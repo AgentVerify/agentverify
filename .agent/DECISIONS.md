@@ -997,6 +997,24 @@
 - Revisit when imported guarded tool controls can be resolved with stable target identity across
   files.
 
+## OpenAI Agents JS Agent.clone is same-file lineage with explicit list semantics
+
+- Decision: Represent exact TypeScript OpenAI Agents SDK `Agent.clone({...})` calls as Agent
+  components only when the clone source is a stable same-file Agent binding and the clone config is
+  a direct object literal. Add a `derived-from` edge back to the source Agent, record list properties
+  explicitly supplied in the clone config, and mark omitted SDK list properties as
+  `shared-from-source-agent`.
+- Evidence: The pinned OpenAI Agents JS `packages/agents-core/src/agent.ts` docs state that
+  omitted list properties such as `tools`, `handoffs`, `mcpServers`, `inputGuardrails`, and
+  `outputGuardrails` share the original Agent's arrays. The pinned docs example
+  `examples/docs/agents/agentCloning.ts` clones `pirateAgent` into `robotAgent` with those lists
+  omitted.
+- Alternative: Treat any `.clone(...)` on an identifier as an Agent, or resolve imported clone
+  sources. Rejected because lookalike objects, dynamic config helpers, rebound source bindings, and
+  cross-file source identity need stronger provenance before AgentVerify should claim lineage.
+- Revisit when imported Agent bindings can be resolved with stable source IDs and list semantics
+  without broad property-flow interpretation.
+
 ## OpenAI Agents JS tool guardrails are source-tool governance controls
 
 - Decision: Represent exact TypeScript OpenAI Agents SDK

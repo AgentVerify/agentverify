@@ -5052,6 +5052,70 @@ def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:
     }
 
 
+def test_typescript_openai_agent_clone_is_exact() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_openai_agent_clone")
+
+    agents = {
+        component.symbol_id: component
+        for component in ir.components
+        if component.kind == "agent"
+    }
+    assert agents["ts:agent.ts#agent:copiedAgent"].attributes == {
+        "constructor": "Agent.clone",
+        "module": "@openai/agents",
+        "imported_symbol": "Agent",
+        "configuration": "Agent.clone",
+        "clone_source_binding": "baseAgent",
+        "clone_source_agent": "Base reviewer",
+        "clone_source_agent_id": "ts:agent.ts#agent:baseAgent",
+        "scope": "production",
+        "clone_omitted_list_properties": [
+            "tools",
+            "handoffs",
+            "mcpServers",
+            "inputGuardrails",
+            "outputGuardrails",
+        ],
+        "clone_omitted_list_policy": "shared-from-source-agent",
+    }
+    assert agents["ts:agent.ts#agent:isolatedAgent"].attributes[
+        "clone_list_overrides"
+    ] == ["tools"]
+    assert agents["ts:agent.ts#agent:isolatedAgent"].attributes[
+        "clone_omitted_list_properties"
+    ] == ["handoffs", "mcpServers", "inputGuardrails", "outputGuardrails"]
+    assert "ts:agent.ts#agent:dynamicClone" not in agents
+    assert "ts:agent.ts#agent:reboundClone" not in agents
+
+    clone_edges = {
+        relationship.source_id: relationship
+        for relationship in ir.relationships
+        if relationship.relation == "derived-from"
+        and relationship.source_kind == "agent"
+        and relationship.target_kind == "agent"
+    }
+    assert set(clone_edges) == {
+        "ts:agent.ts#agent:copiedAgent",
+        "ts:agent.ts#agent:isolatedAgent",
+    }
+    assert clone_edges["ts:agent.ts#agent:copiedAgent"].target_id == (
+        "ts:agent.ts#agent:baseAgent"
+    )
+    assert clone_edges["ts:agent.ts#agent:copiedAgent"].attributes == {
+        "analysis": "typescript-openai-agents-agent-clone",
+        "configuration": "Agent.clone",
+        "clone_source_binding": "baseAgent",
+        "clone_omitted_list_properties": [
+            "tools",
+            "handoffs",
+            "mcpServers",
+            "inputGuardrails",
+            "outputGuardrails",
+        ],
+        "clone_omitted_list_policy": "shared-from-source-agent",
+    }
+
+
 def test_typescript_openai_realtime_session_guardrail_policy_is_exact() -> None:
     ir = scan_repository(ROOT / "cases/typescript_openai_realtime_session_guardrails")
 

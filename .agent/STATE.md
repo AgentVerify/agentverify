@@ -12,9 +12,11 @@ catalog workflows.
   string-not-equals predicates in pinned OpenAI Agents JS examples.
 - Added exact Agent-to-tool-guardrail governance edges when an OpenAI Agents JS Agent uses a
   same-file tool that already has proven `tool({ inputGuardrails, outputGuardrails })` controls.
+- Added exact TypeScript OpenAI Agents SDK `Agent.clone(...)` inventory for same-file source
+  Agents, including source lineage, list-property overrides, and shared omitted-list semantics.
 - Added exact TypeScript OpenAI Agents SDK Agent guardrail tripwire metadata for direct returned
   `tripwireTriggered` objects in inline guardrails and stable typed `InputGuardrail`/
-  `OutputGuardrail` bindings. Regenerated public IR truth-set results now cover 2,355/2,355
+  `OutputGuardrail` bindings. Regenerated public IR truth-set results now cover 2,362/2,362
   passing labels, and the 71-repository engine benchmark still reports 2,900 relationships /
   10,689 symbolized components.
 - Added exact TypeScript OpenAI Agents SDK Agent guardrail direct-throw metadata for stable guardrail
