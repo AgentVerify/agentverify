@@ -22396,6 +22396,7 @@ def typescript_graph(
     }
     local_agents: dict[str, tuple[str, str]] = {}
     local_agent_declaration_ends: dict[str, int] = {}
+    openai_agent_bindings: set[str] = set()
     helper_return_agents: dict[str, tuple[str, str, int]] = {}
     assigned_agents: dict[str, list[tuple[int, int, str, str]]] = defaultdict(list)
     agent_bodies: list[tuple[re.Match[str], int, str, str, str, str]] = []
@@ -22635,6 +22636,8 @@ def typescript_graph(
         if binding_kind == "assignment" and agent_assignment_counts[variable_name] == 1:
             local_agents[variable_name] = (agent_name, agent_id)
             local_agent_declaration_ends[variable_name] = end
+            if constructor == "Agent" and exact_openai_agent_import:
+                openai_agent_bindings.add(variable_name)
         elif binding_kind == "return-new":
             helper_return_agents[variable_name] = (agent_name, agent_id, match.start())
         agent_bodies.append((match, opening + 1, body, agent_name, agent_id, constructor))
@@ -22650,108 +22653,112 @@ def typescript_graph(
         "inputGuardrails",
         "outputGuardrails",
     ]
-    clone_matches = clone_pattern.finditer(code) if exact_openai_agent_import else ()
-    for match in clone_matches:
-        variable_name = match.group(1)
-        source_binding = match.group(2)
-        if variable_name in local_agents or variable_name == source_binding:
-            continue
-        source_agent = local_agents.get(source_binding)
-        if source_agent is None:
-            continue
-        source_declaration_end = local_agent_declaration_ends.get(source_binding)
-        if source_declaration_end is None or source_declaration_end > match.start():
-            continue
-        if re.search(
-            rf"(?<![\w$.]){re.escape(source_binding)}\s*=(?!=)",
-            code[source_declaration_end : match.start()],
-        ):
-            continue
-        opening = code.find("(", match.start(), match.end())
-        end = typescript_balanced_end(code, opening, "(", ")")
-        if end is None:
-            continue
-        arguments = typescript_call_arguments(text[opening + 1 : end - 1], opening + 1)
-        if not arguments:
-            continue
-        body, body_offset = arguments[0]
-        if not typescript_code_mask(body).lstrip().startswith("{"):
-            continue
-        start_line = line_at(text, match.start())
-        clone_name = typescript_object_string_property(body, "name") or variable_name
-        agent_identity = (
-            f"{variable_name}@{start_line}"
-            if agent_assignment_counts[variable_name] > 1
-            else variable_name
-        )
-        agent_id = source_symbol("ts", relative, "agent", agent_identity)
-        list_overrides = [
-            property_name
-            for property_name in openai_agent_list_properties
-            if typescript_object_property_expression_location(
-                body,
-                property_name,
-                body_offset,
+    def add_openai_agent_clone_bindings() -> None:
+        for match in clone_pattern.finditer(code):
+            variable_name = match.group(1)
+            source_binding = match.group(2)
+            if variable_name in local_agents or variable_name == source_binding:
+                continue
+            if source_binding not in openai_agent_bindings:
+                continue
+            source_agent = local_agents.get(source_binding)
+            if source_agent is None:
+                continue
+            source_declaration_end = local_agent_declaration_ends.get(source_binding)
+            if source_declaration_end is None or source_declaration_end > match.start():
+                continue
+            if re.search(
+                rf"(?<![\w$.]){re.escape(source_binding)}\s*=(?!=)",
+                code[source_declaration_end : match.start()],
+            ):
+                continue
+            opening = code.find("(", match.start(), match.end())
+            end = typescript_balanced_end(code, opening, "(", ")")
+            if end is None:
+                continue
+            arguments = typescript_call_arguments(text[opening + 1 : end - 1], opening + 1)
+            if not arguments:
+                continue
+            body, body_offset = arguments[0]
+            if not typescript_code_mask(body).lstrip().startswith("{"):
+                continue
+            start_line = line_at(text, match.start())
+            clone_name = typescript_object_string_property(body, "name") or variable_name
+            agent_identity = (
+                f"{variable_name}@{start_line}"
+                if agent_assignment_counts[variable_name] > 1
+                else variable_name
             )
-            is not None
-        ]
-        omitted_lists = [
-            property_name
-            for property_name in openai_agent_list_properties
-            if property_name not in list_overrides
-        ]
-        source_agent_name, source_agent_id = source_agent
-        attributes: dict[str, object] = {
-            "constructor": "Agent.clone",
-            "module": "@openai/agents",
-            "imported_symbol": "Agent",
-            "configuration": "Agent.clone",
-            "clone_source_binding": source_binding,
-            "clone_source_agent": source_agent_name,
-            "clone_source_agent_id": source_agent_id,
-            "scope": source_scope(relative),
-        }
-        if list_overrides:
-            attributes["clone_list_overrides"] = list_overrides
-        if omitted_lists:
-            attributes["clone_omitted_list_properties"] = omitted_lists
-            attributes["clone_omitted_list_policy"] = "shared-from-source-agent"
-        ev = Evidence(relative, start_line, excerpt(lines, start_line))
-        ir.add_component(Component("agent", clone_name, ev, attributes, agent_id))
-        ir.add_relationship(
-            Relationship(
-                "agent",
-                clone_name,
-                "derived-from",
-                "agent",
-                source_agent_name,
-                ev,
-                {
-                    "analysis": "typescript-openai-agents-agent-clone",
-                    "configuration": "Agent.clone",
-                    "clone_source_binding": source_binding,
-                    **(
-                        {"clone_list_overrides": list_overrides}
-                        if list_overrides
-                        else {}
-                    ),
-                    **(
-                        {
-                            "clone_omitted_list_properties": omitted_lists,
-                            "clone_omitted_list_policy": "shared-from-source-agent",
-                        }
-                        if omitted_lists
-                        else {}
-                    ),
-                },
-                source_id=agent_id,
-                target_id=source_agent_id,
+            agent_id = source_symbol("ts", relative, "agent", agent_identity)
+            list_overrides = [
+                property_name
+                for property_name in openai_agent_list_properties
+                if typescript_object_property_expression_location(
+                    body,
+                    property_name,
+                    body_offset,
+                )
+                is not None
+            ]
+            omitted_lists = [
+                property_name
+                for property_name in openai_agent_list_properties
+                if property_name not in list_overrides
+            ]
+            source_agent_name, source_agent_id = source_agent
+            attributes: dict[str, object] = {
+                "constructor": "Agent.clone",
+                "module": "@openai/agents",
+                "imported_symbol": "Agent",
+                "configuration": "Agent.clone",
+                "clone_source_binding": source_binding,
+                "clone_source_agent": source_agent_name,
+                "clone_source_agent_id": source_agent_id,
+                "scope": source_scope(relative),
+            }
+            if list_overrides:
+                attributes["clone_list_overrides"] = list_overrides
+            if omitted_lists:
+                attributes["clone_omitted_list_properties"] = omitted_lists
+                attributes["clone_omitted_list_policy"] = "shared-from-source-agent"
+            ev = Evidence(relative, start_line, excerpt(lines, start_line))
+            ir.add_component(Component("agent", clone_name, ev, attributes, agent_id))
+            ir.add_relationship(
+                Relationship(
+                    "agent",
+                    clone_name,
+                    "derived-from",
+                    "agent",
+                    source_agent_name,
+                    ev,
+                    {
+                        "analysis": "typescript-openai-agents-agent-clone",
+                        "configuration": "Agent.clone",
+                        "clone_source_binding": source_binding,
+                        **(
+                            {"clone_list_overrides": list_overrides}
+                            if list_overrides
+                            else {}
+                        ),
+                        **(
+                            {
+                                "clone_omitted_list_properties": omitted_lists,
+                                "clone_omitted_list_policy": "shared-from-source-agent",
+                            }
+                            if omitted_lists
+                            else {}
+                        ),
+                    },
+                    source_id=agent_id,
+                    target_id=source_agent_id,
+                )
             )
-        )
-        local_agents[variable_name] = (clone_name, agent_id)
-        local_agent_declaration_ends[variable_name] = end
-        assigned_agents[variable_name].append((match.start(), end, clone_name, agent_id))
-        agent_bodies.append((match, body_offset, body, clone_name, agent_id, "Agent"))
+            local_agents[variable_name] = (clone_name, agent_id)
+            local_agent_declaration_ends[variable_name] = end
+            assigned_agents[variable_name].append((match.start(), end, clone_name, agent_id))
+            agent_bodies.append((match, body_offset, body, clone_name, agent_id, "Agent"))
+
+    add_openai_agent_clone_bindings()
 
     for variable_name, initializer, initializer_offset in typescript_variable_initializers(text):
         if variable_name in local_agents:
@@ -22780,6 +22787,15 @@ def typescript_graph(
         except OSError:
             continue
         target_code = typescript_code_mask(target_text)
+        target_openai_agent_imports = {
+            local
+            for local, imported in typescript_named_import_bindings(
+                target_text,
+                "@openai/agents",
+            ).items()
+            if imported == "Agent"
+            and not typescript_import_binding_is_shadowed(target_text, local)
+        }
         target_realtime_imports = {
             **typescript_named_import_bindings(target_text, "@openai/agents/realtime"),
             **typescript_named_import_bindings(target_text, "@openai/agents-realtime"),
@@ -22831,6 +22847,25 @@ def typescript_graph(
                 agent_id = source_symbol("ts", target, "agent", target_agent_variable)
                 target_local_realtime_agents[target_agent_variable] = (agent_name, agent_id)
         imported_agent_matches: list[tuple[str, str]] = []
+        for target_constructor in target_openai_agent_imports:
+            exported_agent_pattern = re.compile(
+                rf"\bexport\s+const\s+{re.escape(original)}"
+                r"\s*(?::\s*(?:[^=;\n]|=(?!>))+)?"
+                rf"=\s*new\s+{re.escape(target_constructor)}\s*\("
+            )
+            for exported_agent_match in exported_agent_pattern.finditer(target_code):
+                opening = target_code.find(
+                    "(",
+                    exported_agent_match.start(),
+                    exported_agent_match.end(),
+                )
+                end = typescript_balanced_end(target_code, opening, "(", ")")
+                if end is None:
+                    continue
+                body = target_text[opening + 1 : end - 1]
+                agent_name = typescript_object_string_property(body, "name") or original
+                agent_id = source_symbol("ts", target, "agent", original)
+                imported_agent_matches.append((agent_name, agent_id))
         for target_constructor in target_realtime_agent_imports:
             exported_agent_pattern = re.compile(
                 rf"\bexport\s+const\s+{re.escape(original)}"
@@ -22852,6 +22887,8 @@ def typescript_graph(
                 imported_agent_matches.append((agent_name, agent_id))
         if len(imported_agent_matches) == 1:
             local_agents[local_name] = imported_agent_matches[0]
+            local_agent_declaration_ends[local_name] = 0
+            openai_agent_bindings.add(local_name)
         imported_session_matches: list[tuple[tuple[str, str], str]] = []
         for target_constructor in target_realtime_session_imports:
             exported_session_pattern = re.compile(
@@ -22890,6 +22927,7 @@ def typescript_graph(
                 declaration_end=0,
                 transport_attributes={},
             )
+    add_openai_agent_clone_bindings()
     agent_alias_pattern = re.compile(
         r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)"
         r"\s*(?::\s*(?:[^=;\n]|=(?!>))+)?"

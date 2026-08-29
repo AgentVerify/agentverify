@@ -5116,6 +5116,59 @@ def test_typescript_openai_agent_clone_is_exact() -> None:
     }
 
 
+def test_typescript_openai_imported_agent_clone_is_exact() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_openai_imported_agent_clone")
+
+    agents = {
+        component.symbol_id: component
+        for component in ir.components
+        if component.kind == "agent"
+    }
+    assert agents["ts:manager.ts#agent:importedClone"].attributes == {
+        "constructor": "Agent.clone",
+        "module": "@openai/agents",
+        "imported_symbol": "Agent",
+        "configuration": "Agent.clone",
+        "clone_source_binding": "writerAgent",
+        "clone_source_agent": "Imported writer",
+        "clone_source_agent_id": "ts:agents.ts#agent:writerAgent",
+        "scope": "production",
+        "clone_list_overrides": ["tools"],
+        "clone_omitted_list_properties": [
+            "handoffs",
+            "mcpServers",
+            "inputGuardrails",
+            "outputGuardrails",
+        ],
+        "clone_omitted_list_policy": "shared-from-source-agent",
+    }
+    assert "ts:manager.ts#agent:fakeClone" not in agents
+
+    clone_edges = [
+        relationship
+        for relationship in ir.relationships
+        if relationship.relation == "derived-from"
+        and relationship.source_kind == "agent"
+        and relationship.target_kind == "agent"
+    ]
+    assert len(clone_edges) == 1
+    assert clone_edges[0].source_id == "ts:manager.ts#agent:importedClone"
+    assert clone_edges[0].target_id == "ts:agents.ts#agent:writerAgent"
+    assert clone_edges[0].attributes == {
+        "analysis": "typescript-openai-agents-agent-clone",
+        "configuration": "Agent.clone",
+        "clone_source_binding": "writerAgent",
+        "clone_list_overrides": ["tools"],
+        "clone_omitted_list_properties": [
+            "handoffs",
+            "mcpServers",
+            "inputGuardrails",
+            "outputGuardrails",
+        ],
+        "clone_omitted_list_policy": "shared-from-source-agent",
+    }
+
+
 def test_typescript_openai_realtime_session_guardrail_policy_is_exact() -> None:
     ir = scan_repository(ROOT / "cases/typescript_openai_realtime_session_guardrails")
 

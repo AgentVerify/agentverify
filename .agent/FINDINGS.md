@@ -685,7 +685,7 @@
   contribute dynamic-expression or literal tripwire source counts; mutated arrays and settings-only
   sessions remain unresolved. The local fixture plus pinned OpenAI Agents JS
   `examples/docs/voice-agents/guardrails.ts` bring the Realtime guardrail truth-set slice to
-  18/18 labels within the 2,362-label public IR truth set.
+  18/18 labels within the 2,367-label public IR truth set.
 - OpenAI Agents JS Agent-level input/output guardrails are now reviewable when source-proven.
   Exact `new Agent({ inputGuardrails })` and `new Agent({ outputGuardrails })` constructor options
   emit `agent-guardrail-policy` controls linked to the source agent, including
@@ -741,11 +741,14 @@
   prevents non-`tool(...)` guardrail-looking properties from becoming Agent governance. This raises
   the tool guardrail truth-set slice to 30/30 labels.
 - OpenAI Agents JS `Agent.clone(...)` is now visible as Agent lineage when the clone source is a
-  stable same-file Agent. The IR records the source binding/agent, emits a `derived-from` edge, and
-  distinguishes explicitly overridden SDK list properties from omitted `tools`, `handoffs`,
-  `mcpServers`, `inputGuardrails`, and `outputGuardrails` lists that share source-agent arrays per
-  the SDK docs. Dynamic clone configs and rebound clone sources remain unresolved, and the clone
-  truth-set slice starts at 7/7 labels from a local fixture plus pinned OpenAI docs.
+  stable same-file Agent or an exact imported sibling export that resolves to one OpenAI `Agent`.
+  The IR records the source binding/agent, emits a `derived-from` edge, and distinguishes explicitly
+  overridden SDK list properties from omitted `tools`, `handoffs`, `mcpServers`,
+  `inputGuardrails`, and `outputGuardrails` lists that share source-agent arrays per the SDK docs.
+  Dynamic clone configs, rebound clone sources, and lookalike imported `.clone(...)` methods remain
+  unresolved. The clone truth-set slice now covers 12/12 labels from local fixtures plus pinned
+  OpenAI docs and financial-research examples, bringing the public IR truth set to 2,367 passing
+  labels.
 
 ## Hypotheses
 
