@@ -113,7 +113,10 @@
   inventoried. Local builtin-tool `shellTool`/`applyPatchTool` `onApproval` callbacks now also record
   exact approval-object return shape, same-file readline prompt-helper source, and conditional
   fallback rejection when source-proven, but AgentVerify still does not claim full approval or safety
-  quality without broader predicate/action evidence.
+  quality without broader predicate/action evidence. Direct OpenAI run-state approval branches now
+  also record same-file readline prompt-helper review source when source-proven; future work can
+  propagate that through helper-parameter run-state summaries only if call-site provenance remains
+  exact.
 - Explore whether any Realtime auth-source patterns should become reporting rules only after
   gathering enough real non-example client-side/server-side context. Current auth evidence is IR
   inventory only because `process.env.OPENAI_API_KEY` with websocket/SIP can be legitimate server

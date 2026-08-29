@@ -28,6 +28,10 @@ catalog workflows.
   `shellTool` and `applyPatchTool` examples, including shorthand `{ approve }` returns, same-file
   readline prompt-helper source shapes, and conditional prompt-call fallback rejection for the
   pinned apply-patch example, while preserving existing auto-approval environment-bypass evidence.
+- Added exact TypeScript OpenAI Agents SDK run-state approval-decision prompt-review metadata for
+  direct braced `if` approval branches guarded by a same-file readline confirmation helper, covering
+  pinned human-in-the-loop and hosted MCP human-loop examples while leaving reject branches and helper
+  propagation separate.
 - Added exact Python OpenAI Agents SDK `HostedMCPTool(tool_config={...})` approval inventory for
   explicit `"never"`, explicit or same-block/imported local literal `"always"`, shallow selective
   dict policies, imported local literal policies, named local reexported literal policies, consumer

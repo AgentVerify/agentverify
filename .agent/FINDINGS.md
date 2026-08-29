@@ -30,6 +30,12 @@
   comparison, and `SHELL_AUTO_APPROVE` bypass metadata. The pinned `apply-patch.ts` example records a
   conditional `promptApplyPatchApproval` call with fallback rejection, the same readline
   prompt/yes-comparison source shape, and `APPLY_PATCH_AUTO_APPROVE` bypass metadata.
+- TypeScript OpenAI run-state approval decisions now record direct prompt-review source shape when a
+  proven `RunState.approve(...)` branch is guarded by a stable binding returned from a same-file
+  readline confirmation helper. Pinned OpenAI JS `human-in-the-loop.ts`,
+  `human-in-the-loop-stream.ts`, and `hosted-mcp-human-in-the-loop.ts` approval branches now preserve
+  the helper name, readline question source, and yes/yes-string comparison while existing
+  auto-approval environment-bypass metadata remains separate.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
 - A freshly rebuilt wheel includes all fifteen runtime schemas; a verifier script now guards that
   package artifact expectation.

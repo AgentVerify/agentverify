@@ -16525,7 +16525,9 @@ def typescript_approval_prompt_function_summaries(
             rf"\bconst\s+([A-Za-z_$][\w$]*)\s*=\s*"
             rf"{re.escape(answer_binding)}"
             r"(?:\s*\.\s*trim\s*\(\s*\)\s*\.\s*toLowerCase\s*\(\s*\)"
-            r"|\s*\.\s*toLowerCase\s*\(\s*\)\s*\.\s*trim\s*\(\s*\))\s*;",
+            r"|\s*\.\s*toLowerCase\s*\(\s*\)\s*\.\s*trim\s*\(\s*\)"
+            r"|\s*\.\s*toLowerCase\s*\(\s*\)"
+            r"|\s*\.\s*trim\s*\(\s*\))\s*;",
             body_code,
         ):
             normalized_answer_bindings.add(normalization_match.group(1))
@@ -16551,10 +16553,19 @@ def typescript_approval_prompt_function_summaries(
                 for pattern in answer_patterns
             ]
             comparison = rf"(?:{'|'.join(comparison_patterns)})"
+            literal_array_includes_patterns = [
+                rf"\[\s*['\"]y['\"]\s*,\s*['\"]yes['\"]\s*\]"
+                rf"\s*\.\s*includes\s*\(\s*(?:{pattern})\s*\)"
+                for pattern in answer_patterns
+            ]
             return bool(
                 re.fullmatch(
                     rf"{comparison}(?:\s*\|\|\s*{comparison})*",
                     expression,
+                )
+                or any(
+                    re.fullmatch(pattern, expression)
+                    for pattern in literal_array_includes_patterns
                 )
             )
 
@@ -16569,6 +16580,42 @@ def typescript_approval_prompt_function_summaries(
                 }
                 break
     return resolved
+
+
+def typescript_prefixed_approval_prompt_attributes(
+    call_name: str,
+    approval_prompt_function_summaries: dict[str, dict[str, object]],
+    *,
+    attribute_prefix: str,
+) -> dict[str, object]:
+    summary = approval_prompt_function_summaries.get(call_name, {})
+    return {f"{attribute_prefix}_{name}": value for name, value in summary.items()}
+
+
+def typescript_direct_approval_prompt_call_name(
+    expression: str,
+    approval_prompt_function_summaries: dict[str, dict[str, object]],
+) -> str | None:
+    """Return a same-file prompt-helper name when expression is exactly its call."""
+
+    value = expression.strip()
+    while value.startswith("("):
+        end = typescript_balanced_end(value, 0, "(", ")")
+        if end is None or value[end:].strip():
+            break
+        value = value[1 : end - 1].strip()
+    value = re.sub(r"^(?:await\s+)+", "", value).strip()
+    call_match = re.match(r"^([A-Za-z_$][\w$]*)\s*\(", value)
+    if call_match is None:
+        return None
+    function_name = call_match.group(1)
+    if function_name not in approval_prompt_function_summaries:
+        return None
+    opening = value.find("(", call_match.start(1))
+    end = typescript_balanced_end(value, opening, "(", ")")
+    if end is None or value[end:].strip():
+        return None
+    return function_name
 
 
 def typescript_direct_approval_bypass_call_names(
@@ -16595,6 +16642,66 @@ def typescript_direct_approval_bypass_call_names(
     if end is None or value[end:].strip():
         return ()
     return approval_bypass_function_summaries[function_name]
+
+
+def typescript_enclosing_if_approval_prompt_attributes(
+    code: str,
+    target_offset: int,
+    approval_prompt_function_summaries: dict[str, dict[str, object]],
+    *,
+    attribute_prefix: str = "approval",
+) -> dict[str, object]:
+    """Return prompt-helper source-shape attrs for a braced approval if branch."""
+
+    if not approval_prompt_function_summaries:
+        return {}
+    for if_match in reversed(list(re.finditer(r"\bif\s*\(", code[:target_offset]))):
+        opening = code.find("(", if_match.start(), if_match.end())
+        condition_end = typescript_balanced_end(code, opening, "(", ")")
+        if condition_end is None:
+            continue
+        after_condition = condition_end
+        while after_condition < len(code) and code[after_condition].isspace():
+            after_condition += 1
+        if after_condition >= len(code) or code[after_condition] != "{":
+            continue
+        block_end = typescript_balanced_end(code, after_condition, "{", "}")
+        if block_end is None or not (after_condition < target_offset < block_end):
+            continue
+        condition = code[opening + 1 : condition_end - 1].strip()
+        call_name = typescript_direct_approval_prompt_call_name(
+            condition,
+            approval_prompt_function_summaries,
+        )
+        if call_name is not None:
+            return typescript_prefixed_approval_prompt_attributes(
+                call_name,
+                approval_prompt_function_summaries,
+                attribute_prefix=attribute_prefix,
+            )
+        condition_identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", condition)
+        if condition_identifier is None:
+            continue
+        binding_name = condition_identifier.group(0)
+        binding_pattern = re.compile(
+            rf"\b(?:const|let)\s+{re.escape(binding_name)}\s*(?::\s*[^=;\n]+)?=\s*"
+            r"(?:await\s+)?([A-Za-z_$][\w$]*)\s*\("
+        )
+        for binding_match in reversed(list(binding_pattern.finditer(code[: if_match.start()]))):
+            call_name = binding_match.group(1)
+            if call_name not in approval_prompt_function_summaries:
+                continue
+            if re.search(
+                rf"(?<![\w$.]){re.escape(binding_name)}\s*=(?!=)",
+                code[binding_match.end() : if_match.start()],
+            ):
+                continue
+            return typescript_prefixed_approval_prompt_attributes(
+                call_name,
+                approval_prompt_function_summaries,
+                attribute_prefix=attribute_prefix,
+            )
+    return {}
 
 
 def typescript_enclosing_if_approval_bypass_environment_names(
@@ -21558,10 +21665,11 @@ def typescript_openai_on_approval_callback_attributes(
     approval_prompt_function_summaries = approval_prompt_function_summaries or {}
 
     def helper_review_attributes(call_name: str) -> dict[str, object]:
-        summary = approval_prompt_function_summaries.get(call_name, {})
-        return {
-            f"{attribute_prefix}_{name}": value for name, value in summary.items()
-        }
+        return typescript_prefixed_approval_prompt_attributes(
+            call_name,
+            approval_prompt_function_summaries,
+            attribute_prefix=attribute_prefix,
+        )
 
     code = typescript_code_mask(callback_expression)
     arrow = code.find("=>")
@@ -21988,7 +22096,7 @@ def typescript_graph(
     )
     approval_prompt_function_summaries = (
         typescript_approval_prompt_function_summaries(text)
-        if ("onApproval" in text and "question" in text and openai_imports)
+        if ("question" in text and openai_imports)
         else {}
     )
     has_mcp_import = "@modelcontextprotocol/" in text or bool(
@@ -26753,6 +26861,15 @@ def typescript_graph(
             if decision == "approve"
             else ()
         )
+        approval_review_attributes = (
+            typescript_enclosing_if_approval_prompt_attributes(
+                code,
+                match.start(),
+                approval_prompt_function_summaries,
+            )
+            if decision == "approve"
+            else {}
+        )
         rejection_message_attributes = (
             typescript_rejection_message_attributes(
                 text[opening + 1 : end - 1],
@@ -26773,6 +26890,7 @@ def typescript_graph(
             symbol_identity=f"{symbol_receiver}.{decision}@{line}",
             approval_bypass_environment_names=approval_bypass_environment_names,
             rejection_message_attributes=rejection_message_attributes,
+            extra_attributes=approval_review_attributes,
         )
 
     def add_conversation_session_relationship(

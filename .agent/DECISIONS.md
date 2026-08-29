@@ -1,5 +1,24 @@
 # AgentVerify decisions
 
+## TypeScript run-state approval prompt review is direct-branch metadata only
+
+- Decision: Record `approval_review_*` metadata for OpenAI Agents JS `RunState.approve(...)` controls
+  only when the approve call is inside a braced `if` branch whose condition is either a direct
+  same-file prompt-helper call or a stable local binding assigned from that helper before the branch.
+  Keep rejection branches clean unless they have rejection-message evidence, and do not yet propagate
+  prompt-review metadata through helper-parameter run-state summaries.
+- Evidence: The pinned OpenAI JS `human-in-the-loop.ts` and `human-in-the-loop-stream.ts` examples
+  assign `confirmed` / `ok` from a same-file `confirm(...)` helper, then call `state.approve(...)`
+  only in the truthy branch. The helper creates a readline interface, asks the user a yes/no
+  question, and returns a literal yes/yes-string comparison. The pinned hosted MCP human-loop example
+  uses the same branch shape with `result.state.approve(...)`. Existing `AUTO_APPROVE_HITL` bypass
+  metadata remains separate where the helper also contains an auto-approval environment branch.
+- Alternative: Infer prompt-review quality for any nearby approval helper or propagate it through all
+  helper summaries. Rejected for this slice because helper-parameter propagation needs call-site
+  source-agent identity and can be handled separately without weakening this direct-branch contract.
+- Revisit when: Helper-parameter run-state approval summaries can carry prompt-review metadata
+  without conflating multiple call sites or losing source-agent provenance.
+
 ## TypeScript builtin-tool onApproval prompt helpers are source-shape inventory
 
 - Decision: For OpenAI Agents JS `shellTool` and `applyPatchTool`, record exact inline `onApproval`

@@ -8965,6 +8965,74 @@ def test_typescript_openai_approval_decision_records_env_backed_approval_branch(
     assert "approval_bypass_environment_names" not in governed_edges[40]
 
 
+def test_typescript_openai_approval_decision_records_prompt_helper_branch(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "agent.ts").write_text(
+        textwrap.dedent(
+            """
+            import readline from "node:readline/promises";
+            import { Agent, run } from "@openai/agents";
+
+            const agent = new Agent({ name: "Prompted approver" });
+
+            async function confirm(question: string): Promise<boolean> {
+              const rl = readline.createInterface({
+                input: process.stdin,
+                output: process.stdout,
+              });
+              const answer = await rl.question(`${question} (y/n): `);
+              const normalizedAnswer = answer.toLowerCase();
+              rl.close();
+              return normalizedAnswer === "y" || normalizedAnswer === "yes";
+            }
+
+            async function main() {
+              const result = await run(agent, "hello");
+              const state = result.state;
+              for (const interruption of result.interruptions) {
+                const confirmed = await confirm("Approve?");
+                if (confirmed) {
+                  state.approve(interruption);
+                } else {
+                  state.reject(interruption);
+                }
+              }
+            }
+            void main;
+            """
+        ),
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+
+    approve_control = next(
+        component
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "approval-decision"
+        and component.attributes["decision"] == "approve"
+    )
+    assert approve_control.attributes["approval_review_resolution"] == (
+        "same-file-helper-readline-question"
+    )
+    assert approve_control.attributes["approval_review_helper"] == "confirm"
+    assert approve_control.attributes["approval_review_source"] == "readline-question"
+    assert approve_control.attributes["approval_review_decision"] == (
+        "yes-literal-comparison"
+    )
+
+    reject_control = next(
+        component
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "approval-decision"
+        and component.attributes["decision"] == "reject"
+    )
+    assert "approval_review_resolution" not in reject_control.attributes
+
+
 def test_typescript_openai_helper_hitl_resolves_lexical_agent_call_sites() -> None:
     ir = scan_repository(ROOT / "cases/typescript_openai_helper_hitl")
 
