@@ -42,6 +42,10 @@ catalog workflows.
   normalization. The pinned Vercel AI `examples/next-workflow/workflow/agent-chat.ts` `deleteFile`
   tool now records `needs_approval: true`, and the public IR truth set covers 2,430/2,430 passing
   labels.
+- Added exact Vercel AI `WorkflowAgent` constructor inventory from `@ai-sdk/workflow` and stable
+  `tools` object binding edges. The pinned Vercel AI `agent-chat.ts` WorkflowAgent now links to its
+  `deleteFile` object tool through `WorkflowAgent.tools`, and the public IR truth set covers
+  2,432/2,432 passing labels.
 - Added exact Python OpenAI Agents SDK `HostedMCPTool(tool_config={...})` approval inventory for
   explicit `"never"`, explicit or same-block/imported local literal `"always"`, shallow selective
   dict policies, imported local literal policies, named local reexported literal policies, consumer

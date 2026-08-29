@@ -18,7 +18,10 @@
   object-tool dictionaries to WorkflowAgent instances and approval-resumption flows without treating
   arbitrary `tools` containers or partial config objects as executable tools. Plain object tool
   inventory now covers top-level `execute` plus schema evidence and static `needsApproval: true as
-  const`.
+  const`; exact local `@ai-sdk/workflow` `WorkflowAgent({ tools })` edges are covered for stable
+  same-file tool-set bindings. Future work should focus on imported tool-set modules,
+  approval-resumption/event flows, or reportable Vercel approval findings only with matching real
+  evidence.
 - Continue OpenAI Agents JS sandbox and session-governance policy extraction from pinned examples
   where evidence remains exact, especially additional Manifest/sandbox policy fields, additional
   `MemorySession`/server-managed conversation implementation semantics, or agent/session

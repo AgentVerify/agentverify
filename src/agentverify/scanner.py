@@ -22128,6 +22128,7 @@ def typescript_graph(
         **typescript_named_import_bindings(text, "@openai/agents/realtime"),
         **typescript_named_import_bindings(text, "@openai/agents-realtime"),
     }
+    workflow_imports = typescript_named_import_bindings(text, "@ai-sdk/workflow")
     openai_imports = {
         **openai_agents_imports,
         **openai_realtime_imports,
@@ -22679,6 +22680,8 @@ def typescript_graph(
             f"{tool_name}@{start_line}" if tool_identity_counts[tool_name] > 1 else tool_name
         )
         tool_id = source_symbol("ts", relative, "tool", tool_identity)
+        if tool_identity_counts[tool_name] == 1:
+            local_tool_ids[tool_name] = tool_id
         add_typescript_generic_tool(
             ir,
             relative=relative,
@@ -22721,6 +22724,8 @@ def typescript_graph(
             f"{tool_name}@{start_line}" if tool_identity_counts[tool_name] > 1 else tool_name
         )
         tool_id = source_symbol("ts", relative, "tool", tool_identity)
+        if tool_identity_counts[tool_name] == 1:
+            local_tool_ids[tool_name] = tool_id
         add_typescript_generic_tool(
             ir,
             relative=relative,
@@ -22763,6 +22768,29 @@ def typescript_graph(
             call_end=end,
             attributes={"protocol": "MCP", "registry": match.group(1)},
         )
+
+    tool_object_bindings: dict[str, tuple[int, int, tuple[tuple[str, str], ...]]] = {}
+    for variable_name, initializer, initializer_offset in typescript_variable_initializers(text):
+        if not typescript_code_mask(initializer).lstrip().startswith("{"):
+            continue
+        entries: list[tuple[str, str]] = []
+        for property_text, _property_offset in typescript_object_items(
+            initializer,
+            initializer_offset,
+        ):
+            named_property = typescript_named_object_property(property_text)
+            if named_property is None:
+                continue
+            tool_name, _tool_expression = named_property
+            tool_id = local_tool_ids.get(tool_name)
+            if tool_id is not None:
+                entries.append((tool_name, tool_id))
+        if entries:
+            tool_object_bindings[variable_name] = (
+                initializer_offset,
+                initializer_offset + len(initializer),
+                tuple(entries),
+            )
 
     sandbox_imports = typescript_named_import_bindings(text, "@openai/agents/sandbox")
     sandbox_local_imports = typescript_named_import_bindings(text, "@openai/agents/sandbox/local")
@@ -24091,6 +24119,18 @@ def typescript_graph(
             (match, "RealtimeAgent", local_name, match.group(1), "assignment")
             for match in realtime_agent_pattern.finditer(code)
         )
+    for local_name, imported_name in workflow_imports.items():
+        if imported_name != "WorkflowAgent" or typescript_import_binding_is_shadowed(
+            text, local_name
+        ):
+            continue
+        workflow_agent_pattern = re.compile(
+            TS_SANDBOX_AGENT_ASSIGNMENT_TEMPLATE.format(constructor=re.escape(local_name))
+        )
+        agent_matches.extend(
+            (match, "WorkflowAgent", local_name, match.group(1), "assignment")
+            for match in workflow_agent_pattern.finditer(code)
+        )
     for local_name, imported_name in sandbox_imports.items():
         if imported_name != "SandboxAgent" or typescript_import_binding_is_shadowed(
             text, local_name
@@ -24162,6 +24202,16 @@ def typescript_graph(
                     "imported_symbol": "RealtimeAgent",
                     "resolution": "exact-openai-realtime-import",
                     "execution_environment": "openai-realtime",
+                }
+            )
+            if constructor_local and constructor_local != constructor:
+                attributes["local_constructor"] = constructor_local
+        elif constructor == "WorkflowAgent":
+            attributes.update(
+                {
+                    "module": "@ai-sdk/workflow",
+                    "imported_symbol": "WorkflowAgent",
+                    "resolution": "exact-vercel-workflow-import",
                 }
             )
             if constructor_local and constructor_local != constructor:
@@ -25581,6 +25631,82 @@ def typescript_graph(
                         binding=binding,
                         manifest_binding=manifest_binding,
                         manifest_controls=manifest_controls,
+                    )
+        if agent_constructor == "WorkflowAgent":
+            workflow_tool_entries: tuple[tuple[str, str], ...] = ()
+            workflow_tool_binding = None
+            workflow_tool_binding_kind = None
+            tools_property_offset = body_offset
+            tools_location = typescript_object_property_expression_location(
+                body,
+                "tools",
+                body_offset,
+            )
+            if tools_location is not None:
+                tools_expression, tools_property_offset, tools_expression_offset = tools_location
+                tools_expression_code = typescript_code_mask(tools_expression).strip()
+                if identifier := re.fullmatch(r"[A-Za-z_$][\w$]*", tools_expression_code):
+                    workflow_tool_binding = identifier.group(0)
+                    workflow_tool_binding_kind = "tools-object-binding"
+                elif tools_expression_code.startswith("{"):
+                    entries = []
+                    for property_text, _property_offset in typescript_object_items(
+                        tools_expression,
+                        tools_expression_offset,
+                    ):
+                        named_property = typescript_named_object_property(property_text)
+                        if named_property is None:
+                            continue
+                        tool_name, _tool_expression = named_property
+                        tool_id = local_tool_ids.get(tool_name)
+                        if tool_id is not None:
+                            entries.append((tool_name, tool_id))
+                    workflow_tool_entries = tuple(entries)
+                    workflow_tool_binding_kind = "inline-tools-object"
+            else:
+                for property_text, property_offset in typescript_object_items(body, body_offset):
+                    if typescript_code_mask(property_text).strip().rstrip(",") == "tools":
+                        workflow_tool_binding = "tools"
+                        workflow_tool_binding_kind = "tools-object-shorthand"
+                        tools_property_offset = property_offset
+                        break
+            if workflow_tool_binding is not None:
+                binding = tool_object_bindings.get(workflow_tool_binding)
+                if binding is not None:
+                    _binding_start, binding_end, binding_entries = binding
+                    if binding_end <= match.start() and not re.search(
+                        rf"(?<![\w$.]){re.escape(workflow_tool_binding)}\s*=(?!=)",
+                        code[binding_end : match.start()],
+                    ):
+                        workflow_tool_entries = binding_entries
+            if workflow_tool_entries:
+                tool_evidence = Evidence(
+                    relative,
+                    line_at(text, tools_property_offset),
+                    excerpt(lines, line_at(text, tools_property_offset)),
+                )
+                for tool_name, tool_id in workflow_tool_entries:
+                    ir.add_relationship(
+                        Relationship(
+                            "agent",
+                            agent_name,
+                            "uses",
+                            "tool",
+                            tool_name,
+                            tool_evidence,
+                            {
+                                "analysis": "typescript-vercel-workflow-agent-tools",
+                                "configuration": "WorkflowAgent.tools",
+                                "binding": workflow_tool_binding_kind,
+                                **(
+                                    {"tool_set_binding": workflow_tool_binding}
+                                    if workflow_tool_binding is not None
+                                    else {}
+                                ),
+                            },
+                            source_id=agent_id,
+                            target_id=tool_id,
+                        )
                     )
         item_properties = ["capabilities"] if agent_constructor == "SandboxAgent" else ["tools"]
         for item, item_offset in [

@@ -2631,6 +2631,78 @@ def test_typescript_object_tool_literal_approval_as_const(tmp_path: Path) -> Non
     assert "notATool" not in tools
 
 
+def test_typescript_workflow_agent_uses_object_tool_binding(tmp_path: Path) -> None:
+    (tmp_path / "agent.ts").write_text(
+        textwrap.dedent(
+            """
+            import { WorkflowAgent } from "@ai-sdk/workflow";
+            import { z } from "zod";
+
+            const model = {};
+            const tools = {
+              deleteFile: {
+                inputSchema: z.object({ path: z.string() }),
+                execute: async () => "deleted",
+                needsApproval: true as const,
+              },
+            };
+            const agent = new WorkflowAgent({ model, tools });
+
+            let changedTools = {
+              unsafe: {
+                inputSchema: z.object({ path: z.string() }),
+                execute: async () => "changed",
+                needsApproval: true as const,
+              },
+            };
+            changedTools = {};
+            const changedAgent = new WorkflowAgent({
+              model,
+              tools: changedTools,
+            });
+            void agent;
+            void changedAgent;
+            """
+        ),
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+
+    agents = {
+        component.name: component.attributes
+        for component in ir.components
+        if component.kind == "agent"
+    }
+    assert agents["agent"] == {
+        "constructor": "WorkflowAgent",
+        "module": "@ai-sdk/workflow",
+        "imported_symbol": "WorkflowAgent",
+        "resolution": "exact-vercel-workflow-import",
+    }
+    assert agents["changedAgent"] == {
+        "constructor": "WorkflowAgent",
+        "module": "@ai-sdk/workflow",
+        "imported_symbol": "WorkflowAgent",
+        "resolution": "exact-vercel-workflow-import",
+    }
+    assert {
+        (
+            relationship.source_name,
+            relationship.relation,
+            relationship.target_name,
+            relationship.attributes.get("binding"),
+            relationship.attributes.get("tool_set_binding"),
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.target_kind == "tool"
+        and relationship.attributes.get("analysis") == "typescript-vercel-workflow-agent-tools"
+    } == {
+        ("agent", "uses", "deleteFile", "tools-object-shorthand", "tools"),
+    }
+
+
 def test_python_enabled_auto_approval_is_review_candidate() -> None:
     ir = scan_repository(ROOT / "cases/python_auto_approval")
 

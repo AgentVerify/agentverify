@@ -1,5 +1,24 @@
 # AgentVerify decisions
 
+## Vercel WorkflowAgent tool edges require exact constructor and stable tool-set binding
+
+- Decision: Treat `new WorkflowAgent(...)` as an agent only when `WorkflowAgent` is an unshadowed
+  named import from `@ai-sdk/workflow`. Resolve `WorkflowAgent({ tools })` or `tools: <identifier>`
+  into `agent uses tool` edges only when the referenced tool-set object is declared before the agent,
+  contains already-inventoried tool entries, and is not reassigned before construction. Inline tools
+  objects may link only to already-inventoried direct entries.
+- Evidence: Vercel AI's pinned `examples/next-workflow/workflow/agent-chat.ts` imports
+  `WorkflowAgent` from `@ai-sdk/workflow`, declares a stable `tools` object containing `getWeather`,
+  `calculate`, and approval-protected `deleteFile`, then constructs `const agent = new
+  WorkflowAgent({ ..., tools, ... })`. AgentVerify now emits the WorkflowAgent component and
+  `WorkflowAgent.tools` edges to the stable object-tool entries, including the approval-protected
+  `deleteFile` edge.
+- Alternative: Recognize any same-named `WorkflowAgent` constructor or any `tools` object
+  structurally. Rejected because the Vercel API semantics should come from import provenance and a
+  stable binding, not from ordinary object names.
+- Revisit when: Imported/reexported WorkflowAgent constructors, external tool-set modules, or
+  approval-resumption flows can be resolved with comparable provenance and mutation guards.
+
 ## TypeScript plain object tools require execute plus schema evidence
 
 - Decision: Inventory a TypeScript object property as a generic `object-tool` only when its object

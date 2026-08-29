@@ -405,6 +405,7 @@
         "attributes": {"adapter": "asTool", "binding": "billingTool"}
       }
     },
+    {"id":"typescript-vercel-workflow-agent-object-tool-edge-real","target":{"kind":"repository","repository":"vercel/ai","commit":"f607a129c0298870038b398dbcba57ff041114f6"},"check_id":"IR-TS-TOOL-GRAPH","path":"examples/next-workflow/workflow/agent-chat.ts","line":160,"expected":true,"relationship":{"source_kind":"agent","source_name":"agent","source_id":"ts:examples/next-workflow/workflow/agent-chat.ts#agent:agent","relation":"uses","target_kind":"tool","target_name":"deleteFile","target_id":"ts:examples/next-workflow/workflow/agent-chat.ts#tool:deleteFile","attributes":{"analysis":"typescript-vercel-workflow-agent-tools","configuration":"WorkflowAgent.tools","binding":"tools-object-shorthand","tool_set_binding":"tools"}}},
     {
       "id": "typescript-cline-inline-tool-real",
       "target": {
@@ -6070,6 +6071,7 @@
       "check_id":"IR-COMPONENT-TAXONOMY","path":"examples/next-agent/agent/weather-agent.ts","line":3,"expected":true,
       "component":{"kind":"framework","name":"Vercel AI SDK","attributes":{"module":"ai"}}
     },
+    {"id":"taxonomy-vercel-workflow-agent-real","target":{"kind":"repository","repository":"vercel/ai","commit":"f607a129c0298870038b398dbcba57ff041114f6"},"check_id":"IR-COMPONENT-TAXONOMY","path":"examples/next-workflow/workflow/agent-chat.ts","line":156,"expected":true,"component":{"kind":"agent","name":"agent","symbol_id":"ts:examples/next-workflow/workflow/agent-chat.ts#agent:agent","attributes":{"constructor":"WorkflowAgent","module":"@ai-sdk/workflow","imported_symbol":"WorkflowAgent","resolution":"exact-vercel-workflow-import"}}},
     {
       "id":"taxonomy-mistral-real",
       "target":{"kind":"repository","repository":"stitionai/devika","commit":"80bb343cbe4a4e5f5a0ba08d2524920139baceb6"},

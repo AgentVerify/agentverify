@@ -47,6 +47,11 @@
   `inputSchema`, `execute`, and `needsApproval: true as const`; AgentVerify now inventories this as
   a generic `object-tool` with static approval enabled. The public IR truth set now passes
   2,430/2,430 labels.
+- Exact Vercel AI WorkflowAgent topology is now partially visible: an unshadowed
+  `@ai-sdk/workflow` `WorkflowAgent` import creates an agent component, and stable local `tools`
+  object bindings produce `agent uses tool` edges to already-inventoried entries. The pinned
+  `agent-chat.ts` example now links the WorkflowAgent to its approval-protected `deleteFile`
+  object-tool entry, and the public IR truth set passes 2,432/2,432 labels.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
 - A freshly rebuilt wheel includes all fifteen runtime schemas; a verifier script now guards that
   package artifact expectation.
