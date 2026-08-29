@@ -1,6 +1,7 @@
 from typing import Literal
 
 from agents import Agent, HostedMCPTool
+from policies import IMPORTED_ALWAYS, IMPORTED_SELECTIVE, MUTATED_POLICY
 from unrelated import HostedMCPTool as FakeHostedMCPTool
 
 
@@ -50,6 +51,30 @@ def build_agent() -> Agent:
                     "server_label": "dynamic",
                     "server_url": "https://mcp.example.com/mcp",
                     "require_approval": dynamic_policy,
+                }
+            ),
+            HostedMCPTool(
+                tool_config={
+                    "type": "mcp",
+                    "server_label": "imported_literal",
+                    "server_url": "https://mcp.example.com/mcp",
+                    "require_approval": IMPORTED_ALWAYS,
+                }
+            ),
+            HostedMCPTool(
+                tool_config={
+                    "type": "mcp",
+                    "server_label": "imported_selective",
+                    "server_url": "https://mcp.example.com/mcp",
+                    "require_approval": IMPORTED_SELECTIVE,
+                }
+            ),
+            HostedMCPTool(
+                tool_config={
+                    "type": "mcp",
+                    "server_label": "imported_mutated",
+                    "server_url": "https://mcp.example.com/mcp",
+                    "require_approval": MUTATED_POLICY,
                 }
             ),
             FakeHostedMCPTool(

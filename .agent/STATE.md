@@ -21,15 +21,17 @@ catalog workflows.
   approval inventory for default, explicit-never, inline selective, stable same-file const object,
   and callback-handled hosted MCP tools, while mutated policy objects remain dynamic.
 - Added exact Python OpenAI Agents SDK `HostedMCPTool(tool_config={...})` approval inventory for
-  explicit `"never"`, explicit or same-block literal `"always"`, shallow selective dict policies,
-  configured approval callbacks, dynamic bindings, and exact hosted MCP capability edges.
+  explicit `"never"`, explicit or same-block/imported local literal `"always"`, shallow selective
+  dict policies, configured approval callbacks, dynamic/imported-mutated bindings, and exact hosted
+  MCP capability edges. Regenerated public IR truth-set results now cover 2,404/2,404 passing
+  labels.
 - Added exact Python OpenAI Agents SDK non-hosted MCP server `require_approval` call-site inventory
   for `MCPServerStdio(...)`, `MCPServerSse(...)`, `MCPServerStreamableHttp(...)`, and imported
   subclasses of exact `agents.mcp.MCPServer`, including literal never/always booleans, same-block
   literal string/dict bindings, imported local literal approval policies, selective tool-list
   policies, dynamic bindings, report-safe remote URL metadata, redacted remote
   auth/header/client-factory presence metadata, OpenAI-vs-lookalike import separation, and pinned
-  OpenAI SDK remote transport corpus labels. Regenerated public IR truth-set results now cover
+  OpenAI SDK remote transport corpus labels. Regenerated public IR truth-set results then covered
   2,401/2,401 passing labels.
 - Added exact TypeScript OpenAI Agents SDK Agent guardrail tripwire metadata for direct returned
   `tripwireTriggered` objects in inline guardrails and stable typed `InputGuardrail`/

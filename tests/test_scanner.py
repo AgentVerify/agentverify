@@ -2882,23 +2882,23 @@ def test_python_openai_hosted_mcp_approval_policy_is_exact() -> None:
         for component in ir.components
         if component.kind == "tool" and component.attributes.get("constructor") == "HostedMCPTool"
     }
-    assert set(tools) == {19, 27, 36, 47}
-    assert tools[19].attributes == {
+    assert set(tools) == {20, 28, 37, 48, 56, 64, 72}
+    assert tools[20].attributes == {
         "binding": "literal-tools-list-inline-constructor",
         "constructor": "HostedMCPTool",
         "registration": "agent-tool-reference",
-        "registration_line": 16,
+        "registration_line": 17,
         "resolution": "literal-inline-constructor",
         "scope": "production",
         "mcp_approval_policy": "disabled-explicit",
         "mcp_approval_requirement": "never",
         "mcp_approval_handler": "none",
     }
-    assert tools[27].attributes == {
+    assert tools[28].attributes == {
         "binding": "literal-tools-list-inline-constructor",
         "constructor": "HostedMCPTool",
         "registration": "agent-tool-reference",
-        "registration_line": 16,
+        "registration_line": 17,
         "resolution": "literal-inline-constructor",
         "scope": "production",
         "mcp_approval_binding": "require_approval",
@@ -2908,11 +2908,11 @@ def test_python_openai_hosted_mcp_approval_policy_is_exact() -> None:
         "mcp_approval_handler": "configured",
         "mcp_approval_handler_policy": "callback-controlled",
     }
-    assert tools[36].attributes == {
+    assert tools[37].attributes == {
         "binding": "literal-tools-list-inline-constructor",
         "constructor": "HostedMCPTool",
         "registration": "agent-tool-reference",
-        "registration_line": 16,
+        "registration_line": 17,
         "resolution": "literal-inline-constructor",
         "scope": "production",
         "mcp_approval_never_tool_names": ["read_page"],
@@ -2921,17 +2921,35 @@ def test_python_openai_hosted_mcp_approval_policy_is_exact() -> None:
         "mcp_approval_policy": "selective",
         "mcp_approval_handler": "manual-run-loop",
     }
-    assert tools[47].attributes == {
+    assert tools[48].attributes == {
         "binding": "literal-tools-list-inline-constructor",
         "constructor": "HostedMCPTool",
         "registration": "agent-tool-reference",
-        "registration_line": 16,
+        "registration_line": 17,
         "resolution": "literal-inline-constructor",
         "scope": "production",
         "mcp_approval_binding": "dynamic_policy",
         "mcp_approval_policy": "dynamic",
         "mcp_approval_handler": "manual-run-loop",
     }
+    assert tools[56].attributes["mcp_approval_binding"] == "IMPORTED_ALWAYS"
+    assert tools[56].attributes["mcp_approval_resolution"] == (
+        "imported-local-literal:repository-module-single-path"
+    )
+    assert tools[56].attributes["mcp_approval_policy"] == "always-required"
+    assert tools[56].attributes["mcp_approval_requirement"] == "always"
+    assert tools[56].attributes["mcp_approval_handler"] == "manual-run-loop"
+
+    assert tools[64].attributes["mcp_approval_binding"] == "IMPORTED_SELECTIVE"
+    assert tools[64].attributes["mcp_approval_resolution"] == (
+        "imported-local-literal:repository-module-single-path"
+    )
+    assert tools[64].attributes["mcp_approval_policy"] == "selective"
+    assert tools[64].attributes["mcp_approval_never_tool_names"] == ["read_hosted"]
+    assert tools[64].attributes["mcp_approval_always_tool_names"] == ["write_hosted"]
+
+    assert tools[72].attributes["mcp_approval_binding"] == "MUTATED_POLICY"
+    assert tools[72].attributes["mcp_approval_policy"] == "dynamic"
 
     assert not any(
         component.kind == "tool" and component.name.startswith("FakeHostedMCPTool")
@@ -2942,21 +2960,29 @@ def test_python_openai_hosted_mcp_approval_policy_is_exact() -> None:
         for component in ir.components
         if component.kind == "capability" and component.name == "mcp-access"
     }
-    assert set(capabilities) == {19, 27, 36, 47}
-    assert capabilities[27].attributes["mcp_approval_resolution"] == (
+    assert set(capabilities) == {20, 28, 37, 48, 56, 64, 72}
+    assert capabilities[28].attributes["mcp_approval_resolution"] == (
         "same-block-literal-string"
     )
-    assert capabilities[36].attributes["mcp_approval_policy"] == "selective"
+    assert capabilities[37].attributes["mcp_approval_policy"] == "selective"
+    assert capabilities[56].attributes["mcp_approval_resolution"] == (
+        "imported-local-literal:repository-module-single-path"
+    )
+    assert capabilities[64].attributes["mcp_approval_policy"] == "selective"
+    assert capabilities[72].attributes["mcp_approval_policy"] == "dynamic"
     tool_edges = {
         edge.source_name: edge
         for edge in ir.relationships
         if edge.source_kind == "tool" and edge.target_kind == "capability"
     }
     assert set(tool_edges) == {
-        "HostedMCPTool@19",
-        "HostedMCPTool@27",
-        "HostedMCPTool@36",
-        "HostedMCPTool@47",
+        "HostedMCPTool@20",
+        "HostedMCPTool@28",
+        "HostedMCPTool@37",
+        "HostedMCPTool@48",
+        "HostedMCPTool@56",
+        "HostedMCPTool@64",
+        "HostedMCPTool@72",
     }
 
 

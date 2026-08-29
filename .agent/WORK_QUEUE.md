@@ -51,18 +51,18 @@
   acknowledgement beyond the current exact auto-acknowledgement and computer backend lifecycle
   inventory. Hosted MCP `requireApproval`/`onApproval` inventory now covers direct literals, inline
   selective policies, stable same-file const object policies, and dynamic/mutated bindings; future
-  hosted MCP work should resolve imported or reexported policy object bindings only if object
-  identity remains exact. Same-file helper-derived
+  TypeScript hosted MCP work should resolve imported or reexported policy object bindings only if
+  object identity remains exact. Same-file helper-derived
   run-state resumes are now covered for the narrow
   exact-agent-parameter pattern; future helper work should focus only on richer predicate/action
   quality or new exact helper shapes that preserve call-site and source-agent identity.
 - Continue OpenAI Agents Python safety-governance extraction where evidence remains exact: callbacks
-  that distinguish explicit user/policy review from unconditional acknowledgement, imported hosted
-  or non-hosted MCP approval policy objects, any reporting-grade remote MCP auth/URL exposure
-  quality only when deployment context is source-proven, and production sticky-approval defaults
-  that can be separated from prompt-selected `always_approve`/`always_reject` persistence, without
-  resolving arbitrary boolean expressions or collapsing duplicate callback names across lexical
-  scopes.
+  that distinguish explicit user/policy review from unconditional acknowledgement, reexported hosted
+  or non-hosted MCP approval policy objects, imported `tool_config` dictionaries, any
+  reporting-grade remote MCP auth/URL exposure quality only when deployment context is
+  source-proven, and production sticky-approval defaults that can be separated from prompt-selected
+  `always_approve`/`always_reject` persistence, without resolving arbitrary boolean expressions or
+  collapsing duplicate callback names across lexical scopes.
 
 ## P2
 
