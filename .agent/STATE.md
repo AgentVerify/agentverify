@@ -37,6 +37,11 @@ catalog workflows.
   The pinned `examples/tools/computer-use-hitl.ts` helper approval now records both
   `AUTO_APPROVE_HITL` bypass evidence and `confirm` yes/no prompt-review source shape on the
   call-site-expanded approval control.
+- Added conservative TypeScript object-tool inventory for plain object properties with top-level
+  `execute` plus `inputSchema`/`parameters`, including static `needsApproval: true as const`
+  normalization. The pinned Vercel AI `examples/next-workflow/workflow/agent-chat.ts` `deleteFile`
+  tool now records `needs_approval: true`, and the public IR truth set covers 2,430/2,430 passing
+  labels.
 - Added exact Python OpenAI Agents SDK `HostedMCPTool(tool_config={...})` approval inventory for
   explicit `"never"`, explicit or same-block/imported local literal `"always"`, shallow selective
   dict policies, imported local literal policies, named local reexported literal policies, consumer

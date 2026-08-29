@@ -14,6 +14,11 @@
   wrapper factories, type-driven symbols, generic same-named provider wrappers, or additional
   non-provider wildcard/reexport forms beyond the current exact framework-constructor,
   provider-factory, and literal-callable cases.
+- Extend Vercel AI WorkflowAgent modeling only when framework provenance is exact: connect
+  object-tool dictionaries to WorkflowAgent instances and approval-resumption flows without treating
+  arbitrary `tools` containers or partial config objects as executable tools. Plain object tool
+  inventory now covers top-level `execute` plus schema evidence and static `needsApproval: true as
+  const`.
 - Continue OpenAI Agents JS sandbox and session-governance policy extraction from pinned examples
   where evidence remains exact, especially additional Manifest/sandbox policy fields, additional
   `MemorySession`/server-managed conversation implementation semantics, or agent/session

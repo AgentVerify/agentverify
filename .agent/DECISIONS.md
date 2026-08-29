@@ -1,5 +1,23 @@
 # AgentVerify decisions
 
+## TypeScript plain object tools require execute plus schema evidence
+
+- Decision: Inventory a TypeScript object property as a generic `object-tool` only when its object
+  literal has top-level `execute` plus top-level `inputSchema` or `parameters`. Treat
+  `needsApproval: true as const` as the same static approval literal as bare `true`; keep callback
+  or absent approval metadata out of the always-enabled approval path.
+- Evidence: Vercel AI's `examples/next-workflow/workflow/agent-chat.ts` defines a WorkflowAgent
+  `deleteFile` plain object tool with `inputSchema`, `execute: deleteFileStep`, and
+  `needsApproval: true as const`. Before this slice AgentVerify saw only factory-call tools and
+  missed that approval-bearing object tool. A local regression pins the positive object-tool shape
+  and a negative object missing `execute`.
+- Alternative: Treat any object inside a `tools` object, or any object with `needsApproval`, as a
+  tool. Rejected because containers and partial config fragments can contain nested tool-like
+  properties; requiring top-level executable plus schema evidence keeps this broad TypeScript path
+  conservative.
+- Revisit when: WorkflowAgent-specific agent/tool graph edges or framework-import provenance can be
+  added without conflating generic object literals with executable tools.
+
 ## TypeScript helper-parameter run-state prompt review preserves call-site provenance
 
 - Decision: Let exact TypeScript OpenAI Agents SDK helper-parameter run-state approval summaries

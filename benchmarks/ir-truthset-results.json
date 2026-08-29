@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-29T14:44:35.828853+00:00",
+  "generated_at": "2026-08-29T15:02:01.473642+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "84c1d4ec990798d00efdbae4cd8e5aa71604f6059dbd9440c98908a18a2068ed",
+    "labels_sha256": "476e36782d645e940d53aabed15c0c683e7f4a2269161178d22704e8cf6ed900",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 2429,
-  "passed": 2429,
+  "labels": 2430,
+  "passed": 2430,
   "failed": 0,
   "failure_summary": {
     "observation_mismatch": 0,
@@ -35,7 +35,7 @@
       "recall": 1.0
     },
     "IR-APPROVAL-CONTROL": {
-      "tp": 102,
+      "tp": 103,
       "fp": 0,
       "tn": 21,
       "fn": 0,
@@ -1015,6 +1015,15 @@
       "check_id": "IR-APPROVAL-CONTROL",
       "expected": false,
       "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-vercel-workflow-object-tool-approval-as-const-real",
+      "check_id": "IR-APPROVAL-CONTROL",
+      "expected": true,
+      "observed": true,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

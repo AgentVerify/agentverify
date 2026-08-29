@@ -13520,7 +13520,7 @@ TS_SANDBOX_RESUME_SESSION_ASSIGNMENT = re.compile(
     r"(?:\b(?:const|let)\s+|(?<![\w$.]))([A-Za-z_$][\w$]*)\s*=\s*"
     r"(?:await\s+)?([A-Za-z_$][\w$]*)\.resume\s*\("
 )
-TS_LITERAL_APPROVAL = re.compile(r"\bneedsApproval\s*:\s*true\b")
+TS_LITERAL_APPROVAL = re.compile(r"\bneedsApproval\s*:\s*true(?:\s+as\s+const)?\b")
 TS_AUTO_APPROVAL_ENABLED = re.compile(
     r"\b(?:autoApprove|auto_approve|skipConfirmation|skip_confirmation|"
     r"dangerouslySkip(?:Permissions?|Confirmation|Approval)|"
@@ -20880,6 +20880,7 @@ def add_typescript_openai_sandbox_manifest_composition_relationships(
 def typescript_literal_boolean_value(expression: str) -> bool | None:
     """Resolve a direct TypeScript boolean literal."""
     code = typescript_code_mask(expression).strip()
+    code = re.sub(r"\s+as\s+const\s*$", "", code)
     if code == "true":
         return True
     if code == "false":
@@ -21217,6 +21218,11 @@ def add_typescript_tool_observation(
     evidence = Evidence(relative, line, excerpt(lines, line))
     literal_options = typescript_code_mask(call_body).lstrip().startswith("{")
     approval_expression = typescript_object_property_expression(call_body, "needsApproval")
+    approval_literal_value = (
+        typescript_literal_boolean_value(approval_expression)
+        if approval_expression is not None
+        else None
+    )
     approval_handler_expression = typescript_object_property_expression(call_body, "onApproval")
     handler_code = typescript_code_mask(approval_handler_expression or "").strip()
     handler_functions = {
@@ -21234,9 +21240,9 @@ def add_typescript_tool_observation(
     )
     if constructor not in TS_OPENAI_APPROVAL_BUILTINS:
         approval_policy = "not-applicable"
-    elif approval_expression == "true":
+    elif approval_literal_value is True:
         approval_policy = "enabled"
-    elif approval_expression == "false":
+    elif approval_literal_value is False:
         approval_policy = "disabled-explicit"
     elif approval_expression is not None:
         approval_policy = "callback-controlled"
@@ -21522,9 +21528,14 @@ def add_typescript_generic_tool(
     start_line = line_at(text, call_offset)
     evidence = Evidence(relative, start_line, excerpt(lines, start_line))
     approval_expression = typescript_object_property_expression(body, "needsApproval")
+    approval_literal_value = (
+        typescript_literal_boolean_value(approval_expression)
+        if approval_expression is not None
+        else None
+    )
     approval_match = (
         TS_LITERAL_APPROVAL.search(typescript_code_mask(body))
-        if constructor != "toolNamespace" and approval_expression == "true"
+        if constructor != "toolNamespace" and approval_literal_value is True
         else None
     )
     approval_attributes = (
@@ -21672,13 +21683,18 @@ def typescript_openai_needs_approval_predicate_attributes(
 def typescript_openai_needs_approval_attributes(body: str) -> dict[str, object]:
     """Resolve exact OpenAI Agents JS needsApproval metadata from one options object."""
     approval_expression = typescript_object_property_expression(body, "needsApproval")
-    if approval_expression == "true":
+    approval_literal_value = (
+        typescript_literal_boolean_value(approval_expression)
+        if approval_expression is not None
+        else None
+    )
+    if approval_literal_value is True:
         return {
             "approval_policy": "enabled",
             "approval_handler": "none",
             "approval_decision": "always",
         }
-    if approval_expression is not None and approval_expression != "false":
+    if approval_expression is not None and approval_literal_value is None:
         return {
             "approval_policy": "callback-controlled",
             "approval_handler": "needsApproval-callback",
@@ -22527,6 +22543,21 @@ def typescript_graph(
             local_factory, constructor, cline_imports, mastra_imports
         ):
             property_matches.append((match, constructor))
+    object_property_matches: list[tuple[re.Match[str], int]] = []
+    for match in re.finditer(r"\b([A-Za-z_$][\w$]*)\s*:\s*\{", code):
+        opening = code.find("{", match.start(), match.end())
+        end = typescript_balanced_end(code, opening, "{", "}")
+        if end is None:
+            continue
+        body = text[opening:end]
+        if typescript_object_property_expression(body, "execute") is None:
+            continue
+        if (
+            typescript_object_property_expression(body, "inputSchema") is None
+            and typescript_object_property_expression(body, "parameters") is None
+        ):
+            continue
+        object_property_matches.append((match, end))
     registration_matches = [
         match
         for match in TS_MCP_TOOL_REGISTRATION.finditer(code)
@@ -22557,6 +22588,7 @@ def typescript_graph(
     tool_identity_counts = Counter(
         [match.group(1) for match in tool_matches]
         + [match.group(1) for match, _ in property_matches]
+        + [match.group(1) for match, _ in object_property_matches]
         + list(registration_names.values())
     )
     for match in tool_matches:
@@ -22680,6 +22712,31 @@ def typescript_graph(
                 body=text[opening + 1 : end - 1],
                 body_offset=opening + 1,
             )
+
+    for match, end in object_property_matches:
+        tool_name = match.group(1)
+        opening = code.find("{", match.start(), match.end())
+        start_line = line_at(text, match.start())
+        tool_identity = (
+            f"{tool_name}@{start_line}" if tool_identity_counts[tool_name] > 1 else tool_name
+        )
+        tool_id = source_symbol("ts", relative, "tool", tool_identity)
+        add_typescript_generic_tool(
+            ir,
+            relative=relative,
+            lines=lines,
+            text=text,
+            tool_by_line=tool_by_line,
+            tool_input_names=tool_input_names,
+            tool_name=tool_name,
+            tool_id=tool_id,
+            constructor="object-tool",
+            body=text[opening:end],
+            body_offset=opening,
+            call_offset=match.start(),
+            call_end=end,
+            attributes={"binding": "object-property"},
+        )
 
     for match in registration_matches:
         tool_name = registration_names[match.start()]

@@ -2578,6 +2578,59 @@ def test_typescript_literal_approval_governs_only_its_tool() -> None:
     } == {("approvedCommand", "governed-by", "human-approval")}
 
 
+def test_typescript_object_tool_literal_approval_as_const(tmp_path: Path) -> None:
+    (tmp_path / "agent.ts").write_text(
+        textwrap.dedent(
+            """
+            import { z } from "zod";
+
+            async function deleteFile(input: { path: string }) {
+              return { deleted: input.path };
+            }
+
+            const tools = {
+              safeLookup: {
+                description: "Read a thing",
+                inputSchema: z.object({ key: z.string() }),
+                execute: async () => "ok",
+              },
+              deleteFile: {
+                description: "Delete a file after approval",
+                inputSchema: z.object({ path: z.string() }),
+                execute: deleteFile,
+                needsApproval: true as const,
+              },
+              notATool: {
+                inputSchema: z.object({ path: z.string() }),
+                needsApproval: true as const,
+              },
+            };
+            void tools;
+            """
+        ),
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+
+    tools = {
+        component.name: component.attributes
+        for component in ir.components
+        if component.kind == "tool"
+    }
+    assert tools["safeLookup"] == {
+        "constructor": "object-tool",
+        "needs_approval": False,
+        "binding": "object-property",
+    }
+    assert tools["deleteFile"] == {
+        "constructor": "object-tool",
+        "needs_approval": True,
+        "binding": "object-property",
+    }
+    assert "notATool" not in tools
+
+
 def test_python_enabled_auto_approval_is_review_candidate() -> None:
     ir = scan_repository(ROOT / "cases/python_auto_approval")
 

@@ -42,6 +42,11 @@
   `examples/tools/computer-use-hitl.ts` approval control records both `AUTO_APPROVE_HITL` bypass
   evidence and the `confirm` readline yes/no prompt source shape, and the public IR truth set remains
   2,429/2,429 passing.
+- Vercel AI WorkflowAgent examples use plain object tool definitions, not only factory-call tools.
+  The pinned `examples/next-workflow/workflow/agent-chat.ts` `deleteFile` object has top-level
+  `inputSchema`, `execute`, and `needsApproval: true as const`; AgentVerify now inventories this as
+  a generic `object-tool` with static approval enabled. The public IR truth set now passes
+  2,430/2,430 labels.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
 - A freshly rebuilt wheel includes all fifteen runtime schemas; a verifier script now guards that
   package artifact expectation.
