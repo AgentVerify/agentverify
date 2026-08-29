@@ -8,11 +8,12 @@
   required, selective, or callable/dynamic. The scanner can now prove direct `MCPServerStdio`,
   `MCPServerSse`, and `MCPServerStreamableHttp` calls plus imported subclasses of exact
   `agents.mcp.MCPServer`, while keeping `local_mcp` lookalikes out of OpenAI-specific approval
-  semantics. Remote URLs are sanitized, and remote auth/header/client-factory evidence is recorded
-  as source-shape metadata without copying secret values. Current validated labels combine
-  local/source-shape coverage with pinned OpenAI SDK integration-test remote transport examples; a
-  noisy review rule for examples or tests would overstate production risk without additional real
-  production cases.
+  semantics. Same-block literal bindings and exact imported local literal approval policies are
+  resolved while mutated imports remain dynamic. Remote URLs are sanitized, and remote
+  auth/header/client-factory evidence is recorded as source-shape metadata without copying secret
+  values. Current validated labels combine local/source-shape coverage with pinned OpenAI SDK
+  integration-test remote transport examples; a noisy review rule for examples or tests would
+  overstate production risk without additional real production cases.
 - Alternative: Immediately flag disabled/non-always MCP server approval as a high-severity rule.
   Rejected because explicit `"never"` can be appropriate for trusted/read-only servers and because
   a user-facing finding should be scoped to reachable risky capabilities or production evidence.

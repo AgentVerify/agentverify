@@ -1132,6 +1132,62 @@ def python_dict_like_entries(node: ast.AST | None) -> dict[str, ast.AST] | None:
     return None
 
 
+def python_mcp_approval_literal_export_nodes(
+    root: Path,
+    relative: str,
+) -> dict[str, ast.AST]:
+    """Return immutable top-level literal MCP approval exports for one local Python module."""
+    path = root / relative
+    try:
+        text = path.read_text(encoding="utf-8", errors="replace")
+        tree = ast.parse(text, filename=relative)
+    except (OSError, SyntaxError):
+        return {}
+
+    mutation_counts: Counter[str] = Counter()
+    global_mutations = {
+        name
+        for candidate in ast.walk(tree)
+        if isinstance(candidate, ast.Global)
+        for name in candidate.names
+    }
+    mutation_counts.update(global_mutations)
+    for statement in tree.body:
+        if isinstance(statement, (ast.Import, ast.ImportFrom)):
+            continue
+        if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            mutation_counts[statement.name] += 1
+            continue
+        for child in ast.walk(statement):
+            if isinstance(child, ast.Name) and isinstance(child.ctx, (ast.Store, ast.Del)):
+                mutation_counts[child.id] += 1
+            elif isinstance(child, ast.ExceptHandler) and child.name:
+                mutation_counts[child.name] += 1
+
+    exports: dict[str, ast.AST] = {}
+    for statement in tree.body:
+        value: ast.AST | None = None
+        targets: list[ast.AST] = []
+        if isinstance(statement, ast.Assign):
+            value = statement.value
+            targets = list(statement.targets)
+        elif isinstance(statement, ast.AnnAssign):
+            value = statement.value
+            targets = [statement.target]
+        if value is None or len(targets) != 1 or not isinstance(targets[0], ast.Name):
+            continue
+        name = targets[0].id
+        if mutation_counts[name] != 1:
+            continue
+        if (
+            isinstance(value, ast.Constant)
+            and isinstance(value.value, (str, bool))
+            or python_dict_like_entries(value) is not None
+        ):
+            exports[name] = value
+    return exports
+
+
 def python_openai_mcp_require_approval_attributes(
     require_approval: ast.AST | None,
     resolve_literal_binding: Callable[[ast.Name], tuple[ast.AST, str] | None],
@@ -10841,7 +10897,7 @@ def scan_python(
     def hosted_mcp_tool_attributes(call: ast.Call) -> dict[str, object]:
         attributes = python_openai_hosted_mcp_approval_attributes(
             call,
-            same_block_literal_binding,
+            exact_mcp_approval_literal_binding,
         )
         if not attributes:
             return attributes
@@ -10986,6 +11042,33 @@ def scan_python(
         name: next(alias.name for alias in statement.names if (alias.asname or alias.name) == name)
         for name, statement in imported_mcp_constructors.items()
     }
+    imported_mcp_approval_literals: dict[str, tuple[ast.AST, str]] = {}
+    imported_mcp_approval_export_cache: dict[str, dict[str, ast.AST]] = {}
+    for statement in tree.body:
+        if not isinstance(statement, ast.ImportFrom):
+            continue
+        for alias in statement.names:
+            if alias.name == "*":
+                continue
+            local_name = alias.asname or alias.name
+            if import_binding_counts[local_name] != 1 or nonimport_binding_counts[local_name] != 0:
+                continue
+            resolution = resolve_python_import(root, relative, statement, alias.name, module_paths)
+            if resolution is None:
+                continue
+            exports = imported_mcp_approval_export_cache.setdefault(
+                resolution.path,
+                python_mcp_approval_literal_export_nodes(root, resolution.path),
+            )
+            if exported := exports.get(alias.name):
+                imported_mcp_approval_literals[local_name] = (
+                    exported,
+                    f"imported-local-literal:{resolution.basis}",
+                )
+
+    def exact_mcp_approval_literal_binding(name: ast.Name) -> tuple[ast.AST, str] | None:
+        return same_block_literal_binding(name) or imported_mcp_approval_literals.get(name.id)
+
     local_agent_constructor_origins: dict[str, PythonAgentConstructorOrigin] = {}
     framework_agent_star_import_candidates: dict[str, list[tuple[str, str]]] = defaultdict(list)
     for statement in tree.body:
@@ -11205,7 +11288,7 @@ def scan_python(
         )
         attributes = python_openai_mcp_require_approval_attributes(
             require_approval,
-            same_block_literal_binding,
+            exact_mcp_approval_literal_binding,
         )
         if attributes:
             attributes = {

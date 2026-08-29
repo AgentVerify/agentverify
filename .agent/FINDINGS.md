@@ -7,9 +7,9 @@
 - The runtime catalog currently contains 25 enabled reporting rules.
 - Python OpenAI Agents SDK MCP approval metadata now covers both hosted `HostedMCPTool` tool configs
   and non-hosted `MCPServerStdio`/`MCPServerSse`/`MCPServerStreamableHttp`/exact-`MCPServer`
-  subclass `require_approval` call sites. The non-hosted check now has 11 public IR labels (9
-  positive, 2 lookalike negatives), including redacted remote auth/header/client-factory metadata,
-  and the full public IR truth set passes 2,398/2,398.
+  subclass `require_approval` call sites. The non-hosted check now has 14 public IR labels (12
+  positive, 2 lookalike negatives), including imported local literal approval policies and redacted
+  remote auth/header/client-factory metadata, and the full public IR truth set passes 2,401/2,401.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
 - A freshly rebuilt wheel includes all fifteen runtime schemas; a verifier script now guards that
   package artifact expectation.
@@ -775,12 +775,13 @@
   exact `agents.mcp.MCPServerStdio` components and imported subclasses whose base is exactly
   `agents.mcp.MCPServer` / `agents.mcp.server.MCPServer`. Literal `"never"`/`False` records
   disabled approval, literal `"always"`/`True` records always-required approval, same-block literal
-  bindings retain source resolution, shallow selective dict policies expose exact always/never
-  tool-name lists and read-only hints, remote URLs are sanitized, literal `Authorization` header
-  names and `auth`/`httpx_client_factory` bindings are recorded without copying secret values,
-  dynamic bindings stay dynamic, and OpenAI-shaped imports from other MCP modules do not inherit
-  OpenAI-specific approval semantics. The local fixture plus pinned OpenAI SDK remote transport
-  examples now cover 11/11 labels, bringing the public IR truth set to 2,398 passing labels.
+  bindings and exact imported local literal policies retain source resolution, shallow selective
+  dict policies expose exact always/never tool-name lists and read-only hints, remote URLs are
+  sanitized, literal `Authorization` header names and `auth`/`httpx_client_factory` bindings are
+  recorded without copying secret values, dynamic bindings stay dynamic, and OpenAI-shaped imports
+  from other MCP modules do not inherit OpenAI-specific approval semantics. The local fixture plus
+  pinned OpenAI SDK remote transport examples now cover 14/14 labels, bringing the public IR truth
+  set to 2,401 passing labels.
 
 ## Hypotheses
 

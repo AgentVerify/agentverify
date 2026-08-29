@@ -14841,34 +14841,52 @@ def test_python_openai_mcp_server_approval_policy_is_exact() -> None:
         for component in ir.components
         if component.kind == "mcp-server" and component.evidence.path == "app.py"
     }
-    assert set(servers) == {20, 24, 28, 32, 36}
-    for line in (20, 24, 28, 32):
+    assert set(servers) == {21, 25, 29, 33, 37, 41, 45, 49}
+    for line in (21, 25, 29, 33, 37, 41, 45):
         assert servers[line].attributes["mcp_approval_contract"] == (
             "openai-agents-python-mcp-server"
         )
         assert servers[line].attributes["mcp_approval_source"] == "callsite-require-approval"
         assert servers[line].attributes["mcp_approval_constructor"] == "MCPServerStdio"
 
-    assert servers[20].attributes["mcp_approval_policy"] == "disabled-explicit"
-    assert servers[20].attributes["mcp_approval_requirement"] == "never"
-    assert servers[20].attributes["approval_policy"] == "disabled-explicit"
+    assert servers[21].attributes["mcp_approval_policy"] == "disabled-explicit"
+    assert servers[21].attributes["mcp_approval_requirement"] == "never"
+    assert servers[21].attributes["approval_policy"] == "disabled-explicit"
 
-    assert servers[24].attributes["mcp_approval_binding"] == "require_approval"
-    assert servers[24].attributes["mcp_approval_resolution"] == "same-block-literal-string"
-    assert servers[24].attributes["mcp_approval_policy"] == "always-required"
-    assert servers[24].attributes["mcp_approval_requirement"] == "always"
+    assert servers[25].attributes["mcp_approval_binding"] == "require_approval"
+    assert servers[25].attributes["mcp_approval_resolution"] == "same-block-literal-string"
+    assert servers[25].attributes["mcp_approval_policy"] == "always-required"
+    assert servers[25].attributes["mcp_approval_requirement"] == "always"
 
-    assert servers[28].attributes["mcp_approval_binding"] == "selective_policy"
-    assert servers[28].attributes["mcp_approval_resolution"] == "same-block-literal"
-    assert servers[28].attributes["mcp_approval_policy"] == "selective"
-    assert servers[28].attributes["mcp_approval_never_tool_names"] == ["read_file"]
-    assert servers[28].attributes["mcp_approval_never_read_only"] is True
-    assert servers[28].attributes["mcp_approval_always_tool_names"] == ["write_file"]
+    assert servers[29].attributes["mcp_approval_binding"] == "selective_policy"
+    assert servers[29].attributes["mcp_approval_resolution"] == "same-block-literal"
+    assert servers[29].attributes["mcp_approval_policy"] == "selective"
+    assert servers[29].attributes["mcp_approval_never_tool_names"] == ["read_file"]
+    assert servers[29].attributes["mcp_approval_never_read_only"] is True
+    assert servers[29].attributes["mcp_approval_always_tool_names"] == ["write_file"]
 
-    assert servers[32].attributes["mcp_approval_binding"] == "dynamic_policy"
-    assert servers[32].attributes["mcp_approval_policy"] == "dynamic"
+    assert servers[33].attributes["mcp_approval_binding"] == "dynamic_policy"
+    assert servers[33].attributes["mcp_approval_policy"] == "dynamic"
 
-    assert "mcp_approval_policy" not in servers[36].attributes
+    assert servers[37].attributes["mcp_approval_binding"] == "IMPORTED_ALWAYS"
+    assert servers[37].attributes["mcp_approval_resolution"] == (
+        "imported-local-literal:repository-module-single-path"
+    )
+    assert servers[37].attributes["mcp_approval_policy"] == "always-required"
+    assert servers[37].attributes["mcp_approval_requirement"] == "always"
+
+    assert servers[41].attributes["mcp_approval_binding"] == "IMPORTED_SELECTIVE"
+    assert servers[41].attributes["mcp_approval_resolution"] == (
+        "imported-local-literal:repository-module-single-path"
+    )
+    assert servers[41].attributes["mcp_approval_policy"] == "selective"
+    assert servers[41].attributes["mcp_approval_never_tool_names"] == ["read_policy"]
+    assert servers[41].attributes["mcp_approval_always_tool_names"] == ["write_policy"]
+
+    assert servers[45].attributes["mcp_approval_binding"] == "MUTATED_POLICY"
+    assert servers[45].attributes["mcp_approval_policy"] == "dynamic"
+
+    assert "mcp_approval_policy" not in servers[49].attributes
 
     subclass_server = next(
         component

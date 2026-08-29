@@ -3,6 +3,7 @@ from typing import Literal
 from agents import Agent
 from agents.mcp import MCPServerStdio
 from local_mcp import MCPServerStdio as FakeMCPServerStdio
+from policies import IMPORTED_ALWAYS, IMPORTED_SELECTIVE, MUTATED_POLICY
 
 
 def load_policy():
@@ -33,6 +34,18 @@ def build_agent() -> Agent:
         params={"command": "python", "args": ["mcp_server.py"]},
         require_approval=dynamic_policy,
     )
+    imported_literal_approval = MCPServerStdio(
+        params={"command": "python", "args": ["mcp_server.py"]},
+        require_approval=IMPORTED_ALWAYS,
+    )
+    imported_selective_approval = MCPServerStdio(
+        params={"command": "python", "args": ["mcp_server.py"]},
+        require_approval=IMPORTED_SELECTIVE,
+    )
+    imported_mutated_approval = MCPServerStdio(
+        params={"command": "python", "args": ["mcp_server.py"]},
+        require_approval=MUTATED_POLICY,
+    )
     fake_approval = FakeMCPServerStdio(
         params={"command": "python", "args": ["mcp_server.py"]},
         require_approval="always",
@@ -44,6 +57,9 @@ def build_agent() -> Agent:
             literal_approval,
             selective_approval,
             dynamic_approval,
+            imported_literal_approval,
+            imported_selective_approval,
+            imported_mutated_approval,
             fake_approval,
         ],
     )
