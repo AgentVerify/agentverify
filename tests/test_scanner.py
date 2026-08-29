@@ -5024,6 +5024,9 @@ def test_typescript_openai_realtime_session_guardrail_policy_is_exact() -> None:
         "guardrail_count": 1,
         "guardrail_names": ["No mention of Dom"],
         "guardrail_name_count": 1,
+        "guardrail_tripwire_sources": ["dynamic-expression"],
+        "guardrail_tripwire_count": 1,
+        "guardrail_dynamic_tripwire_count": 1,
     }
     assert controls["ts:agent.ts#control:inlineSession.guardrails@38"].attributes[
         "guardrail_source"
@@ -5034,6 +5037,9 @@ def test_typescript_openai_realtime_session_guardrail_policy_is_exact() -> None:
     assert controls["ts:agent.ts#control:inlineSession.guardrails@38"].attributes[
         "debounce_text_length"
     ] == -1
+    assert controls["ts:agent.ts#control:inlineSession.guardrails@38"].attributes[
+        "guardrail_tripwire_sources"
+    ] == ["dynamic-expression"]
     assert controls["ts:agent.ts#control:spreadOptionsSession.guardrails@27"].attributes[
         "session_options_binding"
     ] == "typedOptions"
@@ -5058,6 +5064,9 @@ def test_typescript_openai_realtime_session_guardrail_policy_is_exact() -> None:
         "guardrail_source": "binding",
         "guardrail_binding": "mutableGuardrails",
     }
+    assert "guardrail_tripwire_sources" not in controls[
+        "ts:agent.ts#control:mutableSession.guardrails@71"
+    ].attributes
     assert "debounce_text_length" not in controls[
         "ts:agent.ts#control:dynamicSettingsSession.guardrails@76"
     ].attributes
@@ -5084,6 +5093,9 @@ def test_typescript_openai_realtime_session_guardrail_policy_is_exact() -> None:
         "guardrail_count": 1,
         "guardrail_names": ["No mention of Dom"],
         "guardrail_name_count": 1,
+        "guardrail_tripwire_sources": ["dynamic-expression"],
+        "guardrail_tripwire_count": 1,
+        "guardrail_dynamic_tripwire_count": 1,
         "output_guardrail_settings_present": True,
         "debounce_text_length": 500,
     }

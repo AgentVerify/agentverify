@@ -104,10 +104,11 @@
   inventory only because `process.env.OPENAI_API_KEY` with websocket/SIP can be legitimate server
   code or unsafe browser bundling depending on deployment context.
 - Explore the next OpenAI Realtime guardrail slice only if it stays exact: imported guardrail arrays,
-  helper-created guardrails, input guardrails, or tripwire/action quality. Current output guardrail
-  inventory covers direct session options, typed `RealtimeOutputGuardrail[]` const arrays, typed
-  `RealtimeSessionOptions` spreads, literal names/counts, and `debounceTextLength`, with mutated
-  arrays and dynamic settings bounded.
+  helper-created guardrails, input guardrails, or richer predicate/action semantics beyond direct
+  returned `tripwireTriggered` source classification. Current output guardrail inventory covers
+  direct session options, typed `RealtimeOutputGuardrail[]` const arrays, typed
+  `RealtimeSessionOptions` spreads, literal names/counts, direct tripwire source counts, and
+  `debounceTextLength`, with mutated arrays and dynamic settings bounded.
 - Explore richer OpenAI Agents JS Agent guardrails only if evidence stays exact: imported literal
   guardrail arrays, helper-created guardrails, cross-file guardrail assignment helpers, or richer
   predicate/action semantics beyond direct returned `tripwireTriggered` source classification.

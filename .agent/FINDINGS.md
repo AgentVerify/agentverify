@@ -679,6 +679,13 @@
   are ignored. The local fixture plus pinned OpenAI Agents JS `guardrails.ts` and
   `guardrailSettings.ts` examples bring the public IR truth set to 2,276 passing labels and the
   71-repository engine benchmark to 2,880 relationships / 10,664 symbolized components.
+- OpenAI RealtimeSession output guardrails now expose conservative tripwire metadata when a direct
+  guardrail `execute` body returns an object containing `tripwireTriggered`. Inline arrays,
+  typed `RealtimeOutputGuardrail[]` const arrays, and typed `RealtimeSessionOptions` spreads can
+  contribute dynamic-expression or literal tripwire source counts; mutated arrays and settings-only
+  sessions remain unresolved. The local fixture plus pinned OpenAI Agents JS
+  `examples/docs/voice-agents/guardrails.ts` bring the Realtime guardrail truth-set slice to
+  18/18 labels within the 2,335-label public IR truth set.
 - OpenAI Agents JS Agent-level input/output guardrails are now reviewable when source-proven.
   Exact `new Agent({ inputGuardrails })` and `new Agent({ outputGuardrails })` constructor options
   emit `agent-guardrail-policy` controls linked to the source agent, including
@@ -715,7 +722,7 @@
   agent-to-control governance edge. Mutated guardrail bindings and dynamic guardrail arrays do not
   expose stale tripwire metadata. The local fixture plus pinned OpenAI Agents JS
   `input-guardrails.ts`, `output-guardrails.ts`, and `exceptions1.ts` examples bring the public IR
-  truth set to 2,329 passing labels while the 71-repository engine benchmark remains at
+  truth set to 2,335 passing labels while the 71-repository engine benchmark remains at
   2,900 relationships / 10,689 symbolized components.
 
 ## Hypotheses

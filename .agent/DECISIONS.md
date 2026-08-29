@@ -871,6 +871,23 @@
 - Revisit when imported guardrail arrays, helper-created guardrails, input guardrails, or guardrail
   tripwire/action quality can be tied to exact source-agent identity without broad name matching.
 
+## OpenAI Realtime guardrail tripwires are conservative quality metadata
+
+- Decision: Record direct `tripwireTriggered` return-object metadata on exact TypeScript OpenAI
+  RealtimeSession output guardrail controls. Inline guardrails, stable typed
+  `RealtimeOutputGuardrail[]` const arrays, and typed `RealtimeSessionOptions` spreads may
+  contribute literal or computed tripwire source counts; mutated guardrail arrays and settings-only
+  guardrail configurations do not expose tripwire metadata.
+- Evidence: The local `typescript_openai_realtime_session_guardrails` fixture covers typed-array,
+  inline-array, typed-options-spread, mutable-array, and settings-only cases. The pinned OpenAI
+  Agents JS `examples/docs/voice-agents/guardrails.ts` example contributes a real typed
+  Realtime output guardrail whose returned tripwire predicate is computed from `agentOutput`.
+- Alternative: Treat Realtime output guardrail presence as sufficient tripwire quality. Rejected
+  because placeholder settings, mutable arrays, and throwing or delegated guardrails can exist
+  without a source-proven predicate.
+- Revisit when imported Realtime guardrail arrays, helper-created guardrails, or richer predicate
+  semantics can be resolved without broad callback interpretation.
+
 ## OpenAI Agents JS Agent guardrails are source-agent governance controls
 
 - Decision: Represent exact TypeScript OpenAI Agents SDK `new Agent({ inputGuardrails })` and
