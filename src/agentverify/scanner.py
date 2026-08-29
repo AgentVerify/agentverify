@@ -17363,6 +17363,72 @@ def add_typescript_openai_realtime_session_config_control(
     return "realtime-session-config-policy", control_id
 
 
+def add_typescript_openai_realtime_session_approval_decision_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    session_binding: str,
+    local_constructor: str,
+    request_binding: str,
+    source_agent: tuple[str, str],
+    decision: str,
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS RealtimeSession approval/rejection event evidence."""
+    source_agent_name, source_agent_id = source_agent
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    attributes: dict[str, object] = {
+        "analysis": "typescript-openai-agents-realtime-session-approval-decision",
+        "module": "@openai/agents/realtime",
+        "constructor": "RealtimeSession",
+        "imported_symbol": "RealtimeSession",
+        "local_constructor": local_constructor,
+        "configuration": f"RealtimeSession.{decision}",
+        "session_binding": session_binding,
+        "event": "tool_approval_requested",
+        "request_binding": request_binding,
+        "approval_item_resolution": "event-request-approvalItem",
+        "decision": decision,
+        "source_agent": source_agent_name,
+        "source_agent_id": source_agent_id,
+        "state_scope": "openai-realtime-session-tool-approval-decision",
+        "scope": source_scope(relative),
+    }
+    ir.add_component(
+        Component(
+            "control",
+            "approval-decision",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "agent",
+            source_agent_name,
+            "governed-by",
+            "control",
+            "approval-decision",
+            Evidence(relative, line, excerpt(lines, line)),
+            {
+                "analysis": "typescript-openai-agents-realtime-session-approval-decision",
+                "configuration": f"RealtimeSession.{decision}",
+                "session_binding": session_binding,
+                "event": "tool_approval_requested",
+                "request_binding": request_binding,
+                "approval_item_resolution": "event-request-approvalItem",
+                "decision": decision,
+            },
+            source_id=source_agent_id,
+            target_id=control_id,
+        )
+    )
+    return "approval-decision", control_id
+
+
 def add_typescript_openai_agent_provider_data_control(
     ir: RepositoryIR,
     *,
@@ -20577,6 +20643,7 @@ def typescript_graph(
         text,
         type_names=realtime_session_option_type_names,
     )
+    realtime_session_bindings: dict[str, tuple[tuple[str, str], str, int]] = {}
 
     def resolve_spread_realtime_session_options(
         options_expression: str,
@@ -21202,13 +21269,54 @@ def typescript_graph(
             **typescript_named_import_bindings(target_text, "@openai/agents/realtime"),
             **typescript_named_import_bindings(target_text, "@openai/agents-realtime"),
         }
+        target_realtime_agent_imports = {
+            local
+            for local, imported in target_realtime_imports.items()
+            if imported == "RealtimeAgent"
+            and not typescript_import_binding_is_shadowed(target_text, local)
+        }
+        target_realtime_session_imports = {
+            local
+            for local, imported in target_realtime_imports.items()
+            if imported == "RealtimeSession"
+            and not typescript_import_binding_is_shadowed(target_text, local)
+        }
+        target_local_realtime_agents: dict[str, tuple[str, str]] = {}
+        target_agent_assignment_counts: Counter[str] = Counter()
+        for target_constructor in target_realtime_agent_imports:
+            exported_agent_pattern = re.compile(
+                r"\b(?:export\s+)?const\s+([A-Za-z_$][\w$]*)"
+                r"\s*(?::\s*(?:[^=;\n]|=(?!>))+)?"
+                rf"=\s*new\s+{re.escape(target_constructor)}\s*\("
+            )
+            for exported_agent_match in exported_agent_pattern.finditer(target_code):
+                target_agent_assignment_counts[exported_agent_match.group(1)] += 1
+        for target_constructor in target_realtime_agent_imports:
+            exported_agent_pattern = re.compile(
+                r"\b(?:export\s+)?const\s+([A-Za-z_$][\w$]*)"
+                r"\s*(?::\s*(?:[^=;\n]|=(?!>))+)?"
+                rf"=\s*new\s+{re.escape(target_constructor)}\s*\("
+            )
+            for exported_agent_match in exported_agent_pattern.finditer(target_code):
+                target_agent_variable = exported_agent_match.group(1)
+                if target_agent_assignment_counts[target_agent_variable] != 1:
+                    continue
+                opening = target_code.find(
+                    "(",
+                    exported_agent_match.start(),
+                    exported_agent_match.end(),
+                )
+                end = typescript_balanced_end(target_code, opening, "(", ")")
+                if end is None:
+                    continue
+                body = target_text[opening + 1 : end - 1]
+                agent_name = (
+                    typescript_object_string_property(body, "name") or target_agent_variable
+                )
+                agent_id = source_symbol("ts", target, "agent", target_agent_variable)
+                target_local_realtime_agents[target_agent_variable] = (agent_name, agent_id)
         imported_agent_matches: list[tuple[str, str]] = []
-        for target_constructor, target_imported in target_realtime_imports.items():
-            if target_imported != "RealtimeAgent" or typescript_import_binding_is_shadowed(
-                target_text,
-                target_constructor,
-            ):
-                continue
+        for target_constructor in target_realtime_agent_imports:
             exported_agent_pattern = re.compile(
                 rf"\bexport\s+const\s+{re.escape(original)}"
                 r"\s*(?::\s*(?:[^=;\n]|=(?!>))+)?"
@@ -21229,6 +21337,39 @@ def typescript_graph(
                 imported_agent_matches.append((agent_name, agent_id))
         if len(imported_agent_matches) == 1:
             local_agents[local_name] = imported_agent_matches[0]
+        imported_session_matches: list[tuple[tuple[str, str], str]] = []
+        for target_constructor in target_realtime_session_imports:
+            exported_session_pattern = re.compile(
+                rf"\bexport\s+const\s+{re.escape(original)}"
+                r"\s*(?::\s*(?:[^=;\n]|=(?!>))+)?"
+                rf"=\s*new\s+{re.escape(target_constructor)}\s*\("
+            )
+            for exported_session_match in exported_session_pattern.finditer(target_code):
+                opening = target_code.find(
+                    "(",
+                    exported_session_match.start(),
+                    exported_session_match.end(),
+                )
+                end = typescript_balanced_end(target_code, opening, "(", ")")
+                if end is None:
+                    continue
+                arguments = typescript_call_arguments(
+                    target_text[opening + 1 : end - 1],
+                    opening + 1,
+                )
+                if not arguments:
+                    continue
+                agent_argument = typescript_code_mask(arguments[0][0]).strip()
+                agent_identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", agent_argument)
+                if agent_identifier is None:
+                    continue
+                source_agent = target_local_realtime_agents.get(agent_identifier.group(0))
+                if source_agent is None:
+                    continue
+                imported_session_matches.append((source_agent, target_constructor))
+        if len(imported_session_matches) == 1:
+            source_agent, target_constructor = imported_session_matches[0]
+            realtime_session_bindings[local_name] = (source_agent, target_constructor, 0)
     agent_alias_pattern = re.compile(
         r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)"
         r"\s*(?::\s*(?:[^=;\n]|=(?!>))+)?"
@@ -21306,6 +21447,68 @@ def typescript_graph(
                 return None
         return local_agents.get(argument_name)
 
+    def realtime_approval_callback_body(
+        callback_expression: str,
+        callback_offset: int,
+    ) -> tuple[str, int, str] | None:
+        callback_code = typescript_code_mask(callback_expression)
+        cursor = len(callback_code) - len(callback_code.lstrip())
+        if callback_code[cursor:].startswith("async"):
+            async_end = cursor + len("async")
+            if async_end >= len(callback_code) or not re.match(
+                r"[\w$]",
+                callback_code[async_end],
+            ):
+                cursor = async_end
+                while cursor < len(callback_code) and callback_code[cursor].isspace():
+                    cursor += 1
+        if cursor >= len(callback_code):
+            return None
+        if callback_code[cursor] == "(":
+            parameter_end = typescript_balanced_end(callback_code, cursor, "(", ")")
+            if parameter_end is None:
+                return None
+            parameter_text = callback_expression[cursor + 1 : parameter_end - 1]
+            cursor = parameter_end
+        else:
+            parameter_match = re.match(
+                r"[A-Za-z_$][\w$]*(?:\s*:\s*(?:[^=;\n]|=(?!>))+)?",
+                callback_code[cursor:],
+            )
+            if parameter_match is None:
+                return None
+            parameter_text = callback_expression[cursor : cursor + parameter_match.end()]
+            cursor += parameter_match.end()
+        arrow_match = re.match(r"\s*=>", callback_code[cursor:])
+        if arrow_match is None:
+            return None
+        cursor += arrow_match.end()
+        while cursor < len(callback_code) and callback_code[cursor].isspace():
+            cursor += 1
+        if cursor >= len(callback_code):
+            return None
+        parameters = typescript_function_parameters(parameter_text)
+        request_parameter = next(
+            (
+                parameter.local_name
+                for parameter in parameters
+                if parameter.index == 2 and parameter.property_name is None
+            ),
+            None,
+        )
+        if request_parameter is None:
+            return None
+        if callback_code[cursor] == "{":
+            body_end = typescript_balanced_end(callback_code, cursor, "{", "}")
+            if body_end is None:
+                return None
+            return (
+                callback_expression[cursor + 1 : body_end - 1],
+                callback_offset + cursor + 1,
+                request_parameter,
+            )
+        return callback_expression[cursor:], callback_offset + cursor, request_parameter
+
     for match in TS_SANDBOX_CLIENT_ASSIGNMENT.finditer(code):
         session_name = match.group(1)
         local_constructor = match.group(2)
@@ -21328,6 +21531,7 @@ def typescript_graph(
         )
         if source_agent is None:
             continue
+        realtime_session_bindings[session_name] = (source_agent, local_constructor, end)
         options_expression, options_offset = arguments[1]
         session_options_binding = None
         session_options_resolution = None
@@ -21730,6 +21934,78 @@ def typescript_graph(
                 target_id=config_id,
             )
         )
+
+    for session_name, (source_agent, local_constructor, declaration_end) in (
+        realtime_session_bindings.items()
+    ):
+        if declaration_end == 0 and typescript_import_binding_is_shadowed(text, session_name):
+            continue
+        event_pattern = re.compile(rf"(?<![\w$.]){re.escape(session_name)}\s*\.\s*on\s*\(")
+        for event_match in event_pattern.finditer(code):
+            opening = code.find("(", event_match.start(), event_match.end())
+            end = typescript_balanced_end(code, opening, "(", ")")
+            if end is None:
+                continue
+            arguments = typescript_call_arguments(text[opening + 1 : end - 1], opening + 1)
+            if len(arguments) < 2:
+                continue
+            event_name = typescript_string_literal_value(arguments[0][0])
+            if event_name != "tool_approval_requested":
+                continue
+            if re.search(
+                rf"(?<![\w$.]){re.escape(session_name)}\s*=(?!=)",
+                code[declaration_end : arguments[1][1]],
+            ):
+                continue
+            callback_parts = realtime_approval_callback_body(*arguments[1])
+            if callback_parts is None:
+                continue
+            callback_body, callback_body_offset, request_parameter = callback_parts
+            callback_code = typescript_code_mask(callback_body)
+            decision_pattern = re.compile(
+                rf"(?<![\w$.]){re.escape(session_name)}\s*\.\s*(approve|reject)\s*\("
+            )
+            for decision_match in decision_pattern.finditer(callback_code):
+                call_opening = callback_code.find(
+                    "(",
+                    decision_match.start(1),
+                    decision_match.end(),
+                )
+                call_end = typescript_balanced_end(callback_code, call_opening, "(", ")")
+                if call_end is None:
+                    continue
+                call_arguments = typescript_call_arguments(
+                    callback_body[call_opening + 1 : call_end - 1],
+                    callback_body_offset + call_opening + 1,
+                )
+                if not call_arguments:
+                    continue
+                approval_item_argument = typescript_code_mask(call_arguments[0][0]).strip()
+                if not re.fullmatch(
+                    rf"{re.escape(request_parameter)}\s*\.\s*approvalItem",
+                    approval_item_argument,
+                ):
+                    continue
+                decision_offset = callback_body_offset + decision_match.start()
+                if re.search(
+                    rf"(?<![\w$.]){re.escape(session_name)}\s*=(?!=)",
+                    code[declaration_end:decision_offset],
+                ):
+                    continue
+                decision = decision_match.group(1)
+                decision_line = line_at(text, decision_offset)
+                add_typescript_openai_realtime_session_approval_decision_control(
+                    ir,
+                    relative=relative,
+                    lines=lines,
+                    line=decision_line,
+                    session_binding=session_name,
+                    local_constructor=local_constructor,
+                    request_binding=request_parameter,
+                    source_agent=source_agent,
+                    decision=decision,
+                    symbol_identity=f"{session_name}.{decision}@{decision_line}",
+                )
 
     for match, body_offset, body, agent_name, agent_id, agent_constructor in agent_bodies:
         ev = Evidence(

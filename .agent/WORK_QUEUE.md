@@ -37,8 +37,10 @@
   session policy, plus exact literal
   `config.audio.input.turnDetection.type/eagerness/createResponse/interruptResponse` resolved from
   same-file agents, narrow exported sibling `RealtimeAgent` imports, or one exact typed
-  `Partial<RealtimeSessionOptions>` spread, without broadening into ambiguous helper/config
-  composition or arbitrary spread objects.
+  `Partial<RealtimeSessionOptions>` spread, plus exact `tool_approval_requested` event
+  approval/rejection decisions resolved from same-file or narrow exported sibling
+  `RealtimeSession` bindings, without broadening into ambiguous helper/config composition,
+  arbitrary spread objects, or lookalike event emitters.
 - Continue OpenAI Agents JS HITL and safety-governance extraction where evidence remains exact:
   richer `needsApproval` predicate quality, automatic approval bypasses, and `computerTool`
   `onSafetyCheck` callbacks that distinguish explicit user/policy review from pass-through
@@ -91,9 +93,11 @@
   decisions plus helper-derived state resumes are now inventoried; generic tools, delegated-agent
   adapters, and approval-capable builtin tools now distinguish literal approval from
   callback-controlled `needsApproval`, and the first shallow literal predicate metadata is now
-  recorded for prefix/contains/literal-set checks. `computerTool({ onSafetyCheck })` pass-through
-  callbacks now report as `AV-APPROVAL011`, but AgentVerify still does not claim full approval or
-  safety quality without broader predicate/action evidence.
+  recorded for prefix/contains/literal-set checks. Exact Realtime
+  `tool_approval_requested` event approve/reject calls are now modeled when the event request's
+  `approvalItem` is passed to a proven `RealtimeSession`. `computerTool({ onSafetyCheck })`
+  pass-through callbacks now report as `AV-APPROVAL011`, but AgentVerify still does not claim full
+  approval or safety quality without broader predicate/action evidence.
 
 ## Deferred until access/authorization
 

@@ -648,6 +648,16 @@
   `model`/`config` override, and no later reassignment or mutation of the options binding. The
   pinned OpenAI Agents JS `sipTransport.ts` example contributes spread-derived model and
   turn-detection policy evidence, bringing the public IR truth set to 2,244 passing labels.
+- OpenAI Realtime tool-approval event decisions are now source-proven governance evidence. The
+  scanner records `approval-decision` controls for exact
+  `session.on("tool_approval_requested", (..., request) => session.approve(request.approvalItem))`
+  or `session.reject(request.approvalItem)` flows only when `session` is a proven
+  `RealtimeSession`; imported sessions resolve through a narrow sibling export proof that links back
+  to the exported `RealtimeAgent`. Wrong events, lookalike objects, and approval calls using another
+  object’s `approvalItem` remain unresolved. The pinned OpenAI Agents JS
+  `examples/docs/voice-agents/toolApprovalEvent.ts` example contributes imported-session approval
+  evidence, bringing the public IR truth set to 2,251 passing labels and the 71-repository engine
+  benchmark to 2,870 relationships / 10,654 symbolized components.
 
 ## Hypotheses
 

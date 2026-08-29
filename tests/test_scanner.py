@@ -4752,6 +4752,67 @@ def test_typescript_openai_realtime_session_typed_options_spread_policy_is_exact
     }
 
 
+def test_typescript_openai_realtime_tool_approval_event_decisions_are_exact() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_openai_realtime_tool_approval_event")
+
+    controls = {
+        component.symbol_id: component
+        for component in ir.components
+        if component.kind == "control" and component.name == "approval-decision"
+    }
+    assert set(controls) == {
+        "ts:agent.ts#control:session.approve@12",
+        "ts:agent.ts#control:session.reject@13",
+    }
+    assert controls["ts:agent.ts#control:session.approve@12"].attributes == {
+        "analysis": "typescript-openai-agents-realtime-session-approval-decision",
+        "module": "@openai/agents/realtime",
+        "constructor": "RealtimeSession",
+        "imported_symbol": "RealtimeSession",
+        "local_constructor": "RealtimeSession",
+        "configuration": "RealtimeSession.approve",
+        "session_binding": "session",
+        "event": "tool_approval_requested",
+        "request_binding": "request",
+        "approval_item_resolution": "event-request-approvalItem",
+        "decision": "approve",
+        "source_agent": "Realtime greeter",
+        "source_agent_id": "ts:agent.ts#agent:greeter",
+        "state_scope": "openai-realtime-session-tool-approval-decision",
+        "scope": "production",
+    }
+    assert controls["ts:agent.ts#control:session.reject@13"].attributes["decision"] == "reject"
+    assert controls["ts:agent.ts#control:session.reject@13"].attributes["configuration"] == (
+        "RealtimeSession.reject"
+    )
+
+    edges = {
+        relationship.target_id: relationship
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "governed-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "approval-decision"
+    }
+    assert set(edges) == {
+        "ts:agent.ts#control:session.approve@12",
+        "ts:agent.ts#control:session.reject@13",
+    }
+    assert edges["ts:agent.ts#control:session.approve@12"].source_name == "Realtime greeter"
+    assert edges["ts:agent.ts#control:session.approve@12"].source_id == (
+        "ts:agent.ts#agent:greeter"
+    )
+    assert edges["ts:agent.ts#control:session.approve@12"].attributes == {
+        "analysis": "typescript-openai-agents-realtime-session-approval-decision",
+        "configuration": "RealtimeSession.approve",
+        "session_binding": "session",
+        "event": "tool_approval_requested",
+        "request_binding": "request",
+        "approval_item_resolution": "event-request-approvalItem",
+        "decision": "approve",
+    }
+
+
 def test_typescript_openai_computer_safety_check_auto_acknowledgement() -> None:
     ir = scan_repository(ROOT / "cases/typescript_openai_computer_safety")
 

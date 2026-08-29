@@ -858,6 +858,13 @@ catalog workflows.
   same-repository named sibling imports resolve only when the target exports one exact
   `RealtimeAgent`, covering the pinned OpenAI Agents JS `turnDetection.ts` example without
   broadening into arbitrary spread/config composition. Exact imported
+  `RealtimeSession` bindings such as `import { session } from './agent'` now resolve only when the
+  sibling target exports one exact `new RealtimeSession(sourceAgent, ...)` whose source agent is a
+  proven `RealtimeAgent`; this supports exact `tool_approval_requested` event decisions without
+  treating lookalike `.on(...)` objects as SDK evidence. Realtime event handlers now emit
+  `approval-decision` controls only for callback request parameters passed as
+  `session.approve(request.approvalItem)` or `session.reject(request.approvalItem)`.
+  Exact imported
   `withTrace` callbacks containing
   source-proven SDK `run(agent, ...)` calls, exact Runner instances with source-proven
   `.run(agent, ...)` calls, and exact delegated-agent `asTool` adapters emit `trace-group`,
@@ -897,7 +904,9 @@ semantics distinct from trace-correlation `withTrace(..., { groupId/traceId })` 
   prompt/keyword policy, plus exact literal
   `config.audio.input.turnDetection.type/eagerness/createResponse/interruptResponse` policy
   through direct same-file agents, narrow exported sibling `RealtimeAgent` imports, or one exact
-  typed `Partial<RealtimeSessionOptions>` spread. For OpenAI
+  typed `Partial<RealtimeSessionOptions>` spread, plus exact
+  `tool_approval_requested` event approval/rejection decisions through direct or narrow exported
+  sibling `RealtimeSession` bindings. For OpenAI
 approval work, keep literal always-approval, callback-controlled
 approval on generic tools/delegated tools/approval-capable builtin tools, delegated-agent adapter
 approval metadata, literal predicate metadata, SDK state approval decisions, helper-parameter
