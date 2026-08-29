@@ -1035,6 +1035,23 @@
 - Revisit when imported or reexported policy object bindings can be resolved without broad
   object-flow interpretation.
 
+## OpenAI Agents Python HostedMCPTool approval is source-proven tool_config inventory
+
+- Decision: Record exact Python `HostedMCPTool(tool_config={...})` approval state through
+  `mcp_approval_*` attributes on tool and hosted MCP capability nodes. Support direct literal
+  `"never"`/`"always"`, same-block literal string bindings, shallow `{always, never}` tool-list
+  dict policies, dynamic binding metadata, and configured `on_approval_request` callbacks.
+- Evidence: The pinned OpenAI Agents Python `HostedMCPTool` stores a raw MCP `tool_config` and
+  separates `on_approval_request` as the callback used when approval is requested. Pinned
+  `examples/hosted_mcp/simple.py`, `on_approval.py`, and `human_in_the_loop.py`, plus Composio's
+  OpenAI Agents hosted MCP example, cover explicit disablement, same-block literal always-required
+  policies, callback-controlled handling, and manual run-loop handling.
+- Alternative: Treat hosted MCP approval as generic `approval_policy` or infer SDK defaults when
+  `require_approval` is omitted. Rejected because hosted MCP uses provider/API-specific
+  configuration and the Python examples make approval policy explicit in `tool_config`.
+- Revisit when imported `tool_config` dictionaries, `Mcp(...)` factory objects in production
+  examples, or callable `require_approval` policies can be resolved without broad Python dataflow.
+
 ## OpenAI Agents JS tool guardrails are source-tool governance controls
 
 - Decision: Represent exact TypeScript OpenAI Agents SDK

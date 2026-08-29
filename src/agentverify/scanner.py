@@ -9,6 +9,7 @@ import re
 import shlex
 import warnings
 from collections import Counter, defaultdict
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
 from pathlib import Path
@@ -1021,6 +1022,111 @@ def dotted_name(node: ast.AST) -> str:
         parent = dotted_name(node.value)
         return f"{parent}.{node.attr}" if parent else node.attr
     return ""
+
+
+def python_dict_like_entries(node: ast.AST | None) -> dict[str, ast.AST] | None:
+    """Return literal-key entries for a Python dict or exact keyword-style config call."""
+    if isinstance(node, ast.Dict):
+        entries: dict[str, ast.AST] = {}
+        for key, value in zip(node.keys, node.values, strict=True):
+            if not isinstance(key, ast.Constant) or not isinstance(key.value, str):
+                return None
+            entries[key.value] = value
+        return entries
+    if isinstance(node, ast.Call):
+        call_name = dotted_name(node.func)
+        if call_name.rsplit(".", 1)[-1] == "cast" and len(node.args) >= 2:
+            return python_dict_like_entries(node.args[1])
+        if call_name.rsplit(".", 1)[-1] == "Mcp" and not node.args:
+            entries = {}
+            for keyword in node.keywords:
+                if keyword.arg is None:
+                    return None
+                entries[keyword.arg] = keyword.value
+            return entries
+    return None
+
+
+def python_openai_hosted_mcp_approval_attributes(
+    call: ast.Call,
+    resolve_literal_string_binding: Callable[[ast.Name], tuple[str, str] | None],
+) -> dict[str, object]:
+    """Resolve exact Python OpenAI HostedMCPTool tool_config approval metadata."""
+    tool_config = next(
+        (keyword.value for keyword in call.keywords if keyword.arg == "tool_config"),
+        None,
+    )
+    config_entries = python_dict_like_entries(tool_config)
+    if config_entries is None:
+        return {}
+    require_approval = config_entries.get("require_approval")
+    if require_approval is None:
+        return {}
+
+    attributes: dict[str, object] = {}
+    if isinstance(require_approval, ast.Name):
+        attributes["mcp_approval_binding"] = require_approval.id
+        resolved = resolve_literal_string_binding(require_approval)
+        if resolved is None:
+            attributes["mcp_approval_policy"] = "dynamic"
+            return attributes
+        require_approval = ast.Constant(value=resolved[0])
+        attributes["mcp_approval_resolution"] = resolved[1]
+
+    if isinstance(require_approval, ast.Constant):
+        value = require_approval.value
+        if value in {"never", False}:
+            attributes["mcp_approval_policy"] = "disabled-explicit"
+            attributes["mcp_approval_requirement"] = "never" if value == "never" else False
+        elif value in {"always", True}:
+            attributes["mcp_approval_policy"] = "always-required"
+            attributes["mcp_approval_requirement"] = "always" if value == "always" else True
+        else:
+            attributes["mcp_approval_policy"] = "dynamic"
+        return attributes
+
+    policy_entries = python_dict_like_entries(require_approval)
+    if policy_entries is None:
+        attributes["mcp_approval_policy"] = "dynamic"
+        return attributes
+
+    if set(policy_entries).issubset({"always", "never"}) and any(
+        isinstance(value, (ast.Dict, ast.Call)) for value in policy_entries.values()
+    ):
+        for policy_name, prefix in (("never", "mcp_approval_never"), ("always", "mcp_approval_always")):
+            branch_entries = python_dict_like_entries(policy_entries.get(policy_name))
+            if branch_entries is None:
+                continue
+            tool_names = python_literal_string_list(
+                branch_entries.get("tool_names") or branch_entries.get("toolNames")
+            )
+            if tool_names is not None:
+                attributes[f"{prefix}_tool_names"] = tool_names
+            read_only = branch_entries.get("read_only") or branch_entries.get("readOnly")
+            if isinstance(read_only, ast.Constant) and isinstance(read_only.value, bool):
+                attributes[f"{prefix}_read_only"] = read_only.value
+        attributes["mcp_approval_policy"] = "selective"
+        return attributes
+
+    always_names: list[str] = []
+    never_names: list[str] = []
+    for tool_name, policy in policy_entries.items():
+        if not isinstance(policy, ast.Constant):
+            attributes["mcp_approval_policy"] = "dynamic"
+            return attributes
+        if policy.value == "always":
+            always_names.append(tool_name)
+        elif policy.value == "never":
+            never_names.append(tool_name)
+        else:
+            attributes["mcp_approval_policy"] = "dynamic"
+            return attributes
+    attributes["mcp_approval_policy"] = "selective"
+    if never_names:
+        attributes["mcp_approval_never_tool_names"] = sorted(never_names)
+    if always_names:
+        attributes["mcp_approval_always_tool_names"] = sorted(always_names)
+    return attributes
 
 
 OPENHANDS_BUILTIN_TOOL_CAPABILITIES = {
@@ -10516,6 +10622,87 @@ def scan_python(
         mutation_cache[id(statement)] = mutations
         return mutations
 
+    approval_bypass_function_summaries = (
+        python_approval_bypass_function_summaries(tree)
+        if "on_approval" in text and re.search(r"\b(?:from|import)\s+agents\b", text)
+        else {}
+    )
+
+    def same_block_literal_string_binding(name: ast.Name) -> tuple[str, str] | None:
+        block_info = enclosing_statement_block(name)
+        if block_info is None:
+            return None
+        block, use_index = block_info
+        matches: list[tuple[int, ast.AST]] = []
+        for index, statement in enumerate(block[:use_index]):
+            value: ast.AST | None = None
+            target: ast.AST | None = None
+            if isinstance(statement, ast.Assign):
+                if len(statement.targets) != 1:
+                    continue
+                target = statement.targets[0]
+                value = statement.value
+            elif isinstance(statement, ast.AnnAssign):
+                target = statement.target
+                value = statement.value
+            if (
+                isinstance(target, ast.Name)
+                and target.id == name.id
+                and isinstance(value, ast.Constant)
+                and isinstance(value.value, str)
+                and not any(
+                    name.id in statement_mutations(candidate)
+                    for candidate in block[index + 1 : use_index]
+                )
+            ):
+                matches.append((index, value))
+        if len(matches) != 1:
+            return None
+        return matches[0][1].value, "same-block-literal-string"
+
+    def exact_agents_hosted_mcp_tool_call(call: ast.Call) -> bool:
+        constructor = dotted_name(call.func)
+        constructor_root = constructor.split(".", 1)[0]
+        constructor_import = imported_tool_constructors.get(constructor_root)
+        return bool(
+            constructor_import is not None
+            and constructor_import.module == "agents"
+            and constructor_import.lineno < call.lineno
+            and any(
+                alias.name == "HostedMCPTool" and (alias.asname or alias.name) == constructor_root
+                for alias in constructor_import.names
+            )
+        )
+
+    def hosted_mcp_tool_attributes(call: ast.Call) -> dict[str, object]:
+        attributes = python_openai_hosted_mcp_approval_attributes(
+            call,
+            same_block_literal_string_binding,
+        )
+        if not attributes:
+            return attributes
+        handler = next(
+            (keyword.value for keyword in call.keywords if keyword.arg == "on_approval_request"),
+            None,
+        )
+        if handler is not None and not (
+            isinstance(handler, ast.Constant) and handler.value is None
+        ):
+            attributes["mcp_approval_handler"] = "configured"
+            attributes["mcp_approval_handler_policy"] = "callback-controlled"
+            handler_name = dotted_name(handler).rsplit(".", 1)[-1]
+            if environment_names := approval_bypass_function_summaries.get(handler_name, ()):
+                attributes["approval_bypass_environment_names"] = list(environment_names)
+                attributes["approval_bypass_resolution"] = "same-file-transitive-callback"
+        elif (
+            attributes.get("mcp_approval_policy") == "disabled-explicit"
+            and attributes.get("mcp_approval_requirement") in {"never", False}
+        ):
+            attributes["mcp_approval_handler"] = "none"
+        else:
+            attributes["mcp_approval_handler"] = "manual-run-loop"
+        return attributes
+
     function_tool_factories: dict[str, str] = {}
     for statement in tree.body:
         if isinstance(statement, ast.ImportFrom) and statement.module in {
@@ -11475,6 +11662,10 @@ def scan_python(
         ):
             continue
         symbol_id = call_symbol_ids[id(node.value)]
+        is_hosted_mcp_tool = exact_agents_hosted_mcp_tool_call(node.value)
+        hosted_mcp_attributes = (
+            hosted_mcp_tool_attributes(node.value) if is_hosted_mcp_tool else {}
+        )
         ir.add_component(
             Component(
                 "tool",
@@ -11487,21 +11678,12 @@ def scan_python(
                     "registration_line": usage_tool_assignments[id(node)][1].lineno,
                     "resolution": usage_tool_assignments[id(node)][2],
                     "scope": source_scope(relative),
+                    **hosted_mcp_attributes,
                 },
                 symbol_id,
             )
         )
-        constructor_root = constructor.split(".", 1)[0]
-        constructor_import = imported_tool_constructors.get(constructor_root)
-        is_hosted_mcp_tool = constructor_import is not None and any(
-            alias.name == "HostedMCPTool" and (alias.asname or alias.name) == constructor_root
-            for alias in constructor_import.names
-        )
-        if (
-            constructor_import is not None
-            and constructor_import.module == "agents"
-            and is_hosted_mcp_tool
-        ):
+        if is_hosted_mcp_tool:
             evidence = Evidence(
                 relative,
                 node.value.lineno,
@@ -11516,6 +11698,7 @@ def scan_python(
                         "api": constructor,
                         "hosted": True,
                         "scope": source_scope(relative),
+                        **hosted_mcp_attributes,
                     },
                 )
             )
@@ -11594,6 +11777,10 @@ def scan_python(
         symbol_id = source_symbol("py", relative, "tool", occurrence)
         inline_usage_tool_calls[id(call)] = (occurrence, symbol_id)
         call_symbol_ids[id(call)] = symbol_id
+        is_hosted_mcp_tool = exact_agents_hosted_mcp_tool_call(call)
+        hosted_mcp_attributes = (
+            hosted_mcp_tool_attributes(call) if is_hosted_mcp_tool else {}
+        )
         ir.add_component(
             Component(
                 "tool",
@@ -11606,10 +11793,37 @@ def scan_python(
                     "registration_line": agent_call.lineno,
                     "resolution": "literal-inline-constructor",
                     "scope": source_scope(relative),
+                    **hosted_mcp_attributes,
                 },
                 symbol_id,
             )
         )
+        if is_hosted_mcp_tool:
+            evidence = Evidence(relative, call.lineno, excerpt(text.splitlines(), call.lineno))
+            ir.add_component(
+                Component(
+                    "capability",
+                    "mcp-access",
+                    evidence,
+                    {
+                        "api": constructor,
+                        "hosted": True,
+                        "scope": source_scope(relative),
+                        **hosted_mcp_attributes,
+                    },
+                )
+            )
+            ir.add_relationship(
+                Relationship(
+                    "tool",
+                    occurrence,
+                    "uses",
+                    "capability",
+                    "mcp-access",
+                    evidence,
+                    source_id=symbol_id,
+                )
+            )
 
     context_usage_tool_resolutions: list[tuple[ast.Call, str, str]] = []
     context_binding_counts = Counter(name for _node_id, name in context_usage_tool_bindings)
@@ -12496,11 +12710,7 @@ def scan_python(
         ),
         url_parser_names=url_parser_names,
         module_literal_string_sets=module_literal_string_sets,
-        approval_bypass_function_summaries=(
-            python_approval_bypass_function_summaries(tree)
-            if "on_approval" in text and re.search(r"\b(?:from|import)\s+agents\b", text)
-            else {}
-        ),
+        approval_bypass_function_summaries=approval_bypass_function_summaries,
         computer_safety_check_function_summaries=(
             python_computer_safety_check_function_summaries(tree, node_scopes)
             if "on_safety_check" in text and re.search(r"\b(?:from|import)\s+agents\b", text)

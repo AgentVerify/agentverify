@@ -20,9 +20,12 @@ catalog workflows.
 - Added exact TypeScript OpenAI Agents SDK `hostedMcpTool({ requireApproval, onApproval })`
   approval inventory for default, explicit-never, inline selective, stable same-file const object,
   and callback-handled hosted MCP tools, while mutated policy objects remain dynamic.
+- Added exact Python OpenAI Agents SDK `HostedMCPTool(tool_config={...})` approval inventory for
+  explicit `"never"`, explicit or same-block literal `"always"`, shallow selective dict policies,
+  configured approval callbacks, dynamic bindings, and exact hosted MCP capability edges.
 - Added exact TypeScript OpenAI Agents SDK Agent guardrail tripwire metadata for direct returned
   `tripwireTriggered` objects in inline guardrails and stable typed `InputGuardrail`/
-  `OutputGuardrail` bindings. Regenerated public IR truth-set results now cover 2,378/2,378
+  `OutputGuardrail` bindings. Regenerated public IR truth-set results now cover 2,387/2,387
   passing labels, and the 71-repository engine benchmark still reports 2,900 relationships /
   10,689 symbolized components.
 - Added exact TypeScript OpenAI Agents SDK Agent guardrail direct-throw metadata for stable guardrail
