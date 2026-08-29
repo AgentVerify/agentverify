@@ -4752,6 +4752,75 @@ def test_typescript_openai_realtime_session_typed_options_spread_policy_is_exact
     }
 
 
+def test_typescript_openai_agent_guardrail_policy_is_exact() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_openai_agent_guardrails")
+
+    controls = {
+        component.symbol_id: component
+        for component in ir.components
+        if component.kind == "control" and component.name == "agent-guardrail-policy"
+    }
+    assert set(controls) == {
+        "ts:agent.ts#control:supportAgent.inputGuardrails@26",
+        "ts:agent.ts#control:assistantAgent.outputGuardrails@40",
+        "ts:agent.ts#control:mutableAgent.outputGuardrails@59",
+        "ts:agent.ts#control:dynamicAgent.inputGuardrails@65",
+    }
+    assert controls["ts:agent.ts#control:supportAgent.inputGuardrails@26"].attributes == {
+        "analysis": "typescript-openai-agents-agent-guardrails",
+        "module": "@openai/agents",
+        "constructor": "Agent",
+        "imported_symbol": "Agent",
+        "configuration": "Agent.inputGuardrails",
+        "guardrail_kind": "input",
+        "guardrail_scope": "agent-input",
+        "source_agent": "Customer support agent",
+        "source_agent_id": "ts:agent.ts#agent:supportAgent",
+        "scope": "production",
+        "guardrail_source": "inline-array",
+        "guardrail_count": 2,
+        "guardrail_bindings": ["typedInputGuardrail"],
+        "guardrail_names": ["Math homework guardrail", "Inline abuse guardrail"],
+        "guardrail_name_count": 2,
+    }
+    assert controls["ts:agent.ts#control:assistantAgent.outputGuardrails@40"].attributes[
+        "guardrail_names"
+    ] == ["Phone number guardrail"]
+    assert controls["ts:agent.ts#control:assistantAgent.outputGuardrails@40"].attributes[
+        "guardrail_kind"
+    ] == "output"
+    assert "guardrail_names" not in controls[
+        "ts:agent.ts#control:mutableAgent.outputGuardrails@59"
+    ].attributes
+    assert controls["ts:agent.ts#control:mutableAgent.outputGuardrails@59"].attributes[
+        "guardrail_bindings"
+    ] == ["mutableOutputGuardrail"]
+    assert controls["ts:agent.ts#control:dynamicAgent.inputGuardrails@65"].attributes[
+        "guardrail_source"
+    ] == "binding"
+
+    edges = {
+        relationship.target_id: relationship
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "governed-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "agent-guardrail-policy"
+    }
+    assert set(edges) == set(controls)
+    assert edges["ts:agent.ts#control:supportAgent.inputGuardrails@26"].attributes == {
+        "analysis": "typescript-openai-agents-agent-guardrails",
+        "configuration": "Agent.inputGuardrails",
+        "guardrail_kind": "input",
+        "guardrail_scope": "agent-input",
+        "guardrail_source": "inline-array",
+        "guardrail_count": 2,
+        "guardrail_bindings": ["typedInputGuardrail"],
+        "guardrail_names": ["Math homework guardrail", "Inline abuse guardrail"],
+        "guardrail_name_count": 2,
+    }
+
+
 def test_typescript_openai_realtime_session_guardrail_policy_is_exact() -> None:
     ir = scan_repository(ROOT / "cases/typescript_openai_realtime_session_guardrails")
 

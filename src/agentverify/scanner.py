@@ -12544,7 +12544,9 @@ TS_AGENT_TOOL_ASSIGNMENT = re.compile(
     r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*"
     r"([A-Za-z_$][\w$]*)\.asTool\s*\("
 )
-TS_AGENT_ASSIGNMENT = re.compile(r"\b(?:const|let)\s+(\w+)\s*=\s*new\s+Agent\s*\(")
+TS_AGENT_ASSIGNMENT = re.compile(
+    r"\b(?:const|let)\s+(\w+)\s*=\s*new\s+Agent\s*(?:<[^;{}\n]+>)?\s*\("
+)
 TS_SANDBOX_AGENT_ASSIGNMENT_TEMPLATE = r"\b(?:const|let)\s+(\w+)\s*=\s*new\s+{constructor}\s*\("
 TS_SANDBOX_AGENT_RETURN_TEMPLATE = r"\breturn\s+new\s+{constructor}\s*\("
 TS_SANDBOX_CLIENT_ASSIGNMENT = re.compile(
@@ -17276,6 +17278,74 @@ def add_typescript_openai_agent_model_settings_control(
     return "model-settings-policy", control_id
 
 
+def add_typescript_openai_agent_guardrail_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    source_agent: tuple[str, str],
+    guardrail_kind: str,
+    guardrail_attributes: dict[str, object],
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS Agent input/output guardrail evidence."""
+    source_agent_name, source_agent_id = source_agent
+    configuration = f"Agent.{guardrail_kind}Guardrails"
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    attributes: dict[str, object] = {
+        "analysis": "typescript-openai-agents-agent-guardrails",
+        "module": "@openai/agents",
+        "constructor": "Agent",
+        "imported_symbol": "Agent",
+        "configuration": configuration,
+        "guardrail_kind": guardrail_kind,
+        "guardrail_scope": f"agent-{guardrail_kind}",
+        "source_agent": source_agent_name,
+        "source_agent_id": source_agent_id,
+        "scope": source_scope(relative),
+    }
+    attributes.update(guardrail_attributes)
+    ir.add_component(
+        Component(
+            "control",
+            "agent-guardrail-policy",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    relationship_attributes: dict[str, object] = {
+        "analysis": "typescript-openai-agents-agent-guardrails",
+        "configuration": configuration,
+        "guardrail_kind": guardrail_kind,
+        "guardrail_scope": f"agent-{guardrail_kind}",
+    }
+    for key in (
+        "guardrail_source",
+        "guardrail_count",
+        "guardrail_bindings",
+        "guardrail_names",
+        "guardrail_name_count",
+    ):
+        if key in attributes:
+            relationship_attributes[key] = attributes[key]
+    ir.add_relationship(
+        Relationship(
+            "agent",
+            source_agent_name,
+            "governed-by",
+            "control",
+            "agent-guardrail-policy",
+            Evidence(relative, line, excerpt(lines, line)),
+            relationship_attributes,
+            source_id=source_agent_id,
+            target_id=control_id,
+        )
+    )
+    return "agent-guardrail-policy", control_id
+
+
 def add_typescript_openai_realtime_session_config_control(
     ir: RepositoryIR,
     *,
@@ -17816,7 +17886,7 @@ def typescript_typed_const_object_bindings(
     assignment = re.compile(
         rf"\b(?:export\s+)?const\s+([A-Za-z_$][\w$]*)"
         rf"\s*:\s*(?:Readonly\s*<\s*)?(?:Partial\s*<\s*)?(?:{type_pattern})"
-        r"\s*>?\s*=\s*\{"
+        r"(?:\s*<[^=;{}\n]+>)?\s*>?\s*=\s*\{"
     )
     bindings: dict[str, tuple[str, int]] = {}
     for match in assignment.finditer(code):
@@ -17851,7 +17921,7 @@ def typescript_typed_const_array_bindings(
     assignment = re.compile(
         rf"\b(?:export\s+)?const\s+([A-Za-z_$][\w$]*)"
         rf"\s*:\s*(?:ReadonlyArray\s*<\s*)?(?:Readonly\s*<\s*)?(?:{type_pattern})"
-        r"(?:\s*>\s*)?(?:\[\])?\s*=\s*\["
+        r"(?:\s*<[^=;{}\n]+>)?(?:\s*>\s*)?(?:\[\])?\s*=\s*\["
     )
     bindings: dict[str, tuple[str, int, int]] = {}
     for match in assignment.finditer(code):
@@ -20857,6 +20927,36 @@ def typescript_graph(
         for local_name, imported_name in openai_agents_imports.items()
         if imported_name == "Runner" and not typescript_import_binding_is_shadowed(text, local_name)
     }
+    openai_agent_input_guardrail_type_names = {
+        local_name
+        for local_name, imported_name in openai_agents_imports.items()
+        if imported_name == "InputGuardrail"
+    }
+    openai_agent_output_guardrail_type_names = {
+        local_name
+        for local_name, imported_name in openai_agents_imports.items()
+        if imported_name == "OutputGuardrail"
+    }
+    openai_agent_guardrail_object_bindings = {
+        "input": typescript_typed_const_object_bindings(
+            text,
+            type_names=openai_agent_input_guardrail_type_names,
+        ),
+        "output": typescript_typed_const_object_bindings(
+            text,
+            type_names=openai_agent_output_guardrail_type_names,
+        ),
+    }
+    openai_agent_guardrail_array_bindings = {
+        "input": typescript_typed_const_array_bindings(
+            text,
+            type_names=openai_agent_input_guardrail_type_names,
+        ),
+        "output": typescript_typed_const_array_bindings(
+            text,
+            type_names=openai_agent_output_guardrail_type_names,
+        ),
+    }
     memory_session_imports = {
         local_name
         for local_name, imported_name in openai_agents_imports.items()
@@ -21034,6 +21134,108 @@ def typescript_graph(
             guardrail_name = typescript_string_literal_value(name_expression)
             if guardrail_name is not None:
                 guardrail_names.append(guardrail_name)
+        if guardrail_names:
+            attributes["guardrail_names"] = guardrail_names
+            attributes["guardrail_name_count"] = len(guardrail_names)
+        return attributes
+
+    def openai_agent_guardrail_item_name(
+        item: str,
+        item_offset: int,
+        *,
+        guardrail_kind: str,
+    ) -> tuple[str | None, str | None]:
+        name_expression = typescript_literal_object_property_expression(item, "name")
+        if name_expression is not None:
+            return typescript_string_literal_value(name_expression), None
+        item_code = typescript_code_mask(item).strip()
+        identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", item_code)
+        if identifier is None:
+            return None, None
+        binding_name = identifier.group(0)
+        binding = openai_agent_guardrail_object_bindings[guardrail_kind].get(binding_name)
+        if binding is None:
+            return None, binding_name
+        binding_expression, binding_offset = binding
+        if binding_offset > item_offset:
+            return None, binding_name
+        if re.search(
+            rf"(?<![\w$.]){re.escape(binding_name)}\s*=(?!=)",
+            code[binding_offset:item_offset],
+        ) or re.search(
+            rf"(?<![\w$]){re.escape(binding_name)}\s*(?:\.|\[)",
+            code[binding_offset:item_offset],
+        ):
+            return None, binding_name
+        name_expression = typescript_literal_object_property_expression(binding_expression, "name")
+        if name_expression is None:
+            return None, binding_name
+        return typescript_string_literal_value(name_expression), binding_name
+
+    def openai_agent_guardrail_array_attributes(
+        expression: str,
+        expression_offset: int,
+        *,
+        guardrail_kind: str,
+    ) -> dict[str, object] | None:
+        attributes: dict[str, object]
+        items = typescript_array_items(expression, expression_offset)
+        if items is not None:
+            attributes = {"guardrail_source": "inline-array"}
+        else:
+            expression_code = typescript_code_mask(expression).strip()
+            identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", expression_code)
+            if identifier is None:
+                return {"guardrail_source": "dynamic-expression"}
+            binding_name = identifier.group(0)
+            binding = openai_agent_guardrail_array_bindings[guardrail_kind].get(binding_name)
+            if binding is None:
+                return {
+                    "guardrail_source": "binding",
+                    "guardrail_bindings": [binding_name],
+                }
+            binding_expression, _, binding_end = binding
+            if binding_end > expression_offset or re.search(
+                rf"(?<![\w$.]){re.escape(binding_name)}\s*=(?!=)",
+                code[binding_end:expression_offset],
+            ) or re.search(
+                rf"(?<![\w$]){re.escape(binding_name)}\s*(?:\.|\[)",
+                code[binding_end:expression_offset],
+            ):
+                return {
+                    "guardrail_source": "binding",
+                    "guardrail_bindings": [binding_name],
+                }
+            items = typescript_array_items(binding_expression, binding[1])
+            if items is None:
+                return {
+                    "guardrail_source": "binding",
+                    "guardrail_bindings": [binding_name],
+                }
+            attributes = {
+                "guardrail_source": "typed-const-array-binding",
+                "guardrail_bindings": [binding_name],
+            }
+        concrete_items = [
+            (item, item_offset)
+            for item, item_offset in items
+            if typescript_code_mask(item).strip()
+        ]
+        attributes["guardrail_count"] = len(concrete_items)
+        guardrail_names: list[str] = []
+        guardrail_bindings: list[str] = list(attributes.get("guardrail_bindings", []))
+        for item, item_offset in concrete_items:
+            guardrail_name, guardrail_binding = openai_agent_guardrail_item_name(
+                item,
+                item_offset,
+                guardrail_kind=guardrail_kind,
+            )
+            if guardrail_name is not None:
+                guardrail_names.append(guardrail_name)
+            if guardrail_binding is not None and guardrail_binding not in guardrail_bindings:
+                guardrail_bindings.append(guardrail_binding)
+        if guardrail_bindings:
+            attributes["guardrail_bindings"] = guardrail_bindings
         if guardrail_names:
             attributes["guardrail_names"] = guardrail_names
             attributes["guardrail_name_count"] = len(guardrail_names)
@@ -22621,6 +22823,39 @@ def typescript_graph(
         ev = Evidence(
             relative, line_at(text, match.start()), excerpt(lines, line_at(text, match.start()))
         )
+        if agent_constructor == "Agent":
+            for guardrail_kind, property_name in (
+                ("input", "inputGuardrails"),
+                ("output", "outputGuardrails"),
+            ):
+                guardrail_location = typescript_object_property_expression_location(
+                    body,
+                    property_name,
+                    body_offset,
+                )
+                if guardrail_location is None:
+                    continue
+                guardrail_expression, guardrail_property_offset, guardrail_expression_offset = (
+                    guardrail_location
+                )
+                guardrail_attributes = openai_agent_guardrail_array_attributes(
+                    guardrail_expression,
+                    guardrail_expression_offset,
+                    guardrail_kind=guardrail_kind,
+                )
+                if guardrail_attributes is None:
+                    continue
+                guardrail_line = line_at(text, guardrail_property_offset)
+                add_typescript_openai_agent_guardrail_control(
+                    ir,
+                    relative=relative,
+                    lines=lines,
+                    line=guardrail_line,
+                    source_agent=(agent_name, agent_id),
+                    guardrail_kind=guardrail_kind,
+                    guardrail_attributes=guardrail_attributes,
+                    symbol_identity=f"{agent_id.rsplit(':', 1)[-1]}.{property_name}@{guardrail_line}",
+                )
         if agent_constructor == "SandboxAgent":
             default_manifest_location = typescript_object_property_expression_location(
                 body,

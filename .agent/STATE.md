@@ -931,3 +931,11 @@ likely needs dependency-aware path expansion or scan-result reuse to preserve cr
   debounce values, mutated guardrail arrays, comment-only placeholders, and lookalike objects remain
   bounded. Public IR truth set: 2,276/2,276. Engine benchmark: 71/71 repositories, 2,880
   relationships, 10,664 symbolized components.
+- Added exact TypeScript OpenAI Agents SDK Agent-level input/output guardrail inventory. Proven
+  `new Agent({ inputGuardrails })` and `new Agent({ outputGuardrails })` constructor options,
+  including `new Agent<...>(...)` generics, now emit `agent-guardrail-policy` controls linked to the
+  source agent. Inline arrays, typed `InputGuardrail`/`OutputGuardrail` object bindings including
+  generic `OutputGuardrail<typeof schema>` forms, literal names/counts, and binding-only fallbacks
+  are covered; dynamic arrays, mutated guardrail objects, and object lookalikes remain bounded.
+  Public IR truth set: 2,292/2,292. Engine benchmark: 71/71 repositories, 2,894 relationships,
+  10,683 symbolized components.

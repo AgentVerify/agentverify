@@ -870,3 +870,24 @@
   audio, turn-detection, or auth configuration.
 - Revisit when imported guardrail arrays, helper-created guardrails, input guardrails, or guardrail
   tripwire/action quality can be tied to exact source-agent identity without broad name matching.
+
+## OpenAI Agents JS Agent guardrails are source-agent governance controls
+
+- Decision: Represent exact TypeScript OpenAI Agents SDK `new Agent({ inputGuardrails })` and
+  `new Agent({ outputGuardrails })` constructor options as `agent-guardrail-policy` controls tied
+  to the source agent. Support exact `new Agent<...>(...)` generic constructor syntax, inline
+  guardrail arrays, stable typed `InputGuardrail`/`OutputGuardrail` object bindings, generic
+  `OutputGuardrail<typeof schema>` bindings, literal names/counts, and binding-only fallbacks.
+- Evidence: The local `typescript_openai_agent_guardrails` fixture covers inline input guardrails
+  with typed object and inline object entries, generic Agent output guardrails with a generic typed
+  output guardrail object, a mutated guardrail object that remains name-unresolved, and a dynamic
+  guardrail array that remains binding-only. The pinned OpenAI Agents JS
+  `examples/agent-patterns/input-guardrails.ts`, `examples/agent-patterns/output-guardrails.ts`,
+  and `examples/docs/running-agents/exceptions1.ts` examples provide real input, output, typed
+  object, and generic Agent constructor cases.
+- Alternative: Reuse the Realtime guardrail control name. Rejected because SDK Agent guardrails and
+  RealtimeSession guardrails live on different constructors and have different execution scopes
+  even though both are governance controls.
+- Revisit when post-construction `agent.inputGuardrails = [...]` updates, imported guardrail arrays,
+  helper-created guardrails, tool guardrails, or tripwire/action quality can be tied to exact source
+  identity without broad name matching.

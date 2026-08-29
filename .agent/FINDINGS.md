@@ -679,6 +679,17 @@
   are ignored. The local fixture plus pinned OpenAI Agents JS `guardrails.ts` and
   `guardrailSettings.ts` examples bring the public IR truth set to 2,276 passing labels and the
   71-repository engine benchmark to 2,880 relationships / 10,664 symbolized components.
+- OpenAI Agents JS Agent-level input/output guardrails are now reviewable when source-proven.
+  Exact `new Agent({ inputGuardrails })` and `new Agent({ outputGuardrails })` constructor options
+  emit `agent-guardrail-policy` controls linked to the source agent, including
+  `new Agent<unknown, typeof schema>(...)` generic constructors. Inline arrays expose guardrail
+  counts and literal names; typed `InputGuardrail`/`OutputGuardrail` object bindings, including
+  generic `OutputGuardrail<typeof schema>`, contribute literal names when stable. Mutated guardrail
+  objects fall back to binding-only metadata, dynamic guardrail arrays remain binding-only, and
+  lookalike objects are ignored. The local fixture plus pinned OpenAI Agents JS
+  `input-guardrails.ts`, `output-guardrails.ts`, and `exceptions1.ts` examples bring the public IR
+  truth set to 2,292 passing labels and the 71-repository engine benchmark to 2,894 relationships /
+  10,683 symbolized components.
 
 ## Hypotheses
 
