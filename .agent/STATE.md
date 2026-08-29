@@ -29,8 +29,8 @@ catalog workflows.
   whole `tool_config` dictionaries, and consumer-star-imported `tool_config` dictionaries,
   configured approval callbacks,
   dynamic/imported-mutated bindings, dynamic imported/reexported-mutated `tool_config` bindings, and
-  ambiguous multi-star imports pinned as dynamic, plus exact hosted MCP capability edges. The public
-  IR truth set now covers 2,429/2,429 passing labels.
+  exact ordered local multi-star imports when the later visible source is literal, plus exact hosted
+  MCP capability edges. The public IR truth set now covers 2,429/2,429 passing labels.
 - Added exact Python OpenAI Agents SDK non-hosted MCP server `require_approval` call-site inventory
   for `MCPServerStdio(...)`, `MCPServerSse(...)`, `MCPServerStreamableHttp(...)`, and imported
   subclasses of exact `agents.mcp.MCPServer`, including literal never/always booleans, same-block

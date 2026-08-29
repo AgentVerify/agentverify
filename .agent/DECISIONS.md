@@ -10,7 +10,8 @@
   `agents.mcp.MCPServer`, while keeping `local_mcp` lookalikes out of OpenAI-specific approval
   semantics. Same-block literal bindings and exact imported, named-reexported,
   producer-star-reexported, or consumer-star-imported local literal approval policies are resolved
-  while mutated imports/reexports and ambiguous multi-star imports remain dynamic. Remote URLs are sanitized, and remote
+  while mutated imports/reexports and unresolved later star imports remain dynamic. Ordered local
+  multi-star imports resolve to the later visible literal source. Remote URLs are sanitized, and remote
   auth/header/client-factory evidence is recorded as source-shape metadata without copying secret
   values. Current validated labels combine local/source-shape coverage with pinned OpenAI SDK
   integration-test remote transport examples; a noisy review rule for examples or tests would
@@ -1065,8 +1066,8 @@
   `"never"`/`"always"`, same-block and exact imported local literal string bindings, shallow
   `{always, never}` tool-list dict policies, imported, named-reexported, producer-star-reexported,
   and consumer-star-imported local literal whole `tool_config` dictionaries,
-  dynamic/imported/reexported-mutated binding metadata, ambiguous multi-star import boundaries, and
-  configured `on_approval_request` callbacks.
+  dynamic/imported/reexported-mutated binding metadata, ordered local multi-star import semantics
+  when the later visible source is exact, and configured `on_approval_request` callbacks.
 - Evidence: The pinned OpenAI Agents Python `HostedMCPTool` stores a raw MCP `tool_config` and
   separates `on_approval_request` as the callback used when approval is requested. Pinned
   `examples/hosted_mcp/simple.py`, `on_approval.py`, and `human_in_the_loop.py`, plus Composio's
@@ -1075,7 +1076,7 @@
 - Alternative: Treat hosted MCP approval as generic `approval_policy` or infer SDK defaults when
   `require_approval` is omitted. Rejected because hosted MCP uses provider/API-specific
   configuration and the Python examples make approval policy explicit in `tool_config`.
-- Revisit when package-level policy or `tool_config` exports, ordered multi-star shadowing,
+- Revisit when package-level policy or `tool_config` exports, unresolved later external star imports,
   `Mcp(...)` factory objects in production examples, or callable `require_approval` policies can be
   resolved without broad Python dataflow.
 

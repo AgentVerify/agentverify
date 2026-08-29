@@ -3061,8 +3061,11 @@ def test_python_openai_hosted_mcp_approval_policy_is_exact() -> None:
     assert tools[18].attributes["mcp_approval_policy"] == "dynamic"
 
     assert tools[10].attributes["mcp_approval_binding"] == "IMPORTED_ALWAYS"
-    assert "mcp_approval_resolution" not in tools[10].attributes
-    assert tools[10].attributes["mcp_approval_policy"] == "dynamic"
+    assert tools[10].attributes["mcp_approval_resolution"] == (
+        "imported-local-star-import-literal:repository-module-single-path"
+    )
+    assert tools[10].attributes["mcp_approval_policy"] == "always-required"
+    assert tools[10].attributes["mcp_approval_requirement"] == "always"
 
     assert not any(
         component.kind == "tool" and component.name.startswith("FakeHostedMCPTool")
@@ -3130,7 +3133,10 @@ def test_python_openai_hosted_mcp_approval_policy_is_exact() -> None:
         "imported-local-star-import-tool-config:repository-module-single-path"
     )
     assert capabilities[18].attributes["mcp_approval_policy"] == "dynamic"
-    assert capabilities[10].attributes["mcp_approval_policy"] == "dynamic"
+    assert capabilities[10].attributes["mcp_approval_resolution"] == (
+        "imported-local-star-import-literal:repository-module-single-path"
+    )
+    assert capabilities[10].attributes["mcp_approval_policy"] == "always-required"
     tool_edges = {
         edge.source_name: edge
         for edge in ir.relationships
@@ -15250,8 +15256,16 @@ def test_python_openai_mcp_server_approval_policy_is_exact() -> None:
     assert ambiguous_star_import_server.attributes["mcp_approval_binding"] == (
         "IMPORTED_SELECTIVE"
     )
-    assert "mcp_approval_resolution" not in ambiguous_star_import_server.attributes
-    assert ambiguous_star_import_server.attributes["mcp_approval_policy"] == "dynamic"
+    assert ambiguous_star_import_server.attributes["mcp_approval_resolution"] == (
+        "imported-local-star-import-literal:repository-module-single-path"
+    )
+    assert ambiguous_star_import_server.attributes["mcp_approval_policy"] == "selective"
+    assert ambiguous_star_import_server.attributes["mcp_approval_never_tool_names"] == [
+        "read_policy"
+    ]
+    assert ambiguous_star_import_server.attributes["mcp_approval_always_tool_names"] == [
+        "write_policy"
+    ]
 
     subclass_server = next(
         component

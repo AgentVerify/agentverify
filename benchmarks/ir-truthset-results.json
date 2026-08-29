@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-29T12:42:00.180229+00:00",
+  "generated_at": "2026-08-29T12:55:52.555398+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "24b688106a70fee7ce86c37e114bd11408bf4f80af96a61c21e84512ddc9b03a",
+    "labels_sha256": "375c6a29eee83e7e4e8ac8cd6143b5ea7d004f3f42ee5f9748f60e69b5408a1c",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
@@ -10218,7 +10218,7 @@
       "passed": true
     },
     {
-      "id": "python-openai-hosted-mcp-approval-ambiguous-star-import-local",
+      "id": "python-openai-hosted-mcp-approval-ordered-star-import-local",
       "check_id": "IR-PY-OPENAI-HOSTED-MCP-APPROVAL",
       "expected": true,
       "observed": true,
@@ -10389,7 +10389,7 @@
       "passed": true
     },
     {
-      "id": "python-openai-mcp-server-approval-ambiguous-star-import-local",
+      "id": "python-openai-mcp-server-approval-ordered-star-import-local",
       "check_id": "IR-PY-OPENAI-MCP-SERVER-APPROVAL",
       "expected": true,
       "observed": true,
