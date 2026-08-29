@@ -1,5 +1,23 @@
 # AgentVerify decisions
 
+## Vercel WorkflowAgent model controls require direct provider-call proof
+
+- Decision: Emit a `model-settings-policy` control for `WorkflowAgent.model` only when a
+  source-proven `@ai-sdk/workflow` `WorkflowAgent` constructor has a top-level `model` property whose
+  expression is exactly one direct AI SDK provider model call, such as
+  `anthropic("claude-sonnet-4-20250514")`. Link the control back to the WorkflowAgent with an
+  `agent configured-by control` edge.
+- Evidence: Vercel AI's pinned `examples/next-workflow/workflow/agent-chat.ts` constructs a
+  WorkflowAgent with a direct Anthropic model call. AgentVerify now records the provider, provider
+  module, imported provider symbol, call, model string, model method, and source-agent identity in
+  the control, and the public IR truth set pins both the control and relationship labels.
+- Alternative: Resolve bound model variables, casts, or arbitrary wrapper expressions around provider
+  calls. Rejected for this slice because those forms need separate mutation and alias provenance;
+  otherwise a model value can be reassigned or transformed before the agent receives it.
+- Revisit when: Same-file/imported stable provider-model constants, framework-specific model wrapper
+  helpers, or safe TypeScript cast stripping can be proven without broadening into arbitrary
+  expression resolution.
+
 ## TypeScript object-tool execute helper bodies map only under unique stable same-file proof
 
 - Decision: When a generic TypeScript tool object has a direct `execute: helperName` property, map

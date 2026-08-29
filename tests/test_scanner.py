@@ -2774,6 +2774,82 @@ def test_typescript_object_tool_execute_helper_maps_capabilities(tmp_path: Path)
     } == {"calculate", "inline"}
 
 
+def test_typescript_workflow_agent_model_control_is_exact(tmp_path: Path) -> None:
+    (tmp_path / "agent.ts").write_text(
+        textwrap.dedent(
+            """
+            import { anthropic } from "@ai-sdk/anthropic";
+            import { WorkflowAgent } from "@ai-sdk/workflow";
+
+            const boundModel = anthropic("claude-bound");
+
+            const agent = new WorkflowAgent({
+              model: anthropic("claude-sonnet-4-20250514"),
+            });
+            const boundAgent = new WorkflowAgent({ model: boundModel });
+            const castAgent = new WorkflowAgent({
+              model: anthropic("claude-cast") as any,
+            });
+            void agent;
+            void boundAgent;
+            void castAgent;
+            """
+        ),
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+
+    controls = [
+        component
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "model-settings-policy"
+        and component.attributes.get("analysis") == "typescript-vercel-workflow-agent-model"
+    ]
+    assert len(controls) == 1
+    assert controls[0].attributes == {
+        "analysis": "typescript-vercel-workflow-agent-model",
+        "module": "@ai-sdk/workflow",
+        "constructor": "WorkflowAgent",
+        "imported_symbol": "WorkflowAgent",
+        "configuration": "WorkflowAgent.model",
+        "settings_scope": "workflow-agent-model",
+        "source_agent": "agent",
+        "source_agent_id": "ts:agent.ts#agent:agent",
+        "provider": "Anthropic",
+        "provider_module": "@ai-sdk/anthropic",
+        "provider_imported_symbol": "anthropic",
+        "provider_call": "anthropic",
+        "model": "claude-sonnet-4-20250514",
+        "model_method": "language",
+        "scope": "production",
+    }
+    assert {
+        (
+            relationship.source_name,
+            relationship.relation,
+            relationship.target_name,
+            relationship.attributes.get("analysis"),
+            relationship.attributes.get("provider"),
+            relationship.attributes.get("model"),
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.target_kind == "control"
+        and relationship.attributes.get("analysis") == "typescript-vercel-workflow-agent-model"
+    } == {
+        (
+            "agent",
+            "configured-by",
+            "model-settings-policy",
+            "typescript-vercel-workflow-agent-model",
+            "Anthropic",
+            "claude-sonnet-4-20250514",
+        )
+    }
+
+
 def test_python_enabled_auto_approval_is_review_candidate() -> None:
     ir = scan_repository(ROOT / "cases/python_auto_approval")
 

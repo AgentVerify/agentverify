@@ -20,9 +20,10 @@
   inventory now covers top-level `execute` plus schema evidence and static `needsApproval: true as
   const`; exact local `@ai-sdk/workflow` `WorkflowAgent({ tools })` edges are covered for stable
   same-file tool-set bindings; unique stable same-file `execute: helper` bodies now map delegated
-  code-execution/filesystem/network capability evidence back to the owning tool. Future work should
-  focus on imported tool-set/helper modules, approval-resumption/event flows, or reportable Vercel
-  approval findings only with matching real evidence.
+  code-execution/filesystem/network capability evidence back to the owning tool; direct
+  `WorkflowAgent.model` AI SDK provider calls now emit source-agent-linked model-setting controls.
+  Future work should focus on imported tool-set/helper/model modules, approval-resumption/event
+  flows, or reportable Vercel approval findings only with matching real evidence.
 - Continue OpenAI Agents JS sandbox and session-governance policy extraction from pinned examples
   where evidence remains exact, especially additional Manifest/sandbox policy fields, additional
   `MemorySession`/server-managed conversation implementation semantics, or agent/session

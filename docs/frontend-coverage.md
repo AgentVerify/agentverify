@@ -771,6 +771,11 @@ model-only options, literal audio input/output formats, and literal
 session governance metadata. Prompt content is not retained in IR attributes; AgentVerify records
 literal prompt presence and length plus literal keyword arrays/counts. Dynamic realtime session
 model/config values remain unresolved.
+Vercel AI `WorkflowAgent` constructors from exact `@ai-sdk/workflow` imports now also emit
+source-agent-linked `model-settings-policy` controls for direct AI SDK provider calls in the
+top-level `model` property, such as `anthropic("claude-sonnet-4-20250514")`. Bound model variables,
+casts, wrappers, and imported model constants remain unresolved until their provenance can be proven
+without general expression guessing.
 OpenAI Agents Python run-state approval decisions are now inventoried separately from approval-policy
 declaration: exact `Runner.run(...)` or `Runner.run_streamed(...)` results that produce a stable
 `result.to_state()` binding, plus exact `RunState.from_json/from_string(...)` restored states, emit
@@ -1135,7 +1140,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 730-label rule truth set and 2,433-label IR component/relationship set are curated regression
+The 730-label rule truth set and 2,435-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

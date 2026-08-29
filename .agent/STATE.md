@@ -7,6 +7,11 @@ catalog workflows.
 
 ## Completed recently
 
+- Added exact Vercel AI `WorkflowAgent.model` model-setting controls for direct AI SDK provider
+  calls in `@ai-sdk/workflow` constructors. The pinned Vercel AI `agent-chat.ts` WorkflowAgent now
+  records its Anthropic provider/model selection as a source-agent-linked control, while bound model
+  variables and cast expressions remain unresolved. The public IR truth set covers 2,435/2,435
+  passing labels.
 - Added exact TypeScript OpenAI Agents SDK tool guardrail reject-condition metadata for shallow
   `if` branches that directly return `rejectContent`, including literal string-includes and
   string-not-equals predicates in pinned OpenAI Agents JS examples.

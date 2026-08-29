@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-29T15:53:54.092362+00:00",
+  "generated_at": "2026-08-29T16:13:16.755939+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "fbd55ebc492b8ccf83ed0890ec34ae5f88e4c645c74bd7ad92e9778c184fcad9",
+    "labels_sha256": "6f33fcbb4f905974f2bb0a6846e2a9275d6bd3dd6cea24fee26f3abd65c7ea73",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 2433,
-  "passed": 2433,
+  "labels": 2435,
+  "passed": 2435,
   "failed": 0,
   "failure_summary": {
     "observation_mismatch": 0,
@@ -809,6 +809,14 @@
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
+    },
+    "IR-TS-WORKFLOW-AGENT-MODEL": {
+      "tp": 2,
+      "fp": 0,
+      "tn": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
     }
   },
   "outcomes": [
@@ -1346,6 +1354,24 @@
     {
       "id": "typescript-vercel-workflow-tool-execute-helper-code-execution-real",
       "check_id": "IR-TS-TOOL-GRAPH",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-vercel-workflow-agent-model-control-real",
+      "check_id": "IR-TS-WORKFLOW-AGENT-MODEL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-vercel-workflow-agent-model-edge-real",
+      "check_id": "IR-TS-WORKFLOW-AGENT-MODEL",
       "expected": true,
       "observed": true,
       "anchor_ok": true,

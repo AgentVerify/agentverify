@@ -18738,6 +18738,51 @@ def add_typescript_openai_agent_model_settings_control(
     return "model-settings-policy", control_id
 
 
+def add_typescript_vercel_workflow_agent_model_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    source_agent: tuple[str, str],
+    model_call: TypeScriptProviderCall,
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add exact Vercel WorkflowAgent model configuration evidence."""
+    source_agent_name, source_agent_id = source_agent
+    attributes: dict[str, object] = {
+        "analysis": "typescript-vercel-workflow-agent-model",
+        "module": "@ai-sdk/workflow",
+        "constructor": "WorkflowAgent",
+        "imported_symbol": "WorkflowAgent",
+        "configuration": "WorkflowAgent.model",
+        "settings_scope": "workflow-agent-model",
+        "source_agent": source_agent_name,
+        "source_agent_id": source_agent_id,
+        "provider": model_call.provider,
+        "provider_module": model_call.module,
+        "provider_imported_symbol": model_call.imported_symbol,
+        "provider_call": model_call.call,
+        "model": model_call.model,
+        "scope": source_scope(relative),
+    }
+    if model_call.model_method is not None:
+        attributes["model_method"] = model_call.model_method
+    if model_call.model_resolution_basis is not None:
+        attributes["model_resolution"] = model_call.model_resolution_basis
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    ir.add_component(
+        Component(
+            "control",
+            "model-settings-policy",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    return "model-settings-policy", control_id
+
+
 def add_typescript_openai_agent_guardrail_control(
     ir: RepositoryIR,
     *,
@@ -24283,6 +24328,16 @@ def typescript_graph(
     agent_tool_bindings = {
         match.group(1): match.group(2) for match in TS_AGENT_TOOL_ASSIGNMENT.finditer(code)
     }
+    workflow_model_calls = (
+        {
+            provider_call.offset: provider_call
+            for provider_call in typescript_ai_sdk_provider_calls(root, path, text)
+            if provider_call.call_kind == "ai-sdk-provider-model"
+            and provider_call.model is not None
+        }
+        if workflow_imports
+        else {}
+    )
     local_agents: dict[str, tuple[str, str]] = {}
     local_agent_declaration_ends: dict[str, int] = {}
     openai_agent_bindings: set[str] = set()
@@ -24341,6 +24396,63 @@ def typescript_graph(
         if binding_kind == "return-new":
             attributes.update({"binding": "return-new", "helper": variable_name})
         ir.add_component(Component("agent", agent_name, ev, attributes, agent_id))
+        if constructor == "WorkflowAgent":
+            model_location = typescript_object_property_expression_location(
+                body,
+                "model",
+                opening + 1,
+            )
+            if model_location is not None:
+                model_expression, model_property_offset, model_expression_offset = model_location
+                model_call = workflow_model_calls.get(model_expression_offset)
+                expression_code = typescript_code_mask(model_expression)
+                expression_opening = expression_code.find("(")
+                expression_end = (
+                    typescript_balanced_end(expression_code, expression_opening, "(", ")")
+                    if expression_opening >= 0
+                    else None
+                )
+                if (
+                    model_call is not None
+                    and expression_end is not None
+                    and not expression_code[expression_end:].strip()
+                ):
+                    model_line = line_at(text, model_property_offset)
+                    model_control_name, model_control_id = (
+                        add_typescript_vercel_workflow_agent_model_control(
+                            ir,
+                            relative=relative,
+                            lines=lines,
+                            line=model_line,
+                            source_agent=(agent_name, agent_id),
+                            model_call=model_call,
+                            symbol_identity=f"{agent_identity}.model@{model_line}",
+                        )
+                    )
+                    model_attributes: dict[str, object] = {
+                        "analysis": "typescript-vercel-workflow-agent-model",
+                        "configuration": "WorkflowAgent-model",
+                        "binding": "model",
+                        "provider": model_call.provider,
+                        "model": model_call.model,
+                    }
+                    if model_call.model_method is not None:
+                        model_attributes["model_method"] = model_call.model_method
+                    if model_call.model_resolution_basis is not None:
+                        model_attributes["model_resolution"] = model_call.model_resolution_basis
+                    ir.add_relationship(
+                        Relationship(
+                            "agent",
+                            agent_name,
+                            "configured-by",
+                            "control",
+                            model_control_name,
+                            Evidence(relative, model_line, excerpt(lines, model_line)),
+                            model_attributes,
+                            source_id=agent_id,
+                            target_id=model_control_id,
+                        )
+                    )
         if constructor == "Agent" and exact_openai_agent_import:
             model_settings_location = typescript_object_property_expression_location(
                 body,
