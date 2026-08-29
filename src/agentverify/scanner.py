@@ -17327,6 +17327,7 @@ def add_typescript_openai_agent_guardrail_control(
         "guardrail_bindings",
         "guardrail_names",
         "guardrail_name_count",
+        "guardrail_update",
     ):
         if key in attributes:
             relationship_attributes[key] = attributes[key]
@@ -21973,6 +21974,7 @@ def typescript_graph(
         match.group(1): match.group(2) for match in TS_AGENT_TOOL_ASSIGNMENT.finditer(code)
     }
     local_agents: dict[str, tuple[str, str]] = {}
+    local_agent_declaration_ends: dict[str, int] = {}
     helper_return_agents: dict[str, tuple[str, str, int]] = {}
     assigned_agents: dict[str, list[tuple[int, int, str, str]]] = defaultdict(list)
     agent_bodies: list[tuple[re.Match[str], int, str, str, str, str]] = []
@@ -22211,6 +22213,7 @@ def typescript_graph(
             )
         if binding_kind == "assignment" and agent_assignment_counts[variable_name] == 1:
             local_agents[variable_name] = (agent_name, agent_id)
+            local_agent_declaration_ends[variable_name] = end
         elif binding_kind == "return-new":
             helper_return_agents[variable_name] = (agent_name, agent_id, match.start())
         agent_bodies.append((match, opening + 1, body, agent_name, agent_id, constructor))
@@ -22228,6 +22231,7 @@ def typescript_graph(
         if initializer_offset <= helper_offset:
             continue
         local_agents[variable_name] = (agent_name, agent_id)
+        local_agent_declaration_ends[variable_name] = initializer_offset + len(initializer)
         assigned_agents[variable_name].append(
             (initializer_offset, initializer_offset + len(initializer), agent_name, agent_id)
         )
@@ -22426,6 +22430,77 @@ def typescript_graph(
             ):
                 return None
         return local_agents.get(argument_name)
+
+    def typescript_assignment_rhs_expression(
+        expression_offset: int,
+    ) -> tuple[str, int] | None:
+        while expression_offset < len(code) and code[expression_offset].isspace():
+            expression_offset += 1
+        if expression_offset >= len(code):
+            return None
+        if code[expression_offset] == "[":
+            expression_end = typescript_balanced_end(code, expression_offset, "[", "]")
+            if expression_end is None:
+                return None
+            return text[expression_offset:expression_end], expression_offset
+        semicolon = code.find(";", expression_offset)
+        newline = code.find("\n", expression_offset)
+        candidates = [offset for offset in (semicolon, newline) if offset != -1]
+        expression_end = min(candidates) if candidates else len(text)
+        return text[expression_offset:expression_end].rstrip(), expression_offset
+
+    if exact_openai_agent_import:
+        agent_guardrail_assignment_pattern = re.compile(
+            r"(?<![\w$.])([A-Za-z_$][\w$]*)\s*\.\s*"
+            r"(inputGuardrails|outputGuardrails)\s*=\s*"
+        )
+        for guardrail_assignment in agent_guardrail_assignment_pattern.finditer(code):
+            agent_binding = guardrail_assignment.group(1)
+            source_agent = resolve_lexical_openai_agent_argument(
+                agent_binding,
+                guardrail_assignment.start(),
+            )
+            declaration_end = local_agent_declaration_ends.get(agent_binding)
+            if source_agent is None or declaration_end is None:
+                continue
+            if guardrail_assignment.start() <= declaration_end:
+                continue
+            if re.search(
+                rf"(?<![\w$.]){re.escape(agent_binding)}\s*=(?!=)",
+                code[declaration_end : guardrail_assignment.start()],
+            ):
+                continue
+            rhs_expression = typescript_assignment_rhs_expression(guardrail_assignment.end())
+            if rhs_expression is None:
+                continue
+            guardrail_expression, guardrail_expression_offset = rhs_expression
+            guardrail_kind = (
+                "input"
+                if guardrail_assignment.group(2) == "inputGuardrails"
+                else "output"
+            )
+            guardrail_attributes = openai_agent_guardrail_array_attributes(
+                guardrail_expression,
+                guardrail_expression_offset,
+                guardrail_kind=guardrail_kind,
+            )
+            if guardrail_attributes is None:
+                continue
+            guardrail_attributes["guardrail_update"] = "property-assignment"
+            guardrail_line = line_at(text, guardrail_assignment.start(2))
+            agent_name, agent_id = source_agent
+            add_typescript_openai_agent_guardrail_control(
+                ir,
+                relative=relative,
+                lines=lines,
+                line=guardrail_line,
+                source_agent=(agent_name, agent_id),
+                guardrail_kind=guardrail_kind,
+                guardrail_attributes=guardrail_attributes,
+                symbol_identity=(
+                    f"{agent_binding}.{guardrail_assignment.group(2)}@{guardrail_line}"
+                ),
+            )
 
     def realtime_approval_callback_body(
         callback_expression: str,

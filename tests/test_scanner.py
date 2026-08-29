@@ -4765,6 +4765,9 @@ def test_typescript_openai_agent_guardrail_policy_is_exact() -> None:
         "ts:agent.ts#control:assistantAgent.outputGuardrails@40",
         "ts:agent.ts#control:mutableAgent.outputGuardrails@59",
         "ts:agent.ts#control:dynamicAgent.inputGuardrails@65",
+        "ts:agent.ts#control:supportAgent.inputGuardrails@75",
+        "ts:agent.ts#control:assistantAgent.outputGuardrails@84",
+        "ts:agent.ts#control:supportAgent.inputGuardrails@87",
     }
     assert controls["ts:agent.ts#control:supportAgent.inputGuardrails@26"].attributes == {
         "analysis": "typescript-openai-agents-agent-guardrails",
@@ -4798,6 +4801,45 @@ def test_typescript_openai_agent_guardrail_policy_is_exact() -> None:
     assert controls["ts:agent.ts#control:dynamicAgent.inputGuardrails@65"].attributes[
         "guardrail_source"
     ] == "binding"
+    assert controls["ts:agent.ts#control:supportAgent.inputGuardrails@75"].attributes == {
+        "analysis": "typescript-openai-agents-agent-guardrails",
+        "module": "@openai/agents",
+        "constructor": "Agent",
+        "imported_symbol": "Agent",
+        "configuration": "Agent.inputGuardrails",
+        "guardrail_kind": "input",
+        "guardrail_scope": "agent-input",
+        "source_agent": "Customer support agent",
+        "source_agent_id": "ts:agent.ts#agent:supportAgent",
+        "scope": "production",
+        "guardrail_source": "inline-array",
+        "guardrail_count": 1,
+        "guardrail_bindings": ["fallbackInputGuardrail"],
+        "guardrail_names": ["Math homework fallback guardrail"],
+        "guardrail_name_count": 1,
+        "guardrail_update": "property-assignment",
+    }
+    assert controls["ts:agent.ts#control:assistantAgent.outputGuardrails@84"].attributes[
+        "guardrail_names"
+    ] == ["Phone number fallback guardrail"]
+    assert controls["ts:agent.ts#control:assistantAgent.outputGuardrails@84"].attributes[
+        "guardrail_update"
+    ] == "property-assignment"
+    assert controls["ts:agent.ts#control:supportAgent.inputGuardrails@87"].attributes == {
+        "analysis": "typescript-openai-agents-agent-guardrails",
+        "module": "@openai/agents",
+        "constructor": "Agent",
+        "imported_symbol": "Agent",
+        "configuration": "Agent.inputGuardrails",
+        "guardrail_kind": "input",
+        "guardrail_scope": "agent-input",
+        "source_agent": "Customer support agent",
+        "source_agent_id": "ts:agent.ts#agent:supportAgent",
+        "scope": "production",
+        "guardrail_source": "binding",
+        "guardrail_bindings": ["dynamicAssignedGuardrails"],
+        "guardrail_update": "property-assignment",
+    }
 
     edges = {
         relationship.target_id: relationship
@@ -4818,6 +4860,18 @@ def test_typescript_openai_agent_guardrail_policy_is_exact() -> None:
         "guardrail_bindings": ["typedInputGuardrail"],
         "guardrail_names": ["Math homework guardrail", "Inline abuse guardrail"],
         "guardrail_name_count": 2,
+    }
+    assert edges["ts:agent.ts#control:supportAgent.inputGuardrails@75"].attributes == {
+        "analysis": "typescript-openai-agents-agent-guardrails",
+        "configuration": "Agent.inputGuardrails",
+        "guardrail_kind": "input",
+        "guardrail_scope": "agent-input",
+        "guardrail_source": "inline-array",
+        "guardrail_count": 1,
+        "guardrail_bindings": ["fallbackInputGuardrail"],
+        "guardrail_names": ["Math homework fallback guardrail"],
+        "guardrail_name_count": 1,
+        "guardrail_update": "property-assignment",
     }
 
 

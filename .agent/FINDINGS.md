@@ -700,6 +700,15 @@
   fixture plus pinned OpenAI Agents JS `examples/basic/tools.ts` and
   `examples/docs/guardrails/toolGuardrails.ts` bring the public IR truth set to 2,308 passing labels
   and the 71-repository engine benchmark to 2,898 relationships / 10,687 symbolized components.
+- OpenAI Agents JS post-construction Agent guardrail assignments are now reviewable when
+  source-proven. Stable same-file `agent.inputGuardrails = [...]` and
+  `agent.outputGuardrails = [...]` assignments emit `agent-guardrail-policy` controls with
+  `guardrail_update: property-assignment`; inline arrays expose counts and stable typed guardrail
+  object bindings expose literal names. Dynamic assignment expressions stay binding-only, rebound
+  Agent bindings are unresolved, and lookalike objects are ignored. The local fixture plus pinned
+  OpenAI Agents JS `examples/docs/running-agents/exceptions1.ts` fallback assignments bring the
+  public IR truth set to 2,321 passing labels and the 71-repository engine benchmark to
+  2,900 relationships / 10,689 symbolized components.
 
 ## Hypotheses
 

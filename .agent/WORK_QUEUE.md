@@ -108,6 +108,10 @@
   inventory covers direct session options, typed `RealtimeOutputGuardrail[]` const arrays, typed
   `RealtimeSessionOptions` spreads, literal names/counts, and `debounceTextLength`, with mutated
   arrays and dynamic settings bounded.
+- Explore richer OpenAI Agents JS Agent guardrails only if evidence stays exact: imported literal
+  guardrail arrays, helper-created guardrails, or tripwire/action quality. Constructor
+  `inputGuardrails`/`outputGuardrails` and stable same-file post-construction property assignments
+  are now inventoried; dynamic arrays and rebound agents should remain binding-only or unresolved.
 - Explore richer OpenAI Agents JS tool guardrails only if evidence stays exact: imported literal
   guardrail arrays, helper-created tool guardrails, additional action/tripwire metadata, or
   source-agent composition edges that connect guarded tools back to agents without overclaiming

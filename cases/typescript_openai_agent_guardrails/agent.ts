@@ -64,3 +64,34 @@ const dynamicAgent = new Agent({
   name: "Dynamic guardrail agent",
   inputGuardrails: dynamicGuardrails,
 });
+
+const fallbackInputGuardrail: InputGuardrail = {
+  name: "Math homework fallback guardrail",
+  async execute() {
+    return { tripwireTriggered: false };
+  },
+};
+
+supportAgent.inputGuardrails = [fallbackInputGuardrail];
+
+const fallbackOutputGuardrail: OutputGuardrail = {
+  name: "Phone number fallback guardrail",
+  async execute() {
+    return { tripwireTriggered: false };
+  },
+};
+
+assistantAgent.outputGuardrails = [fallbackOutputGuardrail];
+
+const dynamicAssignedGuardrails = process.env.ENABLE_FALLBACK ? [fallbackInputGuardrail] : [];
+supportAgent.inputGuardrails = dynamicAssignedGuardrails;
+
+let reboundAgent = new Agent({
+  name: "Initial rebound agent",
+});
+reboundAgent = new Agent({
+  name: "Replacement rebound agent",
+});
+reboundAgent.inputGuardrails = [fallbackInputGuardrail];
+
+looseAgent.inputGuardrails = [fallbackInputGuardrail];

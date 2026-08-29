@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-29T04:58:03.567978+00:00",
+  "generated_at": "2026-08-29T05:26:50.684858+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "2034ae03cba76e7b59f3ae72ffe8995841935e151ec28cb4a19ab8366bd267a6",
+    "labels_sha256": "dbc6df577b26e77f1bc268fe394cf38871349fcb26056fa965881600b299317b",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 2308,
-  "passed": 2308,
+  "labels": 2321,
+  "passed": 2321,
   "failed": 0,
   "failure_summary": {
     "observation_mismatch": 0,
@@ -571,9 +571,9 @@
       "recall": 1.0
     },
     "IR-TS-OPENAI-AGENT-GUARDRAILS": {
-      "tp": 14,
+      "tp": 24,
       "fp": 0,
-      "tn": 2,
+      "tn": 5,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -20995,6 +20995,87 @@
       "passed": true
     },
     {
+      "id": "typescript-openai-agent-input-guardrails-assignment-local",
+      "check_id": "IR-TS-OPENAI-AGENT-GUARDRAILS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-agent-input-guardrails-assignment-edge-local",
+      "check_id": "IR-TS-OPENAI-AGENT-GUARDRAILS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-agent-output-guardrails-assignment-local",
+      "check_id": "IR-TS-OPENAI-AGENT-GUARDRAILS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-agent-output-guardrails-assignment-edge-local",
+      "check_id": "IR-TS-OPENAI-AGENT-GUARDRAILS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-agent-dynamic-guardrails-assignment-local",
+      "check_id": "IR-TS-OPENAI-AGENT-GUARDRAILS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-agent-dynamic-guardrails-assignment-edge-local",
+      "check_id": "IR-TS-OPENAI-AGENT-GUARDRAILS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-agent-dynamic-guardrails-assignment-count-local-negative",
+      "check_id": "IR-TS-OPENAI-AGENT-GUARDRAILS",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-agent-rebound-guardrails-assignment-local-negative",
+      "check_id": "IR-TS-OPENAI-AGENT-GUARDRAILS",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-agent-lookalike-guardrails-assignment-local-negative",
+      "check_id": "IR-TS-OPENAI-AGENT-GUARDRAILS",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
       "id": "typescript-openai-agent-input-guardrails-real",
       "check_id": "IR-TS-OPENAI-AGENT-GUARDRAILS",
       "expected": true,
@@ -21067,6 +21148,24 @@
       "passed": true
     },
     {
+      "id": "typescript-openai-agent-input-guardrails-fallback-assignment-real",
+      "check_id": "IR-TS-OPENAI-AGENT-GUARDRAILS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-agent-input-guardrails-fallback-assignment-edge-real",
+      "check_id": "IR-TS-OPENAI-AGENT-GUARDRAILS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
       "id": "typescript-openai-agent-output-guardrails-generic-real",
       "check_id": "IR-TS-OPENAI-AGENT-GUARDRAILS",
       "expected": true,
@@ -21077,6 +21176,24 @@
     },
     {
       "id": "typescript-openai-agent-output-guardrails-generic-edge-real",
+      "check_id": "IR-TS-OPENAI-AGENT-GUARDRAILS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-agent-output-guardrails-fallback-assignment-real",
+      "check_id": "IR-TS-OPENAI-AGENT-GUARDRAILS",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-agent-output-guardrails-fallback-assignment-edge-real",
       "check_id": "IR-TS-OPENAI-AGENT-GUARDRAILS",
       "expected": true,
       "observed": true,

@@ -888,9 +888,30 @@
 - Alternative: Reuse the Realtime guardrail control name. Rejected because SDK Agent guardrails and
   RealtimeSession guardrails live on different constructors and have different execution scopes
   even though both are governance controls.
-- Revisit when post-construction `agent.inputGuardrails = [...]` updates, imported guardrail arrays,
-  helper-created guardrails, tool guardrails, or tripwire/action quality can be tied to exact source
-  identity without broad name matching.
+- Revisit when imported guardrail arrays, helper-created guardrails, richer tripwire/action
+  quality, or cross-file Agent guardrail updates can be tied to exact source identity without broad
+  name matching.
+
+## OpenAI Agents JS Agent guardrail assignments are fallback policy evidence
+
+- Decision: Represent exact post-construction TypeScript OpenAI Agents SDK assignments such as
+  `agent.inputGuardrails = [...]` and `agent.outputGuardrails = [...]` as
+  `agent-guardrail-policy` controls on the same source agent, with
+  `guardrail_update: property-assignment`. Emit only when the receiver is a stable same-file
+  `new Agent(...)` binding and no rebinding occurs between declaration and assignment; keep dynamic
+  assignment expressions binding-only.
+- Evidence: The local `typescript_openai_agent_guardrails` fixture covers stable input/output
+  fallback assignments, dynamic fallback assignment binding-only metadata, rebound-agent negatives,
+  and lookalike-object negatives. The pinned OpenAI Agents JS
+  `examples/docs/running-agents/exceptions1.ts` example mutates `agent.inputGuardrails` and
+  `agent2.outputGuardrails` after `GuardrailExecutionError` to install fallback guardrails before
+  retrying.
+- Alternative: Ignore post-construction updates because constructor guardrails are already modeled.
+  Rejected because fallback/retry code can materially change the active safety policy at runtime
+  and appears in official OpenAI guidance.
+- Revisit when cross-file exported Agent bindings or helper functions that install fallback
+  guardrails can be resolved without treating arbitrary `.inputGuardrails` property writes as SDK
+  policy evidence.
 
 ## OpenAI Agents JS tool guardrails are source-tool governance controls
 

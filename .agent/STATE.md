@@ -13,6 +13,10 @@ catalog workflows.
   allow/reject-content action metadata when source-proven. Regenerated public IR truth-set results
   now cover 2,308/2,308 passing labels, and the 71-repository engine benchmark now reports
   2,898 relationships / 10,687 symbolized components.
+- Added exact post-construction TypeScript OpenAI Agents SDK Agent guardrail assignment inventory
+  for stable same-file `agent.inputGuardrails = [...]` and `agent.outputGuardrails = [...]`
+  bindings. Regenerated public IR truth-set results now cover 2,321/2,321 passing labels, and the
+  71-repository engine benchmark now reports 2,900 relationships / 10,689 symbolized components.
 - Added compact scan summaries for CI logs.
 - Added deterministic `risk_summary` data to JSON reports and native AI BOM governance.
 - Added bundled schemas for JSON reports, native AI BOMs, and policies.
