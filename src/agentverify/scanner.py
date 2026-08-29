@@ -17276,6 +17276,8 @@ def add_typescript_openai_realtime_session_config_control(
     line: int,
     local_constructor: str,
     session_binding: str,
+    session_options_binding: str | None,
+    session_options_resolution: str | None,
     source_agent: tuple[str, str],
     session_model: str | None,
     session_model_resolution: str | None,
@@ -17311,6 +17313,10 @@ def add_typescript_openai_realtime_session_config_control(
         "source_agent_id": source_agent_id,
         "scope": source_scope(relative),
     }
+    if session_options_binding is not None:
+        attributes["session_options_binding"] = session_options_binding
+    if session_options_resolution is not None:
+        attributes["session_options_resolution"] = session_options_resolution
     if session_model is not None:
         attributes["session_model"] = session_model
         if session_model_resolution is not None:
@@ -17569,6 +17575,41 @@ def typescript_literal_nested_object_boolean_property_location(
     if value is None:
         return None
     return value, property_offset, offset
+
+
+def typescript_typed_const_object_bindings(
+    text: str,
+    *,
+    type_names: set[str],
+) -> dict[str, tuple[str, int]]:
+    """Return exact const object initializers annotated with selected TypeScript type names."""
+    if not type_names:
+        return {}
+    code = typescript_code_mask(text)
+    type_pattern = "|".join(re.escape(type_name) for type_name in sorted(type_names))
+    assignment = re.compile(
+        rf"\b(?:export\s+)?const\s+([A-Za-z_$][\w$]*)"
+        rf"\s*:\s*(?:Readonly\s*<\s*)?(?:Partial\s*<\s*)?(?:{type_pattern})"
+        r"\s*>?\s*=\s*\{"
+    )
+    bindings: dict[str, tuple[str, int]] = {}
+    for match in assignment.finditer(code):
+        opening = match.end() - 1
+        end = typescript_balanced_end(code, opening, "{", "}")
+        if end is None:
+            continue
+        suffix = code[end:].lstrip()
+        if not suffix.startswith(";"):
+            continue
+        initializer = text[opening:end]
+        binding_name = match.group(1)
+        trailing_code = code[end:]
+        if re.search(rf"(?<![\w$.]){re.escape(binding_name)}\s*=(?!=)", trailing_code):
+            continue
+        if re.search(rf"(?<![\w$]){re.escape(binding_name)}\s*(?:\.|\[)", trailing_code):
+            continue
+        bindings[binding_name] = (initializer, opening)
+    return bindings
 
 
 def add_typescript_openai_trace_id_control(
@@ -20526,6 +20567,54 @@ def typescript_graph(
         if imported_name == "RealtimeSession"
         and not typescript_import_binding_is_shadowed(text, local_name)
     }
+    realtime_session_option_type_names = {
+        local_name
+        for local_name, imported_name in openai_realtime_imports.items()
+        if imported_name == "RealtimeSessionOptions"
+        and not typescript_import_binding_is_shadowed(text, local_name)
+    }
+    realtime_session_option_bindings = typescript_typed_const_object_bindings(
+        text,
+        type_names=realtime_session_option_type_names,
+    )
+
+    def resolve_spread_realtime_session_options(
+        options_expression: str,
+        options_offset: int,
+    ) -> tuple[str, int, str, str] | None:
+        if (
+            typescript_object_property_expression_location(
+                options_expression,
+                "model",
+                options_offset,
+            )
+            is not None
+            or typescript_object_property_expression_location(
+                options_expression,
+                "config",
+                options_offset,
+            )
+            is not None
+        ):
+            return None
+        spread_bindings: list[str] = []
+        for property_text, _ in typescript_object_items(options_expression, options_offset):
+            property_code = typescript_code_mask(property_text).strip().rstrip(",").strip()
+            spread = re.fullmatch(r"\.\.\.\s*([A-Za-z_$][\w$]*)", property_code)
+            if spread is None:
+                if property_code.startswith("..."):
+                    return None
+                continue
+            binding_name = spread.group(1)
+            if binding_name not in realtime_session_option_bindings:
+                return None
+            spread_bindings.append(binding_name)
+        if len(spread_bindings) != 1:
+            return None
+        binding_name = spread_bindings[0]
+        expression, offset = realtime_session_option_bindings[binding_name]
+        return expression, offset, binding_name, "typed-const-spread"
+
     conversation_session_bindings: dict[str, tuple[str, str]] = {}
     for match in TS_SANDBOX_CLIENT_ASSIGNMENT.finditer(code):
         session_name = match.group(1)
@@ -21240,6 +21329,19 @@ def typescript_graph(
         if source_agent is None:
             continue
         options_expression, options_offset = arguments[1]
+        session_options_binding = None
+        session_options_resolution = None
+        spread_options = resolve_spread_realtime_session_options(
+            options_expression,
+            options_offset,
+        )
+        if spread_options is not None:
+            (
+                options_expression,
+                options_offset,
+                session_options_binding,
+                session_options_resolution,
+            ) = spread_options
         session_model = None
         session_model_resolution = None
         session_model_offset = None
@@ -21278,6 +21380,8 @@ def typescript_graph(
                 line=policy_line,
                 local_constructor=local_constructor,
                 session_binding=session_name,
+                session_options_binding=session_options_binding,
+                session_options_resolution=session_options_resolution,
                 source_agent=source_agent,
                 session_model=session_model,
                 session_model_resolution=session_model_resolution,
@@ -21307,6 +21411,10 @@ def typescript_graph(
             }
             if session_model_resolution is not None:
                 config_attributes["session_model_resolution"] = session_model_resolution
+            if session_options_binding is not None:
+                config_attributes["session_options_binding"] = session_options_binding
+            if session_options_resolution is not None:
+                config_attributes["session_options_resolution"] = session_options_resolution
             ir.add_relationship(
                 Relationship(
                     "agent",
@@ -21537,6 +21645,8 @@ def typescript_graph(
             line=policy_line,
             local_constructor=local_constructor,
             session_binding=session_name,
+            session_options_binding=session_options_binding,
+            session_options_resolution=session_options_resolution,
             source_agent=source_agent,
             session_model=session_model,
             session_model_resolution=session_model_resolution,
@@ -21563,6 +21673,10 @@ def typescript_graph(
             "binding": "config",
             "session_binding": session_name,
         }
+        if session_options_binding is not None:
+            config_attributes["session_options_binding"] = session_options_binding
+        if session_options_resolution is not None:
+            config_attributes["session_options_resolution"] = session_options_resolution
         if session_model is not None:
             config_attributes["session_model"] = session_model
             if session_model_resolution is not None:

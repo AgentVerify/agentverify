@@ -4692,6 +4692,66 @@ def test_typescript_openai_realtime_session_parallel_tool_calls_policy_is_exact(
     }
 
 
+def test_typescript_openai_realtime_session_typed_options_spread_policy_is_exact() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_openai_realtime_session_options_spread")
+
+    controls = [
+        component
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "realtime-session-config-policy"
+    ]
+    assert [control.symbol_id for control in controls] == [
+        "ts:agent.ts#control:spreadOptionsSession.config@14",
+    ]
+    assert controls[0].attributes == {
+        "analysis": "typescript-openai-agents-realtime-session-config",
+        "module": "@openai/agents/realtime",
+        "constructor": "RealtimeSession",
+        "imported_symbol": "RealtimeSession",
+        "local_constructor": "RealtimeSession",
+        "configuration": "RealtimeSession.config",
+        "session_binding": "spreadOptionsSession",
+        "config_scope": "realtime-session-config",
+        "source_agent": "Realtime greeter",
+        "source_agent_id": "ts:agent.ts#agent:greeter",
+        "session_options_binding": "stableSessionOptions",
+        "session_options_resolution": "typed-const-spread",
+        "session_model": "gpt-realtime-2.1",
+        "session_model_resolution": "literal",
+        "turn_detection_type": "semantic_vad",
+        "turn_detection_interrupt_response": True,
+        "scope": "production",
+    }
+
+    edges = [
+        relationship
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "configured-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "realtime-session-config-policy"
+    ]
+    assert len(edges) == 1
+    assert edges[0].source_name == "Realtime greeter"
+    assert edges[0].source_id == "ts:agent.ts#agent:greeter"
+    assert edges[0].target_id == "ts:agent.ts#control:spreadOptionsSession.config@14"
+    assert edges[0].evidence.path == "agent.ts"
+    assert edges[0].evidence.line == 14
+    assert edges[0].attributes == {
+        "analysis": "typescript-openai-agents-realtime-session-config",
+        "configuration": "RealtimeSession-config",
+        "binding": "config",
+        "session_binding": "spreadOptionsSession",
+        "session_options_binding": "stableSessionOptions",
+        "session_options_resolution": "typed-const-spread",
+        "session_model": "gpt-realtime-2.1",
+        "session_model_resolution": "literal",
+        "turn_detection_type": "semantic_vad",
+        "turn_detection_interrupt_response": True,
+    }
+
+
 def test_typescript_openai_computer_safety_check_auto_acknowledgement() -> None:
     ir = scan_repository(ROOT / "cases/typescript_openai_computer_safety")
 

@@ -642,6 +642,12 @@
   and a narrow named sibling import such as `import { agent } from './agent'` resolves only when the
   target exports one exact `RealtimeAgent`. The pinned OpenAI Agents JS `turnDetection.ts` example
   links back to `agent.ts#agent:agent`, bringing the public IR truth set to 2,239 passing labels.
+- OpenAI Realtime typed session-options spreads are now reviewable only for narrow exact cases.
+  `const sessionOptions: Partial<RealtimeSessionOptions> = { ... }` can feed
+  `new RealtimeSession(agent, { ...sessionOptions })` when there is one recognized spread, no direct
+  `model`/`config` override, and no later reassignment or mutation of the options binding. The
+  pinned OpenAI Agents JS `sipTransport.ts` example contributes spread-derived model and
+  turn-detection policy evidence, bringing the public IR truth set to 2,244 passing labels.
 
 ## Hypotheses
 

@@ -724,6 +724,15 @@ catalog workflows.
   Focused RealtimeSession config labels pass 29/29, full public IR labels pass 2,239/2,239, and
   the full schema-v158 engine benchmark refresh passes 71/71 repositories with 2,868
   relationships and 10,652 symbolized components.
+- Extended exact OpenAI Realtime session option composition to one narrow spread shape:
+  `const sessionOptions: Partial<RealtimeSessionOptions> = { ... }` feeding
+  `new RealtimeSession(agent, { ...sessionOptions })`. The resolver refuses direct
+  `model`/`config` overrides, unknown or multiple spreads, and later reassignment/mutation of the
+  typed options binding. The local spread fixture covers stable positive and dynamic negative
+  options, while pinned `sipTransport.ts` proves real spread-derived model/turn-detection policy.
+  Focused RealtimeSession config labels pass 34/34, full public IR labels pass 2,244/2,244, and
+  the full schema-v159 engine benchmark refresh passes 71/71 repositories with 2,869
+  relationships and 10,653 symbolized components.
 
 ## Current findings
 
@@ -887,7 +896,8 @@ semantics distinct from trace-correlation `withTrace(..., { groupId/traceId })` 
   input/output format, and audio transcription model/delay/languages plus privacy-preserving
   prompt/keyword policy, plus exact literal
   `config.audio.input.turnDetection.type/eagerness/createResponse/interruptResponse` policy
-  through direct same-file agents or narrow exported sibling `RealtimeAgent` imports. For OpenAI
+  through direct same-file agents, narrow exported sibling `RealtimeAgent` imports, or one exact
+  typed `Partial<RealtimeSessionOptions>` spread. For OpenAI
 approval work, keep literal always-approval, callback-controlled
 approval on generic tools/delegated tools/approval-capable builtin tools, delegated-agent adapter
 approval metadata, literal predicate metadata, SDK state approval decisions, helper-parameter
