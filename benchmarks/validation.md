@@ -167,9 +167,9 @@ tool. The same model command passes through `shell-quote` classification and rea
 
 ## Full-corpus engine benchmark
 
-The 2026-08-26 default scan covered 70 source-bearing repositories plus one docs-only upstream
+The 2026-08-29 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,797 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 2,383 relationships, and completed in 412.7624 seconds on the development machine. Three parse
+resolved 2,942 relationships with 10,814 symbolized components, and completed in 886.3668 seconds on the development machine. Three parse
 warnings were isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
 default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline directives,
 so the benchmark records zero suppressed findings.

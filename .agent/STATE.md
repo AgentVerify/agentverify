@@ -7,6 +7,9 @@ catalog workflows.
 
 ## Completed recently
 
+- Refreshed the full 71-repository schema-v159 engine benchmark after the Vercel Code Mode IR
+  additions. The benchmark passes 71/71 repositories, scans 10,797 selected source files plus 155
+  config files, and now records 2,942 relationships / 10,814 symbolized components.
 - Added exact Vercel AI Code Mode model-visible tool-surface inventory for `codeModeTool()` /
   `experimental_toolCaller(...)`, including its sandboxed TypeScript code-execution capability from
   `runCodeMode({ js: input.js, tools })`, generated host-tool prompt surface, and link to the
@@ -88,8 +91,8 @@ catalog workflows.
 - Added exact TypeScript OpenAI Agents SDK Agent guardrail tripwire metadata for direct returned
   `tripwireTriggered` objects in inline guardrails and stable typed `InputGuardrail`/
   `OutputGuardrail` bindings. Regenerated public IR truth-set results then covered 2,387/2,387
-  passing labels, and the 71-repository engine benchmark still reports 2,900 relationships /
-  10,689 symbolized components.
+  passing labels; a later full engine refresh now reports 2,942 relationships / 10,814 symbolized
+  components.
 - Added exact TypeScript OpenAI Agents SDK Agent guardrail direct-throw metadata for stable guardrail
   bindings whose `execute` body directly throws, including official `GuardrailExecutionError`
   fallback examples.
@@ -106,7 +109,8 @@ catalog workflows.
 - Added exact post-construction TypeScript OpenAI Agents SDK Agent guardrail assignment inventory
   for stable same-file `agent.inputGuardrails = [...]` and `agent.outputGuardrails = [...]`
   bindings. Regenerated public IR truth-set results now cover 2,321/2,321 passing labels, and the
-  71-repository engine benchmark now reports 2,900 relationships / 10,689 symbolized components.
+  71-repository engine benchmark at that slice reported 2,900 relationships / 10,689 symbolized
+  components.
 - Added compact scan summaries for CI logs.
 - Added deterministic `risk_summary` data to JSON reports and native AI BOM governance.
 - Added bundled schemas for JSON reports, native AI BOMs, and policies.
