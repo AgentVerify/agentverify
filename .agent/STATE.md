@@ -22,7 +22,7 @@ catalog workflows.
   and callback-handled hosted MCP tools, while mutated policy objects remain dynamic.
 - Added exact TypeScript OpenAI Agents SDK Agent guardrail tripwire metadata for direct returned
   `tripwireTriggered` objects in inline guardrails and stable typed `InputGuardrail`/
-  `OutputGuardrail` bindings. Regenerated public IR truth-set results now cover 2,377/2,377
+  `OutputGuardrail` bindings. Regenerated public IR truth-set results now cover 2,378/2,378
   passing labels, and the 71-repository engine benchmark still reports 2,900 relationships /
   10,689 symbolized components.
 - Added exact TypeScript OpenAI Agents SDK Agent guardrail direct-throw metadata for stable guardrail
