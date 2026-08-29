@@ -811,7 +811,9 @@ APPROVAL_GATE_NAME = re.compile(r"approv|confirm|consent|permission", re.IGNOREC
 MCP_PACKAGE_LAUNCHERS = {"npx", "uvx"}
 MCP_LAUNCHER_CONSTRUCTORS = {
     "MCPServer",
+    "MCPServerSse",
     "MCPServerStdio",
+    "MCPServerStreamableHttp",
     "MCPTools",
     "StdioServerParameters",
 }
@@ -824,6 +826,10 @@ OPENAI_AGENTS_MCP_SERVER_CONSTRUCTORS = frozenset(
         "MCPServerStreamableHttp",
     }
 )
+PYTHON_MCP_REMOTE_SERVER_TRANSPORTS = {
+    "MCPServerSse": "sse",
+    "MCPServerStreamableHttp": "streamable-http",
+}
 
 
 def is_mcp_server_constructor_module(module: str, constructor: str) -> bool:
@@ -835,6 +841,20 @@ def is_mcp_server_constructor_module(module: str, constructor: str) -> bool:
         re.search(r"(?:^|[._])mcp(?:[._]|$)", module, re.IGNORECASE)
         or "modelcontextprotocol" in module.lower()
     )
+
+
+def sanitized_mcp_url_attributes(url: str) -> dict[str, object]:
+    """Return report-safe URL attributes for an MCP server endpoint."""
+    try:
+        parsed = urlsplit(url)
+        hostname = parsed.hostname or ""
+        port = f":{parsed.port}" if parsed.port else ""
+        userinfo = "[REDACTED]@" if parsed.username or parsed.password else ""
+        return {
+            "url": urlunsplit((parsed.scheme, f"{userinfo}{hostname}{port}", parsed.path, "", ""))
+        }
+    except ValueError:
+        return {"url": "[INVALID URL REDACTED]"}
 
 
 def literal_string_arguments(node: ast.AST | None) -> list[str | None] | None:
@@ -6765,6 +6785,44 @@ class PythonVisitor(ast.NodeVisitor):
         if symbol_id is not None:
             self.observed_mcp_server_ids.add(symbol_id)
 
+    def add_mcp_remote_server(
+        self,
+        node: ast.AST,
+        *,
+        name: str,
+        url_node: ast.AST | None,
+        constructor: str,
+        transport: str,
+        analysis: str,
+    ) -> None:
+        """Record an import-proven remote MCP server without exposing credentials."""
+        symbol_id = self.call_symbol_ids.get(id(node))
+        attributes: dict[str, object] = {
+            "transport": transport,
+            "constructor": constructor,
+            "analysis": analysis,
+            "frontend": "python",
+            "scope": source_scope(self.path),
+            **self.openai_mcp_approval_call_attributes.get(id(node), {}),
+        }
+        if isinstance(url_node, ast.Constant) and isinstance(url_node.value, str):
+            attributes.update(sanitized_mcp_url_attributes(url_node.value))
+        else:
+            attributes["url_resolution"] = "unresolved"
+        if resolution := self.mcp_server_binding_resolutions.get(id(node)):
+            attributes["binding_resolution"] = resolution
+        self.ir.add_component(
+            Component(
+                "mcp-server",
+                name,
+                self.ev(node),
+                attributes,
+                symbol_id,
+            )
+        )
+        if symbol_id is not None:
+            self.observed_mcp_server_ids.add(symbol_id)
+
     def add_mcp_in_process_server(
         self,
         node: ast.AST,
@@ -8504,6 +8562,20 @@ class PythonVisitor(ast.NodeVisitor):
                             constructor=constructor,
                             analysis="python-import-bound-mcp-constructor",
                         )
+            elif constructor in PYTHON_MCP_REMOTE_SERVER_TRANSPORTS:
+                params_node = keywords.get("params")
+                if params_node is None and node.args:
+                    params_node = node.args[0]
+                params_entries = python_dict_like_entries(params_node)
+                url_node = params_entries.get("url") if params_entries is not None else None
+                self.add_mcp_remote_server(
+                    node,
+                    name=server_name,
+                    url_node=url_node,
+                    constructor=constructor,
+                    transport=PYTHON_MCP_REMOTE_SERVER_TRANSPORTS[constructor],
+                    analysis="python-import-bound-mcp-constructor",
+                )
             elif constructor not in MCP_IN_PROCESS_SERVER_CONSTRUCTORS:
                 command_node = keywords.get("command")
                 if command_node is None and node.args:
@@ -27327,21 +27399,12 @@ def scan_mcp_config(ir: RepositoryIR, root: Path, path: Path) -> None:
         if command := config.get("command"):
             attributes.update({"command": command, "transport": "stdio"})
         if url := config.get("url"):
+            raw_url = str(url)
+            attributes.update(sanitized_mcp_url_attributes(raw_url))
             try:
-                parsed = urlsplit(str(url))
-                hostname = parsed.hostname or ""
-                port = f":{parsed.port}" if parsed.port else ""
-                userinfo = "[REDACTED]@" if parsed.username or parsed.password else ""
-                attributes.update(
-                    {
-                        "url": urlunsplit(
-                            (parsed.scheme, f"{userinfo}{hostname}{port}", parsed.path, "", "")
-                        ),
-                        "transport": parsed.scheme or "remote",
-                    }
-                )
+                attributes["transport"] = urlsplit(raw_url).scheme or "remote"
             except ValueError:
-                attributes["url"] = "[INVALID URL REDACTED]"
+                attributes["transport"] = "remote"
         args = config.get("args")
         if isinstance(args, list):
             sanitized_args = []

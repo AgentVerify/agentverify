@@ -5,11 +5,11 @@
 - Decision: Record exact non-hosted OpenAI Agents Python MCP server `require_approval` call-site
   semantics as IR metadata, not a new user-facing reporting rule yet.
 - Evidence: The SDK implementation and tests show `require_approval` can be disabled, always
-  required, selective, or callable/dynamic. The scanner can now prove direct `MCPServerStdio` calls
-  and imported subclasses of exact `agents.mcp.MCPServer`, while keeping `local_mcp` lookalikes out
-  of OpenAI-specific approval semantics. Current validated labels are local/source-shape coverage;
-  a noisy review rule for examples or tests would overstate production risk without additional
-  real production cases.
+  required, selective, or callable/dynamic. The scanner can now prove direct `MCPServerStdio`,
+  `MCPServerSse`, and `MCPServerStreamableHttp` calls plus imported subclasses of exact
+  `agents.mcp.MCPServer`, while keeping `local_mcp` lookalikes out of OpenAI-specific approval
+  semantics. Current validated labels are local/source-shape coverage; a noisy review rule for
+  examples or tests would overstate production risk without additional real production cases.
 - Alternative: Immediately flag disabled/non-always MCP server approval as a high-severity rule.
   Rejected because explicit `"never"` can be appropriate for trusted/read-only servers and because
   a user-facing finding should be scoped to reachable risky capabilities or production evidence.

@@ -7,8 +7,8 @@
 - The runtime catalog currently contains 25 enabled reporting rules.
 - Python OpenAI Agents SDK MCP approval metadata now covers both hosted `HostedMCPTool` tool configs
   and non-hosted `MCPServerStdio`/exact-`MCPServer` subclass `require_approval` call sites. The
-  non-hosted check has 6 public IR labels (5 positive, 1 lookalike negative), and the full public IR
-  truth set passes 2,393/2,393.
+  non-hosted check now has 9 public IR labels (7 positive, 2 lookalike negatives), and the full
+  public IR truth set passes 2,396/2,396.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
 - A freshly rebuilt wheel includes all fifteen runtime schemas; a verifier script now guards that
   package artifact expectation.
@@ -776,8 +776,8 @@
   disabled approval, literal `"always"`/`True` records always-required approval, same-block literal
   bindings retain source resolution, shallow selective dict policies expose exact always/never
   tool-name lists and read-only hints, dynamic bindings stay dynamic, and OpenAI-shaped imports from
-  other MCP modules do not inherit OpenAI-specific approval semantics. The local fixture covers 6/6
-  labels, bringing the public IR truth set to 2,393 passing labels.
+  other MCP modules do not inherit OpenAI-specific approval semantics. The local fixture now covers
+  9/9 labels, bringing the public IR truth set to 2,396 passing labels.
 
 ## Hypotheses
 

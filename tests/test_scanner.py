@@ -14882,6 +14882,41 @@ def test_python_openai_mcp_server_approval_policy_is_exact() -> None:
     assert subclass_server.attributes["mcp_approval_policy"] == "always-required"
     assert subclass_server.attributes["mcp_approval_requirement"] is True
 
+    remote_servers = {
+        component.evidence.line: component
+        for component in ir.components
+        if component.kind == "mcp-server" and component.evidence.path == "remote_app.py"
+    }
+    assert set(remote_servers) == {7, 11, 15}
+    assert remote_servers[7].attributes["transport"] == "sse"
+    assert remote_servers[7].attributes["url"] == "https://[REDACTED]@example.com/sse"
+    assert remote_servers[7].attributes["mcp_approval_constructor"] == "MCPServerSse"
+    assert remote_servers[7].attributes["mcp_approval_policy"] == "always-required"
+    assert remote_servers[11].attributes["transport"] == "streamable-http"
+    assert remote_servers[11].attributes["url"] == "https://api.example.com/mcp"
+    assert remote_servers[11].attributes["mcp_approval_constructor"] == (
+        "MCPServerStreamableHttp"
+    )
+    assert remote_servers[11].attributes["mcp_approval_policy"] == "selective"
+    assert remote_servers[11].attributes["mcp_approval_never_tool_names"] == ["read"]
+    assert remote_servers[11].attributes["mcp_approval_always_tool_names"] == ["write"]
+    assert remote_servers[15].attributes["transport"] == "sse"
+    assert remote_servers[15].attributes["url"] == "https://fake.example.com/sse"
+    assert "mcp_approval_policy" not in remote_servers[15].attributes
+
+    remote_edges = {
+        edge.target_id: edge
+        for edge in ir.relationships
+        if edge.source_kind == "agent"
+        and edge.target_kind == "mcp-server"
+        and edge.evidence.path == "remote_app.py"
+    }
+    assert set(remote_edges) == {
+        "py:remote_app.py#mcp-server:sse_server",
+        "py:remote_app.py#mcp-server:http_server",
+        "py:remote_app.py#mcp-server:fake_server",
+    }
+
 
 def test_mcp_package_launchers_require_literal_mcp_structure_and_auto_install() -> None:
     ir = scan_repository(ROOT / "cases/mcp_package_launchers")
