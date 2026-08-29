@@ -30,7 +30,8 @@
   `run(..., { maxTurns })` per-run turn-limit evidence and exact Agent-level
   `modelSettings.toolChoice` evidence plus stable Runner-level `modelSettings.toolChoice` per-run
   evidence and exact Agent-level literal reasoning/verbosity/parallel-tool-calls model settings,
-  plus exact RealtimeSession top-level `model`, `config.parallelToolCalls`,
+  plus exact RealtimeSession top-level `model` including model-only session options,
+  `config.parallelToolCalls`,
   `config.reasoning.effort`, literal `config.outputModalities`, audio input/output format, and
   audio transcription model/delay/languages plus privacy-preserving transcription prompt/keyword
   session

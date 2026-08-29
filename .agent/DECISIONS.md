@@ -795,6 +795,7 @@
 ## OpenAI Realtime session config is separate source-agent policy metadata
 
 - Decision: Represent exact TypeScript OpenAI Realtime
+  `new RealtimeSession(agent, { model })` and
   `new RealtimeSession(agent, { model, config: { parallelToolCalls: <boolean>,
   reasoning: { effort }, outputModalities: [...], audio: { input, output } } })`
   configuration as a `realtime-session-config-policy` control tied to the source-proven
@@ -809,15 +810,17 @@
 - Evidence: The local realtime-session fixture covers false, true, and dynamic negative
   `parallelToolCalls` values plus a direct low `reasoning.effort` value and a literal
   `outputModalities: ["audio"]` value with a dynamic-modality negative, plus a literal audio
-  details session with exact top-level session model metadata and dynamic session/transcription
-  model negative coverage. The pinned OpenAI Agents JS
+  details session with exact top-level session model metadata, a model-only session, and dynamic
+  session/transcription model negative coverage. The pinned OpenAI Agents JS
   `examples/docs/voice-agents/configureSession.ts` example sets
   `model: 'gpt-realtime-2.1'`, `config.outputModalities: ['audio']`,
   `config.reasoning.effort: 'low'`, and `config.parallelToolCalls: true`, plus
   `audio.input.format: 'pcm16'`,
   `audio.output.format: 'pcm16'`, `audio.input.transcription.model: 'gpt-live-transcribe'`,
   `audio.input.transcription.delay: 'low'`, transcription prompt length, transcription keywords,
-  and transcription languages `['en', 'ja']` for the `Greeter` RealtimeAgent.
+  and transcription languages `['en', 'ja']` for the `Greeter` RealtimeAgent. The pinned
+  `examples/docs/voice-agents/sendMessage.ts` example proves model-only session options for the
+  `Assistant` RealtimeAgent.
 - Alternative: Fold realtime session config into Agent-level `model-settings-policy`. Rejected
   because `RealtimeSession` configuration is a different constructor scope from `Agent.modelSettings`
   and should not imply the same inheritance or override semantics.

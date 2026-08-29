@@ -522,8 +522,8 @@ OpenAI Realtime `RealtimeSession({ config.parallelToolCalls })` concurrency meta
 source-proven `RealtimeAgent` instances, and schema v152 extends that control to exact realtime
 `config.reasoning.effort` metadata. Schema v153-v156 extend the same source-proven session control
 to literal output modalities, audio input/output format, audio transcription model/delay/languages,
-privacy-preserving transcription prompt/keyword metadata, and exact top-level session model
-metadata. AgentVerify emits
+privacy-preserving transcription prompt/keyword metadata, exact top-level session model metadata,
+and exact model-only session options. AgentVerify emits
 distinct `trace-group`, `trace-id`, `tracing-disabled`, `agent-turn-limit`,
 `agent-model-override`, `trace-workflow`, `tool-choice-policy`, `model-settings-policy`,
 `web-search-policy`, `provider-data-policy`, and `realtime-session-config-policy` controls and

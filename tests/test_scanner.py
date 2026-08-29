@@ -4437,6 +4437,7 @@ def test_typescript_openai_realtime_session_parallel_tool_calls_policy_is_exact(
         "ts:agent.ts#control:reasoningSession.config@28",
         "ts:agent.ts#control:audioSession.config@35",
         "ts:agent.ts#control:audioDetailsSession.config@43",
+        "ts:agent.ts#control:modelOnlySession.config@61",
     }
     assert controls["ts:agent.ts#control:sequentialSession.config@15"].attributes == {
         "analysis": "typescript-openai-agents-realtime-session-config",
@@ -4516,6 +4517,21 @@ def test_typescript_openai_realtime_session_parallel_tool_calls_policy_is_exact(
         "transcription_prompt_length": 60,
         "transcription_keywords": ["OpenAI Agents SDK", "RealtimeSession"],
         "transcription_keyword_count": 2,
+        "scope": "production",
+    }
+    assert controls["ts:agent.ts#control:modelOnlySession.config@61"].attributes == {
+        "analysis": "typescript-openai-agents-realtime-session-config",
+        "module": "@openai/agents/realtime",
+        "constructor": "RealtimeSession",
+        "imported_symbol": "RealtimeSession",
+        "local_constructor": "RealtimeSession",
+        "configuration": "RealtimeSession.config",
+        "session_binding": "modelOnlySession",
+        "config_scope": "realtime-session-config",
+        "source_agent": "Realtime greeter",
+        "source_agent_id": "ts:agent.ts#agent:greeter",
+        "session_model": "gpt-realtime-2.1",
+        "session_model_resolution": "literal",
         "scope": "production",
     }
 
@@ -4621,6 +4637,21 @@ def test_typescript_openai_realtime_session_parallel_tool_calls_policy_is_exact(
                 ("transcription_model", "gpt-live-transcribe"),
                 ("transcription_prompt_length", 60),
                 ("transcription_prompt_literal", True),
+            ),
+        ),
+        (
+            "Realtime greeter",
+            "ts:agent.ts#agent:greeter",
+            "ts:agent.ts#control:modelOnlySession.config@61",
+            "agent.ts",
+            61,
+            (
+                ("analysis", "typescript-openai-agents-realtime-session-config"),
+                ("binding", "config"),
+                ("configuration", "RealtimeSession-config"),
+                ("session_binding", "modelOnlySession"),
+                ("session_model", "gpt-realtime-2.1"),
+                ("session_model_resolution", "literal"),
             ),
         ),
     }

@@ -21193,6 +21193,58 @@ def typescript_graph(
             options_offset,
         )
         if config_location is None:
+            if session_model is None or session_model_offset is None:
+                continue
+            policy_line = line_at(text, session_model_offset)
+            config_name, config_id = add_typescript_openai_realtime_session_config_control(
+                ir,
+                relative=relative,
+                lines=lines,
+                line=policy_line,
+                local_constructor=local_constructor,
+                session_binding=session_name,
+                source_agent=source_agent,
+                session_model=session_model,
+                session_model_resolution=session_model_resolution,
+                parallel_tool_calls=None,
+                reasoning_effort=None,
+                output_modalities=None,
+                audio_input_format=None,
+                audio_output_format=None,
+                transcription_model=None,
+                transcription_delay=None,
+                transcription_languages=None,
+                transcription_prompt_length=None,
+                transcription_keywords=None,
+                symbol_identity=f"{session_name}.config@{policy_line}",
+            )
+            agent_name, agent_id = source_agent
+            config_attributes: dict[str, object] = {
+                "analysis": "typescript-openai-agents-realtime-session-config",
+                "configuration": "RealtimeSession-config",
+                "binding": "config",
+                "session_binding": session_name,
+                "session_model": session_model,
+            }
+            if session_model_resolution is not None:
+                config_attributes["session_model_resolution"] = session_model_resolution
+            ir.add_relationship(
+                Relationship(
+                    "agent",
+                    agent_name,
+                    "configured-by",
+                    "control",
+                    config_name,
+                    Evidence(
+                        relative,
+                        policy_line,
+                        excerpt(lines, policy_line),
+                    ),
+                    config_attributes,
+                    source_id=agent_id,
+                    target_id=config_id,
+                )
+            )
             continue
         config_expression, _, config_offset = config_location
         reasoning_effort = None

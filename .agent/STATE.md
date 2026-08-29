@@ -711,6 +711,12 @@ catalog workflows.
   the pinned `configureSession.ts` example now records `gpt-realtime-2.1` alongside audio/reasoning
   metadata. Focused RealtimeSession config labels pass 18/18 and full public IR labels pass
   2,228/2,228.
+- Extended exact OpenAI Realtime session model inventory to model-only session options without a
+  `config` object. The local fixture covers a model-only positive and dynamic model-only negative,
+  and the pinned `sendMessage.ts` example proves official docs coverage. Focused RealtimeSession
+  config labels pass 23/23, full public IR labels pass 2,233/2,233, and the full schema-v157
+  engine benchmark refresh passes 71/71 repositories with 2,867 relationships and 10,651
+  symbolized components.
 
 ## Current findings
 
@@ -826,7 +832,8 @@ catalog workflows.
   source-proven `.run(agent, ...)` calls. Exact Agent-level literal
   `modelSettings.reasoning.effort`, `modelSettings.text.verbosity`, and
   `modelSettings.parallelToolCalls` values expose `model-settings-policy` controls. Exact imported
-  RealtimeSession options/config with top-level session model, `parallelToolCalls`,
+  RealtimeSession options/config with top-level session model including model-only options,
+  `parallelToolCalls`,
   `reasoning.effort`, literal
   `outputModalities`, literal audio input/output formats, and literal audio transcription
   model/delay/languages plus privacy-preserving prompt/keyword metadata exposes
@@ -863,7 +870,8 @@ semantics distinct from trace-correlation `withTrace(..., { groupId/traceId })` 
   evidence, plus exact `computerTool({ computer })` backend lifecycle metadata for external
   bindings, inline static objects, create/dispose per-run factories, and create-only factories, plus
   exact Agent-level `modelSettings.reasoning.effort`, `modelSettings.text.verbosity`, and
-  `modelSettings.parallelToolCalls` metadata, plus exact RealtimeSession top-level `model`,
+  `modelSettings.parallelToolCalls` metadata, plus exact RealtimeSession top-level `model`
+  including model-only session options,
   `config.parallelToolCalls`, `config.reasoning.effort`, literal `config.outputModalities`, audio
   input/output format, and audio transcription model/delay/languages plus privacy-preserving
   prompt/keyword policy. For OpenAI
