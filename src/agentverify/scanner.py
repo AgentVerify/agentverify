@@ -13216,6 +13216,7 @@ class TypeScriptLiteralObjectBinding:
     expression_offset: int
     declaration_end: int
     scope_end: int
+    resolution: str = "same-file-const-object"
 
 
 @dataclass(frozen=True)
@@ -14428,6 +14429,74 @@ def typescript_immutable_module_literal_object_bindings(
         ):
             continue
         resolved[name] = values[0]
+    return resolved
+
+
+def typescript_exported_literal_object_bindings(
+    text: str,
+) -> dict[str, TypeScriptLiteralObjectBinding]:
+    """Return immutable exported const object bindings in one TypeScript module."""
+    code = typescript_code_mask(text)
+    exported = {
+        match.group(1)
+        for match in re.finditer(
+            r"\bexport\s+const\s+([A-Za-z_$][\w$]*)\s*(?:\:\s*[^=;\n]+)?=",
+            code,
+        )
+    }
+    if not exported:
+        return {}
+    return {
+        name: binding
+        for name, binding in typescript_immutable_module_literal_object_bindings(text).items()
+        if name in exported
+    }
+
+
+def typescript_imported_literal_object_bindings(
+    root: Path,
+    path: Path,
+    text: str,
+) -> dict[str, TypeScriptLiteralObjectBinding]:
+    """Resolve exact relative named imports of immutable exported const object literals."""
+    code = typescript_code_mask(text)
+    import_counts: Counter[str] = Counter()
+    imported_bindings: list[tuple[str, str, str]] = []
+    for match in TS_NAMED_IMPORT.finditer(text):
+        specifier = match.group(2)
+        for raw_specifier in match.group(1).split(","):
+            parts = typescript_named_specifier_parts(raw_specifier)
+            if parts is None:
+                continue
+            original, local = parts
+            import_counts[local] += 1
+            imported_bindings.append((specifier, original, local))
+
+    resolved: dict[str, TypeScriptLiteralObjectBinding] = {}
+    export_cache: dict[Path, dict[str, TypeScriptLiteralObjectBinding]] = {}
+    for specifier, original, local in imported_bindings:
+        if import_counts[local] != 1 or typescript_import_binding_is_shadowed(text, local):
+            continue
+        target = typescript_resolve_local_module(root, path, specifier)
+        if target is None:
+            continue
+        try:
+            target_text = target.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        if target not in export_cache:
+            export_cache[target] = typescript_exported_literal_object_bindings(target_text)
+        exports = export_cache[target]
+        binding = exports.get(original)
+        if binding is None:
+            continue
+        resolved[local] = TypeScriptLiteralObjectBinding(
+            binding.expression,
+            binding.expression_offset,
+            0,
+            len(code) + 1,
+            "imported-local-const-object",
+        )
     return resolved
 
 
@@ -20932,7 +21001,7 @@ def typescript_openai_hosted_mcp_approval_attributes(
                     policy_code = typescript_code_mask(binding.expression).strip()
                     require_approval = binding.expression
                     attributes["mcp_approval_binding"] = binding_name
-                    attributes["mcp_approval_resolution"] = "same-file-const-object"
+                    attributes["mcp_approval_resolution"] = binding.resolution
             if policy_code.startswith("{"):
                 attributes["mcp_approval_policy"] = "selective"
                 for branch_name in ("never", "always"):
@@ -21559,7 +21628,10 @@ def typescript_graph(
         else {}
     )
     immutable_object_bindings = (
-        typescript_immutable_module_literal_object_bindings(text)
+        {
+            **typescript_imported_literal_object_bindings(root, path, text),
+            **typescript_immutable_module_literal_object_bindings(text),
+        }
         if "hostedMcpTool" in text and "requireApproval" in text
         else {}
     )

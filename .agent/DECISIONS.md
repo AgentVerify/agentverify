@@ -1053,8 +1053,9 @@
 - Alternative: Treat hosted MCP approval as generic `approval_policy` or report every hosted MCP
   callback as human approval. Rejected because the SDK option is named differently, approval may be
   handled by the agent loop, and callback quality remains distinct from the MCP tool requirement.
-- Revisit when imported or reexported policy object bindings can be resolved without broad
-  object-flow interpretation.
+- Revisit when reexported policy object bindings can be resolved without broad object-flow
+  interpretation. Direct imported sibling const-object policies are now covered when the import and
+  exported object identity are exact.
 
 ## OpenAI Agents Python HostedMCPTool approval is source-proven tool_config inventory
 

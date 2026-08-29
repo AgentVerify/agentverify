@@ -19,11 +19,13 @@ catalog workflows.
   and list-property semantics without treating lookalike `.clone(...)` methods as Agents.
 - Added exact TypeScript OpenAI Agents SDK `hostedMcpTool({ requireApproval, onApproval })`
   approval inventory for default, explicit-never, inline selective, stable same-file const object,
-  and callback-handled hosted MCP tools, while mutated policy objects remain dynamic.
+  imported local const object, aliased imported local const object, and callback-handled hosted MCP
+  tools, while mutated local and imported policy objects remain dynamic.
 - Added exact Python OpenAI Agents SDK `HostedMCPTool(tool_config={...})` approval inventory for
   explicit `"never"`, explicit or same-block/imported local literal `"always"`, shallow selective
   dict policies, configured approval callbacks, dynamic/imported-mutated bindings, and exact hosted
-  MCP capability edges. Regenerated public IR truth-set results now cover 2,404/2,404 passing
+  MCP capability edges. The public IR truth set covered 2,404/2,404 passing labels after this Python
+  slice and now covers 2,407/2,407 passing labels after the TypeScript hosted MCP imported-policy
   labels.
 - Added exact Python OpenAI Agents SDK non-hosted MCP server `require_approval` call-site inventory
   for `MCPServerStdio(...)`, `MCPServerSse(...)`, `MCPServerStreamableHttp(...)`, and imported

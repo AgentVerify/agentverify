@@ -1,4 +1,9 @@
 import { Agent, hostedMcpTool } from "@openai/agents";
+import {
+  aliasedPolicy as importedAliasedPolicy,
+  importedPolicy,
+  mutatedExport,
+} from "./policies";
 
 function fakeHostedMcpTool(options: unknown) {
   return options;
@@ -45,6 +50,21 @@ const agent = new Agent({
       serverLabel: "mutated",
       serverUrl: "https://mcp.example.com/mcp",
       requireApproval: mutatedPolicy,
+    }),
+    hostedMcpTool({
+      serverLabel: "imported",
+      serverUrl: "https://mcp.example.com/mcp",
+      requireApproval: importedPolicy,
+    }),
+    hostedMcpTool({
+      serverLabel: "imported-aliased",
+      serverUrl: "https://mcp.example.com/mcp",
+      requireApproval: importedAliasedPolicy,
+    }),
+    hostedMcpTool({
+      serverLabel: "imported-mutated",
+      serverUrl: "https://mcp.example.com/mcp",
+      requireApproval: mutatedExport,
     }),
     fakeHostedMcpTool({
       serverLabel: "fake",
