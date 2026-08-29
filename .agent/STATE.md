@@ -864,6 +864,11 @@ catalog workflows.
   treating lookalike `.on(...)` objects as SDK evidence. Realtime event handlers now emit
   `approval-decision` controls only for callback request parameters passed as
   `session.approve(request.approvalItem)` or `session.reject(request.approvalItem)`.
+  Exact Realtime `session.connect({ apiKey })` calls now emit `realtime-session-auth-policy`
+  controls when the receiver is a proven `RealtimeSession`, with redacted classification for
+  literal placeholders, literal ephemeral `ek_` client secrets, `process.env.OPENAI_API_KEY`
+  server-key environment usage, fetch-derived ephemeral-key bindings, dynamic bindings, and direct
+  literal/custom-constructor transport context such as `websocket` or `OpenAIRealtimeSIP`.
   Exact imported
   `withTrace` callbacks containing
   source-proven SDK `run(agent, ...)` calls, exact Runner instances with source-proven
@@ -906,7 +911,8 @@ semantics distinct from trace-correlation `withTrace(..., { groupId/traceId })` 
   through direct same-file agents, narrow exported sibling `RealtimeAgent` imports, or one exact
   typed `Partial<RealtimeSessionOptions>` spread, plus exact
   `tool_approval_requested` event approval/rejection decisions through direct or narrow exported
-  sibling `RealtimeSession` bindings. For OpenAI
+  sibling `RealtimeSession` bindings, plus exact `session.connect({ apiKey })` auth-source evidence
+  through direct `RealtimeSession` bindings. For OpenAI
 approval work, keep literal always-approval, callback-controlled
 approval on generic tools/delegated tools/approval-capable builtin tools, delegated-agent adapter
 approval metadata, literal predicate metadata, SDK state approval decisions, helper-parameter

@@ -658,6 +658,17 @@
   `examples/docs/voice-agents/toolApprovalEvent.ts` example contributes imported-session approval
   evidence, bringing the public IR truth set to 2,251 passing labels and the 71-repository engine
   benchmark to 2,870 relationships / 10,654 symbolized components.
+- OpenAI Realtime session auth/connect configuration is now inventory evidence. Exact
+  `session.connect({ apiKey })` calls on proven `RealtimeSession` bindings emit
+  `realtime-session-auth-policy` controls, redact key values, and classify literal placeholders,
+  literal `ek_` ephemeral client secrets, `process.env.OPENAI_API_KEY` server-key environment usage,
+  fetch-derived ephemeral-key bindings, and unresolved dynamic bindings. When session options
+  provide literal or constructor transport context, the same auth control records `websocket` or
+  custom transport constructors such as `OpenAIRealtimeSIP`. Lookalike `.connect(...)` objects remain
+  unresolved. The pinned OpenAI Agents JS `createSession.ts`, `helloWorld.ts`,
+  `websocketSession.ts`, `sipTransport.ts`, and readme voice-agent example now contribute real auth
+  evidence, bringing the public IR truth set to 2,264 passing labels and the 71-repository engine
+  benchmark to 2,878 relationships / 10,662 symbolized components.
 
 ## Hypotheses
 

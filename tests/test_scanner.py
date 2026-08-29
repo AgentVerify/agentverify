@@ -4752,6 +4752,90 @@ def test_typescript_openai_realtime_session_typed_options_spread_policy_is_exact
     }
 
 
+def test_typescript_openai_realtime_session_auth_policy_is_exact() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_openai_realtime_session_auth")
+
+    controls = {
+        component.symbol_id: component
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "realtime-session-auth-policy"
+    }
+    assert set(controls) == {
+        "ts:agent.ts#control:defaultSession.connect.apiKey@14",
+        "ts:agent.ts#control:ephemeralSession.connect.apiKey@18",
+        "ts:agent.ts#control:websocketSession.connect.apiKey@24",
+        "ts:agent.ts#control:sipSession.connect.apiKey@30",
+        "ts:agent.ts#control:browserSession.connect.apiKey@38",
+        "ts:agent.ts#control:unresolvedSession.connect.apiKey@48",
+    }
+    assert controls["ts:agent.ts#control:defaultSession.connect.apiKey@14"].attributes == {
+        "analysis": "typescript-openai-agents-realtime-session-auth",
+        "module": "@openai/agents/realtime",
+        "constructor": "RealtimeSession",
+        "imported_symbol": "RealtimeSession",
+        "local_constructor": "RealtimeSession",
+        "configuration": "RealtimeSession.connect.apiKey",
+        "session_binding": "defaultSession",
+        "auth_scope": "realtime-session-connect",
+        "source_agent": "Realtime greeter",
+        "source_agent_id": "ts:agent.ts#agent:greeter",
+        "scope": "production",
+        "api_key_source": "literal-placeholder",
+        "api_key_resolution": "immutable-module-literal-binding",
+        "api_key_value_redacted": True,
+    }
+    assert controls["ts:agent.ts#control:ephemeralSession.connect.apiKey@18"].attributes[
+        "api_key_kind"
+    ] == "ephemeral-client-secret"
+    assert controls["ts:agent.ts#control:ephemeralSession.connect.apiKey@18"].attributes[
+        "api_key_prefix"
+    ] == "ek_"
+    assert controls["ts:agent.ts#control:websocketSession.connect.apiKey@24"].attributes[
+        "api_key_environment"
+    ] == "OPENAI_API_KEY"
+    assert controls["ts:agent.ts#control:websocketSession.connect.apiKey@24"].attributes[
+        "session_transport"
+    ] == "websocket"
+    assert controls["ts:agent.ts#control:sipSession.connect.apiKey@30"].attributes[
+        "session_transport_constructor"
+    ] == "OpenAIRealtimeSIP"
+    assert controls["ts:agent.ts#control:browserSession.connect.apiKey@38"].attributes[
+        "api_key_source"
+    ] == "fetch-json-binding"
+    assert controls["ts:agent.ts#control:browserSession.connect.apiKey@38"].attributes[
+        "api_key_endpoint_scope"
+    ] == "relative"
+    assert controls["ts:agent.ts#control:unresolvedSession.connect.apiKey@48"].attributes[
+        "api_key_source"
+    ] == "dynamic-binding"
+    assert not any(
+        component.evidence.line == 43
+        for component in controls.values()
+    )
+
+    edges = {
+        relationship.target_id: relationship
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "configured-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "realtime-session-auth-policy"
+    }
+    assert set(edges) == set(controls)
+    assert all(edge.source_id == "ts:agent.ts#agent:greeter" for edge in edges.values())
+    assert edges["ts:agent.ts#control:browserSession.connect.apiKey@38"].attributes == {
+        "analysis": "typescript-openai-agents-realtime-session-auth",
+        "configuration": "RealtimeSession.connect.apiKey",
+        "session_binding": "browserSession",
+        "api_key_source": "fetch-json-binding",
+        "api_key_kind": "ephemeral-client-secret",
+        "api_key_binding": "apiKey",
+        "api_key_endpoint": "/path/to/ephemeral/key/generation",
+        "api_key_endpoint_scope": "relative",
+    }
+
+
 def test_typescript_openai_realtime_tool_approval_event_decisions_are_exact() -> None:
     ir = scan_repository(ROOT / "cases/typescript_openai_realtime_tool_approval_event")
 

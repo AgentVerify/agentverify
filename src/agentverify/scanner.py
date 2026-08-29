@@ -12725,6 +12725,14 @@ class TypeScriptOpenAIRunStateHelperContinuity:
     symbol_identity: str
 
 
+@dataclass(frozen=True)
+class TypeScriptOpenAIRealtimeSessionBinding:
+    source_agent: tuple[str, str]
+    local_constructor: str
+    declaration_end: int
+    transport_attributes: dict[str, object]
+
+
 TypeScriptSandboxManifestControl = tuple[str, str]
 TypeScriptSandboxManifestBinding = tuple[int, list[TypeScriptSandboxManifestControl]]
 
@@ -17429,6 +17437,79 @@ def add_typescript_openai_realtime_session_approval_decision_control(
     return "approval-decision", control_id
 
 
+def add_typescript_openai_realtime_session_auth_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    session_binding: str,
+    local_constructor: str,
+    source_agent: tuple[str, str],
+    api_key_attributes: dict[str, object],
+    transport_attributes: dict[str, object],
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS RealtimeSession connect/auth evidence."""
+    source_agent_name, source_agent_id = source_agent
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    attributes: dict[str, object] = {
+        "analysis": "typescript-openai-agents-realtime-session-auth",
+        "module": "@openai/agents/realtime",
+        "constructor": "RealtimeSession",
+        "imported_symbol": "RealtimeSession",
+        "local_constructor": local_constructor,
+        "configuration": "RealtimeSession.connect.apiKey",
+        "session_binding": session_binding,
+        "auth_scope": "realtime-session-connect",
+        "source_agent": source_agent_name,
+        "source_agent_id": source_agent_id,
+        "scope": source_scope(relative),
+    }
+    attributes.update(api_key_attributes)
+    attributes.update(transport_attributes)
+    ir.add_component(
+        Component(
+            "control",
+            "realtime-session-auth-policy",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    relationship_attributes: dict[str, object] = {
+        "analysis": "typescript-openai-agents-realtime-session-auth",
+        "configuration": "RealtimeSession.connect.apiKey",
+        "session_binding": session_binding,
+    }
+    for key in (
+        "api_key_source",
+        "api_key_kind",
+        "api_key_binding",
+        "api_key_environment",
+        "api_key_endpoint",
+        "api_key_endpoint_scope",
+        "session_transport",
+        "session_transport_constructor",
+    ):
+        if key in attributes:
+            relationship_attributes[key] = attributes[key]
+    ir.add_relationship(
+        Relationship(
+            "agent",
+            source_agent_name,
+            "configured-by",
+            "control",
+            "realtime-session-auth-policy",
+            Evidence(relative, line, excerpt(lines, line)),
+            relationship_attributes,
+            source_id=source_agent_id,
+            target_id=control_id,
+        )
+    )
+    return "realtime-session-auth-policy", control_id
+
+
 def add_typescript_openai_agent_provider_data_control(
     ir: RepositoryIR,
     *,
@@ -18406,6 +18487,38 @@ def typescript_static_string_value(
     if binding is None or binding.declaration_end > expression_offset:
         return None
     return binding.value, "immutable-module-literal-binding"
+
+
+def typescript_process_env_name(expression: str) -> str | None:
+    """Resolve exact process.env.NAME and process.env["NAME"] expressions."""
+    raw = expression.strip()
+    while raw.endswith("!"):
+        raw = raw[:-1].strip()
+    while raw.startswith("(") and raw.endswith(")"):
+        raw_end = typescript_balanced_end(typescript_code_mask(raw), 0, "(", ")")
+        if raw_end != len(raw):
+            break
+        raw = raw[1:-1].strip()
+        while raw.endswith("!"):
+            raw = raw[:-1].strip()
+    code = typescript_code_mask(expression).strip()
+    while code.endswith("!"):
+        code = code[:-1].strip()
+    while code.startswith("(") and code.endswith(")"):
+        end = typescript_balanced_end(code, 0, "(", ")")
+        if end != len(code):
+            break
+        code = code[1:-1].strip()
+        while code.endswith("!"):
+            code = code[:-1].strip()
+    dot = re.fullmatch(r"process\s*\.\s*env\s*\.\s*([A-Za-z_$][\w$]*)", code)
+    if dot is not None:
+        return dot.group(1)
+    bracket = re.fullmatch(
+        r"process\s*\.\s*env\s*\[\s*(['\"])([^\\\r\n]+?)\1\s*\]",
+        raw,
+    )
+    return bracket.group(2) if bracket is not None else None
 
 
 def add_typescript_openai_sandbox_workspace_root_control(
@@ -20088,6 +20201,7 @@ def typescript_graph(
             or "traceId" in text
             or "runConfig" in text
             or "workflowName" in text
+            or "apiKey" in text
         )
         and (
             "extraPathGrants" in text
@@ -20105,6 +20219,7 @@ def typescript_graph(
             or "traceId" in text
             or "model" in text
             or "workflowName" in text
+            or "apiKey" in text
         )
         else {}
     )
@@ -20643,7 +20758,7 @@ def typescript_graph(
         text,
         type_names=realtime_session_option_type_names,
     )
-    realtime_session_bindings: dict[str, tuple[tuple[str, str], str, int]] = {}
+    realtime_session_bindings: dict[str, TypeScriptOpenAIRealtimeSessionBinding] = {}
 
     def resolve_spread_realtime_session_options(
         options_expression: str,
@@ -20681,6 +20796,144 @@ def typescript_graph(
         binding_name = spread_bindings[0]
         expression, offset = realtime_session_option_bindings[binding_name]
         return expression, offset, binding_name, "typed-const-spread"
+
+    def realtime_session_transport_attributes(
+        options_expression: str,
+        options_offset: int,
+    ) -> dict[str, object]:
+        transport_location = typescript_object_property_expression_location(
+            options_expression,
+            "transport",
+            options_offset,
+        )
+        if transport_location is None:
+            return {}
+        transport_expression, _, transport_expression_offset = transport_location
+        transport_value = typescript_static_string_value(
+            transport_expression,
+            expression_offset=transport_expression_offset,
+            immutable_literal_bindings=immutable_literal_bindings,
+        )
+        if transport_value is not None:
+            transport, transport_resolution = transport_value
+            return {
+                "session_transport": transport,
+                "session_transport_resolution": transport_resolution,
+            }
+        constructor_parts = typescript_new_expression_parts(transport_expression.strip())
+        if constructor_parts is not None:
+            return {
+                "session_transport": "custom-constructor",
+                "session_transport_constructor": constructor_parts[0],
+            }
+        identifier = re.fullmatch(
+            r"\s*([A-Za-z_$][\w$]*)\s*",
+            typescript_code_mask(transport_expression),
+        )
+        if identifier is not None:
+            return {
+                "session_transport": "binding",
+                "session_transport_binding": identifier.group(1),
+            }
+        return {}
+
+    def realtime_api_key_fetch_bindings() -> dict[str, tuple[dict[str, object], int]]:
+        bindings: dict[str, tuple[dict[str, object], int]] = {}
+        destructure_pattern = re.compile(
+            r"\bconst\s*\{\s*apiKey(?:\s*:\s*([A-Za-z_$][\w$]*))?\s*\}\s*=\s*"
+            r"(?:await\s+)?fetch\s*\("
+        )
+        for match in destructure_pattern.finditer(code):
+            binding = match.group(1) or "apiKey"
+            opening = code.find("(", match.start(), match.end())
+            end = typescript_balanced_end(code, opening, "(", ")")
+            if end is None:
+                continue
+            arguments = typescript_call_arguments(text[opening + 1 : end - 1], opening + 1)
+            if not arguments:
+                continue
+            endpoint = typescript_static_string_value(
+                arguments[0][0],
+                expression_offset=arguments[0][1],
+                immutable_literal_bindings=immutable_literal_bindings,
+            )
+            if endpoint is None:
+                continue
+            endpoint_value, endpoint_resolution = endpoint
+            endpoint_scope = "relative" if endpoint_value.startswith("/") else "absolute"
+            attributes: dict[str, object] = {
+                "api_key_source": "fetch-json-binding",
+                "api_key_binding": binding,
+                "api_key_endpoint": endpoint_value,
+                "api_key_endpoint_resolution": endpoint_resolution,
+                "api_key_endpoint_scope": endpoint_scope,
+            }
+            if re.search(
+                r"(?:ephemeral|client[_-]?secret|client[_-]?key)",
+                endpoint_value,
+                re.IGNORECASE,
+            ):
+                attributes["api_key_kind"] = "ephemeral-client-secret"
+            bindings[binding] = (attributes, end)
+        return bindings
+
+    realtime_api_key_bindings = realtime_api_key_fetch_bindings()
+
+    def realtime_api_key_attributes(
+        expression: str,
+        expression_offset: int,
+    ) -> dict[str, object] | None:
+        static_value = typescript_static_string_value(
+            expression,
+            expression_offset=expression_offset,
+            immutable_literal_bindings=immutable_literal_bindings,
+        )
+        if static_value is not None:
+            value, resolution = static_value
+            if value.startswith("<") and value.endswith(">") and "api key" in value.lower():
+                return {
+                    "api_key_source": "literal-placeholder",
+                    "api_key_resolution": resolution,
+                    "api_key_value_redacted": True,
+                }
+            attributes: dict[str, object] = {
+                "api_key_source": "literal",
+                "api_key_resolution": resolution,
+                "api_key_value_redacted": True,
+            }
+            if value.startswith("ek_"):
+                attributes["api_key_kind"] = "ephemeral-client-secret"
+                attributes["api_key_prefix"] = "ek_"
+            return attributes
+        environment_name = typescript_process_env_name(expression)
+        if environment_name is not None:
+            attributes = {
+                "api_key_source": "environment",
+                "api_key_environment": environment_name,
+            }
+            if environment_name == "OPENAI_API_KEY":
+                attributes["api_key_kind"] = "server-api-key-env"
+            return attributes
+        identifier = re.fullmatch(
+            r"\s*([A-Za-z_$][\w$]*)\s*",
+            typescript_code_mask(expression),
+        )
+        if identifier is not None:
+            binding_name = identifier.group(1)
+            binding = realtime_api_key_bindings.get(binding_name)
+            if binding is not None and binding[1] <= expression_offset:
+                attributes = dict(binding[0])
+                if re.search(
+                    rf"(?<![\w$.]){re.escape(binding_name)}\s*=(?!=)",
+                    code[binding[1] : expression_offset],
+                ):
+                    return None
+                return attributes
+            return {
+                "api_key_source": "dynamic-binding",
+                "api_key_binding": binding_name,
+            }
+        return None
 
     conversation_session_bindings: dict[str, tuple[str, str]] = {}
     for match in TS_SANDBOX_CLIENT_ASSIGNMENT.finditer(code):
@@ -21369,7 +21622,12 @@ def typescript_graph(
                 imported_session_matches.append((source_agent, target_constructor))
         if len(imported_session_matches) == 1:
             source_agent, target_constructor = imported_session_matches[0]
-            realtime_session_bindings[local_name] = (source_agent, target_constructor, 0)
+            realtime_session_bindings[local_name] = TypeScriptOpenAIRealtimeSessionBinding(
+                source_agent=source_agent,
+                local_constructor=target_constructor,
+                declaration_end=0,
+                transport_attributes={},
+            )
     agent_alias_pattern = re.compile(
         r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)"
         r"\s*(?::\s*(?:[^=;\n]|=(?!>))+)?"
@@ -21519,7 +21777,7 @@ def typescript_graph(
         if end is None:
             continue
         arguments = typescript_call_arguments(text[opening + 1 : end - 1], opening + 1)
-        if len(arguments) < 2:
+        if not arguments:
             continue
         agent_argument = typescript_code_mask(arguments[0][0]).strip()
         agent_identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", agent_argument)
@@ -21531,8 +21789,24 @@ def typescript_graph(
         )
         if source_agent is None:
             continue
-        realtime_session_bindings[session_name] = (source_agent, local_constructor, end)
-        options_expression, options_offset = arguments[1]
+        raw_options_expression = None
+        raw_options_offset = None
+        transport_attributes: dict[str, object] = {}
+        if len(arguments) >= 2:
+            raw_options_expression, raw_options_offset = arguments[1]
+            transport_attributes = realtime_session_transport_attributes(
+                raw_options_expression,
+                raw_options_offset,
+            )
+        realtime_session_bindings[session_name] = TypeScriptOpenAIRealtimeSessionBinding(
+            source_agent=source_agent,
+            local_constructor=local_constructor,
+            declaration_end=end,
+            transport_attributes=transport_attributes,
+        )
+        if raw_options_expression is None or raw_options_offset is None:
+            continue
+        options_expression, options_offset = raw_options_expression, raw_options_offset
         session_options_binding = None
         session_options_resolution = None
         spread_options = resolve_spread_realtime_session_options(
@@ -21935,10 +22209,11 @@ def typescript_graph(
             )
         )
 
-    for session_name, (source_agent, local_constructor, declaration_end) in (
-        realtime_session_bindings.items()
-    ):
-        if declaration_end == 0 and typescript_import_binding_is_shadowed(text, session_name):
+    for session_name, session_binding in realtime_session_bindings.items():
+        if session_binding.declaration_end == 0 and typescript_import_binding_is_shadowed(
+            text,
+            session_name,
+        ):
             continue
         event_pattern = re.compile(rf"(?<![\w$.]){re.escape(session_name)}\s*\.\s*on\s*\(")
         for event_match in event_pattern.finditer(code):
@@ -21954,7 +22229,7 @@ def typescript_graph(
                 continue
             if re.search(
                 rf"(?<![\w$.]){re.escape(session_name)}\s*=(?!=)",
-                code[declaration_end : arguments[1][1]],
+                code[session_binding.declaration_end : arguments[1][1]],
             ):
                 continue
             callback_parts = realtime_approval_callback_body(*arguments[1])
@@ -21989,7 +22264,7 @@ def typescript_graph(
                 decision_offset = callback_body_offset + decision_match.start()
                 if re.search(
                     rf"(?<![\w$.]){re.escape(session_name)}\s*=(?!=)",
-                    code[declaration_end:decision_offset],
+                    code[session_binding.declaration_end : decision_offset],
                 ):
                     continue
                 decision = decision_match.group(1)
@@ -22000,12 +22275,86 @@ def typescript_graph(
                     lines=lines,
                     line=decision_line,
                     session_binding=session_name,
-                    local_constructor=local_constructor,
+                    local_constructor=session_binding.local_constructor,
                     request_binding=request_parameter,
-                    source_agent=source_agent,
+                    source_agent=session_binding.source_agent,
                     decision=decision,
                     symbol_identity=f"{session_name}.{decision}@{decision_line}",
                 )
+
+    for session_name, session_binding in realtime_session_bindings.items():
+        if session_binding.declaration_end == 0 and typescript_import_binding_is_shadowed(
+            text,
+            session_name,
+        ):
+            continue
+        connect_pattern = re.compile(
+            rf"(?<![\w$.]){re.escape(session_name)}\s*\.\s*connect\s*\("
+        )
+        for connect_match in connect_pattern.finditer(code):
+            opening = code.find("(", connect_match.start(), connect_match.end())
+            end = typescript_balanced_end(code, opening, "(", ")")
+            if end is None:
+                continue
+            if re.search(
+                rf"(?<![\w$.]){re.escape(session_name)}\s*=(?!=)",
+                code[session_binding.declaration_end : connect_match.start()],
+            ):
+                continue
+            arguments = typescript_call_arguments(text[opening + 1 : end - 1], opening + 1)
+            if not arguments:
+                continue
+            options_expression, options_offset = arguments[0]
+            api_key_location = typescript_object_property_expression_location(
+                options_expression,
+                "apiKey",
+                options_offset,
+            )
+            api_key_expression = None
+            api_key_expression_offset = None
+            api_key_property_offset = None
+            if api_key_location is not None:
+                api_key_expression, api_key_property_offset, api_key_expression_offset = (
+                    api_key_location
+                )
+            else:
+                shorthand_items = [
+                    (property_text, property_offset)
+                    for property_text, property_offset in typescript_object_items(
+                        options_expression,
+                        options_offset,
+                    )
+                    if typescript_code_mask(property_text).strip().rstrip(",") == "apiKey"
+                ]
+                if len(shorthand_items) == 1:
+                    _, api_key_property_offset = shorthand_items[0]
+                    api_key_expression = "apiKey"
+                    api_key_expression_offset = api_key_property_offset
+            if (
+                api_key_expression is None
+                or api_key_expression_offset is None
+                or api_key_property_offset is None
+            ):
+                continue
+            api_key_attrs = realtime_api_key_attributes(
+                api_key_expression,
+                api_key_expression_offset,
+            )
+            if api_key_attrs is None:
+                continue
+            connect_line = line_at(text, api_key_property_offset)
+            add_typescript_openai_realtime_session_auth_control(
+                ir,
+                relative=relative,
+                lines=lines,
+                line=connect_line,
+                session_binding=session_name,
+                local_constructor=session_binding.local_constructor,
+                source_agent=session_binding.source_agent,
+                api_key_attributes=api_key_attrs,
+                transport_attributes=session_binding.transport_attributes,
+                symbol_identity=f"{session_name}.connect.apiKey@{connect_line}",
+            )
 
     for match, body_offset, body, agent_name, agent_id, agent_constructor in agent_bodies:
         ev = Evidence(

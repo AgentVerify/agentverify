@@ -39,8 +39,9 @@
   same-file agents, narrow exported sibling `RealtimeAgent` imports, or one exact typed
   `Partial<RealtimeSessionOptions>` spread, plus exact `tool_approval_requested` event
   approval/rejection decisions resolved from same-file or narrow exported sibling
-  `RealtimeSession` bindings, without broadening into ambiguous helper/config composition,
-  arbitrary spread objects, or lookalike event emitters.
+  `RealtimeSession` bindings, plus exact `session.connect({ apiKey })` auth-source and transport
+  context resolved from direct `RealtimeSession` bindings, without broadening into ambiguous
+  helper/config composition, arbitrary spread objects, or lookalike event emitters/connectors.
 - Continue OpenAI Agents JS HITL and safety-governance extraction where evidence remains exact:
   richer `needsApproval` predicate quality, automatic approval bypasses, and `computerTool`
   `onSafetyCheck` callbacks that distinguish explicit user/policy review from pass-through
@@ -98,6 +99,10 @@
   `approvalItem` is passed to a proven `RealtimeSession`. `computerTool({ onSafetyCheck })`
   pass-through callbacks now report as `AV-APPROVAL011`, but AgentVerify still does not claim full
   approval or safety quality without broader predicate/action evidence.
+- Explore whether any Realtime auth-source patterns should become reporting rules only after
+  gathering enough real non-example client-side/server-side context. Current auth evidence is IR
+  inventory only because `process.env.OPENAI_API_KEY` with websocket/SIP can be legitimate server
+  code or unsafe browser bundling depending on deployment context.
 
 ## Deferred until access/authorization
 
