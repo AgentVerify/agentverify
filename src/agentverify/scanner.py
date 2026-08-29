@@ -21449,6 +21449,87 @@ def typescript_openai_needs_approval_attributes(body: str) -> dict[str, object]:
     return {}
 
 
+def typescript_openai_on_approval_callback_attributes(
+    callback_expression: str,
+) -> dict[str, object]:
+    """Resolve exact inline OpenAI hosted MCP onApproval callback metadata."""
+    code = typescript_code_mask(callback_expression)
+    arrow = code.find("=>")
+    if arrow < 0:
+        return {}
+    body_expression = callback_expression[arrow + 2 :].strip()
+    body_code = typescript_code_mask(body_expression)
+    expression_body_object = False
+    if body_code.startswith("("):
+        end = typescript_balanced_end(body_code, 0, "(", ")")
+        if end is not None and not body_code[end:].strip():
+            unwrapped_expression = body_expression[1 : end - 1].strip()
+            unwrapped_code = typescript_code_mask(unwrapped_expression)
+            if unwrapped_code.startswith("{"):
+                body_expression = unwrapped_expression
+                body_code = unwrapped_code
+                expression_body_object = True
+
+    block_prefix = ""
+    if body_code.startswith("{") and not expression_body_object:
+        opening = body_code.find("{")
+        end = typescript_balanced_end(body_code, opening, "{", "}")
+        if end is None:
+            return {}
+        block = body_expression[:end].strip()
+        block_code = typescript_code_mask(block)
+        return_matches = list(re.finditer(r"\breturn\s+([\s\S]*?)\s*;", block_code))
+        if len(return_matches) != 1:
+            return {}
+        block_prefix = block[: return_matches[0].start()]
+        body_expression = block[
+            return_matches[0].start(1) : return_matches[0].end(1)
+        ].strip()
+    else:
+        body_expression = body_expression.rstrip(";").strip()
+
+    approve_expression = typescript_object_property_expression(body_expression, "approve")
+    if approve_expression is None:
+        return {}
+    approve_expression_code = typescript_code_mask(approve_expression).strip()
+    approve_decision = typescript_literal_boolean_value(approve_expression_code)
+    if approve_decision is not None:
+        return {
+            "mcp_approval_handler_resolution": "inline-approval-object-return",
+            "mcp_approval_handler_decision": (
+                "always-approve" if approve_decision else "always-reject"
+            ),
+        }
+    if call_match := re.fullmatch(
+        r"(?:await\s+)?([A-Za-z_$][\w$]*(?:\s*\.\s*[A-Za-z_$][\w$]*)*)\s*\([\s\S]*\)",
+        approve_expression_code,
+    ):
+        return {
+            "mcp_approval_handler_resolution": "inline-approval-object-return",
+            "mcp_approval_handler_decision": "dynamic-callback-result",
+            "mcp_approval_handler_approve_source": "call-result",
+            "mcp_approval_handler_approve_call": call_match.group(1).replace(" ", ""),
+        }
+    binding_match = re.fullmatch(r"[A-Za-z_$][\w$]*", approve_expression_code)
+    if binding_match is None or not block_prefix:
+        return {}
+    binding = binding_match.group(0)
+    binding_pattern = re.compile(
+        rf"\bconst\s+{re.escape(binding)}\s*=\s*(?:await\s+)?"
+        r"([A-Za-z_$][\w$]*(?:\s*\.\s*[A-Za-z_$][\w$]*)*)\s*\("
+    )
+    matches = list(binding_pattern.finditer(typescript_code_mask(block_prefix)))
+    if len(matches) != 1:
+        return {}
+    return {
+        "mcp_approval_handler_resolution": "inline-result-binding-approval-object-return",
+        "mcp_approval_handler_approve_binding": binding,
+        "mcp_approval_handler_decision": "dynamic-callback-result",
+        "mcp_approval_handler_approve_source": "call-result",
+        "mcp_approval_handler_approve_call": matches[0].group(1).replace(" ", ""),
+    }
+
+
 def typescript_openai_hosted_mcp_approval_attributes(
     body: str,
     constructor: str,
@@ -21545,6 +21626,7 @@ def typescript_openai_hosted_mcp_approval_attributes(
     if on_approval is not None:
         attributes["mcp_approval_handler"] = "configured"
         attributes["mcp_approval_handler_policy"] = "callback-controlled"
+        attributes.update(typescript_openai_on_approval_callback_attributes(on_approval))
     elif require_approval is not None:
         attributes["mcp_approval_handler"] = "agent-loop"
     return attributes

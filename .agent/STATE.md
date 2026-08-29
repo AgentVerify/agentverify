@@ -20,8 +20,9 @@ catalog workflows.
 - Added exact TypeScript OpenAI Agents SDK `hostedMcpTool({ requireApproval, onApproval })`
   approval inventory for default, explicit-never, inline selective, stable same-file const object,
   imported local const object, aliased imported local const object, named local reexported const
-  object, and callback-handled hosted MCP tools, while mutated local/imported/reexported policy
-  objects remain dynamic.
+  object, and callback-handled hosted MCP tools, including inline literal/result-binding
+  `onApproval` return-shape metadata in local and pinned OpenAI examples, while mutated
+  local/imported/reexported policy objects remain dynamic.
 - Added exact Python OpenAI Agents SDK `HostedMCPTool(tool_config={...})` approval inventory for
   explicit `"never"`, explicit or same-block/imported local literal `"always"`, shallow selective
   dict policies, imported local literal policies, named local reexported literal policies, consumer

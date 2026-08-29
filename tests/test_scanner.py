@@ -5601,6 +5601,8 @@ def test_typescript_openai_hosted_mcp_approval_policy_is_exact() -> None:
         "mcp_approval_always_tool_names": ["ask_question"],
         "mcp_approval_handler": "configured",
         "mcp_approval_handler_policy": "callback-controlled",
+        "mcp_approval_handler_resolution": "inline-approval-object-return",
+        "mcp_approval_handler_decision": "always-reject",
         "execution_environment": "unresolved",
         "scope": "production",
     }

@@ -1,5 +1,23 @@
 # AgentVerify decisions
 
+## TypeScript hosted MCP onApproval return shape is inventory, not full HITL proof
+
+- Decision: Record exact inline `hostedMcpTool({ onApproval })` callbacks that return literal
+  approval objects or one stable block-local approval binding as handler metadata; keep generic
+  callback configuration separate from human-review proof.
+- Evidence: The local hosted MCP fixture includes `onApproval: async () => ({ approve: false })`,
+  which is exact enough to classify as an always-reject callback. The pinned OpenAI Agents JS
+  `hosted-mcp-on-approval.ts` example stores `approval = await promptApproval(item)` and returns
+  `{ approve: approval, reason: undefined }`; AgentVerify can preserve the approve binding and
+  `promptApproval` call source. The same real callback also has existing environment-bypass evidence
+  for `AUTO_APPROVE_MCP` / `AUTO_APPROVE_HITL`, so reporting both source-shape and bypass metadata is
+  more honest than collapsing the callback into a single "approved" concept.
+- Alternative: Treat `onApproval` callbacks as human-in-the-loop controls whenever present. Rejected
+  because callbacks can always approve/reject, consult environment flags, or delegate to helpers with
+  unknown semantics.
+- Revisit when: Helper bodies, prompt APIs, and negative auto-approval branches can be connected to
+  actual user-confirmation quality without overclaiming arbitrary callback behavior.
+
 ## Python hosted MCP callback predicates are inventory, not human-review proof
 
 - Decision: Record exact same-file `HostedMCPTool.on_approval_request` callbacks that directly
