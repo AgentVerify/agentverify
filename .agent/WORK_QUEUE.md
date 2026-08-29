@@ -24,6 +24,11 @@
   `WorkflowAgent.model` AI SDK provider calls now emit source-agent-linked model-setting controls.
   Future work should focus on imported tool-set/helper/model modules, approval-resumption/event
   flows, or reportable Vercel approval findings only with matching real evidence.
+- Extend Vercel AI Code Mode only when runtime provenance stays exact: current IR covers the
+  host-tool approval gate, interrupt payload kind, denial-before-execute behavior, and
+  continuation approval-id validation. Future work should connect concrete Code Mode applications or
+  tool definitions to this runtime path only when tool-call identity and approval response provenance
+  are source-proven.
 - Continue OpenAI Agents JS sandbox and session-governance policy extraction from pinned examples
   where evidence remains exact, especially additional Manifest/sandbox policy fields, additional
   `MemorySession`/server-managed conversation implementation semantics, or agent/session

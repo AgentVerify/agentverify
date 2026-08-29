@@ -41564,6 +41564,207 @@ def add_typescript_cline_subagent_approval_flow(
     )
 
 
+def add_typescript_vercel_code_mode_approval_flow(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve Vercel AI Code Mode host-tool approval interruption semantics."""
+    sources: dict[str, str] = {}
+    for path in paths:
+        if path.suffix.lower() not in {".ts", ".tsx", ".js", ".jsx"} or not path.is_file():
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            sources[relative] = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+
+    def unique_source(markers: tuple[str, ...]) -> tuple[str, str] | None:
+        matches = [
+            (relative, text)
+            for relative, text in sources.items()
+            if all(marker in text for marker in markers)
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    invocation_source = unique_source(
+        (
+            "export async function invokeHostTool({",
+            "const needsApproval =",
+            "!skipApproval &&",
+            "requiresApproval(hostTool, validation.value, executionOptions)",
+            "codeModeOptions.approval?.mode === 'interrupt'",
+            "payload: { kind: CODE_MODE_TOOL_APPROVAL_KIND }",
+            "codeModeOptions.approval?.onApprovalRequired?.({",
+            "if (!approved) {",
+            "CodeModeToolApprovalDeniedError",
+            "executeHostTool(hostTool.execute.bind(hostTool)",
+        )
+    )
+    continuation_source = unique_source(
+        (
+            "export async function continueCodeModeApproval({",
+            "assertCodeModeApprovalResponse(approvalResponse)",
+            "approvalResponse.approvalId !== interrupt.interruptId",
+            "continueCodeModeInterrupt({",
+            "approved: approvalResponse.approved",
+            "approval: { ...options.approval, mode: 'interrupt' }",
+        )
+    )
+    payload_source = unique_source(
+        (
+            "export const CODE_MODE_TOOL_APPROVAL_KIND =",
+            "'ai-sdk-code-mode/tool-approval' as const",
+            "export function assertCodeModeApprovalResponse(",
+            "typeof (value as { approved?: unknown }).approved !== 'boolean'",
+        )
+    )
+    if invocation_source is None or continuation_source is None or payload_source is None:
+        return
+    invocation_path, invocation_text = invocation_source
+    continuation_path, continuation_text = continuation_source
+    payload_path, payload_text = payload_source
+    gate_offset = invocation_text.find("const needsApproval =")
+    continuation_start = continuation_text.find("export async function continueCodeModeApproval({")
+    continuation_offset = continuation_text.find(
+        "assertCodeModeApprovalResponse",
+        continuation_start,
+    )
+    payload_offset = payload_text.find("export const CODE_MODE_TOOL_APPROVAL_KIND")
+    if gate_offset < 0 or continuation_offset < 0 or payload_offset < 0:
+        return
+    if gate_offset > invocation_text.find("executeHostTool(hostTool.execute.bind(hostTool)"):
+        return
+    if continuation_text.find("assertCodeModeApprovalResponse") > continuation_text.find(
+        "approvalResponse.approvalId !== interrupt.interruptId"
+    ):
+        return
+
+    def evidence(path: str, text: str, offset: int) -> Evidence:
+        line = line_at(text, offset)
+        return Evidence(path, line, excerpt(text.splitlines(), line))
+
+    analysis = "typescript-vercel-code-mode-tool-approval-flow"
+    shared = {
+        "analysis": analysis,
+        "framework": "Vercel AI Code Mode",
+        "scope": source_scope(invocation_path),
+    }
+    framework_evidence = evidence(invocation_path, invocation_text, gate_offset)
+    payload_evidence = evidence(payload_path, payload_text, payload_offset)
+    policy_evidence = evidence(invocation_path, invocation_text, gate_offset)
+    continuation_evidence = evidence(continuation_path, continuation_text, continuation_offset)
+    framework_id = source_symbol("ts", invocation_path, "framework", "VercelAICodeMode")
+    payload_id = source_symbol("ts", payload_path, "control-setting", "code-mode-approval-kind")
+    policy_id = source_symbol(
+        "ts", invocation_path, "control", "code-mode-tool-approval-runtime"
+    )
+    continuation_id = source_symbol(
+        "ts", continuation_path, "control", "code-mode-approval-continuation"
+    )
+    ir.add_component(
+        Component(
+            "framework",
+            "Vercel AI Code Mode",
+            framework_evidence,
+            {**shared, "runtime": "code-mode"},
+            framework_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "control-setting",
+            "code-mode-tool-approval-kind",
+            payload_evidence,
+            {
+                **shared,
+                "approval_kind": "ai-sdk-code-mode/tool-approval",
+                "response_schema": "approvalId:string approved:boolean reason?:string",
+            },
+            payload_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "control",
+            "tool-approval-policy",
+            policy_evidence,
+            {
+                **shared,
+                "runtime_function": "invokeHostTool",
+                "approval_trigger": "hostTool.needsApproval",
+                "default_without_needs_approval": False,
+                "skip_approval_parameter": "skipApproval",
+                "interrupt_mode": "interrupt-before-execute",
+                "interrupt_payload_kind": "ai-sdk-code-mode/tool-approval",
+                "callback_handler": "onApprovalRequired",
+                "missing_callback_behavior": "approval-required-error",
+                "denial_behavior": "throws-before-execute",
+                "execution_order": "approval-before-execute",
+            },
+            policy_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "control",
+            "approval-continuation",
+            continuation_evidence,
+            {
+                **shared,
+                "runtime_function": "continueCodeModeApproval",
+                "response_assertion": "assertCodeModeApprovalResponse",
+                "approval_id_match": "required",
+                "resolution_fields": ["approved", "reason"],
+                "continuation_mode": "interrupt",
+            },
+            continuation_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "framework",
+            "Vercel AI Code Mode",
+            "configured-by",
+            "control-setting",
+            "code-mode-tool-approval-kind",
+            payload_evidence,
+            {"analysis": analysis},
+            source_id=framework_id,
+            target_id=payload_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "framework",
+            "Vercel AI Code Mode",
+            "governed-by",
+            "control",
+            "tool-approval-policy",
+            policy_evidence,
+            {"analysis": analysis, "policy_effect": "approval-before-execute"},
+            source_id=framework_id,
+            target_id=policy_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "control",
+            "tool-approval-policy",
+            "continues-through",
+            "control",
+            "approval-continuation",
+            continuation_evidence,
+            {"analysis": analysis, "approval_id_match": "required"},
+            source_id=policy_id,
+            target_id=continuation_id,
+        )
+    )
+
+
 def add_typescript_cline_cli_subagent_approval_flow(
     ir: RepositoryIR,
     root: Path,
@@ -43487,6 +43688,7 @@ def _scan_repository(
     add_typescript_roo_command_approval_flow(ir, root, registry_paths)
     add_typescript_continue_plan_mode_approval_flow(ir, root, registry_paths)
     add_typescript_continue_plan_mode_mcp_flow(ir, root, registry_paths)
+    add_typescript_vercel_code_mode_approval_flow(ir, root, registry_paths)
     add_typescript_cline_subagent_approval_flow(ir, root, registry_paths)
     add_typescript_cline_cli_subagent_approval_flow(ir, root, registry_paths)
     add_typescript_letta_default_tool_flow(ir, root, registry_paths)

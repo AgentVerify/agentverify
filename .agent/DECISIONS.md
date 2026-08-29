@@ -1,5 +1,26 @@
 # AgentVerify decisions
 
+## Vercel Code Mode approval-flow IR requires full gate/continuation proof
+
+- Decision: Emit Vercel AI Code Mode approval-flow controls only when the scanned source uniquely
+  proves the runtime gate, payload kind, and continuation contract together: `invokeHostTool(...)`
+  must check `hostTool.needsApproval` before `executeHostTool(...)`, interrupt mode must return the
+  `ai-sdk-code-mode/tool-approval` payload, callback denial must throw before execution, and
+  `continueCodeModeApproval(...)` must validate response shape plus approval-id equality before
+  resuming in interrupt mode.
+- Evidence: Vercel AI's pinned `packages/code-mode/src/tool-invocation.ts`,
+  `packages/code-mode/src/approval.ts`, and `packages/code-mode/src/approval-continuation.ts`
+  provide the exact runtime path. AgentVerify now records a framework component, approval-kind
+  setting, `tool-approval-policy` control, `approval-continuation` control, and the key governed-by /
+  continues-through edges. A local regression pins the positive multi-file shape and rejects a
+  lookalike where execution happens before the approval gate.
+- Alternative: Treat any `needsApproval` property or approval callback as equivalent runtime
+  enforcement. Rejected because libraries can expose approval metadata without proving the execution
+  order, denial behavior, or continuation replay contract.
+- Revisit when: Concrete applications using Code Mode can link individual tool definitions,
+  approval responses, or user-facing approval UX back into this runtime path without losing
+  tool-call identity.
+
 ## Vercel WorkflowAgent model controls require direct provider-call proof
 
 - Decision: Emit a `model-settings-policy` control for `WorkflowAgent.model` only when a

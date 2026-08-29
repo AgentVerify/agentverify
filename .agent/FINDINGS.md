@@ -5,11 +5,16 @@
 - The repository contains a 71-repository pinned research corpus and schema-v135 engine benchmark
   outputs.
 - The runtime catalog currently contains 25 enabled reporting rules.
+- Vercel AI Code Mode's host-tool approval runtime is now inventoried as a framework approval flow:
+  `invokeHostTool(...)` checks `hostTool.needsApproval` before `executeHostTool(...)`, interrupt
+  mode returns the `ai-sdk-code-mode/tool-approval` payload, callback denial throws before execution,
+  and `continueCodeModeApproval(...)` validates response shape plus approval-id matching before
+  resuming. The full public IR truth set now passes 2,440/2,440 labels.
 - Exact Vercel AI WorkflowAgent model configuration is now visible for direct AI SDK provider calls:
   `WorkflowAgent({ model: anthropic("claude-sonnet-4-20250514") })` emits a
   `model-settings-policy` control linked back to the source agent. Bound model variables and cast or
   otherwise wrapped provider expressions remain unresolved by design, and the full public IR truth
-  set now passes 2,435/2,435 labels.
+  set passed 2,435/2,435 labels for that slice.
 - OpenAI Agents SDK MCP approval metadata now covers TypeScript hosted `hostedMcpTool`
   `requireApproval` policies, Python hosted `HostedMCPTool` tool configs, and Python non-hosted
   MCP server `require_approval` call sites. The TypeScript hosted check now has 16 public IR labels
@@ -62,7 +67,7 @@
   `new Function(...)`; AgentVerify previously detected the code-execution capability but left it
   disconnected from the tool/agent path. Unique stable same-file execute-helper mapping now links
   `calculate -> code-execution`, keeps shared helpers unresolved, keeps reporting labels at
-  730/730, and the public IR checks have since advanced to 2,435/2,435 labels.
+  730/730, and the public IR checks have since advanced to 2,440/2,440 labels.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
 - A freshly rebuilt wheel includes all fifteen runtime schemas; a verifier script now guards that
   package artifact expectation.

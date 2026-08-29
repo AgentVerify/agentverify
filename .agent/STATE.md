@@ -7,6 +7,10 @@ catalog workflows.
 
 ## Completed recently
 
+- Added exact Vercel AI Code Mode host-tool approval-flow inventory for the runtime gate in
+  `invokeHostTool(...)`, the `ai-sdk-code-mode/tool-approval` interrupt payload, and
+  `continueCodeModeApproval(...)` response validation/approval-id matching. The public IR truth set
+  covers 2,440/2,440 passing labels.
 - Added exact Vercel AI `WorkflowAgent.model` model-setting controls for direct AI SDK provider
   calls in `@ai-sdk/workflow` constructors. The pinned Vercel AI `agent-chat.ts` WorkflowAgent now
   records its Anthropic provider/model selection as a source-agent-linked control, while bound model

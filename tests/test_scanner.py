@@ -2850,6 +2850,220 @@ def test_typescript_workflow_agent_model_control_is_exact(tmp_path: Path) -> Non
     }
 
 
+def test_typescript_vercel_code_mode_approval_flow_is_exact(tmp_path: Path) -> None:
+    positive = tmp_path / "positive"
+    src = positive / "packages" / "code-mode" / "src"
+    src.mkdir(parents=True)
+    (src / "tool-invocation.ts").write_text(
+        textwrap.dedent(
+            """
+            import { CODE_MODE_TOOL_APPROVAL_KIND } from './approval.js';
+
+            export async function invokeHostTool({
+              hostTool,
+              validation,
+              executionOptions,
+              codeModeOptions,
+              skipApproval = false,
+            }) {
+              const needsApproval =
+                !skipApproval &&
+                (await raceAgainstAbort(
+                  requiresApproval(hostTool, validation.value, executionOptions),
+                  executionOptions.abortSignal,
+                ));
+
+              if (needsApproval) {
+                if (codeModeOptions.approval?.mode === 'interrupt') {
+                  return {
+                    type: 'interrupted',
+                    payload: { kind: CODE_MODE_TOOL_APPROVAL_KIND },
+                  };
+                }
+                const approval = await raceAgainstAbort(
+                  Promise.resolve(
+                    codeModeOptions.approval?.onApprovalRequired?.({
+                      toolName,
+                    }),
+                  ),
+                );
+                if (approval === undefined) {
+                  throw new CodeModeToolApprovalRequiredError();
+                }
+                const approved =
+                  typeof approval === 'string'
+                    ? approval === 'approved'
+                    : approval?.approved;
+                if (!approved) {
+                  throw new CodeModeToolApprovalDeniedError();
+                }
+              }
+              return await executeHostTool(hostTool.execute.bind(hostTool), {});
+            }
+            """
+        ),
+        encoding="utf-8",
+    )
+    (src / "approval-continuation.ts").write_text(
+        textwrap.dedent(
+            """
+            export async function continueCodeModeApproval({
+              interrupt,
+              approvalResponse,
+              options = {},
+            }) {
+              assertCodeModeApprovalResponse(approvalResponse);
+              if (approvalResponse.approvalId !== interrupt.interruptId) {
+                throw new CodeModeProtocolError();
+              }
+              return await continueCodeModeInterrupt({
+                interrupt,
+                resolution: {
+                  approved: approvalResponse.approved,
+                  ...(approvalResponse.reason !== undefined
+                    ? { reason: approvalResponse.reason }
+                    : {}),
+                },
+                options: {
+                  ...options,
+                  approval: { ...options.approval, mode: 'interrupt' },
+                },
+              });
+            }
+            """
+        ),
+        encoding="utf-8",
+    )
+    (src / "approval.ts").write_text(
+        textwrap.dedent(
+            """
+            export const CODE_MODE_TOOL_APPROVAL_KIND =
+              'ai-sdk-code-mode/tool-approval' as const;
+
+            export function assertCodeModeApprovalResponse(value: unknown) {
+              if (
+                typeof (value as { approvalId?: unknown }).approvalId !== 'string' ||
+                typeof (value as { approved?: unknown }).approved !== 'boolean'
+              ) {
+                throw new CodeModeProtocolError();
+              }
+            }
+            """
+        ),
+        encoding="utf-8",
+    )
+    negative = tmp_path / "negative"
+    negative_src = negative / "packages" / "code-mode" / "src"
+    negative_src.mkdir(parents=True)
+    (negative_src / "tool-invocation.ts").write_text(
+        (src / "tool-invocation.ts")
+        .read_text(encoding="utf-8")
+        .replace(
+            "const needsApproval =",
+            "const eager = await executeHostTool(hostTool.execute.bind(hostTool), {});\n"
+            "              const needsApproval =",
+        )
+        .replace(
+            "return await executeHostTool(hostTool.execute.bind(hostTool), {});",
+            "return eager;",
+        ),
+        encoding="utf-8",
+    )
+    for file_name in ("approval-continuation.ts", "approval.ts"):
+        (negative_src / file_name).write_text(
+            (src / file_name).read_text(encoding="utf-8"),
+            encoding="utf-8",
+        )
+
+    ir = scan_repository(positive)
+
+    controls = [
+        component
+        for component in ir.components
+        if component.kind == "control"
+        and component.attributes.get("analysis")
+        == "typescript-vercel-code-mode-tool-approval-flow"
+    ]
+    assert {
+        (component.name, component.evidence.path, component.attributes.get("runtime_function"))
+        for component in controls
+    } == {
+        (
+            "tool-approval-policy",
+            "packages/code-mode/src/tool-invocation.ts",
+            "invokeHostTool",
+        ),
+        (
+            "approval-continuation",
+            "packages/code-mode/src/approval-continuation.ts",
+            "continueCodeModeApproval",
+        ),
+    }
+
+    negative_ir = scan_repository(negative)
+    assert not [
+        component
+        for component in negative_ir.components
+        if component.kind == "control"
+        and component.attributes.get("analysis")
+        == "typescript-vercel-code-mode-tool-approval-flow"
+    ]
+    policy = next(component for component in controls if component.name == "tool-approval-policy")
+    assert policy.attributes == {
+        "analysis": "typescript-vercel-code-mode-tool-approval-flow",
+        "framework": "Vercel AI Code Mode",
+        "scope": "production",
+        "runtime_function": "invokeHostTool",
+        "approval_trigger": "hostTool.needsApproval",
+        "default_without_needs_approval": False,
+        "skip_approval_parameter": "skipApproval",
+        "interrupt_mode": "interrupt-before-execute",
+        "interrupt_payload_kind": "ai-sdk-code-mode/tool-approval",
+        "callback_handler": "onApprovalRequired",
+        "missing_callback_behavior": "approval-required-error",
+        "denial_behavior": "throws-before-execute",
+        "execution_order": "approval-before-execute",
+    }
+    assert {
+        (
+            relationship.source_kind,
+            relationship.source_name,
+            relationship.relation,
+            relationship.target_kind,
+            relationship.target_name,
+            relationship.attributes.get("analysis"),
+        )
+        for relationship in ir.relationships
+        if relationship.attributes.get("analysis")
+        == "typescript-vercel-code-mode-tool-approval-flow"
+    } == {
+        (
+            "framework",
+            "Vercel AI Code Mode",
+            "configured-by",
+            "control-setting",
+            "code-mode-tool-approval-kind",
+            "typescript-vercel-code-mode-tool-approval-flow",
+        ),
+        (
+            "framework",
+            "Vercel AI Code Mode",
+            "governed-by",
+            "control",
+            "tool-approval-policy",
+            "typescript-vercel-code-mode-tool-approval-flow",
+        ),
+        (
+            "control",
+            "tool-approval-policy",
+            "continues-through",
+            "control",
+            "approval-continuation",
+            "typescript-vercel-code-mode-tool-approval-flow",
+        ),
+    }
+
+
 def test_python_enabled_auto_approval_is_review_candidate() -> None:
     ir = scan_repository(ROOT / "cases/python_auto_approval")
 

@@ -776,6 +776,11 @@ source-agent-linked `model-settings-policy` controls for direct AI SDK provider 
 top-level `model` property, such as `anthropic("claude-sonnet-4-20250514")`. Bound model variables,
 casts, wrappers, and imported model constants remain unresolved until their provenance can be proven
 without general expression guessing.
+Vercel AI Code Mode's host-tool runtime now contributes approval-flow IR when the source uniquely
+proves that `hostTool.needsApproval` is checked before `executeHostTool(...)`, interrupt mode emits
+the `ai-sdk-code-mode/tool-approval` payload, callback denial throws before execution, and
+`continueCodeModeApproval(...)` revalidates both response shape and approval-id matching before
+resuming.
 OpenAI Agents Python run-state approval decisions are now inventoried separately from approval-policy
 declaration: exact `Runner.run(...)` or `Runner.run_streamed(...)` results that produce a stable
 `result.to_state()` binding, plus exact `RunState.from_json/from_string(...)` restored states, emit
@@ -1140,7 +1145,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 730-label rule truth set and 2,435-label IR component/relationship set are curated regression
+The 730-label rule truth set and 2,440-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed
