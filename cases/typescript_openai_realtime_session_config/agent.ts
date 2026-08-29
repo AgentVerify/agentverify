@@ -54,6 +54,7 @@ export const audioDetailsSession = new RealtimeSession(greeter, {
       },
     },
   },
+  model: "gpt-realtime-2.1",
 });
 
 export const dynamicSession = new RealtimeSession(greeter, {
@@ -72,4 +73,5 @@ export const dynamicSession = new RealtimeSession(greeter, {
       },
     },
   },
+  model: process.env.REALTIME_SESSION_MODEL,
 });

@@ -17277,6 +17277,8 @@ def add_typescript_openai_realtime_session_config_control(
     local_constructor: str,
     session_binding: str,
     source_agent: tuple[str, str],
+    session_model: str | None,
+    session_model_resolution: str | None,
     parallel_tool_calls: bool | None,
     reasoning_effort: str | None,
     output_modalities: list[str] | None,
@@ -17305,6 +17307,10 @@ def add_typescript_openai_realtime_session_config_control(
         "source_agent_id": source_agent_id,
         "scope": source_scope(relative),
     }
+    if session_model is not None:
+        attributes["session_model"] = session_model
+        if session_model_resolution is not None:
+            attributes["session_model_resolution"] = session_model_resolution
     if parallel_tool_calls is not None:
         attributes["parallel_tool_calls"] = parallel_tool_calls
     if reasoning_effort is not None:
@@ -21159,6 +21165,28 @@ def typescript_graph(
         if source_agent is None:
             continue
         options_expression, options_offset = arguments[1]
+        session_model = None
+        session_model_resolution = None
+        session_model_offset = None
+        session_model_location = typescript_object_property_expression_location(
+            options_expression,
+            "model",
+            options_offset,
+        )
+        if session_model_location is not None:
+            (
+                session_model_expression,
+                session_model_property_offset,
+                session_model_expression_offset,
+            ) = session_model_location
+            static_session_model = typescript_static_string_value(
+                session_model_expression,
+                expression_offset=session_model_expression_offset,
+                immutable_literal_bindings=immutable_literal_bindings,
+            )
+            if static_session_model is not None:
+                session_model, session_model_resolution = static_session_model
+                session_model_offset = session_model_property_offset
         config_location = typescript_object_property_expression_location(
             options_expression,
             "config",
@@ -21278,7 +21306,8 @@ def typescript_graph(
             )
             parallel_tool_calls = typescript_literal_boolean_value(parallel_tool_calls_expression)
         if (
-            reasoning_effort is None
+            session_model is None
+            and reasoning_effort is None
             and parallel_tool_calls is None
             and output_modalities is None
             and audio_input_format is None
@@ -21293,6 +21322,7 @@ def typescript_graph(
         policy_offset = min(
             offset
             for offset in (
+                session_model_offset,
                 reasoning_effort_offset,
                 output_modalities_offset,
                 audio_input_format_offset,
@@ -21315,6 +21345,8 @@ def typescript_graph(
             local_constructor=local_constructor,
             session_binding=session_name,
             source_agent=source_agent,
+            session_model=session_model,
+            session_model_resolution=session_model_resolution,
             parallel_tool_calls=parallel_tool_calls,
             reasoning_effort=reasoning_effort,
             output_modalities=output_modalities,
@@ -21334,6 +21366,10 @@ def typescript_graph(
             "binding": "config",
             "session_binding": session_name,
         }
+        if session_model is not None:
+            config_attributes["session_model"] = session_model
+            if session_model_resolution is not None:
+                config_attributes["session_model_resolution"] = session_model_resolution
         if parallel_tool_calls is not None:
             config_attributes["parallel_tool_calls"] = parallel_tool_calls
         if reasoning_effort is not None:

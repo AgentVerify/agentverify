@@ -795,12 +795,13 @@
 ## OpenAI Realtime session config is separate source-agent policy metadata
 
 - Decision: Represent exact TypeScript OpenAI Realtime
-  `new RealtimeSession(agent, { config: { parallelToolCalls: <boolean>, reasoning: { effort },
-  outputModalities: [...], audio: { input, output } } })`
+  `new RealtimeSession(agent, { model, config: { parallelToolCalls: <boolean>,
+  reasoning: { effort }, outputModalities: [...], audio: { input, output } } })`
   configuration as a `realtime-session-config-policy` control tied to the source-proven
   `RealtimeAgent` passed as the session's first constructor argument. Emit only for exact imported
-  `RealtimeAgent` and `RealtimeSession` constructors plus direct boolean, string, or literal
-  string-array values, including audio input/output formats and
+  `RealtimeAgent` and `RealtimeSession` constructors plus direct boolean, direct static session
+  model strings, config strings, or literal string-array values, including audio input/output formats
+  and
   `audio.input.transcription.{model, delay, prompt, keywords, languages}`; keep dynamic config
   values and unresolved session-agent arguments unresolved. Do not persist full transcription prompt
   text in IR attributes; record literal prompt presence and length only, alongside literal keyword
@@ -808,10 +809,12 @@
 - Evidence: The local realtime-session fixture covers false, true, and dynamic negative
   `parallelToolCalls` values plus a direct low `reasoning.effort` value and a literal
   `outputModalities: ["audio"]` value with a dynamic-modality negative, plus a literal audio
-  details session with dynamic transcription-model negative coverage. The pinned OpenAI Agents JS
+  details session with exact top-level session model metadata and dynamic session/transcription
+  model negative coverage. The pinned OpenAI Agents JS
   `examples/docs/voice-agents/configureSession.ts` example sets
-  `config.outputModalities: ['audio']`, `config.reasoning.effort: 'low'`, and
-  `config.parallelToolCalls: true`, plus `audio.input.format: 'pcm16'`,
+  `model: 'gpt-realtime-2.1'`, `config.outputModalities: ['audio']`,
+  `config.reasoning.effort: 'low'`, and `config.parallelToolCalls: true`, plus
+  `audio.input.format: 'pcm16'`,
   `audio.output.format: 'pcm16'`, `audio.input.transcription.model: 'gpt-live-transcribe'`,
   `audio.input.transcription.delay: 'low'`, transcription prompt length, transcription keywords,
   and transcription languages `['en', 'ja']` for the `Greeter` RealtimeAgent.

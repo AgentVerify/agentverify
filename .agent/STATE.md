@@ -706,6 +706,11 @@ catalog workflows.
   prompt presence and length, not prompt content, plus literal keyword arrays/counts; dynamic prompt
   and keyword bindings remain unresolved. Focused RealtimeSession config labels pass 17/17 and full
   public IR labels pass 2,227/2,227.
+- Extended OpenAI Realtime `RealtimeSession` inventory to exact top-level session model literals on
+  the same source-proven session config policy. Dynamic session model bindings remain unresolved;
+  the pinned `configureSession.ts` example now records `gpt-realtime-2.1` alongside audio/reasoning
+  metadata. Focused RealtimeSession config labels pass 18/18 and full public IR labels pass
+  2,228/2,228.
 
 ## Current findings
 
@@ -821,7 +826,8 @@ catalog workflows.
   source-proven `.run(agent, ...)` calls. Exact Agent-level literal
   `modelSettings.reasoning.effort`, `modelSettings.text.verbosity`, and
   `modelSettings.parallelToolCalls` values expose `model-settings-policy` controls. Exact imported
-  RealtimeSession config with `parallelToolCalls`, `reasoning.effort`, literal
+  RealtimeSession options/config with top-level session model, `parallelToolCalls`,
+  `reasoning.effort`, literal
   `outputModalities`, literal audio input/output formats, and literal audio transcription
   model/delay/languages plus privacy-preserving prompt/keyword metadata exposes
   `realtime-session-config-policy` controls linked to source-proven RealtimeAgents. Exact imported
@@ -857,9 +863,10 @@ semantics distinct from trace-correlation `withTrace(..., { groupId/traceId })` 
   evidence, plus exact `computerTool({ computer })` backend lifecycle metadata for external
   bindings, inline static objects, create/dispose per-run factories, and create-only factories, plus
   exact Agent-level `modelSettings.reasoning.effort`, `modelSettings.text.verbosity`, and
-  `modelSettings.parallelToolCalls` metadata, plus exact RealtimeSession `config.parallelToolCalls`,
-  `config.reasoning.effort`, literal `config.outputModalities`, audio input/output format, and
-  audio transcription model/delay/languages plus privacy-preserving prompt/keyword policy. For OpenAI
+  `modelSettings.parallelToolCalls` metadata, plus exact RealtimeSession top-level `model`,
+  `config.parallelToolCalls`, `config.reasoning.effort`, literal `config.outputModalities`, audio
+  input/output format, and audio transcription model/delay/languages plus privacy-preserving
+  prompt/keyword policy. For OpenAI
 approval work, keep literal always-approval, callback-controlled
 approval on generic tools/delegated tools/approval-capable builtin tools, delegated-agent adapter
 approval metadata, literal predicate metadata, SDK state approval decisions, helper-parameter
