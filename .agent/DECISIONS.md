@@ -795,20 +795,22 @@
 ## OpenAI Realtime session config is separate source-agent policy metadata
 
 - Decision: Represent exact TypeScript OpenAI Realtime
-  `new RealtimeSession(agent, { config: { parallelToolCalls: <boolean>, reasoning: { effort } } })`
+  `new RealtimeSession(agent, { config: { parallelToolCalls: <boolean>, reasoning: { effort },
+  outputModalities: [...] } })`
   configuration as a `realtime-session-config-policy` control tied to the source-proven
   `RealtimeAgent` passed as the session's first constructor argument. Emit only for exact imported
-  `RealtimeAgent` and `RealtimeSession` constructors plus direct boolean or string literals; keep
-  dynamic config values and unresolved session-agent arguments unresolved.
+  `RealtimeAgent` and `RealtimeSession` constructors plus direct boolean, string, or literal
+  string-array values; keep dynamic config values and unresolved session-agent arguments unresolved.
 - Evidence: The local realtime-session fixture covers false, true, and dynamic negative
-  `parallelToolCalls` values plus a direct low `reasoning.effort` value. The pinned OpenAI Agents JS
+  `parallelToolCalls` values plus a direct low `reasoning.effort` value and a literal
+  `outputModalities: ["audio"]` value with a dynamic-modality negative. The pinned OpenAI Agents JS
   `examples/docs/voice-agents/configureSession.ts` example sets
-  `config.reasoning.effort: 'low'` and `config.parallelToolCalls: true` for the `Greeter`
-  RealtimeAgent.
+  `config.outputModalities: ['audio']`, `config.reasoning.effort: 'low'`, and
+  `config.parallelToolCalls: true` for the `Greeter` RealtimeAgent.
 - Alternative: Fold realtime session config into Agent-level `model-settings-policy`. Rejected
   because `RealtimeSession` configuration is a different constructor scope from `Agent.modelSettings`
   and should not imply the same inheritance or override semantics.
-- Revisit when other RealtimeSession config fields such as audio modalities, transcription model,
+- Revisit when other RealtimeSession config fields such as transcription model, audio formats,
   turn detection, or tool choice can be tied to source-proven realtime agents without broad
   option-object matching.
 

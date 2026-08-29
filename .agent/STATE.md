@@ -816,7 +816,8 @@ catalog workflows.
   source-proven `.run(agent, ...)` calls. Exact Agent-level literal
   `modelSettings.reasoning.effort`, `modelSettings.text.verbosity`, and
   `modelSettings.parallelToolCalls` values expose `model-settings-policy` controls. Exact imported
-  RealtimeSession config with `parallelToolCalls` and `reasoning.effort` exposes
+  RealtimeSession config with `parallelToolCalls`, `reasoning.effort`, and literal
+  `outputModalities` exposes
   `realtime-session-config-policy` controls linked to source-proven RealtimeAgents. Exact imported
   `withTrace` callbacks containing
   source-proven SDK `run(agent, ...)` calls, exact Runner instances with source-proven
@@ -846,12 +847,12 @@ semantics distinct from trace-correlation `withTrace(..., { groupId/traceId })` 
 `asTool({ runConfig: { workflowName } })`, plus stable
 `Runner({ workflowName })` runner-level workflow evidence and exact direct/stable Runner
 `run(..., { maxTurns })` per-run turn-limit evidence, plus exact Agent
-`modelSettings.toolChoice` evidence and stable Runner-level `modelSettings.toolChoice` per-run
-evidence, plus exact `computerTool({ computer })` backend lifecycle metadata for external
-bindings, inline static objects, create/dispose per-run factories, and create-only factories, plus
-exact Agent-level `modelSettings.reasoning.effort`, `modelSettings.text.verbosity`, and
-`modelSettings.parallelToolCalls` metadata, plus exact RealtimeSession `config.parallelToolCalls`
-and `config.reasoning.effort` policy. For OpenAI
+  `modelSettings.toolChoice` evidence and stable Runner-level `modelSettings.toolChoice` per-run
+  evidence, plus exact `computerTool({ computer })` backend lifecycle metadata for external
+  bindings, inline static objects, create/dispose per-run factories, and create-only factories, plus
+  exact Agent-level `modelSettings.reasoning.effort`, `modelSettings.text.verbosity`, and
+  `modelSettings.parallelToolCalls` metadata, plus exact RealtimeSession `config.parallelToolCalls`,
+  `config.reasoning.effort`, and literal `config.outputModalities` policy. For OpenAI
 approval work, keep literal always-approval, callback-controlled
 approval on generic tools/delegated tools/approval-capable builtin tools, delegated-agent adapter
 approval metadata, literal predicate metadata, SDK state approval decisions, helper-parameter

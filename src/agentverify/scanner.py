@@ -17279,6 +17279,7 @@ def add_typescript_openai_realtime_session_config_control(
     source_agent: tuple[str, str],
     parallel_tool_calls: bool | None,
     reasoning_effort: str | None,
+    output_modalities: list[str] | None,
     symbol_identity: str,
 ) -> tuple[str, str]:
     """Add exact OpenAI Agents JS RealtimeSession config governance evidence."""
@@ -17301,6 +17302,8 @@ def add_typescript_openai_realtime_session_config_control(
         attributes["parallel_tool_calls"] = parallel_tool_calls
     if reasoning_effort is not None:
         attributes["reasoning_effort"] = reasoning_effort
+    if output_modalities is not None:
+        attributes["output_modalities"] = output_modalities
     ir.add_component(
         Component(
             "control",
@@ -21150,6 +21153,17 @@ def typescript_graph(
         )
         if reasoning_effort_location is not None:
             reasoning_effort, reasoning_effort_offset, _ = reasoning_effort_location
+        output_modalities = None
+        output_modalities_offset = None
+        output_modalities_location = (
+            typescript_literal_nested_object_string_array_property_location(
+                config_expression,
+                body_offset=config_offset,
+                path=("outputModalities",),
+            )
+        )
+        if output_modalities_location is not None:
+            output_modalities, output_modalities_offset, _ = output_modalities_location
         parallel_tool_calls = None
         parallel_property_offset = None
         parallel_tool_calls_location = typescript_object_property_expression_location(
@@ -21162,11 +21176,19 @@ def typescript_graph(
                 parallel_tool_calls_location
             )
             parallel_tool_calls = typescript_literal_boolean_value(parallel_tool_calls_expression)
-        if reasoning_effort is None and parallel_tool_calls is None:
+        if (
+            reasoning_effort is None
+            and parallel_tool_calls is None
+            and output_modalities is None
+        ):
             continue
         policy_offset = min(
             offset
-            for offset in (reasoning_effort_offset, parallel_property_offset)
+            for offset in (
+                reasoning_effort_offset,
+                output_modalities_offset,
+                parallel_property_offset,
+            )
             if offset is not None
         )
         policy_line = line_at(text, policy_offset)
@@ -21180,6 +21202,7 @@ def typescript_graph(
             source_agent=source_agent,
             parallel_tool_calls=parallel_tool_calls,
             reasoning_effort=reasoning_effort,
+            output_modalities=output_modalities,
             symbol_identity=f"{session_name}.config@{policy_line}",
         )
         agent_name, agent_id = source_agent
@@ -21193,6 +21216,8 @@ def typescript_graph(
             config_attributes["parallel_tool_calls"] = parallel_tool_calls
         if reasoning_effort is not None:
             config_attributes["reasoning_effort"] = reasoning_effort
+        if output_modalities is not None:
+            config_attributes["output_modalities"] = output_modalities
         ir.add_relationship(
             Relationship(
                 "agent",
