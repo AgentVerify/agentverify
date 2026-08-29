@@ -17346,6 +17346,77 @@ def add_typescript_openai_agent_guardrail_control(
     return "agent-guardrail-policy", control_id
 
 
+def add_typescript_openai_tool_guardrail_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    tool_name: str,
+    tool_id: str,
+    guardrail_kind: str,
+    guardrail_attributes: dict[str, object],
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS tool input/output guardrail evidence."""
+    configuration = f"tool.{guardrail_kind}Guardrails"
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    attributes: dict[str, object] = {
+        "analysis": "typescript-openai-agents-tool-guardrails",
+        "module": "@openai/agents",
+        "constructor": "tool",
+        "imported_symbol": "tool",
+        "configuration": configuration,
+        "guardrail_kind": guardrail_kind,
+        "guardrail_scope": f"tool-{guardrail_kind}",
+        "source_tool": tool_name,
+        "source_tool_id": tool_id,
+        "scope": source_scope(relative),
+    }
+    attributes.update(guardrail_attributes)
+    ir.add_component(
+        Component(
+            "control",
+            "tool-guardrail-policy",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    relationship_attributes: dict[str, object] = {
+        "analysis": "typescript-openai-agents-tool-guardrails",
+        "configuration": configuration,
+        "guardrail_kind": guardrail_kind,
+        "guardrail_scope": f"tool-{guardrail_kind}",
+    }
+    for key in (
+        "guardrail_source",
+        "guardrail_count",
+        "guardrail_bindings",
+        "guardrail_names",
+        "guardrail_name_count",
+        "guardrail_actions",
+        "guardrail_action_count",
+        "guardrail_reject_content",
+    ):
+        if key in attributes:
+            relationship_attributes[key] = attributes[key]
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            tool_name,
+            "governed-by",
+            "control",
+            "tool-guardrail-policy",
+            Evidence(relative, line, excerpt(lines, line)),
+            relationship_attributes,
+            source_id=tool_id,
+            target_id=control_id,
+        )
+    )
+    return "tool-guardrail-policy", control_id
+
+
 def add_typescript_openai_realtime_session_config_control(
     ir: RepositoryIR,
     *,
@@ -20381,6 +20452,232 @@ def typescript_graph(
     has_mcp_import = "@modelcontextprotocol/" in text or bool(
         re.search(r"from\s+['\"][^'\"]*mcp[^'\"]*['\"]", text, re.IGNORECASE)
     )
+    openai_tool_guardrail_factory_imports = {
+        "input": {
+            local_name
+            for local_name, imported_name in openai_agents_imports.items()
+            if imported_name == "defineToolInputGuardrail"
+            and not typescript_import_binding_is_shadowed(text, local_name)
+        },
+        "output": {
+            local_name
+            for local_name, imported_name in openai_agents_imports.items()
+            if imported_name == "defineToolOutputGuardrail"
+            and not typescript_import_binding_is_shadowed(text, local_name)
+        },
+    }
+    openai_tool_guardrail_output_factory_imports = {
+        local_name
+        for local_name, imported_name in openai_agents_imports.items()
+        if imported_name == "ToolGuardrailFunctionOutputFactory"
+        and not typescript_import_binding_is_shadowed(text, local_name)
+    }
+
+    def openai_tool_guardrail_actions(expression: str) -> list[str]:
+        actions: set[str] = set()
+        expression_code = typescript_code_mask(expression)
+        for factory_name in openai_tool_guardrail_output_factory_imports:
+            if re.search(
+                rf"(?<![\w$.]){re.escape(factory_name)}\s*\.\s*allow\s*\(",
+                expression_code,
+            ):
+                actions.add("allow")
+            if re.search(
+                rf"(?<![\w$.]){re.escape(factory_name)}\s*\.\s*rejectContent\s*\(",
+                expression_code,
+            ):
+                actions.add("reject-content")
+        if re.search(
+            r"\btype\s*:\s*['\"]allow['\"]",
+            expression,
+        ):
+            actions.add("allow")
+        if re.search(
+            r"\btype\s*:\s*['\"]rejectContent['\"]",
+            expression,
+        ):
+            actions.add("reject-content")
+        return sorted(actions)
+
+    def openai_tool_guardrail_definition_bindings(
+        *,
+        guardrail_kind: str,
+    ) -> dict[str, tuple[dict[str, object], int]]:
+        bindings: dict[str, tuple[dict[str, object], int]] = {}
+        for local_factory in openai_tool_guardrail_factory_imports[guardrail_kind]:
+            definition_pattern = re.compile(
+                rf"\bconst\s+([A-Za-z_$][\w$]*)"
+                rf"\s*=\s*{re.escape(local_factory)}\s*\("
+            )
+            for match in definition_pattern.finditer(code):
+                opening = code.find("(", match.start(), match.end())
+                end = typescript_balanced_end(code, opening, "(", ")")
+                if end is None:
+                    continue
+                arguments = typescript_call_arguments(text[opening + 1 : end - 1], opening + 1)
+                if not arguments:
+                    continue
+                body, _body_offset = arguments[0]
+                attributes: dict[str, object] = {
+                    "guardrail_definition": (
+                        f"defineTool{guardrail_kind.title()}Guardrail"
+                    ),
+                }
+                name_expression = typescript_literal_object_property_expression(body, "name")
+                if name_expression is not None:
+                    guardrail_name = typescript_string_literal_value(name_expression)
+                    if guardrail_name is not None:
+                        attributes["guardrail_names"] = [guardrail_name]
+                        attributes["guardrail_name_count"] = 1
+                actions = openai_tool_guardrail_actions(body)
+                if actions:
+                    attributes["guardrail_actions"] = actions
+                    attributes["guardrail_action_count"] = len(actions)
+                    if "reject-content" in actions:
+                        attributes["guardrail_reject_content"] = True
+                bindings[match.group(1)] = (attributes, end)
+        return bindings
+
+    openai_tool_guardrail_bindings = {
+        "input": openai_tool_guardrail_definition_bindings(guardrail_kind="input"),
+        "output": openai_tool_guardrail_definition_bindings(guardrail_kind="output"),
+    }
+
+    def openai_tool_guardrail_item_attributes(
+        item: str,
+        item_offset: int,
+        *,
+        guardrail_kind: str,
+    ) -> tuple[dict[str, object], str | None]:
+        attributes: dict[str, object] = {}
+        name_expression = typescript_literal_object_property_expression(item, "name")
+        if name_expression is not None:
+            guardrail_name = typescript_string_literal_value(name_expression)
+            if guardrail_name is not None:
+                attributes["guardrail_names"] = [guardrail_name]
+                attributes["guardrail_name_count"] = 1
+        actions = openai_tool_guardrail_actions(item)
+        if actions:
+            attributes["guardrail_actions"] = actions
+            attributes["guardrail_action_count"] = len(actions)
+            if "reject-content" in actions:
+                attributes["guardrail_reject_content"] = True
+        item_code = typescript_code_mask(item).strip()
+        identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", item_code)
+        if identifier is None:
+            return attributes, None
+        binding_name = identifier.group(0)
+        binding = openai_tool_guardrail_bindings[guardrail_kind].get(binding_name)
+        if binding is None:
+            return attributes, binding_name
+        binding_attributes, binding_end = binding
+        if binding_end > item_offset or re.search(
+            rf"(?<![\w$.]){re.escape(binding_name)}\s*=(?!=)",
+            code[binding_end:item_offset],
+        ) or re.search(
+            rf"(?<![\w$]){re.escape(binding_name)}\s*(?:\.|\[)",
+            code[binding_end:item_offset],
+        ):
+            return attributes, binding_name
+        return dict(binding_attributes), binding_name
+
+    def openai_tool_guardrail_array_attributes(
+        expression: str,
+        expression_offset: int,
+        *,
+        guardrail_kind: str,
+    ) -> dict[str, object] | None:
+        items = typescript_array_items(expression, expression_offset)
+        if items is None:
+            expression_code = typescript_code_mask(expression).strip()
+            identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", expression_code)
+            if identifier is None:
+                return {"guardrail_source": "dynamic-expression"}
+            return {
+                "guardrail_source": "binding",
+                "guardrail_bindings": [identifier.group(0)],
+            }
+        concrete_items = [
+            (item, item_offset)
+            for item, item_offset in items
+            if typescript_code_mask(item).strip()
+        ]
+        attributes: dict[str, object] = {
+            "guardrail_source": "inline-array",
+            "guardrail_count": len(concrete_items),
+        }
+        guardrail_names: list[str] = []
+        guardrail_bindings: list[str] = []
+        guardrail_actions: set[str] = set()
+        for item, item_offset in concrete_items:
+            item_attributes, item_binding = openai_tool_guardrail_item_attributes(
+                item,
+                item_offset,
+                guardrail_kind=guardrail_kind,
+            )
+            if item_binding is not None and item_binding not in guardrail_bindings:
+                guardrail_bindings.append(item_binding)
+            names = item_attributes.get("guardrail_names")
+            if isinstance(names, list):
+                guardrail_names.extend(name for name in names if isinstance(name, str))
+            actions = item_attributes.get("guardrail_actions")
+            if isinstance(actions, list):
+                guardrail_actions.update(action for action in actions if isinstance(action, str))
+        if guardrail_bindings:
+            attributes["guardrail_bindings"] = guardrail_bindings
+        if guardrail_names:
+            attributes["guardrail_names"] = guardrail_names
+            attributes["guardrail_name_count"] = len(guardrail_names)
+        if guardrail_actions:
+            sorted_actions = sorted(guardrail_actions)
+            attributes["guardrail_actions"] = sorted_actions
+            attributes["guardrail_action_count"] = len(sorted_actions)
+            if "reject-content" in sorted_actions:
+                attributes["guardrail_reject_content"] = True
+        return attributes
+
+    def add_openai_tool_guardrail_controls(
+        *,
+        tool_name: str,
+        tool_id: str,
+        tool_identity: str,
+        body: str,
+        body_offset: int,
+    ) -> None:
+        for guardrail_kind, property_name in (
+            ("input", "inputGuardrails"),
+            ("output", "outputGuardrails"),
+        ):
+            guardrail_location = typescript_object_property_expression_location(
+                body,
+                property_name,
+                body_offset,
+            )
+            if guardrail_location is None:
+                continue
+            guardrail_expression, guardrail_property_offset, guardrail_expression_offset = (
+                guardrail_location
+            )
+            guardrail_attributes = openai_tool_guardrail_array_attributes(
+                guardrail_expression,
+                guardrail_expression_offset,
+                guardrail_kind=guardrail_kind,
+            )
+            if guardrail_attributes is None:
+                continue
+            guardrail_line = line_at(text, guardrail_property_offset)
+            add_typescript_openai_tool_guardrail_control(
+                ir,
+                relative=relative,
+                lines=lines,
+                line=guardrail_line,
+                tool_name=tool_name,
+                tool_id=tool_id,
+                guardrail_kind=guardrail_kind,
+                guardrail_attributes=guardrail_attributes,
+                symbol_identity=f"{tool_identity}.{property_name}@{guardrail_line}",
+            )
+
     immutable_literal_bindings = (
         typescript_immutable_module_literal_string_bindings(text)
         if (
@@ -20503,6 +20800,11 @@ def typescript_graph(
                 immutable_literal_bindings=immutable_literal_bindings,
             )
         else:
+            openai_tool_factory = (
+                local_factory in openai_agents_imports
+                and constructor == "tool"
+                and not typescript_import_binding_is_shadowed(text, local_factory)
+            )
             add_typescript_generic_tool(
                 ir,
                 relative=relative,
@@ -20517,12 +20819,16 @@ def typescript_graph(
                 body_offset=opening + 1,
                 call_offset=match.start(),
                 call_end=end,
-                openai_approval_capable=(
-                    local_factory in openai_agents_imports
-                    and constructor == "tool"
-                    and not typescript_import_binding_is_shadowed(text, local_factory)
-                ),
+                openai_approval_capable=openai_tool_factory,
             )
+            if openai_tool_factory:
+                add_openai_tool_guardrail_controls(
+                    tool_name=tool_name,
+                    tool_id=tool_id,
+                    tool_identity=tool_identity,
+                    body=body,
+                    body_offset=opening + 1,
+                )
         if is_openai_builtin:
             for line_number in range(start_line, end_line + 1):
                 tool_by_line[line_number] = (tool_name, tool_id)
@@ -20557,6 +20863,18 @@ def typescript_graph(
                 and not typescript_import_binding_is_shadowed(text, match.group(2))
             ),
         )
+        if (
+            match.group(2) in openai_agents_imports
+            and constructor == "tool"
+            and not typescript_import_binding_is_shadowed(text, match.group(2))
+        ):
+            add_openai_tool_guardrail_controls(
+                tool_name=tool_name,
+                tool_id=tool_id,
+                tool_identity=tool_identity,
+                body=text[opening + 1 : end - 1],
+                body_offset=opening + 1,
+            )
 
     for match in registration_matches:
         tool_name = registration_names[match.start()]

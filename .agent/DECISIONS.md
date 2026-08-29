@@ -891,3 +891,25 @@
 - Revisit when post-construction `agent.inputGuardrails = [...]` updates, imported guardrail arrays,
   helper-created guardrails, tool guardrails, or tripwire/action quality can be tied to exact source
   identity without broad name matching.
+
+## OpenAI Agents JS tool guardrails are source-tool governance controls
+
+- Decision: Represent exact TypeScript OpenAI Agents SDK
+  `tool({ inputGuardrails, outputGuardrails })` options as `tool-guardrail-policy` controls tied to
+  the source tool. Support exact imported `tool` factories from `@openai/agents`, inline guardrail
+  arrays, direct `defineToolInputGuardrail`/`defineToolOutputGuardrail` const bindings, literal
+  guardrail names/counts, binding-only fallbacks for dynamic or mutated configurations, and exact
+  allow/reject-content action metadata from `ToolGuardrailFunctionOutputFactory` or literal
+  `{ behavior: { type } }` returns.
+- Evidence: The local `typescript_openai_tool_guardrails` fixture covers bound input guardrails,
+  bound plus inline output guardrails, dynamic guardrail arrays that stay binding-only, mutated
+  guardrail definitions that do not expose stale names/actions, and a lookalike object that is
+  ignored. The pinned OpenAI Agents JS `examples/basic/tools.ts` and
+  `examples/docs/guardrails/toolGuardrails.ts` examples provide real inline and factory-defined
+  input/output tool guardrails, including reject-content and allow behavior.
+- Alternative: Fold tool guardrails into `agent-guardrail-policy`. Rejected because OpenAI Agents
+  SDK tool guardrails govern tool-call inputs/outputs rather than agent input/output, and they
+  attach to a source tool even before agent composition is resolved.
+- Revisit when imported literal guardrail arrays, helper-created tool guardrails, richer tripwire
+  metadata, or guarded-tool-to-agent composition edges can remain source-proven without broad
+  object/property matching.

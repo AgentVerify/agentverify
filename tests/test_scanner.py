@@ -4821,6 +4821,98 @@ def test_typescript_openai_agent_guardrail_policy_is_exact() -> None:
     }
 
 
+def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_openai_tool_guardrails")
+
+    controls = {
+        component.symbol_id: component
+        for component in ir.components
+        if component.kind == "control" and component.name == "tool-guardrail-policy"
+    }
+    assert set(controls) == {
+        "ts:agent.ts#control:classifyTool.inputGuardrails@44",
+        "ts:agent.ts#control:classifyTool.outputGuardrails@45",
+        "ts:agent.ts#control:dynamicTool.inputGuardrails@62",
+        "ts:agent.ts#control:mutableTool.inputGuardrails@76",
+    }
+    assert controls["ts:agent.ts#control:classifyTool.inputGuardrails@44"].attributes == {
+        "analysis": "typescript-openai-agents-tool-guardrails",
+        "module": "@openai/agents",
+        "constructor": "tool",
+        "imported_symbol": "tool",
+        "configuration": "tool.inputGuardrails",
+        "guardrail_kind": "input",
+        "guardrail_scope": "tool-input",
+        "source_tool": "classifyTool",
+        "source_tool_id": "ts:agent.ts#tool:classifyTool",
+        "scope": "production",
+        "guardrail_source": "inline-array",
+        "guardrail_count": 1,
+        "guardrail_bindings": ["blockSecrets"],
+        "guardrail_names": ["block_secrets"],
+        "guardrail_name_count": 1,
+        "guardrail_actions": ["allow", "reject-content"],
+        "guardrail_action_count": 2,
+        "guardrail_reject_content": True,
+    }
+    assert controls["ts:agent.ts#control:classifyTool.outputGuardrails@45"].attributes[
+        "guardrail_names"
+    ] == ["redact_output", "inline_output_allow"]
+    assert controls["ts:agent.ts#control:classifyTool.outputGuardrails@45"].attributes[
+        "guardrail_count"
+    ] == 2
+    assert controls["ts:agent.ts#control:classifyTool.outputGuardrails@45"].attributes[
+        "guardrail_reject_content"
+    ] is True
+    assert controls["ts:agent.ts#control:dynamicTool.inputGuardrails@62"].attributes == {
+        "analysis": "typescript-openai-agents-tool-guardrails",
+        "module": "@openai/agents",
+        "constructor": "tool",
+        "imported_symbol": "tool",
+        "configuration": "tool.inputGuardrails",
+        "guardrail_kind": "input",
+        "guardrail_scope": "tool-input",
+        "source_tool": "dynamicTool",
+        "source_tool_id": "ts:agent.ts#tool:dynamicTool",
+        "scope": "production",
+        "guardrail_source": "binding",
+        "guardrail_bindings": ["dynamicGuardrails"],
+    }
+    assert "guardrail_names" not in controls[
+        "ts:agent.ts#control:mutableTool.inputGuardrails@76"
+    ].attributes
+    assert controls["ts:agent.ts#control:mutableTool.inputGuardrails@76"].attributes[
+        "guardrail_bindings"
+    ] == ["mutableGuardrail"]
+
+    edges = {
+        relationship.target_id: relationship
+        for relationship in ir.relationships
+        if relationship.source_kind == "tool"
+        and relationship.relation == "governed-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "tool-guardrail-policy"
+    }
+    assert set(edges) == set(controls)
+    assert edges["ts:agent.ts#control:classifyTool.inputGuardrails@44"].source_id == (
+        "ts:agent.ts#tool:classifyTool"
+    )
+    assert edges["ts:agent.ts#control:classifyTool.inputGuardrails@44"].attributes == {
+        "analysis": "typescript-openai-agents-tool-guardrails",
+        "configuration": "tool.inputGuardrails",
+        "guardrail_kind": "input",
+        "guardrail_scope": "tool-input",
+        "guardrail_source": "inline-array",
+        "guardrail_count": 1,
+        "guardrail_bindings": ["blockSecrets"],
+        "guardrail_names": ["block_secrets"],
+        "guardrail_name_count": 1,
+        "guardrail_actions": ["allow", "reject-content"],
+        "guardrail_action_count": 2,
+        "guardrail_reject_content": True,
+    }
+
+
 def test_typescript_openai_realtime_session_guardrail_policy_is_exact() -> None:
     ir = scan_repository(ROOT / "cases/typescript_openai_realtime_session_guardrails")
 

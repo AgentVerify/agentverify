@@ -7,6 +7,12 @@ catalog workflows.
 
 ## Completed recently
 
+- Added exact TypeScript OpenAI Agents SDK tool-level guardrail inventory for
+  `tool({ inputGuardrails, outputGuardrails })`, including
+  `defineToolInputGuardrail`/`defineToolOutputGuardrail` binding names and exact
+  allow/reject-content action metadata when source-proven. Regenerated public IR truth-set results
+  now cover 2,308/2,308 passing labels, and the 71-repository engine benchmark now reports
+  2,898 relationships / 10,687 symbolized components.
 - Added compact scan summaries for CI logs.
 - Added deterministic `risk_summary` data to JSON reports and native AI BOM governance.
 - Added bundled schemas for JSON reports, native AI BOMs, and policies.

@@ -108,10 +108,12 @@
   inventory covers direct session options, typed `RealtimeOutputGuardrail[]` const arrays, typed
   `RealtimeSessionOptions` spreads, literal names/counts, and `debounceTextLength`, with mutated
   arrays and dynamic settings bounded.
-- Explore OpenAI Agents JS tool guardrails only if evidence stays exact: `defineToolInputGuardrail`,
-  `defineToolOutputGuardrail`, `tool({ inputGuardrails, outputGuardrails })`, and
-  allow/reject-content action metadata. Agent-level constructor guardrails are now inventoried; tool
-  guardrails should remain a separate source-tool/source-agent policy slice.
+- Explore richer OpenAI Agents JS tool guardrails only if evidence stays exact: imported literal
+  guardrail arrays, helper-created tool guardrails, additional action/tripwire metadata, or
+  source-agent composition edges that connect guarded tools back to agents without overclaiming
+  dynamic tool lists. Direct `tool({ inputGuardrails, outputGuardrails })` and
+  `defineToolInputGuardrail`/`defineToolOutputGuardrail` bindings are now inventoried as a separate
+  source-tool policy slice.
 
 ## Deferred until access/authorization
 

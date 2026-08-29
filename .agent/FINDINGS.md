@@ -690,6 +690,16 @@
   `input-guardrails.ts`, `output-guardrails.ts`, and `exceptions1.ts` examples bring the public IR
   truth set to 2,292 passing labels and the 71-repository engine benchmark to 2,894 relationships /
   10,683 symbolized components.
+- OpenAI Agents JS tool-level input/output guardrails are now reviewable when source-proven. Exact
+  `tool({ inputGuardrails })` and `tool({ outputGuardrails })` factory options emit
+  `tool-guardrail-policy` controls linked to the source tool. Inline arrays expose guardrail counts;
+  `defineToolInputGuardrail`/`defineToolOutputGuardrail` const bindings contribute literal names
+  when stable; `ToolGuardrailFunctionOutputFactory.allow/rejectContent` and literal
+  `{ behavior: { type } }` returns contribute action metadata. Mutated definitions and dynamic
+  guardrail arrays fall back to binding-only metadata, and lookalike objects are ignored. The local
+  fixture plus pinned OpenAI Agents JS `examples/basic/tools.ts` and
+  `examples/docs/guardrails/toolGuardrails.ts` bring the public IR truth set to 2,308 passing labels
+  and the 71-repository engine benchmark to 2,898 relationships / 10,687 symbolized components.
 
 ## Hypotheses
 
