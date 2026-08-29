@@ -1,6 +1,11 @@
 from typing import Literal
 
 from agents import Agent, HostedMCPTool
+from barrel import (
+    REEXPORTED_ALWAYS,
+    REEXPORTED_MUTATED_TOOL_CONFIG,
+    REEXPORTED_TOOL_CONFIG,
+)
 from policies import (
     ALIASED_TOOL_CONFIG as IMPORTED_ALIASED_TOOL_CONFIG,
     IMPORTED_ALWAYS,
@@ -87,6 +92,16 @@ def build_agent() -> Agent:
             HostedMCPTool(tool_config=IMPORTED_TOOL_CONFIG),
             HostedMCPTool(tool_config=IMPORTED_ALIASED_TOOL_CONFIG),
             HostedMCPTool(tool_config=MUTATED_TOOL_CONFIG),
+            HostedMCPTool(
+                tool_config={
+                    "type": "mcp",
+                    "server_label": "reexported_literal",
+                    "server_url": "https://mcp.example.com/mcp",
+                    "require_approval": REEXPORTED_ALWAYS,
+                }
+            ),
+            HostedMCPTool(tool_config=REEXPORTED_TOOL_CONFIG),
+            HostedMCPTool(tool_config=REEXPORTED_MUTATED_TOOL_CONFIG),
             FakeHostedMCPTool(
                 tool_config={
                     "type": "mcp",

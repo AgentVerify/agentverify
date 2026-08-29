@@ -1143,8 +1143,14 @@ def python_assignment_root_name(target: ast.AST) -> str | None:
 def python_mcp_approval_literal_export_nodes(
     root: Path,
     relative: str,
-) -> dict[str, ast.AST]:
-    """Return immutable top-level literal MCP approval exports for one local Python module."""
+    module_paths: dict[str, str] | None = None,
+    requested_names: frozenset[str] | None = None,
+    seen: frozenset[str] = frozenset(),
+) -> dict[str, PythonMCPApprovalLiteralExport]:
+    """Return immutable literal MCP approval exports and exact local named reexports."""
+    if relative in seen:
+        return {}
+    seen = seen | {relative}
     path = root / relative
     try:
         text = path.read_text(encoding="utf-8", errors="replace")
@@ -1177,7 +1183,14 @@ def python_mcp_approval_literal_export_nodes(
             elif isinstance(child, ast.ExceptHandler) and child.name:
                 mutation_counts[child.name] += 1
 
-    exports: dict[str, ast.AST] = {}
+    candidates: dict[str, list[PythonMCPApprovalLiteralExport]] = defaultdict(list)
+    import_counts: Counter[str] = Counter()
+    for statement in tree.body:
+        if not isinstance(statement, ast.ImportFrom):
+            continue
+        for alias in statement.names:
+            import_counts[alias.asname or alias.name] += 1
+
     for statement in tree.body:
         value: ast.AST | None = None
         targets: list[ast.AST] = []
@@ -1190,6 +1203,8 @@ def python_mcp_approval_literal_export_nodes(
         if value is None or len(targets) != 1 or not isinstance(targets[0], ast.Name):
             continue
         name = targets[0].id
+        if requested_names is not None and name not in requested_names:
+            continue
         if mutation_counts[name] != 1:
             continue
         if (
@@ -1197,8 +1212,51 @@ def python_mcp_approval_literal_export_nodes(
             and isinstance(value.value, (str, bool))
             or python_dict_like_entries(value) is not None
         ):
-            exports[name] = value
-    return exports
+            candidates[name].append(PythonMCPApprovalLiteralExport(value))
+
+    if module_paths is not None:
+        for statement in tree.body:
+            if not isinstance(statement, ast.ImportFrom):
+                continue
+            for alias in statement.names:
+                if alias.name == "*":
+                    continue
+                local_name = alias.asname or alias.name
+                if requested_names is not None and local_name not in requested_names:
+                    continue
+                if import_counts[local_name] != 1 or mutation_counts[local_name] != 0:
+                    continue
+                resolution = resolve_python_import(
+                    root,
+                    relative,
+                    statement,
+                    alias.name,
+                    module_paths,
+                )
+                if resolution is None:
+                    continue
+                target_exports = python_mcp_approval_literal_export_nodes(
+                    root,
+                    resolution.path,
+                    module_paths,
+                    frozenset({alias.name}),
+                    seen,
+                )
+                exported = target_exports.get(alias.name)
+                if exported is None:
+                    continue
+                candidates[local_name].append(
+                    PythonMCPApprovalLiteralExport(
+                        exported.node,
+                        "literal-reexport",
+                    )
+                )
+
+    return {
+        name: exports[0]
+        for name, exports in candidates.items()
+        if len(exports) == 1
+    }
 
 
 def python_openai_mcp_require_approval_attributes(
@@ -1297,6 +1355,12 @@ def python_openai_hosted_mcp_approval_attributes(
             resolution = resolution.replace(
                 "imported-local-literal:",
                 "imported-local-tool-config:",
+                1,
+            )
+        elif resolution.startswith("imported-local-reexport-literal:"):
+            resolution = resolution.replace(
+                "imported-local-reexport-literal:",
+                "imported-local-reexport-tool-config:",
                 1,
             )
         elif resolution == "same-block-literal":
@@ -2215,6 +2279,12 @@ class PythonClassNetworkSummary:
 class PythonImportResolution:
     path: str
     basis: str
+
+
+@dataclass(frozen=True)
+class PythonMCPApprovalLiteralExport:
+    node: ast.AST
+    resolution: str = "literal-export"
 
 
 @dataclass(frozen=True)
@@ -11082,7 +11152,9 @@ def scan_python(
         for name, statement in imported_mcp_constructors.items()
     }
     imported_mcp_approval_literals: dict[str, tuple[ast.AST, str]] = {}
-    imported_mcp_approval_export_cache: dict[str, dict[str, ast.AST]] = {}
+    imported_mcp_approval_export_cache: dict[
+        tuple[str, str], dict[str, PythonMCPApprovalLiteralExport]
+    ] = {}
     for statement in tree.body:
         if not isinstance(statement, ast.ImportFrom):
             continue
@@ -11095,14 +11167,26 @@ def scan_python(
             resolution = resolve_python_import(root, relative, statement, alias.name, module_paths)
             if resolution is None:
                 continue
-            exports = imported_mcp_approval_export_cache.setdefault(
-                resolution.path,
-                python_mcp_approval_literal_export_nodes(root, resolution.path),
-            )
+            export_cache_key = (resolution.path, alias.name)
+            if export_cache_key not in imported_mcp_approval_export_cache:
+                imported_mcp_approval_export_cache[export_cache_key] = (
+                    python_mcp_approval_literal_export_nodes(
+                        root,
+                        resolution.path,
+                        module_paths,
+                        frozenset({alias.name}),
+                    )
+                )
+            exports = imported_mcp_approval_export_cache[export_cache_key]
             if exported := exports.get(alias.name):
+                imported_resolution = f"imported-local-literal:{resolution.basis}"
+                if exported.resolution == "literal-reexport":
+                    imported_resolution = (
+                        f"imported-local-reexport-literal:{resolution.basis}"
+                    )
                 imported_mcp_approval_literals[local_name] = (
-                    exported,
-                    f"imported-local-literal:{resolution.basis}",
+                    exported.node,
+                    imported_resolution,
                 )
 
     def exact_mcp_approval_literal_binding(name: ast.Name) -> tuple[ast.AST, str] | None:

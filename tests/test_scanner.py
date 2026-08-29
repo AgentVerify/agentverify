@@ -2882,23 +2882,23 @@ def test_python_openai_hosted_mcp_approval_policy_is_exact() -> None:
         for component in ir.components
         if component.kind == "tool" and component.attributes.get("constructor") == "HostedMCPTool"
     }
-    assert set(tools) == {27, 35, 44, 55, 63, 71, 79, 87, 88, 89}
-    assert tools[27].attributes == {
+    assert set(tools) == {32, 40, 49, 60, 68, 76, 84, 92, 93, 94, 95, 103, 104}
+    assert tools[32].attributes == {
         "binding": "literal-tools-list-inline-constructor",
         "constructor": "HostedMCPTool",
         "registration": "agent-tool-reference",
-        "registration_line": 24,
+        "registration_line": 29,
         "resolution": "literal-inline-constructor",
         "scope": "production",
         "mcp_approval_policy": "disabled-explicit",
         "mcp_approval_requirement": "never",
         "mcp_approval_handler": "none",
     }
-    assert tools[35].attributes == {
+    assert tools[40].attributes == {
         "binding": "literal-tools-list-inline-constructor",
         "constructor": "HostedMCPTool",
         "registration": "agent-tool-reference",
-        "registration_line": 24,
+        "registration_line": 29,
         "resolution": "literal-inline-constructor",
         "scope": "production",
         "mcp_approval_binding": "require_approval",
@@ -2908,11 +2908,11 @@ def test_python_openai_hosted_mcp_approval_policy_is_exact() -> None:
         "mcp_approval_handler": "configured",
         "mcp_approval_handler_policy": "callback-controlled",
     }
-    assert tools[44].attributes == {
+    assert tools[49].attributes == {
         "binding": "literal-tools-list-inline-constructor",
         "constructor": "HostedMCPTool",
         "registration": "agent-tool-reference",
-        "registration_line": 24,
+        "registration_line": 29,
         "resolution": "literal-inline-constructor",
         "scope": "production",
         "mcp_approval_never_tool_names": ["read_page"],
@@ -2921,57 +2921,79 @@ def test_python_openai_hosted_mcp_approval_policy_is_exact() -> None:
         "mcp_approval_policy": "selective",
         "mcp_approval_handler": "manual-run-loop",
     }
-    assert tools[55].attributes == {
+    assert tools[60].attributes == {
         "binding": "literal-tools-list-inline-constructor",
         "constructor": "HostedMCPTool",
         "registration": "agent-tool-reference",
-        "registration_line": 24,
+        "registration_line": 29,
         "resolution": "literal-inline-constructor",
         "scope": "production",
         "mcp_approval_binding": "dynamic_policy",
         "mcp_approval_policy": "dynamic",
         "mcp_approval_handler": "manual-run-loop",
     }
-    assert tools[63].attributes["mcp_approval_binding"] == "IMPORTED_ALWAYS"
-    assert tools[63].attributes["mcp_approval_resolution"] == (
+    assert tools[68].attributes["mcp_approval_binding"] == "IMPORTED_ALWAYS"
+    assert tools[68].attributes["mcp_approval_resolution"] == (
         "imported-local-literal:repository-module-single-path"
     )
-    assert tools[63].attributes["mcp_approval_policy"] == "always-required"
-    assert tools[63].attributes["mcp_approval_requirement"] == "always"
-    assert tools[63].attributes["mcp_approval_handler"] == "manual-run-loop"
+    assert tools[68].attributes["mcp_approval_policy"] == "always-required"
+    assert tools[68].attributes["mcp_approval_requirement"] == "always"
+    assert tools[68].attributes["mcp_approval_handler"] == "manual-run-loop"
 
-    assert tools[71].attributes["mcp_approval_binding"] == "IMPORTED_SELECTIVE"
-    assert tools[71].attributes["mcp_approval_resolution"] == (
+    assert tools[76].attributes["mcp_approval_binding"] == "IMPORTED_SELECTIVE"
+    assert tools[76].attributes["mcp_approval_resolution"] == (
         "imported-local-literal:repository-module-single-path"
     )
-    assert tools[71].attributes["mcp_approval_policy"] == "selective"
-    assert tools[71].attributes["mcp_approval_never_tool_names"] == ["read_hosted"]
-    assert tools[71].attributes["mcp_approval_always_tool_names"] == ["write_hosted"]
+    assert tools[76].attributes["mcp_approval_policy"] == "selective"
+    assert tools[76].attributes["mcp_approval_never_tool_names"] == ["read_hosted"]
+    assert tools[76].attributes["mcp_approval_always_tool_names"] == ["write_hosted"]
 
-    assert tools[79].attributes["mcp_approval_binding"] == "MUTATED_POLICY"
-    assert tools[79].attributes["mcp_approval_policy"] == "dynamic"
+    assert tools[84].attributes["mcp_approval_binding"] == "MUTATED_POLICY"
+    assert tools[84].attributes["mcp_approval_policy"] == "dynamic"
 
-    assert tools[87].attributes["mcp_tool_config_binding"] == "IMPORTED_TOOL_CONFIG"
-    assert tools[87].attributes["mcp_tool_config_resolution"] == (
+    assert tools[92].attributes["mcp_tool_config_binding"] == "IMPORTED_TOOL_CONFIG"
+    assert tools[92].attributes["mcp_tool_config_resolution"] == (
         "imported-local-tool-config:repository-module-single-path"
     )
-    assert tools[87].attributes["mcp_approval_policy"] == "selective"
-    assert tools[87].attributes["mcp_approval_never_tool_names"] == ["read_config"]
-    assert tools[87].attributes["mcp_approval_never_read_only"] is True
-    assert tools[87].attributes["mcp_approval_always_tool_names"] == ["write_config"]
+    assert tools[92].attributes["mcp_approval_policy"] == "selective"
+    assert tools[92].attributes["mcp_approval_never_tool_names"] == ["read_config"]
+    assert tools[92].attributes["mcp_approval_never_read_only"] is True
+    assert tools[92].attributes["mcp_approval_always_tool_names"] == ["write_config"]
 
-    assert tools[88].attributes["mcp_tool_config_binding"] == (
+    assert tools[93].attributes["mcp_tool_config_binding"] == (
         "IMPORTED_ALIASED_TOOL_CONFIG"
     )
-    assert tools[88].attributes["mcp_tool_config_resolution"] == (
+    assert tools[93].attributes["mcp_tool_config_resolution"] == (
         "imported-local-tool-config:repository-module-single-path"
     )
-    assert tools[88].attributes["mcp_approval_policy"] == "always-required"
-    assert tools[88].attributes["mcp_approval_requirement"] == "always"
+    assert tools[93].attributes["mcp_approval_policy"] == "always-required"
+    assert tools[93].attributes["mcp_approval_requirement"] == "always"
 
-    assert tools[89].attributes["mcp_tool_config_binding"] == "MUTATED_TOOL_CONFIG"
-    assert "mcp_tool_config_resolution" not in tools[89].attributes
-    assert tools[89].attributes["mcp_approval_policy"] == "dynamic"
+    assert tools[94].attributes["mcp_tool_config_binding"] == "MUTATED_TOOL_CONFIG"
+    assert "mcp_tool_config_resolution" not in tools[94].attributes
+    assert tools[94].attributes["mcp_approval_policy"] == "dynamic"
+
+    assert tools[95].attributes["mcp_approval_binding"] == "REEXPORTED_ALWAYS"
+    assert tools[95].attributes["mcp_approval_resolution"] == (
+        "imported-local-reexport-literal:repository-module-single-path"
+    )
+    assert tools[95].attributes["mcp_approval_policy"] == "always-required"
+    assert tools[95].attributes["mcp_approval_requirement"] == "always"
+
+    assert tools[103].attributes["mcp_tool_config_binding"] == "REEXPORTED_TOOL_CONFIG"
+    assert tools[103].attributes["mcp_tool_config_resolution"] == (
+        "imported-local-reexport-tool-config:repository-module-single-path"
+    )
+    assert tools[103].attributes["mcp_approval_policy"] == "selective"
+    assert tools[103].attributes["mcp_approval_never_tool_names"] == ["read_config"]
+    assert tools[103].attributes["mcp_approval_never_read_only"] is True
+    assert tools[103].attributes["mcp_approval_always_tool_names"] == ["write_config"]
+
+    assert tools[104].attributes["mcp_tool_config_binding"] == (
+        "REEXPORTED_MUTATED_TOOL_CONFIG"
+    )
+    assert "mcp_tool_config_resolution" not in tools[104].attributes
+    assert tools[104].attributes["mcp_approval_policy"] == "dynamic"
 
     assert not any(
         component.kind == "tool" and component.name.startswith("FakeHostedMCPTool")
@@ -2982,37 +3004,47 @@ def test_python_openai_hosted_mcp_approval_policy_is_exact() -> None:
         for component in ir.components
         if component.kind == "capability" and component.name == "mcp-access"
     }
-    assert set(capabilities) == {27, 35, 44, 55, 63, 71, 79, 87, 88, 89}
-    assert capabilities[35].attributes["mcp_approval_resolution"] == (
+    assert set(capabilities) == {32, 40, 49, 60, 68, 76, 84, 92, 93, 94, 95, 103, 104}
+    assert capabilities[40].attributes["mcp_approval_resolution"] == (
         "same-block-literal-string"
     )
-    assert capabilities[44].attributes["mcp_approval_policy"] == "selective"
-    assert capabilities[63].attributes["mcp_approval_resolution"] == (
+    assert capabilities[49].attributes["mcp_approval_policy"] == "selective"
+    assert capabilities[68].attributes["mcp_approval_resolution"] == (
         "imported-local-literal:repository-module-single-path"
     )
-    assert capabilities[71].attributes["mcp_approval_policy"] == "selective"
-    assert capabilities[79].attributes["mcp_approval_policy"] == "dynamic"
-    assert capabilities[87].attributes["mcp_tool_config_resolution"] == (
+    assert capabilities[76].attributes["mcp_approval_policy"] == "selective"
+    assert capabilities[84].attributes["mcp_approval_policy"] == "dynamic"
+    assert capabilities[92].attributes["mcp_tool_config_resolution"] == (
         "imported-local-tool-config:repository-module-single-path"
     )
-    assert capabilities[88].attributes["mcp_approval_requirement"] == "always"
-    assert capabilities[89].attributes["mcp_approval_policy"] == "dynamic"
+    assert capabilities[93].attributes["mcp_approval_requirement"] == "always"
+    assert capabilities[94].attributes["mcp_approval_policy"] == "dynamic"
+    assert capabilities[95].attributes["mcp_approval_resolution"] == (
+        "imported-local-reexport-literal:repository-module-single-path"
+    )
+    assert capabilities[103].attributes["mcp_tool_config_resolution"] == (
+        "imported-local-reexport-tool-config:repository-module-single-path"
+    )
+    assert capabilities[104].attributes["mcp_approval_policy"] == "dynamic"
     tool_edges = {
         edge.source_name: edge
         for edge in ir.relationships
         if edge.source_kind == "tool" and edge.target_kind == "capability"
     }
     assert set(tool_edges) == {
-        "HostedMCPTool@27",
-        "HostedMCPTool@35",
-        "HostedMCPTool@44",
-        "HostedMCPTool@55",
-        "HostedMCPTool@63",
-        "HostedMCPTool@71",
-        "HostedMCPTool@79",
-        "HostedMCPTool@87",
-        "HostedMCPTool@88",
-        "HostedMCPTool@89",
+        "HostedMCPTool@32",
+        "HostedMCPTool@40",
+        "HostedMCPTool@49",
+        "HostedMCPTool@60",
+        "HostedMCPTool@68",
+        "HostedMCPTool@76",
+        "HostedMCPTool@84",
+        "HostedMCPTool@92",
+        "HostedMCPTool@93",
+        "HostedMCPTool@94",
+        "HostedMCPTool@95",
+        "HostedMCPTool@103",
+        "HostedMCPTool@104",
     }
 
 
@@ -14969,52 +15001,63 @@ def test_python_openai_mcp_server_approval_policy_is_exact() -> None:
         for component in ir.components
         if component.kind == "mcp-server" and component.evidence.path == "app.py"
     }
-    assert set(servers) == {21, 25, 29, 33, 37, 41, 45, 49}
-    for line in (21, 25, 29, 33, 37, 41, 45):
+    assert set(servers) == {22, 26, 30, 34, 38, 42, 46, 50, 54, 58}
+    for line in (22, 26, 30, 34, 38, 42, 46, 50, 54):
         assert servers[line].attributes["mcp_approval_contract"] == (
             "openai-agents-python-mcp-server"
         )
         assert servers[line].attributes["mcp_approval_source"] == "callsite-require-approval"
         assert servers[line].attributes["mcp_approval_constructor"] == "MCPServerStdio"
 
-    assert servers[21].attributes["mcp_approval_policy"] == "disabled-explicit"
-    assert servers[21].attributes["mcp_approval_requirement"] == "never"
-    assert servers[21].attributes["approval_policy"] == "disabled-explicit"
+    assert servers[22].attributes["mcp_approval_policy"] == "disabled-explicit"
+    assert servers[22].attributes["mcp_approval_requirement"] == "never"
+    assert servers[22].attributes["approval_policy"] == "disabled-explicit"
 
-    assert servers[25].attributes["mcp_approval_binding"] == "require_approval"
-    assert servers[25].attributes["mcp_approval_resolution"] == "same-block-literal-string"
-    assert servers[25].attributes["mcp_approval_policy"] == "always-required"
-    assert servers[25].attributes["mcp_approval_requirement"] == "always"
+    assert servers[26].attributes["mcp_approval_binding"] == "require_approval"
+    assert servers[26].attributes["mcp_approval_resolution"] == "same-block-literal-string"
+    assert servers[26].attributes["mcp_approval_policy"] == "always-required"
+    assert servers[26].attributes["mcp_approval_requirement"] == "always"
 
-    assert servers[29].attributes["mcp_approval_binding"] == "selective_policy"
-    assert servers[29].attributes["mcp_approval_resolution"] == "same-block-literal"
-    assert servers[29].attributes["mcp_approval_policy"] == "selective"
-    assert servers[29].attributes["mcp_approval_never_tool_names"] == ["read_file"]
-    assert servers[29].attributes["mcp_approval_never_read_only"] is True
-    assert servers[29].attributes["mcp_approval_always_tool_names"] == ["write_file"]
+    assert servers[30].attributes["mcp_approval_binding"] == "selective_policy"
+    assert servers[30].attributes["mcp_approval_resolution"] == "same-block-literal"
+    assert servers[30].attributes["mcp_approval_policy"] == "selective"
+    assert servers[30].attributes["mcp_approval_never_tool_names"] == ["read_file"]
+    assert servers[30].attributes["mcp_approval_never_read_only"] is True
+    assert servers[30].attributes["mcp_approval_always_tool_names"] == ["write_file"]
 
-    assert servers[33].attributes["mcp_approval_binding"] == "dynamic_policy"
-    assert servers[33].attributes["mcp_approval_policy"] == "dynamic"
+    assert servers[34].attributes["mcp_approval_binding"] == "dynamic_policy"
+    assert servers[34].attributes["mcp_approval_policy"] == "dynamic"
 
-    assert servers[37].attributes["mcp_approval_binding"] == "IMPORTED_ALWAYS"
-    assert servers[37].attributes["mcp_approval_resolution"] == (
+    assert servers[38].attributes["mcp_approval_binding"] == "IMPORTED_ALWAYS"
+    assert servers[38].attributes["mcp_approval_resolution"] == (
         "imported-local-literal:repository-module-single-path"
     )
-    assert servers[37].attributes["mcp_approval_policy"] == "always-required"
-    assert servers[37].attributes["mcp_approval_requirement"] == "always"
+    assert servers[38].attributes["mcp_approval_policy"] == "always-required"
+    assert servers[38].attributes["mcp_approval_requirement"] == "always"
 
-    assert servers[41].attributes["mcp_approval_binding"] == "IMPORTED_SELECTIVE"
-    assert servers[41].attributes["mcp_approval_resolution"] == (
+    assert servers[42].attributes["mcp_approval_binding"] == "IMPORTED_SELECTIVE"
+    assert servers[42].attributes["mcp_approval_resolution"] == (
         "imported-local-literal:repository-module-single-path"
     )
-    assert servers[41].attributes["mcp_approval_policy"] == "selective"
-    assert servers[41].attributes["mcp_approval_never_tool_names"] == ["read_policy"]
-    assert servers[41].attributes["mcp_approval_always_tool_names"] == ["write_policy"]
+    assert servers[42].attributes["mcp_approval_policy"] == "selective"
+    assert servers[42].attributes["mcp_approval_never_tool_names"] == ["read_policy"]
+    assert servers[42].attributes["mcp_approval_always_tool_names"] == ["write_policy"]
 
-    assert servers[45].attributes["mcp_approval_binding"] == "MUTATED_POLICY"
-    assert servers[45].attributes["mcp_approval_policy"] == "dynamic"
+    assert servers[46].attributes["mcp_approval_binding"] == "MUTATED_POLICY"
+    assert servers[46].attributes["mcp_approval_policy"] == "dynamic"
 
-    assert "mcp_approval_policy" not in servers[49].attributes
+    assert servers[50].attributes["mcp_approval_binding"] == "REEXPORTED_SELECTIVE"
+    assert servers[50].attributes["mcp_approval_resolution"] == (
+        "imported-local-reexport-literal:repository-module-single-path"
+    )
+    assert servers[50].attributes["mcp_approval_policy"] == "selective"
+    assert servers[50].attributes["mcp_approval_never_tool_names"] == ["read_policy"]
+    assert servers[50].attributes["mcp_approval_always_tool_names"] == ["write_policy"]
+
+    assert servers[54].attributes["mcp_approval_binding"] == "REEXPORTED_MUTATED_POLICY"
+    assert servers[54].attributes["mcp_approval_policy"] == "dynamic"
+
+    assert "mcp_approval_policy" not in servers[58].attributes
 
     subclass_server = next(
         component

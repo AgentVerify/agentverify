@@ -2,6 +2,7 @@ from typing import Literal
 
 from agents import Agent
 from agents.mcp import MCPServerStdio
+from barrel import REEXPORTED_MUTATED_POLICY, REEXPORTED_SELECTIVE
 from local_mcp import MCPServerStdio as FakeMCPServerStdio
 from policies import IMPORTED_ALWAYS, IMPORTED_SELECTIVE, MUTATED_POLICY
 
@@ -46,6 +47,14 @@ def build_agent() -> Agent:
         params={"command": "python", "args": ["mcp_server.py"]},
         require_approval=MUTATED_POLICY,
     )
+    reexported_selective_approval = MCPServerStdio(
+        params={"command": "python", "args": ["mcp_server.py"]},
+        require_approval=REEXPORTED_SELECTIVE,
+    )
+    reexported_mutated_approval = MCPServerStdio(
+        params={"command": "python", "args": ["mcp_server.py"]},
+        require_approval=REEXPORTED_MUTATED_POLICY,
+    )
     fake_approval = FakeMCPServerStdio(
         params={"command": "python", "args": ["mcp_server.py"]},
         require_approval="always",
@@ -60,6 +69,8 @@ def build_agent() -> Agent:
             imported_literal_approval,
             imported_selective_approval,
             imported_mutated_approval,
+            reexported_selective_approval,
+            reexported_mutated_approval,
             fake_approval,
         ],
     )
