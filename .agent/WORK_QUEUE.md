@@ -34,8 +34,10 @@
   `config.parallelToolCalls`,
   `config.reasoning.effort`, literal `config.outputModalities`, audio input/output format, and
   audio transcription model/delay/languages plus privacy-preserving transcription prompt/keyword
-  session
-  policy, without broadening into ambiguous helper/config composition.
+  session policy, plus exact literal
+  `config.audio.input.turnDetection.type/eagerness/createResponse/interruptResponse` resolved from
+  same-file agents or narrow exported sibling `RealtimeAgent` imports, without broadening into
+  ambiguous helper/config composition or arbitrary spread objects.
 - Continue OpenAI Agents JS HITL and safety-governance extraction where evidence remains exact:
   richer `needsApproval` predicate quality, automatic approval bypasses, and `computerTool`
   `onSafetyCheck` callbacks that distinguish explicit user/policy review from pass-through

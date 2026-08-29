@@ -17289,6 +17289,10 @@ def add_typescript_openai_realtime_session_config_control(
     transcription_languages: list[str] | None,
     transcription_prompt_length: int | None,
     transcription_keywords: list[str] | None,
+    turn_detection_type: str | None,
+    turn_detection_eagerness: str | None,
+    turn_detection_create_response: bool | None,
+    turn_detection_interrupt_response: bool | None,
     symbol_identity: str,
 ) -> tuple[str, str]:
     """Add exact OpenAI Agents JS RealtimeSession config governance evidence."""
@@ -17333,6 +17337,14 @@ def add_typescript_openai_realtime_session_config_control(
     if transcription_keywords is not None:
         attributes["transcription_keywords"] = transcription_keywords
         attributes["transcription_keyword_count"] = len(transcription_keywords)
+    if turn_detection_type is not None:
+        attributes["turn_detection_type"] = turn_detection_type
+    if turn_detection_eagerness is not None:
+        attributes["turn_detection_eagerness"] = turn_detection_eagerness
+    if turn_detection_create_response is not None:
+        attributes["turn_detection_create_response"] = turn_detection_create_response
+    if turn_detection_interrupt_response is not None:
+        attributes["turn_detection_interrupt_response"] = turn_detection_interrupt_response
     ir.add_component(
         Component(
             "control",
@@ -17536,6 +17548,27 @@ def typescript_literal_nested_object_string_array_property_location(
     if values is None or any(value is None for value in values):
         return None
     return [value for value in values if value is not None], property_offset, offset
+
+
+def typescript_literal_nested_object_boolean_property_location(
+    body: str,
+    *,
+    body_offset: int,
+    path: tuple[str, ...],
+) -> tuple[bool, int, int] | None:
+    """Resolve a nested direct boolean property plus property/value offsets."""
+    expression = body
+    offset = body_offset
+    property_offset = body_offset
+    for name in path:
+        location = typescript_object_property_expression_location(expression, name, offset)
+        if location is None:
+            return None
+        expression, property_offset, offset = location
+    value = typescript_literal_boolean_value(expression)
+    if value is None:
+        return None
+    return value, property_offset, offset
 
 
 def add_typescript_openai_trace_id_control(
@@ -19904,6 +19937,8 @@ def typescript_openai_web_search_attributes(body: str, constructor: str) -> dict
 
 def typescript_graph(
     ir: RepositoryIR,
+    root: Path,
+    path: Path,
     relative: str,
     text: str,
     lines: list[str],
@@ -21065,6 +21100,46 @@ def typescript_graph(
         assigned_agents[variable_name].append(
             (initializer_offset, initializer_offset + len(initializer), agent_name, agent_id)
         )
+    for local_name, (target, original) in imported_symbols.items():
+        if local_name in local_agents or typescript_import_binding_is_shadowed(text, local_name):
+            continue
+        target_path = root / target
+        try:
+            target_text = target_path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        target_code = typescript_code_mask(target_text)
+        target_realtime_imports = {
+            **typescript_named_import_bindings(target_text, "@openai/agents/realtime"),
+            **typescript_named_import_bindings(target_text, "@openai/agents-realtime"),
+        }
+        imported_agent_matches: list[tuple[str, str]] = []
+        for target_constructor, target_imported in target_realtime_imports.items():
+            if target_imported != "RealtimeAgent" or typescript_import_binding_is_shadowed(
+                target_text,
+                target_constructor,
+            ):
+                continue
+            exported_agent_pattern = re.compile(
+                rf"\bexport\s+const\s+{re.escape(original)}"
+                r"\s*(?::\s*(?:[^=;\n]|=(?!>))+)?"
+                rf"=\s*new\s+{re.escape(target_constructor)}\s*\("
+            )
+            for exported_agent_match in exported_agent_pattern.finditer(target_code):
+                opening = target_code.find(
+                    "(",
+                    exported_agent_match.start(),
+                    exported_agent_match.end(),
+                )
+                end = typescript_balanced_end(target_code, opening, "(", ")")
+                if end is None:
+                    continue
+                body = target_text[opening + 1 : end - 1]
+                agent_name = typescript_object_string_property(body, "name") or original
+                agent_id = source_symbol("ts", target, "agent", original)
+                imported_agent_matches.append((agent_name, agent_id))
+        if len(imported_agent_matches) == 1:
+            local_agents[local_name] = imported_agent_matches[0]
     agent_alias_pattern = re.compile(
         r"\b(?:const|let)\s+([A-Za-z_$][\w$]*)"
         r"\s*(?::\s*(?:[^=;\n]|=(?!>))+)?"
@@ -21216,6 +21291,10 @@ def typescript_graph(
                 transcription_languages=None,
                 transcription_prompt_length=None,
                 transcription_keywords=None,
+                turn_detection_type=None,
+                turn_detection_eagerness=None,
+                turn_detection_create_response=None,
+                turn_detection_interrupt_response=None,
                 symbol_identity=f"{session_name}.config@{policy_line}",
             )
             agent_name, agent_id = source_agent
@@ -21345,6 +21424,60 @@ def typescript_graph(
             transcription_keywords, transcription_keywords_offset, _ = (
                 transcription_keywords_location
             )
+        turn_detection_type = None
+        turn_detection_type_offset = None
+        turn_detection_type_location = (
+            typescript_literal_nested_object_string_property_location(
+                config_expression,
+                body_offset=config_offset,
+                path=("audio", "input", "turnDetection", "type"),
+            )
+        )
+        if turn_detection_type_location is not None:
+            turn_detection_type, turn_detection_type_offset, _ = turn_detection_type_location
+        turn_detection_eagerness = None
+        turn_detection_eagerness_offset = None
+        turn_detection_eagerness_location = (
+            typescript_literal_nested_object_string_property_location(
+                config_expression,
+                body_offset=config_offset,
+                path=("audio", "input", "turnDetection", "eagerness"),
+            )
+        )
+        if turn_detection_eagerness_location is not None:
+            turn_detection_eagerness, turn_detection_eagerness_offset, _ = (
+                turn_detection_eagerness_location
+            )
+        turn_detection_create_response = None
+        turn_detection_create_response_offset = None
+        turn_detection_create_response_location = (
+            typescript_literal_nested_object_boolean_property_location(
+                config_expression,
+                body_offset=config_offset,
+                path=("audio", "input", "turnDetection", "createResponse"),
+            )
+        )
+        if turn_detection_create_response_location is not None:
+            (
+                turn_detection_create_response,
+                turn_detection_create_response_offset,
+                _,
+            ) = turn_detection_create_response_location
+        turn_detection_interrupt_response = None
+        turn_detection_interrupt_response_offset = None
+        turn_detection_interrupt_response_location = (
+            typescript_literal_nested_object_boolean_property_location(
+                config_expression,
+                body_offset=config_offset,
+                path=("audio", "input", "turnDetection", "interruptResponse"),
+            )
+        )
+        if turn_detection_interrupt_response_location is not None:
+            (
+                turn_detection_interrupt_response,
+                turn_detection_interrupt_response_offset,
+                _,
+            ) = turn_detection_interrupt_response_location
         parallel_tool_calls = None
         parallel_property_offset = None
         parallel_tool_calls_location = typescript_object_property_expression_location(
@@ -21369,6 +21502,10 @@ def typescript_graph(
             and transcription_languages is None
             and transcription_prompt_length is None
             and transcription_keywords is None
+            and turn_detection_type is None
+            and turn_detection_eagerness is None
+            and turn_detection_create_response is None
+            and turn_detection_interrupt_response is None
         ):
             continue
         policy_offset = min(
@@ -21384,6 +21521,10 @@ def typescript_graph(
                 transcription_prompt_offset,
                 transcription_keywords_offset,
                 transcription_languages_offset,
+                turn_detection_type_offset,
+                turn_detection_eagerness_offset,
+                turn_detection_create_response_offset,
+                turn_detection_interrupt_response_offset,
                 parallel_property_offset,
             )
             if offset is not None
@@ -21409,6 +21550,10 @@ def typescript_graph(
             transcription_languages=transcription_languages,
             transcription_prompt_length=transcription_prompt_length,
             transcription_keywords=transcription_keywords,
+            turn_detection_type=turn_detection_type,
+            turn_detection_eagerness=turn_detection_eagerness,
+            turn_detection_create_response=turn_detection_create_response,
+            turn_detection_interrupt_response=turn_detection_interrupt_response,
             symbol_identity=f"{session_name}.config@{policy_line}",
         )
         agent_name, agent_id = source_agent
@@ -21444,6 +21589,16 @@ def typescript_graph(
         if transcription_keywords is not None:
             config_attributes["transcription_keywords"] = transcription_keywords
             config_attributes["transcription_keyword_count"] = len(transcription_keywords)
+        if turn_detection_type is not None:
+            config_attributes["turn_detection_type"] = turn_detection_type
+        if turn_detection_eagerness is not None:
+            config_attributes["turn_detection_eagerness"] = turn_detection_eagerness
+        if turn_detection_create_response is not None:
+            config_attributes["turn_detection_create_response"] = turn_detection_create_response
+        if turn_detection_interrupt_response is not None:
+            config_attributes["turn_detection_interrupt_response"] = (
+                turn_detection_interrupt_response
+            )
         ir.add_relationship(
             Relationship(
                 "agent",
@@ -24021,7 +24176,15 @@ def scan_typescript(ir: RepositoryIR, root: Path, path: Path, text: str) -> None
         brace_depth += masked_line.count("{") - masked_line.count("}")
         line_depths[line_number] = (start_depth, brace_depth)
     imported_symbols = resolve_typescript_imports(root, path, text)
-    tool_by_line, tool_input_names = typescript_graph(ir, relative, text, lines, imported_symbols)
+    tool_by_line, tool_input_names = typescript_graph(
+        ir,
+        root,
+        path,
+        relative,
+        text,
+        lines,
+        imported_symbols,
+    )
     dynamic_names_by_tool = {tool_id: set(names) for tool_id, names in tool_input_names.items()}
     guarded_path_names_by_tool: dict[str, dict[str, TypeScriptPathBoundaryHelper]] = defaultdict(
         dict

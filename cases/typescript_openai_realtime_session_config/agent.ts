@@ -5,6 +5,8 @@ const dynamicOutputModalities = ["audio"];
 const dynamicAudioFormat = process.env.REALTIME_AUDIO_FORMAT;
 const dynamicTranscriptionLanguages = ["en"];
 const dynamicTranscriptionKeywords = ["OpenAI Agents SDK"];
+const dynamicTurnDetectionType = process.env.REALTIME_TURN_DETECTION_TYPE;
+const dynamicCreateResponse = Boolean(process.env.REALTIME_CREATE_RESPONSE);
 
 const greeter = new RealtimeAgent({
   name: "Realtime greeter",
@@ -61,6 +63,21 @@ export const modelOnlySession = new RealtimeSession(greeter, {
   model: "gpt-realtime-2.1",
 });
 
+export const turnDetectionSession = new RealtimeSession(greeter, {
+  config: {
+    audio: {
+      input: {
+        turnDetection: {
+          type: "semantic_vad",
+          eagerness: "medium",
+          createResponse: true,
+          interruptResponse: true,
+        },
+      },
+    },
+  },
+});
+
 export const dynamicSession = new RealtimeSession(greeter, {
   config: {
     parallelToolCalls: dynamicParallelToolCalls,
@@ -73,6 +90,10 @@ export const dynamicSession = new RealtimeSession(greeter, {
           prompt: process.env.REALTIME_TRANSCRIPTION_PROMPT,
           keywords: dynamicTranscriptionKeywords,
           languages: dynamicTranscriptionLanguages,
+        },
+        turnDetection: {
+          type: dynamicTurnDetectionType,
+          createResponse: dynamicCreateResponse,
         },
       },
     },

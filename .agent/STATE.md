@@ -717,6 +717,13 @@ catalog workflows.
   config labels pass 23/23, full public IR labels pass 2,233/2,233, and the full schema-v157
   engine benchmark refresh passes 71/71 repositories with 2,867 relationships and 10,651
   symbolized components.
+- Extended exact OpenAI Realtime turn-detection inventory to
+  `config.audio.input.turnDetection.type/eagerness/createResponse/interruptResponse`. Dynamic
+  turn-detection bindings remain unresolved, and the pinned `turnDetection.ts` docs example is
+  covered through narrow exported sibling `RealtimeAgent` import resolution back to `agent.ts`.
+  Focused RealtimeSession config labels pass 29/29, full public IR labels pass 2,239/2,239, and
+  the full schema-v158 engine benchmark refresh passes 71/71 repositories with 2,868
+  relationships and 10,652 symbolized components.
 
 ## Current findings
 
@@ -836,8 +843,12 @@ catalog workflows.
   `parallelToolCalls`,
   `reasoning.effort`, literal
   `outputModalities`, literal audio input/output formats, and literal audio transcription
-  model/delay/languages plus privacy-preserving prompt/keyword metadata exposes
-  `realtime-session-config-policy` controls linked to source-proven RealtimeAgents. Exact imported
+  model/delay/languages plus privacy-preserving prompt/keyword metadata, and literal
+  `audio.input.turnDetection.type/eagerness/createResponse/interruptResponse` exposes
+  `realtime-session-config-policy` controls linked to source-proven RealtimeAgents. Narrow
+  same-repository named sibling imports resolve only when the target exports one exact
+  `RealtimeAgent`, covering the pinned OpenAI Agents JS `turnDetection.ts` example without
+  broadening into arbitrary spread/config composition. Exact imported
   `withTrace` callbacks containing
   source-proven SDK `run(agent, ...)` calls, exact Runner instances with source-proven
   `.run(agent, ...)` calls, and exact delegated-agent `asTool` adapters emit `trace-group`,
@@ -874,7 +885,9 @@ semantics distinct from trace-correlation `withTrace(..., { groupId/traceId })` 
   including model-only session options,
   `config.parallelToolCalls`, `config.reasoning.effort`, literal `config.outputModalities`, audio
   input/output format, and audio transcription model/delay/languages plus privacy-preserving
-  prompt/keyword policy. For OpenAI
+  prompt/keyword policy, plus exact literal
+  `config.audio.input.turnDetection.type/eagerness/createResponse/interruptResponse` policy
+  through direct same-file agents or narrow exported sibling `RealtimeAgent` imports. For OpenAI
 approval work, keep literal always-approval, callback-controlled
 approval on generic tools/delegated tools/approval-capable builtin tools, delegated-agent adapter
 approval metadata, literal predicate metadata, SDK state approval decisions, helper-parameter

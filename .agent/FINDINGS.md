@@ -636,6 +636,12 @@
   dynamic scalar and array values remain unresolved. The local fixture plus pinned OpenAI Agents JS
   `configureSession.ts` and `sendMessage.ts` voice-agent examples bring the public IR truth set to
   2,233 passing labels.
+- OpenAI Realtime turn-detection behavior is now visible when literal and source-proven. Exact
+  `config.audio.input.turnDetection.type/eagerness/createResponse/interruptResponse` values emit
+  `realtime-session-config-policy` attributes, dynamic turn-detection bindings remain unresolved,
+  and a narrow named sibling import such as `import { agent } from './agent'` resolves only when the
+  target exports one exact `RealtimeAgent`. The pinned OpenAI Agents JS `turnDetection.ts` example
+  links back to `agent.ts#agent:agent`, bringing the public IR truth set to 2,239 passing labels.
 
 ## Hypotheses
 
