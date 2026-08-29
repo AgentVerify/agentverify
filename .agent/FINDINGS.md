@@ -52,6 +52,12 @@
   object bindings produce `agent uses tool` edges to already-inventoried entries. The pinned
   `agent-chat.ts` example now links the WorkflowAgent to its approval-protected `deleteFile`
   object-tool entry, and the public IR truth set passes 2,432/2,432 labels.
+- Vercel AI WorkflowAgent tools can delegate their actual behavior into same-file step helpers.
+  The pinned `agent-chat.ts` `calculate` object tool points `execute` at a helper with
+  `new Function(...)`; AgentVerify previously detected the code-execution capability but left it
+  disconnected from the tool/agent path. Unique stable same-file execute-helper mapping now links
+  `calculate -> code-execution`, keeps shared helpers unresolved, and raises the public checks to
+  730/730 reporting labels plus 2,433/2,433 IR labels.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
 - A freshly rebuilt wheel includes all fifteen runtime schemas; a verifier script now guards that
   package artifact expectation.

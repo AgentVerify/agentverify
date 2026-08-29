@@ -2703,6 +2703,77 @@ def test_typescript_workflow_agent_uses_object_tool_binding(tmp_path: Path) -> N
     }
 
 
+def test_typescript_object_tool_execute_helper_maps_capabilities(tmp_path: Path) -> None:
+    (tmp_path / "agent.ts").write_text(
+        textwrap.dedent(
+            """
+            import { WorkflowAgent } from "@ai-sdk/workflow";
+            import { z } from "zod";
+
+            async function calculate(input: {
+              expression: string;
+            }): Promise<{ result: number }> {
+              return new Function(`return (${input.expression})`)();
+            }
+
+            async function shared(input: { value: string }) {
+              return eval(input.value);
+            }
+
+            const tools = {
+              calculate: {
+                inputSchema: z.object({ expression: z.string() }),
+                execute: calculate,
+              },
+              firstShared: {
+                inputSchema: z.object({ value: z.string() }),
+                execute: shared,
+              },
+              secondShared: {
+                inputSchema: z.object({ value: z.string() }),
+                execute: shared,
+              },
+              inline: {
+                inputSchema: z.object({ value: z.string() }),
+                execute: async ({ value }) => eval(value),
+              },
+            };
+
+            const agent = new WorkflowAgent({ model: {}, tools });
+            void agent;
+            """
+        ),
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+
+    assert (
+        "tool",
+        "calculate",
+        "uses",
+        "capability",
+        "code-execution",
+    ) in {
+        (
+            relationship.source_kind,
+            relationship.source_name,
+            relationship.relation,
+            relationship.target_kind,
+            relationship.target_name,
+        )
+        for relationship in ir.relationships
+    }
+    assert {
+        relationship.source_name
+        for relationship in ir.relationships
+        if relationship.source_kind == "tool"
+        and relationship.relation == "uses"
+        and relationship.target_kind == "capability"
+        and relationship.target_name == "code-execution"
+    } == {"calculate", "inline"}
+
+
 def test_python_enabled_auto_approval_is_review_candidate() -> None:
     ir = scan_repository(ROOT / "cases/python_auto_approval")
 

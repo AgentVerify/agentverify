@@ -1,5 +1,25 @@
 # AgentVerify decisions
 
+## TypeScript object-tool execute helper bodies map only under unique stable same-file proof
+
+- Decision: When a generic TypeScript tool object has a direct `execute: helperName` property, map
+  capability detections inside the helper body back to that tool only if exactly one tool references
+  the helper, exactly one same-file free/static/block-arrow helper body exists, and the helper
+  identifier is not reassigned. The same helper may not be shared by multiple tools for this
+  inference.
+- Evidence: Vercel AI's pinned `examples/next-workflow/workflow/agent-chat.ts` defines a plain
+  object `calculate` tool with `execute: calculate`; the delegated helper contains
+  `new Function(...)`. Before this slice AgentVerify detected a floating `code-execution`
+  capability but could not connect it to the WorkflowAgent's tool graph. The scanner now emits
+  `calculate uses code-execution`, and AV-EXEC002 reports the reachable
+  `agent -> calculate -> code-execution` path. A local regression pins the positive helper case,
+  inline execute support, and the negative shared-helper ambiguity.
+- Alternative: Resolve any same-named function used by `execute`, including shared or reassigned
+  helpers. Rejected because many tool registries reuse helpers or wrappers; capability ownership
+  should remain source-proven rather than guessed from a name.
+- Revisit when: Imported helper modules, framework-specific step decorators, or alias chains can be
+  resolved with comparable mutation guards and call-site provenance.
+
 ## Vercel WorkflowAgent tool edges require exact constructor and stable tool-set binding
 
 - Decision: Treat `new WorkflowAgent(...)` as an agent only when `WorkflowAgent` is an unshadowed

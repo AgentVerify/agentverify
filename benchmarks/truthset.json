@@ -30,6 +30,7 @@
     {"id":"exec-shell-openhands-example-negative","target":{"kind":"repository","repository":"OpenHands/software-agent-sdk","commit":"1de2e6d1bfcf70c7c3d4eb13616811943f33dd75"},"rule_id":"AV-EXEC001","path":"examples/02_remote_agent_server/06_custom_tool/main.py","line":81,"expected":false,"anchor":{"kind":"capability","name":"shell-execution"}},
 
     {"id":"exec-code-ts-positive","target":{"kind":"local","path":"cases/typescript_eval"},"rule_id":"AV-EXEC002","path":"agent.ts","line":5,"expected":true},
+    {"id":"exec-code-vercel-workflow-helper-real","target":{"kind":"repository","repository":"vercel/ai","commit":"f607a129c0298870038b398dbcba57ff041114f6"},"rule_id":"AV-EXEC002","path":"examples/next-workflow/workflow/agent-chat.ts","line":57,"expected":true},
     {"id":"exec-code-constant-negative","target":{"kind":"local","path":"cases/constant_eval"},"rule_id":"AV-EXEC002","path":"agent.py","line":1,"expected":false,"anchor":{"kind":"capability","name":"code-execution"}},
     {"id":"exec-code-smolagents-real","target":{"kind":"repository","repository":"huggingface/smolagents","commit":"e3a5b8994b301983b91c0325546e9dc82eab8cf0"},"rule_id":"AV-EXEC002","path":"src/smolagents/tools.py","line":575,"expected":true},
     {"id":"exec-code-qwen-exec-real","target":{"kind":"repository","repository":"QwenLM/Qwen-Agent","commit":"31a4d36d123688581a9e9744427272b33ce940e0"},"rule_id":"AV-EXEC002","path":"qwen_agent/tools/python_executor.py","line":49,"expected":true},

@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-28T08:28:42.501195+00:00",
+  "generated_at": "2026-08-29T15:43:52.255197+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "reporting-rules",
     "labels_source": "benchmarks/truthset.json",
-    "labels_sha256": "a674b2f7595e05be0cbf57a805c90417faa0af68bf36ec81e43e9ed361c657b8",
+    "labels_sha256": "ac0996c6a0fcb450cabccf4a2b31d3e7b02812d27e91b5da713c8787485a08be",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 729,
-  "passed": 729,
+  "labels": 730,
+  "passed": 730,
   "failed": 0,
   "failure_summary": {
     "observation_mismatch": 0,
@@ -131,7 +131,7 @@
       "recall": 1.0
     },
     "AV-EXEC002": {
-      "tp": 38,
+      "tp": 39,
       "fp": 0,
       "tn": 124,
       "fn": 0,
@@ -465,6 +465,15 @@
     },
     {
       "id": "exec-code-ts-positive",
+      "rule_id": "AV-EXEC002",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "exec-code-vercel-workflow-helper-real",
       "rule_id": "AV-EXEC002",
       "expected": true,
       "observed": true,

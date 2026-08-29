@@ -37,6 +37,14 @@ catalog workflows.
   The pinned `examples/tools/computer-use-hitl.ts` helper approval now records both
   `AUTO_APPROVE_HITL` bypass evidence and `confirm` yes/no prompt-review source shape on the
   call-site-expanded approval control.
+- Added conservative same-file TypeScript object-tool `execute: helper` body mapping. A plain
+  object/factory/register tool now owns capability detections inside a unique, stable same-file
+  function or block-arrow helper, while shared helpers and reassigned helpers remain unresolved.
+  The helper span parser now skips TypeScript return type literals such as `Promise<{...}>` before
+  choosing the real function body. The pinned Vercel AI `agent-chat.ts` `calculate` tool now links
+  to its delegated `new Function(...)` code-execution capability, producing a reachable AV-EXEC002
+  finding through the WorkflowAgent. The reporting truth set covers 730/730 passing labels and the
+  public IR truth set covers 2,433/2,433 passing labels.
 - Added conservative TypeScript object-tool inventory for plain object properties with top-level
   `execute` plus `inputSchema`/`parameters`, including static `needsApproval: true as const`
   normalization. The pinned Vercel AI `examples/next-workflow/workflow/agent-chat.ts` `deleteFile`

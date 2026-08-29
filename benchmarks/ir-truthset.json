@@ -406,6 +406,7 @@
       }
     },
     {"id":"typescript-vercel-workflow-agent-object-tool-edge-real","target":{"kind":"repository","repository":"vercel/ai","commit":"f607a129c0298870038b398dbcba57ff041114f6"},"check_id":"IR-TS-TOOL-GRAPH","path":"examples/next-workflow/workflow/agent-chat.ts","line":160,"expected":true,"relationship":{"source_kind":"agent","source_name":"agent","source_id":"ts:examples/next-workflow/workflow/agent-chat.ts#agent:agent","relation":"uses","target_kind":"tool","target_name":"deleteFile","target_id":"ts:examples/next-workflow/workflow/agent-chat.ts#tool:deleteFile","attributes":{"analysis":"typescript-vercel-workflow-agent-tools","configuration":"WorkflowAgent.tools","binding":"tools-object-shorthand","tool_set_binding":"tools"}}},
+    {"id":"typescript-vercel-workflow-tool-execute-helper-code-execution-real","target":{"kind":"repository","repository":"vercel/ai","commit":"f607a129c0298870038b398dbcba57ff041114f6"},"check_id":"IR-TS-TOOL-GRAPH","path":"examples/next-workflow/workflow/agent-chat.ts","line":57,"expected":true,"relationship":{"source_kind":"tool","source_name":"calculate","source_id":"ts:examples/next-workflow/workflow/agent-chat.ts#tool:calculate","relation":"uses","target_kind":"capability","target_name":"code-execution","attributes":{}}},
     {
       "id": "typescript-cline-inline-tool-real",
       "target": {

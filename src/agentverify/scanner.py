@@ -16367,11 +16367,8 @@ def typescript_function_definitions(
         parameter_end = typescript_balanced_end(code, opening, "(", ")")
         if parameter_end is None:
             continue
-        body_opening = code.find("{", parameter_end)
-        if body_opening < 0 or body_opening - parameter_end > 500:
-            continue
-        terminator = code.find(";", parameter_end, body_opening)
-        if terminator >= 0:
+        body_opening = typescript_function_body_opening_after_parameters(code, parameter_end)
+        if body_opening is None:
             continue
         body_end = typescript_balanced_end(code, body_opening, "{", "}")
         if body_end is None:
@@ -16385,6 +16382,76 @@ def typescript_function_definitions(
             )
         )
     return definitions
+
+
+def typescript_function_body_opening_after_parameters(
+    code: str,
+    parameter_end: int,
+) -> int | None:
+    """Return the real function body opening after optional TypeScript return types."""
+    cursor = parameter_end
+    while cursor < len(code) and code[cursor].isspace():
+        cursor += 1
+    if cursor >= len(code):
+        return None
+    if code[cursor] != ":":
+        body_opening = code.find("{", parameter_end)
+        if body_opening < 0 or body_opening - parameter_end > 500:
+            return None
+        if code.find(";", parameter_end, body_opening) >= 0:
+            return None
+        return body_opening
+
+    cursor += 1
+    round_depth = 0
+    square_depth = 0
+    curly_depth = 0
+    angle_depth = 0
+    seen_type_token = False
+    type_literal_predecessors = {":", "<", "|", "&", ",", "(", "[", "=", "?"}
+    while cursor < len(code) and cursor - parameter_end <= 1000:
+        character = code[cursor]
+        if (
+            character == "{"
+            and round_depth == 0
+            and square_depth == 0
+            and curly_depth == 0
+            and angle_depth == 0
+            and seen_type_token
+        ):
+            previous = cursor - 1
+            while previous >= parameter_end and code[previous].isspace():
+                previous -= 1
+            if previous >= parameter_end and code[previous] not in type_literal_predecessors:
+                return cursor
+        if (
+            character == ";"
+            and round_depth == 0
+            and square_depth == 0
+            and curly_depth == 0
+            and angle_depth == 0
+        ):
+            return None
+        if not character.isspace():
+            seen_type_token = True
+        if character == "{":
+            curly_depth += 1
+        elif character == "}" and curly_depth:
+            curly_depth -= 1
+        elif character == "(":
+            round_depth += 1
+        elif character == ")" and round_depth:
+            round_depth -= 1
+        elif character == "[":
+            square_depth += 1
+        elif character == "]" and square_depth:
+            square_depth -= 1
+        elif character == "<":
+            angle_depth += 1
+        elif character == ">" and angle_depth:
+            angle_depth -= 1
+        cursor += 1
+    return None
 
 
 def typescript_function_body_spans(text: str) -> list[tuple[str, int, int]]:
@@ -16415,10 +16482,11 @@ def typescript_function_body_spans(text: str) -> list[tuple[str, int, int]]:
                 continue
             body_opening = parameter_end + arrow.end() - 1
         else:
-            body_opening = code.find("{", parameter_end)
-            if body_opening < 0 or body_opening - parameter_end > 500:
-                continue
-            if code.find(";", parameter_end, body_opening) >= 0:
+            body_opening = typescript_function_body_opening_after_parameters(
+                code,
+                parameter_end,
+            )
+            if body_opening is None:
                 continue
         body_end = typescript_balanced_end(code, body_opening, "{", "}")
         if body_end is None:
@@ -21577,6 +21645,30 @@ def add_typescript_generic_tool(
         tool_by_line[line_number] = (tool_name, tool_id)
 
 
+def typescript_tool_execute_identifier(body: str) -> str | None:
+    """Return a direct `execute: helper` identifier from one tool object."""
+    execute_expression = typescript_object_property_expression(body, "execute")
+    if execute_expression is None:
+        return None
+    match = re.fullmatch(
+        r"[A-Za-z_$][\w$]*",
+        typescript_code_mask(execute_expression).strip(),
+    )
+    return match.group(0) if match is not None else None
+
+
+def typescript_function_identifier_is_stable(text: str, identifier: str) -> bool:
+    """Return true when a same-file function helper is not reassigned."""
+    code = typescript_code_mask(text)
+    assignments = len(
+        re.findall(rf"(?<![\w$.]){re.escape(identifier)}\s*=(?!=)", code)
+    )
+    const_definitions = len(
+        re.findall(rf"\bconst\s+{re.escape(identifier)}\b[^=;\n]*=", code)
+    )
+    return assignments == const_definitions and const_definitions <= 1
+
+
 def typescript_callback_parameters(expression: str) -> list[str]:
     """Extract shallow callback parameter texts from a direct arrow callback expression."""
     code = typescript_code_mask(expression)
@@ -22117,6 +22209,7 @@ def typescript_graph(
     tool_by_line: dict[int, tuple[str, str]] = {}
     tool_input_names: dict[str, set[str]] = {}
     local_tool_ids: dict[str, str] = {}
+    tool_execute_bindings: dict[str, list[tuple[str, str]]] = defaultdict(list)
     openai_tool_guardrail_controls: dict[
         str,
         list[tuple[str, str, int, str, dict[str, object]]],
@@ -22490,6 +22583,11 @@ def typescript_graph(
                 (control_name, control_id, guardrail_line, guardrail_kind, guardrail_attributes)
             )
 
+    def add_tool_execute_binding(tool_name: str, tool_id: str, body: str) -> None:
+        execute_identifier = typescript_tool_execute_identifier(body)
+        if execute_identifier is not None:
+            tool_execute_bindings[execute_identifier].append((tool_name, tool_id))
+
     immutable_literal_bindings = (
         typescript_immutable_module_literal_string_bindings(text)
         if (
@@ -22659,6 +22757,7 @@ def typescript_graph(
                 call_end=end,
                 openai_approval_capable=openai_tool_factory,
             )
+            add_tool_execute_binding(tool_name, tool_id, body)
             if openai_tool_factory:
                 add_openai_tool_guardrail_controls(
                     tool_name=tool_name,
@@ -22675,6 +22774,7 @@ def typescript_graph(
         tool_name = match.group(1)
         opening = code.find("(", match.start(), match.end())
         end = typescript_balanced_end(code, opening, "(", ")") or len(text)
+        body = text[opening + 1 : end - 1]
         start_line = line_at(text, match.start())
         tool_identity = (
             f"{tool_name}@{start_line}" if tool_identity_counts[tool_name] > 1 else tool_name
@@ -22692,7 +22792,7 @@ def typescript_graph(
             tool_name=tool_name,
             tool_id=tool_id,
             constructor=constructor,
-            body=text[opening + 1 : end - 1],
+            body=body,
             body_offset=opening + 1,
             call_offset=match.start(),
             call_end=end,
@@ -22703,6 +22803,7 @@ def typescript_graph(
                 and not typescript_import_binding_is_shadowed(text, match.group(2))
             ),
         )
+        add_tool_execute_binding(tool_name, tool_id, body)
         if (
             match.group(2) in openai_agents_imports
             and constructor == "tool"
@@ -22719,6 +22820,7 @@ def typescript_graph(
     for match, end in object_property_matches:
         tool_name = match.group(1)
         opening = code.find("{", match.start(), match.end())
+        body = text[opening:end]
         start_line = line_at(text, match.start())
         tool_identity = (
             f"{tool_name}@{start_line}" if tool_identity_counts[tool_name] > 1 else tool_name
@@ -22736,17 +22838,19 @@ def typescript_graph(
             tool_name=tool_name,
             tool_id=tool_id,
             constructor="object-tool",
-            body=text[opening:end],
+            body=body,
             body_offset=opening,
             call_offset=match.start(),
             call_end=end,
             attributes={"binding": "object-property"},
         )
+        add_tool_execute_binding(tool_name, tool_id, body)
 
     for match in registration_matches:
         tool_name = registration_names[match.start()]
         opening = code.find("(", match.start(), match.end())
         end = typescript_balanced_end(code, opening, "(", ")") or len(text)
+        body = text[opening + 1 : end - 1]
         start_line = line_at(text, match.start())
         tool_identity = (
             f"{tool_name}@{start_line}" if tool_identity_counts[tool_name] > 1 else tool_name
@@ -22762,12 +22866,31 @@ def typescript_graph(
             tool_name=tool_name,
             tool_id=tool_id,
             constructor="registerTool",
-            body=text[opening + 1 : end - 1],
+            body=body,
             body_offset=opening + 1,
             call_offset=match.start(),
             call_end=end,
             attributes={"protocol": "MCP", "registry": match.group(1)},
         )
+        add_tool_execute_binding(tool_name, tool_id, body)
+
+    function_spans = typescript_function_body_spans(text)
+    function_spans_by_name: dict[str, list[tuple[int, int]]] = defaultdict(list)
+    for function_name, function_start, function_end in function_spans:
+        function_spans_by_name[function_name].append((function_start, function_end))
+    for execute_identifier, tool_bindings in tool_execute_bindings.items():
+        function_bindings = function_spans_by_name.get(execute_identifier, [])
+        if len(tool_bindings) != 1 or len(function_bindings) != 1:
+            continue
+        if not typescript_function_identifier_is_stable(text, execute_identifier):
+            continue
+        tool_name, tool_id = tool_bindings[0]
+        function_start, function_end = function_bindings[0]
+        for line_number in range(
+            line_at(text, function_start),
+            line_at(text, function_end) + 1,
+        ):
+            tool_by_line.setdefault(line_number, (tool_name, tool_id))
 
     tool_object_bindings: dict[str, tuple[int, int, tuple[tuple[str, str], ...]]] = {}
     for variable_name, initializer, initializer_offset in typescript_variable_initializers(text):
@@ -22807,7 +22930,6 @@ def typescript_graph(
         if imported_name in {"file", "gitRepo", "localDir"}
         and not typescript_import_binding_is_shadowed(text, local_name)
     }
-    function_spans = typescript_function_body_spans(text)
     manifest_bindings: dict[str, TypeScriptSandboxManifestBinding] = {}
     helper_manifest_candidates: dict[str, list[TypeScriptSandboxManifestBinding]] = defaultdict(
         list
