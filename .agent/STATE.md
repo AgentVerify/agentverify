@@ -12,8 +12,9 @@ catalog workflows.
   config files, and now records 2,942 relationships / 10,814 symbolized components. The benchmark
   summary now exposes a first-class `typescript_vercel_code_mode` slice with one repository, eight
   components, and seven approval/tool-surface relationships.
-- Added a repeatable `scripts/benchmark_engine.py --repository <owner/name>` filter for focused
-  single-repository or small-set metric refreshes before running the full 71-repository benchmark.
+- Added a repeatable, unit-tested `scripts/benchmark_engine.py --repository <owner/name>` filter for
+  focused single-repository or small-set metric refreshes before running the full 71-repository
+  benchmark.
 - Added exact Vercel AI Code Mode model-visible tool-surface inventory for `codeModeTool()` /
   `experimental_toolCaller(...)`, including its sandboxed TypeScript code-execution capability from
   `runCodeMode({ js: input.js, tools })`, generated host-tool prompt surface, and link to the

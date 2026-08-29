@@ -78,20 +78,28 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def filter_repositories(
+    repositories: list[dict[str, str]], selected_repositories: list[str]
+) -> list[dict[str, str]]:
+    if not selected_repositories:
+        return repositories
+
+    requested_repositories = set(selected_repositories)
+    filtered_repositories = [
+        row for row in repositories if row["repository"] in requested_repositories
+    ]
+    found_repositories = {row["repository"] for row in filtered_repositories}
+    missing_repositories = sorted(requested_repositories - found_repositories)
+    if missing_repositories:
+        missing = ", ".join(missing_repositories)
+        raise SystemExit(f"unknown --repository value(s): {missing}")
+    return filtered_repositories
+
+
 def main() -> int:
     args = parse_args()
     with args.corpus.open(newline="", encoding="utf-8") as handle:
-        repositories = list(csv.DictReader(handle))
-    if args.repository:
-        requested_repositories = set(args.repository)
-        repositories = [
-            row for row in repositories if row["repository"] in requested_repositories
-        ]
-        found_repositories = {row["repository"] for row in repositories}
-        missing_repositories = sorted(requested_repositories - found_repositories)
-        if missing_repositories:
-            missing = ", ".join(missing_repositories)
-            raise SystemExit(f"unknown --repository value(s): {missing}")
+        repositories = filter_repositories(list(csv.DictReader(handle)), args.repository)
     repository_data = (
         json.loads(args.repository_data.read_text(encoding="utf-8"))
         if args.repository_data.is_file()
