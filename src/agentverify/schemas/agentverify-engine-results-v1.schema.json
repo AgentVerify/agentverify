@@ -1,0 +1,341 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentverify.dev/schemas/agentverify-engine-results-v1.schema.json",
+  "title": "AgentVerify Engine Results 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "generated_at",
+    "defaults",
+    "sampling",
+    "summary",
+    "repositories"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "defaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["include_tests"],
+      "properties": {
+        "include_tests": {
+          "type": "boolean"
+        }
+      }
+    },
+    "sampling": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_files_per_repository",
+        "max_dependency_files_per_repository",
+        "max_bytes_per_repository"
+      ],
+      "properties": {
+        "max_files_per_repository": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_dependency_files_per_repository": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_bytes_per_repository": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "summary": {
+      "$ref": "#/$defs/summary"
+    },
+    "repositories": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/repository_result"
+      }
+    }
+  },
+  "$defs": {
+    "counter": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "integer_metric_object": {
+      "type": "object",
+      "additionalProperties": {
+        "type": ["integer", "boolean", "number", "object", "array"],
+        "minimum": 0
+      }
+    },
+    "component_names": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1
+        },
+        "uniqueItems": true
+      }
+    },
+    "core_counts": {
+      "type": "object",
+      "required": [
+        "files_scanned",
+        "dependency_files_materialized",
+        "config_files_scanned",
+        "relationships",
+        "symbolized_components",
+        "identified_symbol_endpoints",
+        "resolved_symbol_endpoints",
+        "unmatched_identified_symbol_endpoints",
+        "ambiguous_repeated_binding_targets",
+        "suppressed_findings",
+        "parse_warnings",
+        "elapsed_seconds"
+      ],
+      "properties": {
+        "files_scanned": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "dependency_files_materialized": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "config_files_scanned": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "relationships": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "symbolized_components": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "identified_symbol_endpoints": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "resolved_symbol_endpoints": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unmatched_identified_symbol_endpoints": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ambiguous_repeated_binding_targets": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "suppressed_findings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "parse_warnings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "elapsed_seconds": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "summary": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/core_counts"
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "array"
+              },
+              {
+                "type": "object"
+              }
+            ]
+          },
+          "required": [
+            "repositories",
+            "successful",
+            "source_bearing",
+            "zero_source_repositories",
+            "relationship_endpoints",
+            "bom_endpoint_resolutions",
+            "resolved_symbol_endpoints_by_frontend",
+            "findings",
+            "finding_repositories",
+            "observed_component_names",
+            "category_coverage"
+          ],
+          "properties": {
+            "repositories": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "successful": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "source_bearing": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "zero_source_repositories": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "relationship_endpoints": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "bom_endpoint_resolutions": {
+              "$ref": "#/$defs/counter"
+            },
+            "resolved_symbol_endpoints_by_frontend": {
+              "$ref": "#/$defs/counter"
+            },
+            "findings": {
+              "$ref": "#/$defs/counter"
+            },
+            "finding_repositories": {
+              "$ref": "#/$defs/counter"
+            },
+            "observed_component_names": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/$defs/counter"
+              }
+            },
+            "category_coverage": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/$defs/integer_metric_object"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "repository_result": {
+      "type": "object",
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "integer",
+            "minimum": 0
+          },
+          {
+            "type": "number",
+            "minimum": 0
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "array"
+          },
+          {
+            "type": "object"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "required": ["repository", "status"],
+      "properties": {
+        "repository": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": ["ok", "missing"]
+        },
+        "components": {
+          "$ref": "#/$defs/counter"
+        },
+        "component_names": {
+          "$ref": "#/$defs/component_names"
+        },
+        "parse_warning_details": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "ok"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "category",
+              "files_scanned",
+              "dependency_files_materialized",
+              "config_files_scanned",
+              "components",
+              "component_names",
+              "relationships",
+              "symbolized_components",
+              "identified_symbol_endpoints",
+              "resolved_symbol_endpoints",
+              "unmatched_identified_symbol_endpoints",
+              "ambiguous_repeated_binding_targets",
+              "findings",
+              "suppressed_findings",
+              "parse_warnings",
+              "parse_warning_details",
+              "elapsed_seconds"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

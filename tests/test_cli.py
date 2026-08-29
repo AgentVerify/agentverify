@@ -443,6 +443,7 @@ def test_cli_lists_bundled_schemas(capsys) -> None:
         "bom",
         "editor-contract-manifest",
         "editor-contract-verification",
+        "engine-results",
         "holdout-labels",
         "holdout-manifest",
         "policy",
@@ -470,6 +471,19 @@ def test_cli_prints_bundled_editor_contract_verification_schema(capsys) -> None:
     schema = __import__("json").loads(capsys.readouterr().out)
     Draft202012Validator.check_schema(schema)
     assert schema["title"] == "AgentVerify Editor Contract Verification 1"
+
+
+def test_cli_prints_bundled_engine_results_schema(capsys) -> None:
+    assert cli.main(["schema", "engine-results"]) == 0
+
+    schema = __import__("json").loads(capsys.readouterr().out)
+    Draft202012Validator.check_schema(schema)
+    assert schema["title"] == "AgentVerify Engine Results 1"
+    Draft202012Validator(schema).validate(
+        __import__("json").loads(
+            (ROOT / "benchmarks/engine-results.json").read_text(encoding="utf-8")
+        )
+    )
 
 
 def test_cli_prints_bundled_holdout_template_schemas(capsys) -> None:

@@ -2,6 +2,11 @@
 
 ## Durable facts
 
+- Engine-result snapshots are now schema-backed installed machine contracts:
+  `agentverify schema engine-results` validates the top-level full-corpus benchmark artifact shape
+  while intentionally allowing metric maps to grow as detectors add new slices. Distribution checks
+  require both the wheel schema file and the source-distribution `benchmarks/engine-results.json`
+  evidence artifact.
 - The repository contains a 71-repository pinned research corpus and schema-v159 engine benchmark
   outputs. The full-corpus summary now includes a dedicated `typescript_vercel_code_mode` section
   for Vercel AI Code Mode's exact public tool surface and host-tool approval runtime: one repository,

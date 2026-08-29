@@ -1,5 +1,22 @@
 # AgentVerify decisions
 
+## Engine-results schema validates artifact structure while allowing metric growth
+
+- Decision: Expose `benchmarks/engine-results.json` through an installed structural schema via
+  `agentverify schema engine-results`. The schema validates the snapshot envelope, sampling
+  defaults, required core counts, repository result shape, counters, and category-coverage
+  containers, but it does not freeze every individual detector metric key.
+- Evidence: The full 71-repository engine benchmark already functions as a durable release evidence
+  artifact, and `benchmarks/engine-results.json` currently validates against the new bundled
+  schema. Distribution verification now requires the wheel schema file and requires source
+  distributions to include the checked engine-results artifact.
+- Alternative: Leave the benchmark snapshot as an undocumented JSON blob, or require a strict
+  per-metric schema for every current detector slice. Rejected because no schema makes downstream
+  tooling fragile, while strict metric-key freezing would create churn as validated detectors add
+  new benchmark dimensions.
+- Revisit when: Engine metrics become a stable public API or downstream integrations need
+  compatibility guarantees for specific per-detector metric names.
+
 ## Vercel Code Mode tool-surface IR requires public tool-caller proof
 
 - Decision: Emit Vercel AI Code Mode model-visible tool-surface IR only when `codeModeTool()`

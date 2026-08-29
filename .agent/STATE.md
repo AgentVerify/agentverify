@@ -7,6 +7,11 @@ catalog workflows.
 
 ## Completed recently
 
+- Bundled a structural engine-results schema behind `agentverify schema engine-results`, validated
+  the checked 71-repository `benchmarks/engine-results.json` snapshot against it, and extended
+  distribution verification so wheels must ship the schema and source distributions must ship the
+  evidence artifact. CLI and distribution tests now cover schema discovery, schema validation, and
+  package-artifact expectations.
 - Refreshed the full 71-repository schema-v159 engine benchmark after the Vercel Code Mode IR
   additions. The benchmark passes 71/71 repositories, scans 10,797 selected source files plus 155
   config files, and now records 2,942 relationships / 10,814 symbolized components. The benchmark
