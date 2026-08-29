@@ -685,7 +685,7 @@
   contribute dynamic-expression or literal tripwire source counts; mutated arrays and settings-only
   sessions remain unresolved. The local fixture plus pinned OpenAI Agents JS
   `examples/docs/voice-agents/guardrails.ts` bring the Realtime guardrail truth-set slice to
-  18/18 labels within the 2,375-label public IR truth set.
+  18/18 labels within the 2,377-label public IR truth set.
 - OpenAI Agents JS Agent-level input/output guardrails are now reviewable when source-proven.
   Exact `new Agent({ inputGuardrails })` and `new Agent({ outputGuardrails })` constructor options
   emit `agent-guardrail-policy` controls linked to the source agent, including
@@ -752,11 +752,12 @@
 - OpenAI Agents JS `hostedMcpTool({...})` approval settings are now visible as hosted-MCP-specific
   IR metadata instead of being flattened into generic tool approval. Omitted `requireApproval`
   records a disabled default, literal `"never"` records explicit disablement, inline object
-  policies record exact `never`/`always` tool-name branches and read-only hints, and configured
-  `onApproval` callbacks are marked as callback-controlled. Shorthand or dynamic
-  `requireApproval` remains a binding rather than resolved policy. The local fixture plus pinned
-  OpenAI hosted MCP examples cover 8/8 labels, bringing the public IR truth set to 2,375 passing
-  labels.
+  policies and stable same-file const object policies record exact `never`/`always` tool-name
+  branches and read-only hints, and configured `onApproval` callbacks are marked as
+  callback-controlled. Mutated policy objects, shorthand values without stable object proof, and
+  other dynamic `requireApproval` bindings remain binding-only dynamic metadata. The local fixture
+  plus pinned OpenAI hosted MCP examples cover 10/10 labels, bringing the public IR truth set to
+  2,377 passing labels.
 
 ## Hypotheses
 

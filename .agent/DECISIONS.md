@@ -1022,7 +1022,8 @@
 - Decision: Record exact `hostedMcpTool({...})` approval state through `mcp_approval_*` attributes
   rather than overloading generic `needsApproval` fields. Support omitted defaults, literal
   `"never"`/`"always"`, direct selective object policies with shallow `toolNames` and `readOnly`
-  hints, shorthand dynamic bindings, and configured `onApproval` callbacks.
+  hints, stable same-file const object policies, dynamic/mutated bindings, and configured
+  `onApproval` callbacks.
 - Evidence: The pinned OpenAI Agents JS `hostedMcpTool` implementation maps omitted or `"never"`
   `requireApproval` to provider `require_approval: "never"` and otherwise forwards
   `buildRequireApproval(...)` plus `on_approval`. Pinned examples cover simple/default hosted MCP,
@@ -1031,8 +1032,8 @@
 - Alternative: Treat hosted MCP approval as generic `approval_policy` or report every hosted MCP
   callback as human approval. Rejected because the SDK option is named differently, approval may be
   handled by the agent loop, and callback quality remains distinct from the MCP tool requirement.
-- Revisit when same-file policy object bindings can be resolved beyond shorthand dynamic binding
-  without broad object-flow interpretation.
+- Revisit when imported or reexported policy object bindings can be resolved without broad
+  object-flow interpretation.
 
 ## OpenAI Agents JS tool guardrails are source-tool governance controls
 

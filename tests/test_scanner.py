@@ -5177,7 +5177,7 @@ def test_typescript_openai_hosted_mcp_approval_policy_is_exact() -> None:
         for component in ir.components
         if component.kind == "tool"
     }
-    assert tools["hostedMcpTool@10"].attributes == {
+    assert tools["hostedMcpTool@21"].attributes == {
         "constructor": "hostedMcpTool",
         "approval_policy": "not-applicable",
         "approval_handler": "not-applicable",
@@ -5186,7 +5186,7 @@ def test_typescript_openai_hosted_mcp_approval_policy_is_exact() -> None:
         "execution_environment": "unresolved",
         "scope": "production",
     }
-    assert tools["hostedMcpTool@14"].attributes == {
+    assert tools["hostedMcpTool@25"].attributes == {
         "constructor": "hostedMcpTool",
         "approval_policy": "not-applicable",
         "approval_handler": "not-applicable",
@@ -5196,7 +5196,7 @@ def test_typescript_openai_hosted_mcp_approval_policy_is_exact() -> None:
         "execution_environment": "unresolved",
         "scope": "production",
     }
-    assert tools["hostedMcpTool@19"].attributes == {
+    assert tools["hostedMcpTool@30"].attributes == {
         "constructor": "hostedMcpTool",
         "approval_policy": "not-applicable",
         "approval_handler": "not-applicable",
@@ -5209,18 +5209,46 @@ def test_typescript_openai_hosted_mcp_approval_policy_is_exact() -> None:
         "execution_environment": "unresolved",
         "scope": "production",
     }
-    assert "fakeHostedMcpTool@28" not in tools
+    assert tools["hostedMcpTool@39"].attributes == {
+        "constructor": "hostedMcpTool",
+        "approval_policy": "not-applicable",
+        "approval_handler": "not-applicable",
+        "mcp_approval_binding": "stablePolicy",
+        "mcp_approval_resolution": "same-file-const-object",
+        "mcp_approval_policy": "selective",
+        "mcp_approval_never_tool_names": ["list_pages"],
+        "mcp_approval_never_read_only": True,
+        "mcp_approval_always_tool_names": ["write_page"],
+        "mcp_approval_handler": "agent-loop",
+        "execution_environment": "unresolved",
+        "scope": "production",
+    }
+    assert tools["hostedMcpTool@44"].attributes == {
+        "constructor": "hostedMcpTool",
+        "approval_policy": "not-applicable",
+        "approval_handler": "not-applicable",
+        "mcp_approval_policy": "dynamic",
+        "mcp_approval_binding": "mutatedPolicy",
+        "mcp_approval_handler": "agent-loop",
+        "execution_environment": "unresolved",
+        "scope": "production",
+    }
+    assert "fakeHostedMcpTool@49" not in tools
 
     capability_by_line = {
         component.evidence.line: component
         for component in ir.components
         if component.kind == "capability" and component.name == "mcp-access"
     }
-    assert capability_by_line[10].attributes["mcp_approval_policy"] == "disabled-default"
-    assert capability_by_line[14].attributes["mcp_approval_requirement"] == "never"
-    assert capability_by_line[19].attributes["mcp_approval_always_tool_names"] == [
+    assert capability_by_line[21].attributes["mcp_approval_policy"] == "disabled-default"
+    assert capability_by_line[25].attributes["mcp_approval_requirement"] == "never"
+    assert capability_by_line[30].attributes["mcp_approval_always_tool_names"] == [
         "ask_question"
     ]
+    assert capability_by_line[39].attributes["mcp_approval_resolution"] == (
+        "same-file-const-object"
+    )
+    assert capability_by_line[44].attributes["mcp_approval_policy"] == "dynamic"
 
 
 def test_typescript_openai_realtime_session_guardrail_policy_is_exact() -> None:

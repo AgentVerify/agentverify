@@ -12705,6 +12705,14 @@ class TypeScriptLiteralStringBinding:
 
 
 @dataclass(frozen=True)
+class TypeScriptLiteralObjectBinding:
+    expression: str
+    expression_offset: int
+    declaration_end: int
+    scope_end: int
+
+
+@dataclass(frozen=True)
 class TypeScriptOpenAIRunStateHelperDecision:
     helper_name: str
     result_binding: str
@@ -13827,6 +13835,93 @@ def typescript_immutable_module_literal_string_bindings(
         for key, property_bindings in property_values.items():
             if len(property_bindings) == 1:
                 resolved[key] = property_bindings[0]
+    return resolved
+
+
+def typescript_immutable_module_literal_object_bindings(
+    text: str,
+) -> dict[str, TypeScriptLiteralObjectBinding]:
+    """Resolve unique const object bindings within their lexical brace scope."""
+    code = typescript_code_mask(text)
+    depths = [0] * (len(code) + 1)
+    depth = 0
+    for index, character in enumerate(code):
+        depths[index] = depth
+        if character == "{":
+            depth += 1
+        elif character == "}":
+            depth = max(0, depth - 1)
+    depths[len(code)] = depth
+
+    candidates: dict[str, list[TypeScriptLiteralObjectBinding]] = defaultdict(list)
+    object_pattern = re.compile(r"\bconst\s+([A-Za-z_$][\w$]*)\s*(?:\:\s*[^=;\n]+)?=\s*\{")
+    for match in object_pattern.finditer(text):
+        if code[match.start() : match.start(1)].strip() != "const":
+            continue
+        opening = match.end() - 1
+        end = typescript_balanced_end(code, opening, "{", "}")
+        if end is None:
+            continue
+        suffix = code[end:].lstrip()
+        if not suffix.startswith(";"):
+            continue
+        declaration_depth = depths[match.start()]
+        scope_end = len(text)
+        if declaration_depth > 0:
+            scope_opening = None
+            for index in range(match.start() - 1, -1, -1):
+                if code[index] == "{" and depths[index] == declaration_depth - 1:
+                    scope_opening = index
+                    break
+            if scope_opening is None:
+                continue
+            scope_end = typescript_balanced_end(code, scope_opening, "{", "}") or len(text)
+        candidates[match.group(1)].append(
+            TypeScriptLiteralObjectBinding(text[opening:end], opening, end, scope_end)
+        )
+
+    imported_names = set()
+    for match in TS_DEFAULT_IMPORT.finditer(text):
+        imported_names.add(match.group(1))
+        if clause := match.group(2):
+            for imported in clause.split(","):
+                parts = imported.strip().removeprefix("type ").split()
+                if parts:
+                    imported_names.add(
+                        parts[2] if len(parts) >= 3 and parts[1] == "as" else parts[0]
+                    )
+    for match in TS_NAMED_IMPORT.finditer(text):
+        if clause := match.group(1):
+            for imported in clause.split(","):
+                parts = imported.strip().removeprefix("type ").split()
+                if parts:
+                    imported_names.add(
+                        parts[2] if len(parts) >= 3 and parts[1] == "as" else parts[0]
+                    )
+
+    resolved: dict[str, TypeScriptLiteralObjectBinding] = {}
+    for name, values in candidates.items():
+        if len(values) != 1:
+            continue
+        escaped = re.escape(name)
+        if (
+            len(re.findall(rf"\b(?:const|let|var|function|class)\s+{escaped}\b", code))
+            != 1
+            or len(
+                re.findall(
+                    rf"(?<![\w$.]){escaped}\s*(?:\:\s*[^=;\n]+)?=(?!=)",
+                    code,
+                )
+            )
+            != 1
+            or re.search(rf"(?<![\w$]){escaped}\s*\.\s*[A-Za-z_$][\w$]*\s*=(?!=)", code)
+            or re.search(rf"(?<![\w$]){escaped}\s*\[[^\]]+\]\s*=(?!=)", code)
+            or typescript_parameter_binding_is_declared(text, name)
+            or re.search(rf"\bcatch\s*\(\s*{escaped}\b", code)
+            or name in imported_names
+        ):
+            continue
+        resolved[name] = values[0]
     return resolved
 
 
@@ -19806,6 +19901,7 @@ def add_typescript_tool_observation(
     body_offset: int,
     approval_bypass_function_summaries: dict[str, tuple[str, ...]],
     immutable_literal_bindings: dict[str, TypeScriptLiteralStringBinding] | None = None,
+    immutable_object_bindings: dict[str, TypeScriptLiteralObjectBinding] | None = None,
 ) -> None:
     """Add one structure-backed TypeScript tool, its capabilities, and literal approval control."""
     line = line_at(text, call_offset)
@@ -19854,6 +19950,8 @@ def add_typescript_tool_observation(
     hosted_mcp_approval_attributes = typescript_openai_hosted_mcp_approval_attributes(
         call_body,
         constructor,
+        body_offset=body_offset,
+        immutable_object_bindings=immutable_object_bindings,
     )
     execution_environment = "unresolved"
     if constructor in TS_OPENAI_SANDBOX_CAPABILITY_FACTORIES:
@@ -20272,11 +20370,23 @@ def typescript_openai_needs_approval_attributes(body: str) -> dict[str, object]:
 def typescript_openai_hosted_mcp_approval_attributes(
     body: str,
     constructor: str,
+    *,
+    body_offset: int = 0,
+    immutable_object_bindings: dict[str, TypeScriptLiteralObjectBinding] | None = None,
 ) -> dict[str, object]:
     """Resolve exact OpenAI Agents JS hostedMcpTool requireApproval metadata."""
+    immutable_object_bindings = immutable_object_bindings or {}
     if constructor != "hostedMcpTool":
         return {}
     require_approval = typescript_object_property_expression(body, "requireApproval")
+    require_approval_offset = None
+    require_approval_location = typescript_object_property_expression_location(
+        body,
+        "requireApproval",
+        body_offset,
+    )
+    if require_approval_location is not None:
+        _, _, require_approval_offset = require_approval_location
     on_approval = typescript_object_property_expression(body, "onApproval")
     attributes: dict[str, object] = {}
     if require_approval is None and typescript_object_has_shorthand_property(
@@ -20284,6 +20394,10 @@ def typescript_openai_hosted_mcp_approval_attributes(
         "requireApproval",
     ):
         require_approval = "requireApproval"
+        for property_text, property_offset in typescript_object_items(body, body_offset):
+            if typescript_code_mask(property_text).strip() == "requireApproval":
+                require_approval_offset = property_offset
+                break
     if require_approval is None:
         attributes.update(
             {
@@ -20300,6 +20414,19 @@ def typescript_openai_hosted_mcp_approval_attributes(
             attributes["mcp_approval_requirement"] = static_policy
         else:
             policy_code = typescript_code_mask(require_approval).strip()
+            policy_binding = re.fullmatch(r"[A-Za-z_$][\w$]*", policy_code)
+            if policy_binding is not None:
+                binding_name = policy_binding.group(0)
+                binding = immutable_object_bindings.get(binding_name)
+                if (
+                    binding is not None
+                    and require_approval_offset is not None
+                    and binding.declaration_end <= require_approval_offset < binding.scope_end
+                ):
+                    policy_code = typescript_code_mask(binding.expression).strip()
+                    require_approval = binding.expression
+                    attributes["mcp_approval_binding"] = binding_name
+                    attributes["mcp_approval_resolution"] = "same-file-const-object"
             if policy_code.startswith("{"):
                 attributes["mcp_approval_policy"] = "selective"
                 for branch_name in ("never", "always"):
@@ -20331,9 +20458,8 @@ def typescript_openai_hosted_mcp_approval_attributes(
                         attributes[f"mcp_approval_{branch_name}_read_only"] = read_only
             else:
                 attributes["mcp_approval_policy"] = "dynamic"
-                identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", policy_code)
-                if identifier is not None:
-                    attributes["mcp_approval_binding"] = identifier.group(0)
+                if policy_binding is not None:
+                    attributes["mcp_approval_binding"] = policy_binding.group(0)
     if on_approval is not None:
         attributes["mcp_approval_handler"] = "configured"
         attributes["mcp_approval_handler_policy"] = "callback-controlled"
@@ -20926,6 +21052,11 @@ def typescript_graph(
         )
         else {}
     )
+    immutable_object_bindings = (
+        typescript_immutable_module_literal_object_bindings(text)
+        if "hostedMcpTool" in text and "requireApproval" in text
+        else {}
+    )
     tool_matches = list(TS_TOOL_ASSIGNMENT.finditer(code))
     tool_assignment_counts = Counter(match.group(1) for match in tool_matches)
     property_matches = []
@@ -21013,6 +21144,7 @@ def typescript_graph(
                 body_offset=opening + 1,
                 approval_bypass_function_summaries=approval_bypass_function_summaries,
                 immutable_literal_bindings=immutable_literal_bindings,
+                immutable_object_bindings=immutable_object_bindings,
             )
         else:
             openai_tool_factory = (
@@ -24522,6 +24654,7 @@ def typescript_graph(
                     body_offset=item_offset + relative_body_offset,
                     approval_bypass_function_summaries=approval_bypass_function_summaries,
                     immutable_literal_bindings=immutable_literal_bindings,
+                    immutable_object_bindings=immutable_object_bindings,
                 )
             else:
                 tool_name = local_factory
