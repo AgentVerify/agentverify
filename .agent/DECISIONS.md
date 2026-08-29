@@ -913,6 +913,25 @@
   guardrails can be resolved without treating arbitrary `.inputGuardrails` property writes as SDK
   policy evidence.
 
+## OpenAI Agents JS Agent guardrail tripwires are conservative quality metadata
+
+- Decision: Record direct `tripwireTriggered` return-object metadata on exact TypeScript OpenAI
+  Agents SDK Agent guardrail controls. Inline object guardrails and stable typed
+  `InputGuardrail`/`OutputGuardrail` bindings may contribute `literal-false`, `literal-true`, or
+  `dynamic-expression` tripwire source counts; mutated bindings and dynamic guardrail arrays remain
+  unresolved for tripwire quality.
+- Evidence: The local `typescript_openai_agent_guardrails` fixture covers method-syntax
+  `async execute() { return { tripwireTriggered: false }; }` guardrails, mutated binding
+  negatives, and dynamic array negatives. The pinned OpenAI Agents JS
+  `examples/agent-patterns/input-guardrails.ts`, `examples/agent-patterns/output-guardrails.ts`,
+  and `examples/docs/running-agents/exceptions1.ts` examples contribute computed tripwire
+  expressions, including fallback guardrails installed after `GuardrailExecutionError`.
+- Alternative: Treat any guardrail with an `execute` callback as having an effective tripwire.
+  Rejected because guardrail bodies can throw, delegate, or return dynamic data, and AgentVerify
+  should distinguish literal inert tripwires from source-proven computed predicates.
+- Revisit when helper-created guardrails, imported guardrail bindings, or richer predicate semantics
+  can be resolved without broad callback interpretation.
+
 ## OpenAI Agents JS tool guardrails are source-tool governance controls
 
 - Decision: Represent exact TypeScript OpenAI Agents SDK

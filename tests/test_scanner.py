@@ -4785,14 +4785,23 @@ def test_typescript_openai_agent_guardrail_policy_is_exact() -> None:
         "guardrail_bindings": ["typedInputGuardrail"],
         "guardrail_names": ["Math homework guardrail", "Inline abuse guardrail"],
         "guardrail_name_count": 2,
+        "guardrail_tripwire_sources": ["literal-false", "literal-false"],
+        "guardrail_tripwire_count": 2,
+        "guardrail_literal_false_tripwire_count": 2,
     }
     assert controls["ts:agent.ts#control:assistantAgent.outputGuardrails@40"].attributes[
         "guardrail_names"
     ] == ["Phone number guardrail"]
     assert controls["ts:agent.ts#control:assistantAgent.outputGuardrails@40"].attributes[
+        "guardrail_tripwire_sources"
+    ] == ["literal-false"]
+    assert controls["ts:agent.ts#control:assistantAgent.outputGuardrails@40"].attributes[
         "guardrail_kind"
     ] == "output"
     assert "guardrail_names" not in controls[
+        "ts:agent.ts#control:mutableAgent.outputGuardrails@59"
+    ].attributes
+    assert "guardrail_tripwire_sources" not in controls[
         "ts:agent.ts#control:mutableAgent.outputGuardrails@59"
     ].attributes
     assert controls["ts:agent.ts#control:mutableAgent.outputGuardrails@59"].attributes[
@@ -4801,6 +4810,9 @@ def test_typescript_openai_agent_guardrail_policy_is_exact() -> None:
     assert controls["ts:agent.ts#control:dynamicAgent.inputGuardrails@65"].attributes[
         "guardrail_source"
     ] == "binding"
+    assert "guardrail_tripwire_sources" not in controls[
+        "ts:agent.ts#control:dynamicAgent.inputGuardrails@65"
+    ].attributes
     assert controls["ts:agent.ts#control:supportAgent.inputGuardrails@75"].attributes == {
         "analysis": "typescript-openai-agents-agent-guardrails",
         "module": "@openai/agents",
@@ -4818,6 +4830,9 @@ def test_typescript_openai_agent_guardrail_policy_is_exact() -> None:
         "guardrail_names": ["Math homework fallback guardrail"],
         "guardrail_name_count": 1,
         "guardrail_update": "property-assignment",
+        "guardrail_tripwire_sources": ["literal-false"],
+        "guardrail_tripwire_count": 1,
+        "guardrail_literal_false_tripwire_count": 1,
     }
     assert controls["ts:agent.ts#control:assistantAgent.outputGuardrails@84"].attributes[
         "guardrail_names"
@@ -4825,6 +4840,9 @@ def test_typescript_openai_agent_guardrail_policy_is_exact() -> None:
     assert controls["ts:agent.ts#control:assistantAgent.outputGuardrails@84"].attributes[
         "guardrail_update"
     ] == "property-assignment"
+    assert controls["ts:agent.ts#control:assistantAgent.outputGuardrails@84"].attributes[
+        "guardrail_tripwire_sources"
+    ] == ["literal-false"]
     assert controls["ts:agent.ts#control:supportAgent.inputGuardrails@87"].attributes == {
         "analysis": "typescript-openai-agents-agent-guardrails",
         "module": "@openai/agents",
@@ -4860,6 +4878,9 @@ def test_typescript_openai_agent_guardrail_policy_is_exact() -> None:
         "guardrail_bindings": ["typedInputGuardrail"],
         "guardrail_names": ["Math homework guardrail", "Inline abuse guardrail"],
         "guardrail_name_count": 2,
+        "guardrail_tripwire_sources": ["literal-false", "literal-false"],
+        "guardrail_tripwire_count": 2,
+        "guardrail_literal_false_tripwire_count": 2,
     }
     assert edges["ts:agent.ts#control:supportAgent.inputGuardrails@75"].attributes == {
         "analysis": "typescript-openai-agents-agent-guardrails",
@@ -4872,6 +4893,9 @@ def test_typescript_openai_agent_guardrail_policy_is_exact() -> None:
         "guardrail_names": ["Math homework fallback guardrail"],
         "guardrail_name_count": 1,
         "guardrail_update": "property-assignment",
+        "guardrail_tripwire_sources": ["literal-false"],
+        "guardrail_tripwire_count": 1,
+        "guardrail_literal_false_tripwire_count": 1,
     }
 
 

@@ -17328,6 +17328,11 @@ def add_typescript_openai_agent_guardrail_control(
         "guardrail_names",
         "guardrail_name_count",
         "guardrail_update",
+        "guardrail_tripwire_sources",
+        "guardrail_tripwire_count",
+        "guardrail_literal_false_tripwire_count",
+        "guardrail_literal_true_tripwire_count",
+        "guardrail_dynamic_tripwire_count",
     ):
         if key in attributes:
             relationship_attributes[key] = attributes[key]
@@ -21491,6 +21496,122 @@ def typescript_graph(
             return None, binding_name
         return typescript_string_literal_value(name_expression), binding_name
 
+    def openai_agent_guardrail_tripwire_attributes(
+        item: str,
+    ) -> dict[str, object]:
+        execute_expression = typescript_literal_object_property_expression(item, "execute")
+        if execute_expression is None:
+            for property_text, _ in typescript_literal_object_items(item):
+                property_code = typescript_code_mask(property_text)
+                method_match = re.match(
+                    r"\s*(?:async\s+)?execute\s*(?:<[^;={}\n]+>)?\s*\(",
+                    property_code,
+                )
+                if method_match is None:
+                    continue
+                parameter_opening = property_code.find("(", method_match.start())
+                parameter_end = typescript_balanced_end(
+                    property_code,
+                    parameter_opening,
+                    "(",
+                    ")",
+                )
+                if parameter_end is None:
+                    continue
+                cursor = parameter_end
+                while cursor < len(property_code) and property_code[cursor].isspace():
+                    cursor += 1
+                if cursor < len(property_code) and property_code[cursor] == ":":
+                    cursor += 1
+                    while cursor < len(property_code) and property_code[cursor] not in "{;":
+                        cursor += 1
+                while cursor < len(property_code) and property_code[cursor].isspace():
+                    cursor += 1
+                if cursor >= len(property_code) or property_code[cursor] != "{":
+                    continue
+                method_end = typescript_balanced_end(property_code, cursor, "{", "}")
+                if method_end is None:
+                    continue
+                execute_expression = property_text[cursor:method_end]
+                break
+        if execute_expression is None:
+            return {}
+        execute_code = typescript_code_mask(execute_expression)
+        tripwire_sources: list[str] = []
+
+        def add_tripwire_source(returned_object: str) -> None:
+            tripwire_expression = typescript_object_property_expression(
+                returned_object,
+                "tripwireTriggered",
+            )
+            if tripwire_expression is None:
+                return
+            literal_value = typescript_literal_boolean_value(tripwire_expression)
+            if literal_value is True:
+                tripwire_sources.append("literal-true")
+            elif literal_value is False:
+                tripwire_sources.append("literal-false")
+            else:
+                tripwire_sources.append("dynamic-expression")
+
+        for return_match in re.finditer(r"\breturn\s*\{", execute_code):
+            opening = return_match.end() - 1
+            end = typescript_balanced_end(execute_code, opening, "{", "}")
+            if end is None:
+                continue
+            add_tripwire_source(execute_expression[opening:end])
+
+        arrow_match = re.search(r"=>\s*\(\s*\{", execute_code)
+        if arrow_match is not None:
+            opening = execute_code.find("{", arrow_match.start())
+            end = typescript_balanced_end(execute_code, opening, "{", "}")
+            if end is not None:
+                add_tripwire_source(execute_expression[opening:end])
+
+        if not tripwire_sources:
+            return {}
+        attributes: dict[str, object] = {
+            "guardrail_tripwire_sources": tripwire_sources,
+            "guardrail_tripwire_count": len(tripwire_sources),
+        }
+        literal_false_count = tripwire_sources.count("literal-false")
+        literal_true_count = tripwire_sources.count("literal-true")
+        dynamic_count = tripwire_sources.count("dynamic-expression")
+        if literal_false_count:
+            attributes["guardrail_literal_false_tripwire_count"] = literal_false_count
+        if literal_true_count:
+            attributes["guardrail_literal_true_tripwire_count"] = literal_true_count
+        if dynamic_count:
+            attributes["guardrail_dynamic_tripwire_count"] = dynamic_count
+        return attributes
+
+    def openai_agent_guardrail_item_tripwire_attributes(
+        item: str,
+        item_offset: int,
+        *,
+        guardrail_kind: str,
+    ) -> dict[str, object]:
+        item_code = typescript_code_mask(item).strip()
+        identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", item_code)
+        if identifier is None:
+            return openai_agent_guardrail_tripwire_attributes(item)
+        binding_name = identifier.group(0)
+        binding = openai_agent_guardrail_object_bindings[guardrail_kind].get(binding_name)
+        if binding is None:
+            return {}
+        binding_expression, binding_offset = binding
+        if binding_offset > item_offset:
+            return {}
+        if re.search(
+            rf"(?<![\w$.]){re.escape(binding_name)}\s*=(?!=)",
+            code[binding_offset:item_offset],
+        ) or re.search(
+            rf"(?<![\w$]){re.escape(binding_name)}\s*(?:\.|\[)",
+            code[binding_offset:item_offset],
+        ):
+            return {}
+        return openai_agent_guardrail_tripwire_attributes(binding_expression)
+
     def openai_agent_guardrail_array_attributes(
         expression: str,
         expression_offset: int,
@@ -21543,6 +21664,7 @@ def typescript_graph(
         attributes["guardrail_count"] = len(concrete_items)
         guardrail_names: list[str] = []
         guardrail_bindings: list[str] = list(attributes.get("guardrail_bindings", []))
+        guardrail_tripwire_sources: list[str] = []
         for item, item_offset in concrete_items:
             guardrail_name, guardrail_binding = openai_agent_guardrail_item_name(
                 item,
@@ -21553,11 +21675,33 @@ def typescript_graph(
                 guardrail_names.append(guardrail_name)
             if guardrail_binding is not None and guardrail_binding not in guardrail_bindings:
                 guardrail_bindings.append(guardrail_binding)
+            tripwire_attributes = openai_agent_guardrail_item_tripwire_attributes(
+                item,
+                item_offset,
+                guardrail_kind=guardrail_kind,
+            )
+            tripwire_sources = tripwire_attributes.get("guardrail_tripwire_sources")
+            if isinstance(tripwire_sources, list):
+                guardrail_tripwire_sources.extend(
+                    source for source in tripwire_sources if isinstance(source, str)
+                )
         if guardrail_bindings:
             attributes["guardrail_bindings"] = guardrail_bindings
         if guardrail_names:
             attributes["guardrail_names"] = guardrail_names
             attributes["guardrail_name_count"] = len(guardrail_names)
+        if guardrail_tripwire_sources:
+            attributes["guardrail_tripwire_sources"] = guardrail_tripwire_sources
+            attributes["guardrail_tripwire_count"] = len(guardrail_tripwire_sources)
+            literal_false_count = guardrail_tripwire_sources.count("literal-false")
+            literal_true_count = guardrail_tripwire_sources.count("literal-true")
+            dynamic_count = guardrail_tripwire_sources.count("dynamic-expression")
+            if literal_false_count:
+                attributes["guardrail_literal_false_tripwire_count"] = literal_false_count
+            if literal_true_count:
+                attributes["guardrail_literal_true_tripwire_count"] = literal_true_count
+            if dynamic_count:
+                attributes["guardrail_dynamic_tripwire_count"] = dynamic_count
         return attributes
 
     def realtime_api_key_fetch_bindings() -> dict[str, tuple[dict[str, object], int]]:

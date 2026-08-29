@@ -709,6 +709,14 @@
   OpenAI Agents JS `examples/docs/running-agents/exceptions1.ts` fallback assignments bring the
   public IR truth set to 2,321 passing labels and the 71-repository engine benchmark to
   2,900 relationships / 10,689 symbolized components.
+- OpenAI Agents JS Agent guardrails now expose conservative tripwire metadata when the guardrail
+  `execute` body directly returns an object containing `tripwireTriggered`. Literal `true`/`false`
+  values are counted separately from computed expressions, and the metadata propagates to the
+  agent-to-control governance edge. Mutated guardrail bindings and dynamic guardrail arrays do not
+  expose stale tripwire metadata. The local fixture plus pinned OpenAI Agents JS
+  `input-guardrails.ts`, `output-guardrails.ts`, and `exceptions1.ts` examples bring the public IR
+  truth set to 2,329 passing labels while the 71-repository engine benchmark remains at
+  2,900 relationships / 10,689 symbolized components.
 
 ## Hypotheses
 
