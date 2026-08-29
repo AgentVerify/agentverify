@@ -11,12 +11,13 @@
   (14 positive, 2 over-resolution/lookalike negatives), including imported local const-object
   policies, aliased imports, and named local reexports while imported/reexported-mutated bindings
   remain dynamic. The Python hosted
-  check has 24 public IR labels (23 positive, 1 lookalike negative), including imported,
+  check has 25 public IR labels (24 positive, 1 lookalike negative), including imported,
   named-reexported, producer-star-reexported, and consumer-star-imported whole `tool_config`
-  dictionaries while mutated configs remain dynamic. The Python non-hosted server check has 20
-  public IR labels (18 positive, 2 lookalike negatives), including imported, named-reexported,
+  dictionaries while mutated and ambiguous multi-star configs remain dynamic. The Python non-hosted server check has 21
+  public IR labels (19 positive, 2 lookalike negatives), including imported, named-reexported,
   producer-star-reexported, and consumer-star-imported local literal approval policies and redacted
-  remote auth/header/client-factory metadata, and the full public IR truth set passes 2,427/2,427.
+  remote auth/header/client-factory metadata, while ambiguous multi-star policies remain dynamic; the
+  full public IR truth set passes 2,429/2,429.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
 - A freshly rebuilt wheel includes all fifteen runtime schemas; a verifier script now guards that
   package artifact expectation.
@@ -783,7 +784,7 @@
   dynamic/imported/reexported-mutated approval or `tool_config` bindings remain binding-only
   metadata. In-place mutations such as `CONFIG["require_approval"] = ...` are treated as dynamic
   rather than over-resolved. The local fixture plus pinned OpenAI Agents Python and Composio hosted
-  MCP examples cover 24/24 labels, bringing the public IR truth set to 2,427 passing labels.
+  MCP examples cover 25/25 labels, bringing the public IR truth set to 2,429 passing labels.
 - Python OpenAI Agents SDK non-hosted MCP server `require_approval` call sites are now visible on
   exact `agents.mcp.MCPServerStdio` components and imported subclasses whose base is exactly
   `agents.mcp.MCPServer` / `agents.mcp.server.MCPServer`. Literal `"never"`/`False` records
@@ -794,8 +795,8 @@
   remote URLs are sanitized, literal `Authorization` header names and `auth`/`httpx_client_factory`
   bindings are recorded without copying secret values, dynamic bindings stay dynamic, and OpenAI-shaped imports
   from other MCP modules do not inherit OpenAI-specific approval semantics. The local fixture plus
-  pinned OpenAI SDK remote transport examples now cover 20/20 labels, bringing the public IR truth
-  set to 2,427 passing labels.
+  pinned OpenAI SDK remote transport examples now cover 21/21 labels, bringing the public IR truth
+  set to 2,429 passing labels.
 
 ## Hypotheses
 

@@ -2884,6 +2884,7 @@ def test_python_openai_hosted_mcp_approval_policy_is_exact() -> None:
     }
     assert set(tools) == {
         9,
+        10,
         13,
         17,
         18,
@@ -3059,6 +3060,10 @@ def test_python_openai_hosted_mcp_approval_policy_is_exact() -> None:
     assert "mcp_tool_config_resolution" not in tools[18].attributes
     assert tools[18].attributes["mcp_approval_policy"] == "dynamic"
 
+    assert tools[10].attributes["mcp_approval_binding"] == "IMPORTED_ALWAYS"
+    assert "mcp_approval_resolution" not in tools[10].attributes
+    assert tools[10].attributes["mcp_approval_policy"] == "dynamic"
+
     assert not any(
         component.kind == "tool" and component.name.startswith("FakeHostedMCPTool")
         for component in ir.components
@@ -3070,6 +3075,7 @@ def test_python_openai_hosted_mcp_approval_policy_is_exact() -> None:
     }
     assert set(capabilities) == {
         9,
+        10,
         13,
         17,
         18,
@@ -3124,6 +3130,7 @@ def test_python_openai_hosted_mcp_approval_policy_is_exact() -> None:
         "imported-local-star-import-tool-config:repository-module-single-path"
     )
     assert capabilities[18].attributes["mcp_approval_policy"] == "dynamic"
+    assert capabilities[10].attributes["mcp_approval_policy"] == "dynamic"
     tool_edges = {
         edge.source_name: edge
         for edge in ir.relationships
@@ -3149,6 +3156,7 @@ def test_python_openai_hosted_mcp_approval_policy_is_exact() -> None:
         "HostedMCPTool@21",
         "HostedMCPTool@22",
         "HostedMCPTool@9",
+        "HostedMCPTool@10",
     }
 
 
@@ -15228,6 +15236,22 @@ def test_python_openai_mcp_server_approval_policy_is_exact() -> None:
         "MUTATED_POLICY"
     )
     assert star_import_servers[11].attributes["mcp_approval_policy"] == "dynamic"
+
+    ambiguous_star_import_server = next(
+        component
+        for component in ir.components
+        if component.kind == "mcp-server"
+        and component.evidence.path == "ambiguous_star_import_app.py"
+    )
+    assert ambiguous_star_import_server.evidence.line == 8
+    assert ambiguous_star_import_server.attributes["mcp_approval_contract"] == (
+        "openai-agents-python-mcp-server"
+    )
+    assert ambiguous_star_import_server.attributes["mcp_approval_binding"] == (
+        "IMPORTED_SELECTIVE"
+    )
+    assert "mcp_approval_resolution" not in ambiguous_star_import_server.attributes
+    assert ambiguous_star_import_server.attributes["mcp_approval_policy"] == "dynamic"
 
     subclass_server = next(
         component
