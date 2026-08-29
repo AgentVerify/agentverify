@@ -32,6 +32,11 @@ catalog workflows.
   direct braced `if` approval branches guarded by a same-file readline confirmation helper, covering
   pinned human-in-the-loop and hosted MCP human-loop examples while leaving reject branches and helper
   propagation separate.
+- Propagated exact same-file readline prompt-review metadata through TypeScript OpenAI Agents SDK
+  helper-parameter run-state approval summaries while preserving per-call source-agent provenance.
+  The pinned `examples/tools/computer-use-hitl.ts` helper approval now records both
+  `AUTO_APPROVE_HITL` bypass evidence and `confirm` yes/no prompt-review source shape on the
+  call-site-expanded approval control.
 - Added exact Python OpenAI Agents SDK `HostedMCPTool(tool_config={...})` approval inventory for
   explicit `"never"`, explicit or same-block/imported local literal `"always"`, shallow selective
   dict policies, imported local literal policies, named local reexported literal policies, consumer

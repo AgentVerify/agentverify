@@ -8971,18 +8971,19 @@ def test_typescript_openai_approval_decision_records_prompt_helper_branch(
     (tmp_path / "agent.ts").write_text(
         textwrap.dedent(
             """
-            import readline from "node:readline/promises";
+            import { toolFactory } from "browser-tools";
+            import { createInterface } from "node:readline/promises";
             import { Agent, run } from "@openai/agents";
 
             const agent = new Agent({ name: "Prompted approver" });
 
             async function confirm(question: string): Promise<boolean> {
-              const rl = readline.createInterface({
+              const rl = createInterface({
                 input: process.stdin,
                 output: process.stdout,
               });
               const answer = await rl.question(`${question} (y/n): `);
-              const normalizedAnswer = answer.toLowerCase();
+              const normalizedAnswer = answer.trim().toLowerCase();
               rl.close();
               return normalizedAnswer === "y" || normalizedAnswer === "yes";
             }
@@ -9029,6 +9030,83 @@ def test_typescript_openai_approval_decision_records_prompt_helper_branch(
         if component.kind == "control"
         and component.name == "approval-decision"
         and component.attributes["decision"] == "reject"
+    )
+    assert "approval_review_resolution" not in reject_control.attributes
+
+
+def test_typescript_openai_helper_hitl_preserves_prompt_review_metadata(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "agent.ts").write_text(
+        textwrap.dedent(
+            """
+            import readline from "node:readline/promises";
+            import { Agent, run } from "@openai/agents";
+
+            async function firstFlow() {
+              const agent = new Agent({ name: "First prompted helper agent" });
+              await runWithHitl(agent, "open the browser");
+            }
+
+            async function confirm(question: string): Promise<boolean> {
+              const rl = readline.createInterface({
+                input: process.stdin,
+                output: process.stdout,
+              });
+              const answer = await rl.question(`${question} (y/n): `);
+              const normalizedAnswer = answer.toLowerCase();
+              rl.close();
+              return normalizedAnswer === "y" || normalizedAnswer === "yes";
+            }
+
+            async function runWithHitl(agent: Agent<unknown, any>, input: string) {
+              let result = await run(agent, input);
+              const state = result.state;
+              for (const interruption of result.interruptions ?? []) {
+                const approved = await confirm("Approve?");
+                if (approved) {
+                  state.approve(interruption);
+                } else {
+                  state.reject(interruption, { message: "dismissed" });
+                }
+              }
+              result = await run(agent, state);
+              return result;
+            }
+            void firstFlow;
+            """
+        ),
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+
+    approve_control = next(
+        component
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "approval-decision"
+        and component.attributes["decision"] == "approve"
+        and component.attributes.get("resolution") == "same-file-helper-parameter-run-state"
+    )
+    assert approve_control.attributes["resolution"] == "same-file-helper-parameter-run-state"
+    assert approve_control.attributes["source_agent"] == "First prompted helper agent"
+    assert approve_control.attributes["approval_review_resolution"] == (
+        "same-file-helper-readline-question"
+    )
+    assert approve_control.attributes["approval_review_helper"] == "confirm"
+    assert approve_control.attributes["approval_review_source"] == "readline-question"
+    assert approve_control.attributes["approval_review_decision"] == (
+        "yes-literal-comparison"
+    )
+
+    reject_control = next(
+        component
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "approval-decision"
+        and component.attributes["decision"] == "reject"
+        and component.attributes.get("resolution") == "same-file-helper-parameter-run-state"
     )
     assert "approval_review_resolution" not in reject_control.attributes
 

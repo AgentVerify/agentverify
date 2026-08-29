@@ -13675,6 +13675,7 @@ class TypeScriptOpenAIRunStateHelperDecision:
     offset: int
     symbol_identity: str
     approval_bypass_environment_names: tuple[str, ...]
+    approval_review_attributes: dict[str, object]
     rejection_message_attributes: dict[str, object]
 
 
@@ -16490,6 +16491,21 @@ def typescript_approval_prompt_function_summaries(
     """Resolve unique same-file functions that ask a terminal yes/no approval question."""
     definitions = typescript_function_definitions(text)
     name_counts = Counter(name for name, _, _, _ in definitions)
+    static_create_interface_aliases: set[str] = set()
+    for import_match in re.finditer(
+        r"\bimport\s*\{(?P<specifiers>[^{}]*?)\}\s*from\s*"
+        r"['\"]node:readline/promises['\"]",
+        text,
+    ):
+        for specifier in import_match.group("specifiers").split(","):
+            specifier_match = re.fullmatch(
+                r"\s*createInterface(?:\s+as\s+([A-Za-z_$][\w$]*))?\s*",
+                specifier,
+            )
+            if specifier_match is not None:
+                static_create_interface_aliases.add(
+                    specifier_match.group(1) or "createInterface"
+                )
     resolved: dict[str, dict[str, object]] = {}
     for name, _, _, body in definitions:
         if name_counts[name] != 1:
@@ -16502,13 +16518,18 @@ def typescript_approval_prompt_function_summaries(
                 body,
             )
         )
+        create_interface_names = "|".join(
+            re.escape(alias)
+            for alias in sorted({"createInterface", *static_create_interface_aliases})
+        )
         interface_match = re.search(
             r"\bconst\s+([A-Za-z_$][\w$]*)\s*=\s*"
-            r"(?:(readline)\s*\.\s*)?createInterface\s*\(",
+            rf"(?:(readline)\s*\.\s*)?(?P<factory>{create_interface_names})\s*\(",
             body_code,
         )
         if interface_match is None or (
             interface_match.group(2) is None and not has_dynamic_readline_import
+            and interface_match.group("factory") not in static_create_interface_aliases
         ):
             continue
         interface_binding = interface_match.group(1)
@@ -19658,6 +19679,7 @@ def typescript_openai_run_state_helper_decisions(
     run_bindings: set[str],
     agent_type_bindings: set[str],
     approval_bypass_function_summaries: dict[str, tuple[str, ...]],
+    approval_prompt_function_summaries: dict[str, dict[str, object]],
     literal_bindings: dict[str, str],
 ) -> tuple[
     dict[str, tuple[TypeScriptOpenAIRunStateHelperDecision, ...]],
@@ -19929,6 +19951,15 @@ def typescript_openai_run_state_helper_decisions(
                 if decision == "reject"
                 else {}
             )
+            approval_review_attributes = (
+                typescript_enclosing_if_approval_prompt_attributes(
+                    body_code,
+                    match.start(),
+                    approval_prompt_function_summaries,
+                )
+                if decision == "approve"
+                else {}
+            )
             helper_decisions.append(
                 TypeScriptOpenAIRunStateHelperDecision(
                     helper_name=function_match.group("name"),
@@ -19947,6 +19978,7 @@ def typescript_openai_run_state_helper_decisions(
                         if decision == "approve"
                         else ()
                     ),
+                    approval_review_attributes=approval_review_attributes,
                     rejection_message_attributes=rejection_message_attributes,
                 )
             )
@@ -26375,6 +26407,7 @@ def typescript_graph(
         run_bindings=run_bindings,
         agent_type_bindings=agent_type_bindings,
         approval_bypass_function_summaries=approval_bypass_function_summaries,
+        approval_prompt_function_summaries=approval_prompt_function_summaries,
         literal_bindings=literal_bindings,
     )
     openai_agents_run_result_sources: dict[str, list[tuple[tuple[str, str], int]]] = defaultdict(
@@ -27022,6 +27055,7 @@ def typescript_graph(
                     extra_attributes={
                         **base_extra_attributes,
                         "helper_decision_line": helper_decision.line,
+                        **helper_decision.approval_review_attributes,
                     },
                 )
 

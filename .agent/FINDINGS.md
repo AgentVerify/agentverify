@@ -36,6 +36,12 @@
   `human-in-the-loop-stream.ts`, and `hosted-mcp-human-in-the-loop.ts` approval branches now preserve
   the helper name, readline question source, and yes/yes-string comparison while existing
   auto-approval environment-bypass metadata remains separate.
+- TypeScript OpenAI helper-parameter run-state approvals now propagate exact same-file readline
+  prompt-review metadata from the helper body into call-site-expanded approval controls without
+  overwriting per-call source-agent provenance. The pinned OpenAI JS
+  `examples/tools/computer-use-hitl.ts` approval control records both `AUTO_APPROVE_HITL` bypass
+  evidence and the `confirm` readline yes/no prompt source shape, and the public IR truth set remains
+  2,429/2,429 passing.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
 - A freshly rebuilt wheel includes all fifteen runtime schemas; a verifier script now guards that
   package artifact expectation.
