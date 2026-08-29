@@ -1,7 +1,14 @@
 from typing import Literal
 
 from agents import Agent, HostedMCPTool
-from policies import IMPORTED_ALWAYS, IMPORTED_SELECTIVE, MUTATED_POLICY
+from policies import (
+    ALIASED_TOOL_CONFIG as IMPORTED_ALIASED_TOOL_CONFIG,
+    IMPORTED_ALWAYS,
+    IMPORTED_SELECTIVE,
+    IMPORTED_TOOL_CONFIG,
+    MUTATED_POLICY,
+    MUTATED_TOOL_CONFIG,
+)
 from unrelated import HostedMCPTool as FakeHostedMCPTool
 
 
@@ -77,6 +84,9 @@ def build_agent() -> Agent:
                     "require_approval": MUTATED_POLICY,
                 }
             ),
+            HostedMCPTool(tool_config=IMPORTED_TOOL_CONFIG),
+            HostedMCPTool(tool_config=IMPORTED_ALIASED_TOOL_CONFIG),
+            HostedMCPTool(tool_config=MUTATED_TOOL_CONFIG),
             FakeHostedMCPTool(
                 tool_config={
                     "type": "mcp",

@@ -1132,6 +1132,14 @@ def python_dict_like_entries(node: ast.AST | None) -> dict[str, ast.AST] | None:
     return None
 
 
+def python_assignment_root_name(target: ast.AST) -> str | None:
+    """Return the root binding written by a simple/subscript/attribute assignment target."""
+    current = target
+    while isinstance(current, (ast.Attribute, ast.Subscript)):
+        current = current.value
+    return current.id if isinstance(current, ast.Name) else None
+
+
 def python_mcp_approval_literal_export_nodes(
     root: Path,
     relative: str,
@@ -1161,6 +1169,11 @@ def python_mcp_approval_literal_export_nodes(
         for child in ast.walk(statement):
             if isinstance(child, ast.Name) and isinstance(child.ctx, (ast.Store, ast.Del)):
                 mutation_counts[child.id] += 1
+            elif isinstance(child, (ast.Attribute, ast.Subscript)) and isinstance(
+                child.ctx, (ast.Store, ast.Del)
+            ):
+                if root_name := python_assignment_root_name(child):
+                    mutation_counts[root_name] += 1
             elif isinstance(child, ast.ExceptHandler) and child.name:
                 mutation_counts[child.name] += 1
 
@@ -1271,13 +1284,35 @@ def python_openai_hosted_mcp_approval_attributes(
         (keyword.value for keyword in call.keywords if keyword.arg == "tool_config"),
         None,
     )
+    attributes: dict[str, object] = {}
+    if isinstance(tool_config, ast.Name):
+        attributes["mcp_tool_config_binding"] = tool_config.id
+        resolved = resolve_literal_binding(tool_config)
+        if resolved is None:
+            attributes["mcp_approval_policy"] = "dynamic"
+            return attributes
+        tool_config = resolved[0]
+        resolution = resolved[1]
+        if resolution.startswith("imported-local-literal:"):
+            resolution = resolution.replace(
+                "imported-local-literal:",
+                "imported-local-tool-config:",
+                1,
+            )
+        elif resolution == "same-block-literal":
+            resolution = "same-block-literal-tool-config"
+        attributes["mcp_tool_config_resolution"] = resolution
+
     config_entries = python_dict_like_entries(tool_config)
     if config_entries is None:
-        return {}
-    return python_openai_mcp_require_approval_attributes(
+        return attributes if attributes.get("mcp_approval_policy") == "dynamic" else {}
+    approval_attributes = python_openai_mcp_require_approval_attributes(
         config_entries.get("require_approval"),
         resolve_literal_binding,
     )
+    if not approval_attributes:
+        return {}
+    return {**attributes, **approval_attributes}
 
 
 OPENHANDS_BUILTIN_TOOL_CAPABILITIES = {
@@ -10824,6 +10859,10 @@ def scan_python(
                 mutations.add(candidate.name)
             if isinstance(candidate, ast.Name) and isinstance(candidate.ctx, (ast.Store, ast.Del)):
                 mutations.add(candidate.id)
+            elif isinstance(candidate, (ast.Attribute, ast.Subscript)) and isinstance(
+                candidate.ctx, (ast.Store, ast.Del)
+            ) and (root_name := python_assignment_root_name(candidate)):
+                mutations.add(root_name)
             for child in ast.iter_child_nodes(candidate):
                 collect(child)
 

@@ -11,10 +11,11 @@
   (14 positive, 2 over-resolution/lookalike negatives), including imported local const-object
   policies, aliased imports, and named local reexports while imported/reexported-mutated bindings
   remain dynamic. The Python hosted
-  check has 12 public IR labels (11 positive, 1 lookalike negative), and the Python non-hosted
+  check has 15 public IR labels (14 positive, 1 lookalike negative), including imported whole
+  `tool_config` dictionaries while imported-mutated configs remain dynamic. The Python non-hosted
   server check has 14 public IR labels (12
   positive, 2 lookalike negatives), including imported local literal approval policies and redacted
-  remote auth/header/client-factory metadata, and the full public IR truth set passes 2,409/2,409.
+  remote auth/header/client-factory metadata, and the full public IR truth set passes 2,412/2,412.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
 - A freshly rebuilt wheel includes all fifteen runtime schemas; a verifier script now guards that
   package artifact expectation.
@@ -773,11 +774,13 @@
   hosted-MCP-specific IR metadata on exact imported tool and capability nodes. Direct `"never"`
   policies record explicit disablement, direct or same-block literal `"always"` policies record
   always-required approval, shallow dict policies expose exact `always`/`never` tool-name lists and
-  read-only hints, exact imported local literal policies retain source resolution,
-  configured `on_approval_request` callbacks are callback-controlled, and dynamic or
-  imported-mutated bindings remain binding-only metadata. The local fixture plus pinned OpenAI
-  Agents Python and Composio hosted MCP examples cover 12/12 labels, bringing the public IR truth set
-  to 2,404 passing labels.
+  read-only hints, exact imported local literal policies and imported local literal whole
+  `tool_config` dictionaries retain source resolution, configured `on_approval_request` callbacks
+  are callback-controlled, and dynamic/imported-mutated approval or `tool_config` bindings remain
+  binding-only metadata. In-place mutations such as `CONFIG["require_approval"] = ...` are treated
+  as dynamic rather than over-resolved. The local fixture plus pinned OpenAI Agents Python and
+  Composio hosted MCP examples cover 15/15 labels, bringing the public IR truth set to 2,412 passing
+  labels.
 - Python OpenAI Agents SDK non-hosted MCP server `require_approval` call sites are now visible on
   exact `agents.mcp.MCPServerStdio` components and imported subclasses whose base is exactly
   `agents.mcp.MCPServer` / `agents.mcp.server.MCPServer`. Literal `"never"`/`False` records
