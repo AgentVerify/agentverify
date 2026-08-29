@@ -7,6 +7,10 @@ catalog workflows.
 
 ## Completed recently
 
+- Added exact Vercel AI Code Mode model-visible tool-surface inventory for `codeModeTool()` /
+  `experimental_toolCaller(...)`, including its sandboxed TypeScript code-execution capability from
+  `runCodeMode({ js: input.js, tools })`, generated host-tool prompt surface, and link to the
+  approval runtime. The public IR truth set covers 2,446/2,446 passing labels.
 - Added exact Vercel AI Code Mode host-tool approval-flow inventory for the runtime gate in
   `invokeHostTool(...)`, the `ai-sdk-code-mode/tool-approval` interrupt payload, and
   `continueCodeModeApproval(...)` response validation/approval-id matching. The public IR truth set

@@ -41564,6 +41564,221 @@ def add_typescript_cline_subagent_approval_flow(
     )
 
 
+def add_typescript_vercel_code_mode_tool_surface(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve Vercel AI Code Mode's model-visible code execution tool surface."""
+    sources: dict[str, str] = {}
+    for path in paths:
+        if path.suffix.lower() not in {".ts", ".tsx", ".js", ".jsx"} or not path.is_file():
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            sources[relative] = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+
+    def unique_source(markers: tuple[str, ...]) -> tuple[str, str] | None:
+        matches = [
+            (relative, text)
+            for relative, text in sources.items()
+            if all(marker in text for marker in markers)
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    tool_source = unique_source(
+        (
+            "import {",
+            "experimental_toolCaller",
+            "export function createCodeModeTool(",
+            "return tool<CodeModeToolInput",
+            "description: buildCodeModeToolDescription(tools)",
+            "inputSchema: jsonSchema<CodeModeToolInput>",
+            "description:",
+            "Code-mode TypeScript source to execute.",
+            "execute: async (input, executionOptions) =>",
+            "await runCodeMode({",
+            "js: input.js",
+            "tools,",
+            "export function codeModeTool(",
+            "return experimental_toolCaller(createCodeModeTool({}, options),",
+            "bind: tools =>",
+            "createCodeModeTool(tools as unknown as CodeModeToolSet, options)",
+        )
+    )
+    prompt_source = unique_source(
+        (
+            "export function buildCodeModeToolDescription(tools: CodeModeToolSet)",
+            "Execute code-mode TypeScript in an isolated sandbox.",
+            "Call host tools only as async `tools.name(input)`",
+            "Fetch: `fetch` is not available.",
+            "Tools:",
+        )
+    )
+    if tool_source is None or prompt_source is None:
+        return
+    tool_path, tool_text = tool_source
+    prompt_path, prompt_text = prompt_source
+    create_offset = tool_text.find("export function createCodeModeTool(")
+    caller_offset = tool_text.find("export function codeModeTool(")
+    prompt_offset = prompt_text.find("Execute code-mode TypeScript in an isolated sandbox.")
+    if create_offset < 0 or caller_offset < 0 or prompt_offset < 0:
+        return
+    run_offset = tool_text.find("await runCodeMode({", create_offset)
+    execute_offset = tool_text.find("execute: async (input, executionOptions) =>", create_offset)
+    caller_wrap_offset = tool_text.find(
+        "return experimental_toolCaller(createCodeModeTool({}, options),",
+        caller_offset,
+    )
+    if (
+        run_offset < 0
+        or execute_offset < 0
+        or caller_wrap_offset < 0
+        or not (create_offset < execute_offset < run_offset < caller_offset < caller_wrap_offset)
+    ):
+        return
+
+    def evidence(path: str, text: str, offset: int) -> Evidence:
+        line = line_at(text, offset)
+        return Evidence(path, line, excerpt(text.splitlines(), line))
+
+    analysis = "typescript-vercel-code-mode-tool-surface"
+    shared = {
+        "analysis": analysis,
+        "framework": "Vercel AI Code Mode",
+        "scope": source_scope(tool_path),
+    }
+    framework_evidence = evidence(tool_path, tool_text, create_offset)
+    tool_evidence = evidence(tool_path, tool_text, caller_offset)
+    capability_evidence = evidence(tool_path, tool_text, run_offset)
+    prompt_evidence = evidence(prompt_path, prompt_text, prompt_offset)
+    framework_id = source_symbol("ts", tool_path, "framework", "VercelAICodeMode")
+    tool_id = source_symbol("ts", tool_path, "tool", "codeModeTool")
+    capability_id = source_symbol("ts", tool_path, "capability", "code-mode-code-execution")
+    prompt_id = source_symbol("ts", prompt_path, "control-setting", "code-mode-tool-prompt")
+    approval_control_id = source_symbol(
+        "ts",
+        "packages/code-mode/src/tool-invocation.ts",
+        "control",
+        "code-mode-tool-approval-runtime",
+    )
+    ir.add_component(
+        Component(
+            "framework",
+            "Vercel AI Code Mode",
+            framework_evidence,
+            {**shared, "runtime": "code-mode"},
+            framework_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "tool",
+            "codeModeTool",
+            tool_evidence,
+            {
+                **shared,
+                "constructor": "experimental_toolCaller",
+                "factory": "codeModeTool",
+                "inner_tool_factory": "createCodeModeTool",
+                "host_tools_binding": "late-bound",
+                "host_tools_api": "tools.*",
+                "model_input_field": "js",
+                "input_schema_additional_properties": False,
+            },
+            tool_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "capability",
+            "code-execution",
+            capability_evidence,
+            {
+                **shared,
+                "runtime_function": "runCodeMode",
+                "execution_environment": "isolated-sandbox",
+                "language": "typescript",
+                "model_input_field": "js",
+                "host_tools_available": "late-bound",
+                "network_fetch_available": False,
+            },
+            capability_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "control-setting",
+            "code-mode-tool-prompt",
+            prompt_evidence,
+            {
+                **shared,
+                "prompt_surface": "tool-description",
+                "declares_sandbox": True,
+                "declares_host_tools_api": "tools.name(input)",
+                "declares_fetch_unavailable": True,
+            },
+            prompt_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "framework",
+            "Vercel AI Code Mode",
+            "exposes",
+            "tool",
+            "codeModeTool",
+            tool_evidence,
+            {"analysis": analysis, "tool_surface": "experimental_toolCaller"},
+            source_id=framework_id,
+            target_id=tool_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            "codeModeTool",
+            "uses",
+            "capability",
+            "code-execution",
+            capability_evidence,
+            {"analysis": analysis, "model_input_field": "js"},
+            source_id=tool_id,
+            target_id=capability_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            "codeModeTool",
+            "configured-by",
+            "control-setting",
+            "code-mode-tool-prompt",
+            prompt_evidence,
+            {"analysis": analysis, "configuration": "buildCodeModeToolDescription"},
+            source_id=tool_id,
+            target_id=prompt_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "tool",
+            "codeModeTool",
+            "governed-by",
+            "control",
+            "tool-approval-policy",
+            tool_evidence,
+            {"analysis": analysis, "policy_effect": "host-tool-approval-runtime"},
+            source_id=tool_id,
+            target_id=approval_control_id,
+        )
+    )
+
+
 def add_typescript_vercel_code_mode_approval_flow(
     ir: RepositoryIR,
     root: Path,
@@ -43688,6 +43903,7 @@ def _scan_repository(
     add_typescript_roo_command_approval_flow(ir, root, registry_paths)
     add_typescript_continue_plan_mode_approval_flow(ir, root, registry_paths)
     add_typescript_continue_plan_mode_mcp_flow(ir, root, registry_paths)
+    add_typescript_vercel_code_mode_tool_surface(ir, root, registry_paths)
     add_typescript_vercel_code_mode_approval_flow(ir, root, registry_paths)
     add_typescript_cline_subagent_approval_flow(ir, root, registry_paths)
     add_typescript_cline_cli_subagent_approval_flow(ir, root, registry_paths)

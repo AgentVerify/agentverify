@@ -3064,6 +3064,181 @@ def test_typescript_vercel_code_mode_approval_flow_is_exact(tmp_path: Path) -> N
     }
 
 
+def test_typescript_vercel_code_mode_tool_surface_is_exact(tmp_path: Path) -> None:
+    positive = tmp_path / "positive"
+    src = positive / "packages" / "code-mode" / "src"
+    src.mkdir(parents=True)
+    (src / "code-mode-tool.ts").write_text(
+        textwrap.dedent(
+            """
+            import {
+              experimental_toolCaller,
+              jsonSchema,
+              tool,
+            } from 'ai';
+            import { runCodeMode } from './run-code-mode.js';
+            import { buildCodeModeToolDescription } from './tool-prompt.js';
+
+            export function createCodeModeTool(
+              tools: CodeModeToolSet,
+              options: CodeModeOptions = {},
+            ): CodeModeTool {
+              return tool<CodeModeToolInput, unknown, Record<string, unknown>>({
+                description: buildCodeModeToolDescription(tools),
+                inputSchema: jsonSchema<CodeModeToolInput>({
+                  type: 'object',
+                  properties: {
+                    js: {
+                      type: 'string',
+                      description:
+                        'Code-mode TypeScript source to execute.',
+                    },
+                  },
+                  required: ['js'],
+                  additionalProperties: false,
+                }),
+                execute: async (input, executionOptions) =>
+                  await runCodeMode({
+                    js: input.js,
+                    tools,
+                    toolExecutionOptions: executionOptions,
+                    options,
+                  }),
+              }) as CodeModeTool;
+            }
+
+            export function codeModeTool(
+              options: CodeModeOptions = {},
+            ): Experimental_ToolCallerTool<CodeModeTool> {
+              return experimental_toolCaller(createCodeModeTool({}, options), {
+                type: 'local',
+                bind: tools =>
+                  createCodeModeTool(tools as unknown as CodeModeToolSet, options),
+              });
+            }
+            """
+        ),
+        encoding="utf-8",
+    )
+    (src / "tool-prompt.ts").write_text(
+        textwrap.dedent(
+            """
+            export function buildCodeModeToolDescription(tools: CodeModeToolSet): string {
+              const sections = [
+                'Execute code-mode TypeScript in an isolated sandbox.',
+                'Call host tools only as async `tools.name(input)`; await each.',
+                'Fetch: `fetch` is not available.',
+              ];
+              sections.push('', 'Tools:');
+              return sections.join('\\n');
+            }
+            """
+        ),
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(positive)
+
+    tool = next(
+        component
+        for component in ir.components
+        if component.kind == "tool"
+        and component.name == "codeModeTool"
+        and component.attributes.get("analysis") == "typescript-vercel-code-mode-tool-surface"
+    )
+    assert tool.symbol_id == "ts:packages/code-mode/src/code-mode-tool.ts#tool:codeModeTool"
+    assert tool.attributes == {
+        "analysis": "typescript-vercel-code-mode-tool-surface",
+        "framework": "Vercel AI Code Mode",
+        "scope": "production",
+        "constructor": "experimental_toolCaller",
+        "factory": "codeModeTool",
+        "inner_tool_factory": "createCodeModeTool",
+        "host_tools_binding": "late-bound",
+        "host_tools_api": "tools.*",
+        "model_input_field": "js",
+        "input_schema_additional_properties": False,
+    }
+    capability = next(
+        component
+        for component in ir.components
+        if component.kind == "capability"
+        and component.name == "code-execution"
+        and component.attributes.get("analysis") == "typescript-vercel-code-mode-tool-surface"
+    )
+    assert capability.attributes["execution_environment"] == "isolated-sandbox"
+    assert capability.attributes["model_input_field"] == "js"
+    assert capability.attributes["network_fetch_available"] is False
+    assert {
+        (
+            relationship.source_kind,
+            relationship.source_name,
+            relationship.relation,
+            relationship.target_kind,
+            relationship.target_name,
+            relationship.attributes.get("analysis"),
+        )
+        for relationship in ir.relationships
+        if relationship.attributes.get("analysis") == "typescript-vercel-code-mode-tool-surface"
+    } == {
+        (
+            "framework",
+            "Vercel AI Code Mode",
+            "exposes",
+            "tool",
+            "codeModeTool",
+            "typescript-vercel-code-mode-tool-surface",
+        ),
+        (
+            "tool",
+            "codeModeTool",
+            "uses",
+            "capability",
+            "code-execution",
+            "typescript-vercel-code-mode-tool-surface",
+        ),
+        (
+            "tool",
+            "codeModeTool",
+            "configured-by",
+            "control-setting",
+            "code-mode-tool-prompt",
+            "typescript-vercel-code-mode-tool-surface",
+        ),
+        (
+            "tool",
+            "codeModeTool",
+            "governed-by",
+            "control",
+            "tool-approval-policy",
+            "typescript-vercel-code-mode-tool-surface",
+        ),
+    }
+
+    negative = tmp_path / "negative"
+    negative_src = negative / "packages" / "code-mode" / "src"
+    negative_src.mkdir(parents=True)
+    (negative_src / "code-mode-tool.ts").write_text(
+        (src / "code-mode-tool.ts")
+        .read_text(encoding="utf-8")
+        .replace(
+            "return experimental_toolCaller(createCodeModeTool({}, options),",
+            "return notCaller(",
+        ),
+        encoding="utf-8",
+    )
+    (negative_src / "tool-prompt.ts").write_text(
+        (src / "tool-prompt.ts").read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    negative_ir = scan_repository(negative)
+    assert not [
+        component
+        for component in negative_ir.components
+        if component.attributes.get("analysis") == "typescript-vercel-code-mode-tool-surface"
+    ]
+
+
 def test_python_enabled_auto_approval_is_review_candidate() -> None:
     ir = scan_repository(ROOT / "cases/python_auto_approval")
 

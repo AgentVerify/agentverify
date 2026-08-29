@@ -1,5 +1,24 @@
 # AgentVerify decisions
 
+## Vercel Code Mode tool-surface IR requires public tool-caller proof
+
+- Decision: Emit Vercel AI Code Mode model-visible tool-surface IR only when `codeModeTool()`
+  source-provenly wraps `createCodeModeTool(...)` in `experimental_toolCaller(...)`, and
+  `createCodeModeTool(...)` routes the model-provided `js` field into `runCodeMode({ js: input.js,
+  tools })`. Record the sandboxed TypeScript code-execution capability, late-bound `tools.*` host
+  tool access, generated prompt control-setting, and edge to the Code Mode approval runtime.
+- Evidence: Vercel AI's pinned `packages/code-mode/src/code-mode-tool.ts` exposes
+  `codeModeTool()` and `createCodeModeTool(...)`; `packages/code-mode/src/tool-prompt.ts` declares
+  the isolated sandbox, `tools.name(input)` host-tool API, and unavailable `fetch`. A local
+  regression pins the positive source shape and rejects a wrapper that no longer uses
+  `experimental_toolCaller(...)`.
+- Alternative: Treat any function named `createCodeModeTool` or any `runCodeMode({ js })` call as a
+  model-visible tool. Rejected because direct runtime calls can be host-internal; the public
+  AI-SDK-facing `experimental_toolCaller(...)` wrapper is the evidence that a generation call can
+  expose the surface to a model.
+- Revisit when: Real applications use `codeModeTool()` with concrete host tools so AgentVerify can
+  link model-visible code-mode calls to exact downstream host-tool capabilities and approval UX.
+
 ## Vercel Code Mode approval-flow IR requires full gate/continuation proof
 
 - Decision: Emit Vercel AI Code Mode approval-flow controls only when the scanned source uniquely

@@ -781,6 +781,11 @@ proves that `hostTool.needsApproval` is checked before `executeHostTool(...)`, i
 the `ai-sdk-code-mode/tool-approval` payload, callback denial throws before execution, and
 `continueCodeModeApproval(...)` revalidates both response shape and approval-id matching before
 resuming.
+The same package now exposes the public `codeModeTool()` surface as a model-visible
+`experimental_toolCaller`: AgentVerify records the `codeModeTool` tool, its sandboxed TypeScript
+`code-execution` capability sourced from `runCodeMode({ js: input.js, tools })`, the generated
+tool-description control that declares `tools.name(input)` host-tool calls and unavailable `fetch`,
+and the edge to the Code Mode approval runtime.
 OpenAI Agents Python run-state approval decisions are now inventoried separately from approval-policy
 declaration: exact `Runner.run(...)` or `Runner.run_streamed(...)` results that produce a stable
 `result.to_state()` binding, plus exact `RunState.from_json/from_string(...)` restored states, emit
@@ -1145,7 +1150,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 730-label rule truth set and 2,440-label IR component/relationship set are curated regression
+The 730-label rule truth set and 2,446-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed
