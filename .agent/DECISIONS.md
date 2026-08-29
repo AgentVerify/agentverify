@@ -1,5 +1,22 @@
 # AgentVerify decisions
 
+## Python hosted MCP callback predicates are inventory, not human-review proof
+
+- Decision: Record exact same-file `HostedMCPTool.on_approval_request` callbacks that directly
+  return an approval result dictionary as handler predicate metadata, but do not treat generic
+  configured callbacks as human-review controls.
+- Evidence: A local Python hosted MCP fixture returns `{"approve": request.data.name !=
+  "delete_page"}`, which is source-visible enough to record the request-field predicate and
+  conditional decision. The pinned OpenAI hosted MCP `on_approval.py` example routes through
+  `confirm_with_fallback(...)` and an intermediate result dictionary, which is real review-shaped
+  behavior but needs separate prompt/dataflow proof before AgentVerify should claim exact approval
+  quality.
+- Alternative: Mark every configured hosted MCP approval callback as a human approval edge. Rejected
+  because callbacks can unconditionally approve, reject, consult environment flags, or delegate to
+  opaque helpers; configuration alone is not control quality.
+- Revisit when: The scanner can prove prompt/user-confirmation flows or classify unconditional
+  approval/rejection callbacks from real repositories without broad interprocedural inference.
+
 ## Python OpenAI MCP server approval remains IR inventory until risk-scoped reporting evidence exists
 
 - Decision: Record exact non-hosted OpenAI Agents Python MCP server `require_approval` call-site

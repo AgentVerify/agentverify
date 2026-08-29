@@ -14,12 +14,13 @@
   check has 25 public IR labels (24 positive, 1 lookalike negative), including imported,
   named-reexported, producer-star-reexported, and consumer-star-imported whole `tool_config`
   dictionaries while mutated configs remain dynamic. Ordered local multi-star imports resolve to the
-  later visible literal source. The Python non-hosted server check has 21
+  later visible literal source, and same-file direct approval callbacks returning
+  `{"approve": request... <literal>}` now record exact handler predicate metadata. The Python
+  non-hosted server check has 21
   public IR labels (19 positive, 2 lookalike negatives), including imported, named-reexported,
   producer-star-reexported, and consumer-star-imported local literal approval policies and redacted
   remote auth/header/client-factory metadata, with ordered local multi-star imports resolving to the
-  later visible literal source; the
-  full public IR truth set passes 2,429/2,429.
+  later visible literal source; the full public IR truth set passes 2,429/2,429.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
 - A freshly rebuilt wheel includes all fifteen runtime schemas; a verifier script now guards that
   package artifact expectation.

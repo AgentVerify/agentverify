@@ -1459,6 +1459,83 @@ def python_openai_hosted_mcp_approval_attributes(
     return {**attributes, **approval_attributes}
 
 
+def python_openai_hosted_mcp_approval_callback_attributes(
+    function: ast.FunctionDef | ast.AsyncFunctionDef,
+) -> dict[str, object]:
+    """Resolve exact direct-return HostedMCPTool approval callback metadata."""
+    parameters = [*function.args.posonlyargs, *function.args.args]
+    if not parameters:
+        return {}
+    request_name = parameters[0].arg
+    body = [
+        statement
+        for statement in function.body
+        if not (
+            isinstance(statement, ast.Expr)
+            and isinstance(statement.value, ast.Constant)
+            and isinstance(statement.value.value, str)
+        )
+    ]
+    if len(body) != 1 or not isinstance(body[0], ast.Return) or body[0].value is None:
+        return {}
+    return_value = body[0].value
+    entries = python_dict_like_entries(return_value)
+    if entries is None:
+        return {}
+    approve_expression = entries.get("approve")
+    if approve_expression is None:
+        return {}
+    attributes: dict[str, object] = {
+        "mcp_approval_handler_resolution": "same-file-direct-approval-dict-return"
+    }
+    if isinstance(approve_expression, ast.Constant) and isinstance(
+        approve_expression.value, bool
+    ):
+        attributes["mcp_approval_handler_decision"] = (
+            "always-approve" if approve_expression.value else "always-reject"
+        )
+        return attributes
+    if not (
+        isinstance(approve_expression, ast.Compare)
+        and len(approve_expression.ops) == 1
+        and len(approve_expression.comparators) == 1
+        and isinstance(approve_expression.ops[0], (ast.Eq, ast.NotEq))
+        and isinstance(approve_expression.comparators[0], ast.Constant)
+        and isinstance(approve_expression.comparators[0].value, (str, int, bool))
+    ):
+        return {}
+
+    def request_field_path(node: ast.AST) -> str | None:
+        parts: list[str] = []
+        current = node
+        while isinstance(current, ast.Attribute):
+            parts.append(current.attr)
+            current = current.value
+        if not isinstance(current, ast.Name) or current.id != request_name:
+            return None
+        return ".".join(reversed(parts)) or None
+
+    field = request_field_path(approve_expression.left)
+    if field is None:
+        return {}
+    predicate = (
+        "request-field-equals-literal"
+        if isinstance(approve_expression.ops[0], ast.Eq)
+        else "request-field-not-equals-literal"
+    )
+    attributes.update(
+        {
+            "mcp_approval_handler_decision": "conditional-approve",
+            "mcp_approval_handler_predicate": predicate,
+            "mcp_approval_handler_predicate_field": field,
+            "mcp_approval_handler_predicate_values": [
+                approve_expression.comparators[0].value
+            ],
+        }
+    )
+    return attributes
+
+
 OPENHANDS_BUILTIN_TOOL_CAPABILITIES = {
     "TerminalTool": "shell-execution",
     "FileEditorTool": "filesystem",
@@ -11025,6 +11102,12 @@ def scan_python(
         if "on_approval" in text and re.search(r"\b(?:from|import)\s+agents\b", text)
         else {}
     )
+    hosted_mcp_approval_callback_summaries = {
+        statement.name: python_openai_hosted_mcp_approval_callback_attributes(statement)
+        for statement in tree.body
+        if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and module_mutation_counts[statement.name] == 1
+    }
 
     def same_block_literal_binding(name: ast.Name) -> tuple[ast.AST, str] | None:
         block_info = enclosing_statement_block(name)
@@ -11097,9 +11180,23 @@ def scan_python(
         if handler is not None and not (
             isinstance(handler, ast.Constant) and handler.value is None
         ):
+            def handler_shadowed_by_enclosing_function(name: str) -> bool:
+                parent = parent_by_id.get(id(handler))
+                while parent is not None:
+                    if isinstance(parent, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        return name in python_function_local_bindings(parent)
+                    parent = parent_by_id.get(id(parent))
+                return False
+
             attributes["mcp_approval_handler"] = "configured"
             attributes["mcp_approval_handler_policy"] = "callback-controlled"
             handler_name = dotted_name(handler).rsplit(".", 1)[-1]
+            if (
+                isinstance(handler, ast.Name)
+                and not handler_shadowed_by_enclosing_function(handler.id)
+                and (handler_attributes := hosted_mcp_approval_callback_summaries.get(handler.id))
+            ):
+                attributes.update(handler_attributes)
             if environment_names := approval_bypass_function_summaries.get(handler_name, ()):
                 attributes["approval_bypass_environment_names"] = list(environment_names)
                 attributes["approval_bypass_resolution"] = "same-file-transitive-callback"

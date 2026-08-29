@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import shutil
+import textwrap
 from datetime import date
 from pathlib import Path
 
@@ -2928,6 +2929,11 @@ def test_python_openai_hosted_mcp_approval_policy_is_exact() -> None:
         "mcp_approval_requirement": "always",
         "mcp_approval_handler": "configured",
         "mcp_approval_handler_policy": "callback-controlled",
+        "mcp_approval_handler_resolution": "same-file-direct-approval-dict-return",
+        "mcp_approval_handler_decision": "conditional-approve",
+        "mcp_approval_handler_predicate": "request-field-not-equals-literal",
+        "mcp_approval_handler_predicate_field": "data.name",
+        "mcp_approval_handler_predicate_values": ["delete_page"],
     }
     assert tools[49].attributes == {
         "binding": "literal-tools-list-inline-constructor",
@@ -3101,6 +3107,15 @@ def test_python_openai_hosted_mcp_approval_policy_is_exact() -> None:
     assert capabilities[40].attributes["mcp_approval_resolution"] == (
         "same-block-literal-string"
     )
+    assert capabilities[40].attributes["mcp_approval_handler_resolution"] == (
+        "same-file-direct-approval-dict-return"
+    )
+    assert capabilities[40].attributes["mcp_approval_handler_predicate"] == (
+        "request-field-not-equals-literal"
+    )
+    assert capabilities[40].attributes["mcp_approval_handler_predicate_values"] == [
+        "delete_page"
+    ]
     assert capabilities[49].attributes["mcp_approval_policy"] == "selective"
     assert capabilities[68].attributes["mcp_approval_resolution"] == (
         "imported-local-literal:repository-module-single-path"
@@ -3164,6 +3179,43 @@ def test_python_openai_hosted_mcp_approval_policy_is_exact() -> None:
         "HostedMCPTool@9",
         "HostedMCPTool@10",
     }
+
+
+def test_python_openai_hosted_mcp_approval_callback_shadow_stays_unresolved(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "agent.py").write_text(
+        textwrap.dedent(
+            """
+            from agents import Agent, HostedMCPTool
+
+            def prompt_approval(request):
+                return {'approve': request.data.name != 'delete_page'}
+
+            def build_agent():
+                prompt_approval = lambda request: {'approve': True}
+                return Agent(
+                    name='shadowed callback',
+                    tools=[
+                        HostedMCPTool(
+                            tool_config={'type': 'mcp', 'require_approval': 'always'},
+                            on_approval_request=prompt_approval,
+                        )
+                    ],
+                )
+            """
+        )
+    )
+    ir = scan_repository(tmp_path)
+    tool = next(
+        component
+        for component in ir.components
+        if component.kind == "tool"
+        and component.attributes.get("constructor") == "HostedMCPTool"
+    )
+    assert tool.attributes["mcp_approval_handler"] == "configured"
+    assert tool.attributes["mcp_approval_handler_policy"] == "callback-controlled"
+    assert "mcp_approval_handler_resolution" not in tool.attributes
 
 
 def test_python_computer_tool_has_exact_agent_and_capability_identity() -> None:
