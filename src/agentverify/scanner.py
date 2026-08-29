@@ -19851,6 +19851,10 @@ def add_typescript_tool_observation(
         call_body, constructor
     )
     web_search_attributes = typescript_openai_web_search_attributes(call_body, constructor)
+    hosted_mcp_approval_attributes = typescript_openai_hosted_mcp_approval_attributes(
+        call_body,
+        constructor,
+    )
     execution_environment = "unresolved"
     if constructor in TS_OPENAI_SANDBOX_CAPABILITY_FACTORIES:
         execution_environment = "sdk-sandbox"
@@ -19891,6 +19895,7 @@ def add_typescript_tool_observation(
         **safety_check_attributes,
         **computer_provider_attributes,
         **web_search_attributes,
+        **hosted_mcp_approval_attributes,
         "execution_environment": execution_environment,
         "scope": source_scope(relative),
         **(
@@ -19924,6 +19929,8 @@ def add_typescript_tool_observation(
         capability_attributes.update(computer_provider_attributes)
     if constructor == "webSearchTool":
         capability_attributes.update(web_search_attributes)
+    if constructor == "hostedMcpTool":
+        capability_attributes.update(hosted_mcp_approval_attributes)
     if constructor == "applyPatchTool":
         capability_attributes["write_access"] = True
     for capability in TS_OPENAI_BUILTIN_TOOL_CAPABILITIES.get(constructor, ()):
@@ -20260,6 +20267,79 @@ def typescript_openai_needs_approval_attributes(body: str) -> dict[str, object]:
             **typescript_openai_needs_approval_predicate_attributes(approval_expression),
         }
     return {}
+
+
+def typescript_openai_hosted_mcp_approval_attributes(
+    body: str,
+    constructor: str,
+) -> dict[str, object]:
+    """Resolve exact OpenAI Agents JS hostedMcpTool requireApproval metadata."""
+    if constructor != "hostedMcpTool":
+        return {}
+    require_approval = typescript_object_property_expression(body, "requireApproval")
+    on_approval = typescript_object_property_expression(body, "onApproval")
+    attributes: dict[str, object] = {}
+    if require_approval is None and typescript_object_has_shorthand_property(
+        body,
+        "requireApproval",
+    ):
+        require_approval = "requireApproval"
+    if require_approval is None:
+        attributes.update(
+            {
+                "mcp_approval_policy": "disabled-default",
+                "mcp_approval_handler": "none",
+            }
+        )
+    else:
+        static_policy = typescript_string_literal_value(require_approval)
+        if static_policy in {"never", "always"}:
+            attributes["mcp_approval_policy"] = (
+                "disabled-explicit" if static_policy == "never" else "always-required"
+            )
+            attributes["mcp_approval_requirement"] = static_policy
+        else:
+            policy_code = typescript_code_mask(require_approval).strip()
+            if policy_code.startswith("{"):
+                attributes["mcp_approval_policy"] = "selective"
+                for branch_name in ("never", "always"):
+                    branch = typescript_literal_object_property_expression(
+                        require_approval,
+                        branch_name,
+                    )
+                    if branch is None:
+                        continue
+                    tool_names_expression = typescript_literal_object_property_expression(
+                        branch,
+                        "toolNames",
+                    )
+                    tool_names = (
+                        typescript_literal_string_arguments(tool_names_expression)
+                        if tool_names_expression is not None
+                        else None
+                    )
+                    if tool_names is not None and all(
+                        tool_name is not None for tool_name in tool_names
+                    ):
+                        attributes[f"mcp_approval_{branch_name}_tool_names"] = list(
+                            tool_names
+                        )
+                    read_only = typescript_literal_boolean_value(
+                        typescript_literal_object_property_expression(branch, "readOnly") or ""
+                    )
+                    if read_only is not None:
+                        attributes[f"mcp_approval_{branch_name}_read_only"] = read_only
+            else:
+                attributes["mcp_approval_policy"] = "dynamic"
+                identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", policy_code)
+                if identifier is not None:
+                    attributes["mcp_approval_binding"] = identifier.group(0)
+    if on_approval is not None:
+        attributes["mcp_approval_handler"] = "configured"
+        attributes["mcp_approval_handler_policy"] = "callback-controlled"
+    elif require_approval is not None:
+        attributes["mcp_approval_handler"] = "agent-loop"
+    return attributes
 
 
 def typescript_openai_safety_check_attributes(body: str, constructor: str) -> dict[str, object]:

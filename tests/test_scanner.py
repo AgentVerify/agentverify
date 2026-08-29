@@ -5169,6 +5169,60 @@ def test_typescript_openai_imported_agent_clone_is_exact() -> None:
     }
 
 
+def test_typescript_openai_hosted_mcp_approval_policy_is_exact() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_openai_hosted_mcp_approval")
+
+    tools = {
+        component.name: component
+        for component in ir.components
+        if component.kind == "tool"
+    }
+    assert tools["hostedMcpTool@10"].attributes == {
+        "constructor": "hostedMcpTool",
+        "approval_policy": "not-applicable",
+        "approval_handler": "not-applicable",
+        "mcp_approval_policy": "disabled-default",
+        "mcp_approval_handler": "none",
+        "execution_environment": "unresolved",
+        "scope": "production",
+    }
+    assert tools["hostedMcpTool@14"].attributes == {
+        "constructor": "hostedMcpTool",
+        "approval_policy": "not-applicable",
+        "approval_handler": "not-applicable",
+        "mcp_approval_policy": "disabled-explicit",
+        "mcp_approval_requirement": "never",
+        "mcp_approval_handler": "agent-loop",
+        "execution_environment": "unresolved",
+        "scope": "production",
+    }
+    assert tools["hostedMcpTool@19"].attributes == {
+        "constructor": "hostedMcpTool",
+        "approval_policy": "not-applicable",
+        "approval_handler": "not-applicable",
+        "mcp_approval_policy": "selective",
+        "mcp_approval_never_tool_names": ["read_wiki_structure"],
+        "mcp_approval_never_read_only": True,
+        "mcp_approval_always_tool_names": ["ask_question"],
+        "mcp_approval_handler": "configured",
+        "mcp_approval_handler_policy": "callback-controlled",
+        "execution_environment": "unresolved",
+        "scope": "production",
+    }
+    assert "fakeHostedMcpTool@28" not in tools
+
+    capability_by_line = {
+        component.evidence.line: component
+        for component in ir.components
+        if component.kind == "capability" and component.name == "mcp-access"
+    }
+    assert capability_by_line[10].attributes["mcp_approval_policy"] == "disabled-default"
+    assert capability_by_line[14].attributes["mcp_approval_requirement"] == "never"
+    assert capability_by_line[19].attributes["mcp_approval_always_tool_names"] == [
+        "ask_question"
+    ]
+
+
 def test_typescript_openai_realtime_session_guardrail_policy_is_exact() -> None:
     ir = scan_repository(ROOT / "cases/typescript_openai_realtime_session_guardrails")
 

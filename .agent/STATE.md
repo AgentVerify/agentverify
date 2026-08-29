@@ -17,9 +17,11 @@ catalog workflows.
 - Extended exact TypeScript OpenAI Agents SDK `Agent.clone(...)` inventory to imported sibling
   source Agents when the import resolves to one exported OpenAI `Agent`, preserving clone lineage
   and list-property semantics without treating lookalike `.clone(...)` methods as Agents.
+- Added exact TypeScript OpenAI Agents SDK `hostedMcpTool({ requireApproval, onApproval })`
+  approval inventory for default, explicit-never, selective, and callback-handled hosted MCP tools.
 - Added exact TypeScript OpenAI Agents SDK Agent guardrail tripwire metadata for direct returned
   `tripwireTriggered` objects in inline guardrails and stable typed `InputGuardrail`/
-  `OutputGuardrail` bindings. Regenerated public IR truth-set results now cover 2,367/2,367
+  `OutputGuardrail` bindings. Regenerated public IR truth-set results now cover 2,375/2,375
   passing labels, and the 71-repository engine benchmark still reports 2,900 relationships /
   10,689 symbolized components.
 - Added exact TypeScript OpenAI Agents SDK Agent guardrail direct-throw metadata for stable guardrail

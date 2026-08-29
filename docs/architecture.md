@@ -300,7 +300,9 @@ constructor name and the consumer does not shadow it; ambiguous stars, near pack
 rebinding stay unresolved. An exact imported class may also create a tool through the known
 `from_settings` factory method, provided the class import is immutable and already establishes tool
 role. `agents.HostedMCPTool` and `google.adk.integrations.langchain.LangchainTool` are explicit
-integration adapters; the hosted MCP adapter records MCP access but does not invent approval state.
+integration adapters; the hosted MCP adapter records MCP access plus exact `requireApproval` and
+`onApproval` state when present, while omitted, shorthand, and dynamic settings remain explicitly
+bounded rather than promoted to generic human-approval controls.
 For OpenAI built-in approval handlers, unique same-file Python/TypeScript functions can also be
 summarized transitively when an approval-specific environment comparison has an immediate true
 return. A resolved handler adds a tool-to-auto-approval configuration edge; ambiguous definitions,
