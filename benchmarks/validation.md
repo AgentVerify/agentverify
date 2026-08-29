@@ -176,6 +176,9 @@ approval/surface relationships. Three parse warnings were isolated and reported 
 run. Tests and fixtures are inventoried but excluded from findings by default; `--include-tests`
 enables them. The pinned corpus contains no AgentVerify inline directives, so the benchmark records
 zero suppressed findings.
+For focused development, `scripts/benchmark_engine.py --repository <owner/name>` can refresh one or
+more named corpus repositories before paying the full-corpus cost; release evidence should still use
+the default unfiltered 71-repository run.
 
 The locked collector prioritizes manifests, production SSRF/URL-safety sources, and then general
 security/agent/tool/MCP sources within the 220-file cap. It adds at most 20 local source files:

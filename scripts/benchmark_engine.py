@@ -69,6 +69,12 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--cache-dir", type=Path, default=Path(".agentverify-cache/repositories"))
     parser.add_argument("--output", type=Path, default=Path("benchmarks/engine-results.json"))
+    parser.add_argument(
+        "--repository",
+        action="append",
+        default=[],
+        help="Restrict the benchmark to a named corpus repository; repeat for multiple repositories.",
+    )
     return parser.parse_args()
 
 
@@ -76,6 +82,16 @@ def main() -> int:
     args = parse_args()
     with args.corpus.open(newline="", encoding="utf-8") as handle:
         repositories = list(csv.DictReader(handle))
+    if args.repository:
+        requested_repositories = set(args.repository)
+        repositories = [
+            row for row in repositories if row["repository"] in requested_repositories
+        ]
+        found_repositories = {row["repository"] for row in repositories}
+        missing_repositories = sorted(requested_repositories - found_repositories)
+        if missing_repositories:
+            missing = ", ".join(missing_repositories)
+            raise SystemExit(f"unknown --repository value(s): {missing}")
     repository_data = (
         json.loads(args.repository_data.read_text(encoding="utf-8"))
         if args.repository_data.is_file()
