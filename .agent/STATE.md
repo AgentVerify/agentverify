@@ -24,10 +24,12 @@ catalog workflows.
   objects remain dynamic.
 - Added exact Python OpenAI Agents SDK `HostedMCPTool(tool_config={...})` approval inventory for
   explicit `"never"`, explicit or same-block/imported local literal `"always"`, shallow selective
-  dict policies, imported local literal policies, named local reexported literal policies, imported
-  named-reexported, or star-reexported literal whole `tool_config` dictionaries, configured approval callbacks,
+  dict policies, imported local literal policies, named local reexported literal policies, consumer
+  star-imported literal policies, imported, named-reexported, or producer-star-reexported literal
+  whole `tool_config` dictionaries, and consumer-star-imported `tool_config` dictionaries,
+  configured approval callbacks,
   dynamic/imported-mutated bindings, dynamic imported/reexported-mutated `tool_config` bindings, and
-  exact hosted MCP capability edges. The public IR truth set now covers 2,422/2,422 passing labels.
+  exact hosted MCP capability edges. The public IR truth set now covers 2,427/2,427 passing labels.
 - Added exact Python OpenAI Agents SDK non-hosted MCP server `require_approval` call-site inventory
   for `MCPServerStdio(...)`, `MCPServerSse(...)`, `MCPServerStreamableHttp(...)`, and imported
   subclasses of exact `agents.mcp.MCPServer`, including literal never/always booleans, same-block

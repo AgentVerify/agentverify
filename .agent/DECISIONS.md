@@ -8,10 +8,11 @@
   required, selective, or callable/dynamic. The scanner can now prove direct `MCPServerStdio`,
   `MCPServerSse`, and `MCPServerStreamableHttp` calls plus imported subclasses of exact
   `agents.mcp.MCPServer`, while keeping `local_mcp` lookalikes out of OpenAI-specific approval
-  semantics. Same-block literal bindings and exact imported, named-reexported, or star-reexported
-  local literal approval policies are resolved while mutated imports/reexports remain dynamic. Remote URLs are
-  sanitized, and remote auth/header/client-factory evidence is recorded as source-shape metadata
-  without copying secret values. Current validated labels combine local/source-shape coverage with pinned OpenAI SDK
+  semantics. Same-block literal bindings and exact imported, named-reexported,
+  producer-star-reexported, or consumer-star-imported local literal approval policies are resolved
+  while mutated imports/reexports remain dynamic. Remote URLs are sanitized, and remote
+  auth/header/client-factory evidence is recorded as source-shape metadata without copying secret
+  values. Current validated labels combine local/source-shape coverage with pinned OpenAI SDK
   integration-test remote transport examples; a noisy review rule for examples or tests would
   overstate production risk without additional real production cases.
 - Alternative: Immediately flag disabled/non-always MCP server approval as a high-severity rule.
@@ -1062,9 +1063,10 @@
 - Decision: Record exact Python `HostedMCPTool(tool_config={...})` approval state through
   `mcp_approval_*` attributes on tool and hosted MCP capability nodes. Support direct literal
   `"never"`/`"always"`, same-block and exact imported local literal string bindings, shallow
-  `{always, never}` tool-list dict policies, imported, named-reexported, and star-reexported local
-  literal whole `tool_config` dictionaries, dynamic/imported/reexported-mutated binding metadata,
-  and configured `on_approval_request` callbacks.
+  `{always, never}` tool-list dict policies, imported, named-reexported, producer-star-reexported,
+  and consumer-star-imported local literal whole `tool_config` dictionaries,
+  dynamic/imported/reexported-mutated binding metadata, and configured `on_approval_request`
+  callbacks.
 - Evidence: The pinned OpenAI Agents Python `HostedMCPTool` stores a raw MCP `tool_config` and
   separates `on_approval_request` as the callback used when approval is requested. Pinned
   `examples/hosted_mcp/simple.py`, `on_approval.py`, and `human_in_the_loop.py`, plus Composio's
@@ -1073,7 +1075,7 @@
 - Alternative: Treat hosted MCP approval as generic `approval_policy` or infer SDK defaults when
   `require_approval` is omitted. Rejected because hosted MCP uses provider/API-specific
   configuration and the Python examples make approval policy explicit in `tool_config`.
-- Revisit when package-level policy or `tool_config` exports, consumer-side star imports,
+- Revisit when package-level policy or `tool_config` exports, ambiguous multi-star imports,
   `Mcp(...)` factory objects in production examples, or callable `require_approval` policies can be
   resolved without broad Python dataflow.
 

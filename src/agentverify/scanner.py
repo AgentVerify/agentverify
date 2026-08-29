@@ -1425,6 +1425,24 @@ def python_openai_hosted_mcp_approval_attributes(
                 "imported-local-star-reexport-tool-config:",
                 1,
             )
+        elif resolution.startswith("imported-local-star-import-literal:"):
+            resolution = resolution.replace(
+                "imported-local-star-import-literal:",
+                "imported-local-star-import-tool-config:",
+                1,
+            )
+        elif resolution.startswith("imported-local-star-import-reexport-literal:"):
+            resolution = resolution.replace(
+                "imported-local-star-import-reexport-literal:",
+                "imported-local-star-import-reexport-tool-config:",
+                1,
+            )
+        elif resolution.startswith("imported-local-star-import-star-reexport-literal:"):
+            resolution = resolution.replace(
+                "imported-local-star-import-star-reexport-literal:",
+                "imported-local-star-import-star-reexport-tool-config:",
+                1,
+            )
         elif resolution == "same-block-literal":
             resolution = "same-block-literal-tool-config"
         attributes["mcp_tool_config_resolution"] = resolution
@@ -11217,11 +11235,21 @@ def scan_python(
     imported_mcp_approval_export_cache: dict[
         tuple[str, str], dict[str, PythonMCPApprovalLiteralExport]
     ] = {}
+    imported_mcp_approval_star_sources: list[PythonImportResolution] = []
     for statement in tree.body:
         if not isinstance(statement, ast.ImportFrom):
             continue
         for alias in statement.names:
             if alias.name == "*":
+                resolution = resolve_python_import(
+                    root,
+                    relative,
+                    statement,
+                    alias.name,
+                    module_paths,
+                )
+                if resolution is not None:
+                    imported_mcp_approval_star_sources.append(resolution)
                 continue
             local_name = alias.asname or alias.name
             if import_binding_counts[local_name] != 1 or nonimport_binding_counts[local_name] != 0:
@@ -11255,8 +11283,57 @@ def scan_python(
                     imported_resolution,
                 )
 
+    imported_mcp_approval_star_cache: dict[
+        tuple[str, str], dict[str, PythonMCPApprovalLiteralExport]
+    ] = {}
+
+    def exact_mcp_approval_star_import_literal_binding(
+        name: ast.Name,
+    ) -> tuple[ast.AST, str] | None:
+        if (
+            not imported_mcp_approval_star_sources
+            or import_binding_counts[name.id] != 0
+            or nonimport_binding_counts[name.id] != 0
+        ):
+            return None
+        candidates: list[tuple[PythonMCPApprovalLiteralExport, str]] = []
+        for resolution in imported_mcp_approval_star_sources:
+            if not python_star_import_allows(root, resolution.path, name.id):
+                continue
+            cache_key = (resolution.path, name.id)
+            if cache_key not in imported_mcp_approval_star_cache:
+                imported_mcp_approval_star_cache[cache_key] = (
+                    python_mcp_approval_literal_export_nodes(
+                        root,
+                        resolution.path,
+                        module_paths,
+                        frozenset({name.id}),
+                    )
+                )
+            exported = imported_mcp_approval_star_cache[cache_key].get(name.id)
+            if exported is None:
+                continue
+            imported_resolution = f"imported-local-star-import-literal:{resolution.basis}"
+            if exported.resolution == "literal-reexport":
+                imported_resolution = (
+                    f"imported-local-star-import-reexport-literal:{resolution.basis}"
+                )
+            elif exported.resolution == "literal-star-reexport":
+                imported_resolution = (
+                    f"imported-local-star-import-star-reexport-literal:{resolution.basis}"
+                )
+            candidates.append((exported, imported_resolution))
+        if len(candidates) != 1:
+            return None
+        exported, imported_resolution = candidates[0]
+        return exported.node, imported_resolution
+
     def exact_mcp_approval_literal_binding(name: ast.Name) -> tuple[ast.AST, str] | None:
-        return same_block_literal_binding(name) or imported_mcp_approval_literals.get(name.id)
+        return (
+            same_block_literal_binding(name)
+            or imported_mcp_approval_literals.get(name.id)
+            or exact_mcp_approval_star_import_literal_binding(name)
+        )
 
     local_agent_constructor_origins: dict[str, PythonAgentConstructorOrigin] = {}
     framework_agent_star_import_candidates: dict[str, list[tuple[str, str]]] = defaultdict(list)

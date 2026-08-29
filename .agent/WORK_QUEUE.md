@@ -58,7 +58,7 @@
   exact-agent-parameter pattern; future helper work should focus only on richer predicate/action
   quality or new exact helper shapes that preserve call-site and source-agent identity.
 - Continue OpenAI Agents Python safety-governance extraction where evidence remains exact: callbacks
-  that distinguish explicit user/policy review from unconditional acknowledgement, star/package-level
+  that distinguish explicit user/policy review from unconditional acknowledgement, ambiguous multi-star
   consumer imports or package-level hosted/non-hosted MCP approval policy or `tool_config` exports,
   any reporting-grade remote MCP auth/URL exposure quality only when deployment context is
   source-proven, and production sticky-approval defaults that can be separated from prompt-selected
