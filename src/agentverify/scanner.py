@@ -20446,6 +20446,11 @@ def typescript_graph(
     tool_by_line: dict[int, tuple[str, str]] = {}
     tool_input_names: dict[str, set[str]] = {}
     local_tool_ids: dict[str, str] = {}
+    openai_tool_guardrail_controls: dict[
+        str,
+        list[tuple[str, str, int, str, dict[str, object]]],
+    ] = defaultdict(list)
+    emitted_agent_tool_guardrail_edges: set[tuple[str, str]] = set()
     code = typescript_code_mask(text)
     openai_agents_imports = typescript_named_import_bindings(text, "@openai/agents")
     openai_realtime_imports = {
@@ -20793,7 +20798,7 @@ def typescript_graph(
             if guardrail_attributes is None:
                 continue
             guardrail_line = line_at(text, guardrail_property_offset)
-            add_typescript_openai_tool_guardrail_control(
+            control_name, control_id = add_typescript_openai_tool_guardrail_control(
                 ir,
                 relative=relative,
                 lines=lines,
@@ -20803,6 +20808,9 @@ def typescript_graph(
                 guardrail_kind=guardrail_kind,
                 guardrail_attributes=guardrail_attributes,
                 symbol_identity=f"{tool_identity}.{property_name}@{guardrail_line}",
+            )
+            openai_tool_guardrail_controls[tool_name].append(
+                (control_name, control_id, guardrail_line, guardrail_kind, guardrail_attributes)
             )
 
     immutable_literal_bindings = (
@@ -23747,6 +23755,56 @@ def typescript_graph(
                         target_id=target_id,
                     )
                 )
+                if target_id is not None:
+                    for (
+                        control_name,
+                        control_id,
+                        _guardrail_line,
+                        guardrail_kind,
+                        guardrail_attributes,
+                    ) in openai_tool_guardrail_controls.get(tool_name, ()):
+                        edge_key = (agent_id, control_id)
+                        if edge_key in emitted_agent_tool_guardrail_edges:
+                            continue
+                        emitted_agent_tool_guardrail_edges.add(edge_key)
+                        guardrail_relationship_attributes: dict[str, object] = {
+                            "analysis": "typescript-openai-agents-tool-guardrails",
+                            "configuration": "Agent.tools.toolGuardrails",
+                            "tool_configuration": f"tool.{guardrail_kind}Guardrails",
+                            "guardrail_kind": guardrail_kind,
+                            "guardrail_scope": f"tool-{guardrail_kind}",
+                            "via_tool": tool_name,
+                            "via_tool_id": target_id,
+                        }
+                        for key in (
+                            "guardrail_source",
+                            "guardrail_count",
+                            "guardrail_bindings",
+                            "guardrail_names",
+                            "guardrail_name_count",
+                            "guardrail_actions",
+                            "guardrail_action_count",
+                            "guardrail_reject_content",
+                            "guardrail_reject_condition_sources",
+                            "guardrail_reject_condition_count",
+                            "guardrail_reject_condition_literals",
+                            "guardrail_reject_condition_literal_count",
+                        ):
+                            if key in guardrail_attributes:
+                                guardrail_relationship_attributes[key] = guardrail_attributes[key]
+                        ir.add_relationship(
+                            Relationship(
+                                "agent",
+                                agent_name,
+                                "governed-by",
+                                "control",
+                                control_name,
+                                ev,
+                                guardrail_relationship_attributes,
+                                source_id=agent_id,
+                                target_id=control_id,
+                            )
+                        )
                 continue
             as_tool = re.match(r"([A-Za-z_$][\w$]*)\.asTool\s*\(", expression)
             if as_tool and balanced_call_end(expression, expression.find("(")) == len(expression):

@@ -5017,6 +5017,40 @@ def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:
         "guardrail_reject_condition_literal_count": 1,
     }
 
+    agent_edges = {
+        relationship.target_id: relationship
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "governed-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "tool-guardrail-policy"
+    }
+    assert set(agent_edges) == set(controls)
+    assert agent_edges["ts:agent.ts#control:classifyTool.inputGuardrails@44"].source_id == (
+        "ts:agent.ts#agent:agent"
+    )
+    assert agent_edges["ts:agent.ts#control:classifyTool.inputGuardrails@44"].attributes == {
+        "analysis": "typescript-openai-agents-tool-guardrails",
+        "configuration": "Agent.tools.toolGuardrails",
+        "tool_configuration": "tool.inputGuardrails",
+        "guardrail_kind": "input",
+        "guardrail_scope": "tool-input",
+        "via_tool": "classifyTool",
+        "via_tool_id": "ts:agent.ts#tool:classifyTool",
+        "guardrail_source": "inline-array",
+        "guardrail_count": 1,
+        "guardrail_bindings": ["blockSecrets"],
+        "guardrail_names": ["block_secrets"],
+        "guardrail_name_count": 1,
+        "guardrail_actions": ["allow", "reject-content"],
+        "guardrail_action_count": 2,
+        "guardrail_reject_content": True,
+        "guardrail_reject_condition_sources": ["string-includes"],
+        "guardrail_reject_condition_count": 1,
+        "guardrail_reject_condition_literals": ["sk-"],
+        "guardrail_reject_condition_literal_count": 1,
+    }
+
 
 def test_typescript_openai_realtime_session_guardrail_policy_is_exact() -> None:
     ir = scan_repository(ROOT / "cases/typescript_openai_realtime_session_guardrails")

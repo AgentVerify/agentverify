@@ -982,6 +982,21 @@
 - Revisit when helper predicate calls or imported literal predicate constants can be resolved while
   preserving the exact configured tool and guardrail binding.
 
+## OpenAI Agents JS tool guardrails govern exact same-file Agents through tool bindings
+
+- Decision: Add Agent-to-`tool-guardrail-policy` governance edges only when a TypeScript OpenAI
+  Agents SDK `Agent` uses a same-file tool binding that already emitted a proven
+  `tool({ inputGuardrails, outputGuardrails })` control. Record `via_tool` and `via_tool_id` rather
+  than pretending the guardrail was configured directly on the Agent.
+- Evidence: The local `typescript_openai_tool_guardrails` fixture and pinned OpenAI Agents JS
+  `examples/basic/tools.ts` / `examples/docs/guardrails/toolGuardrails.ts` all attach guarded tools
+  to Agents through literal same-file `tools` arrays.
+- Alternative: Infer Agent governance for imported tools, repeated tool bindings, or any object
+  with `inputGuardrails`/`outputGuardrails`. Rejected because the current IR can only source-prove
+  the tool guardrail control and Agent attachment in same-file, unambiguous bindings.
+- Revisit when imported guarded tool controls can be resolved with stable target identity across
+  files.
+
 ## OpenAI Agents JS tool guardrails are source-tool governance controls
 
 - Decision: Represent exact TypeScript OpenAI Agents SDK

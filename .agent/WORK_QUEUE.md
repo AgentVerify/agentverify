@@ -117,11 +117,12 @@
   metadata are now inventoried; dynamic arrays, mutated bindings, and rebound agents should remain
   binding-only or unresolved.
 - Explore richer OpenAI Agents JS tool guardrails only if evidence stays exact: imported literal
-  guardrail arrays, helper-created tool guardrails, helper predicate calls, or source-agent
-  composition edges that connect guarded tools back to agents without overclaiming dynamic tool
-  lists. Direct `tool({ inputGuardrails, outputGuardrails })`,
+  guardrail arrays, helper-created tool guardrails, helper predicate calls, or imported guarded-tool
+  composition edges without overclaiming dynamic tool lists. Direct
+  `tool({ inputGuardrails, outputGuardrails })`,
   `defineToolInputGuardrail`/`defineToolOutputGuardrail` bindings, allow/reject-content actions,
-  and shallow literal reject predicates are now inventoried as a separate source-tool policy slice.
+  shallow literal reject predicates, and exact same-file Agent-to-tool-guardrail edges are now
+  inventoried as a separate source-tool policy slice.
 
 ## Deferred until access/authorization
 
