@@ -14434,8 +14434,19 @@ def typescript_immutable_module_literal_object_bindings(
 
 def typescript_exported_literal_object_bindings(
     text: str,
+    root: Path | None = None,
+    path: Path | None = None,
+    seen: frozenset[Path] = frozenset(),
 ) -> dict[str, TypeScriptLiteralObjectBinding]:
-    """Return immutable exported const object bindings in one TypeScript module."""
+    """Return immutable exported const object bindings from one module and exact named reexports."""
+    if root is not None and path is not None:
+        try:
+            canonical_path = path.resolve()
+        except OSError:
+            return {}
+        if canonical_path in seen:
+            return {}
+        seen = seen | {canonical_path}
     code = typescript_code_mask(text)
     exported = {
         match.group(1)
@@ -14444,12 +14455,53 @@ def typescript_exported_literal_object_bindings(
             code,
         )
     }
-    if not exported:
-        return {}
-    return {
+    direct_exports = {
         name: binding
         for name, binding in typescript_immutable_module_literal_object_bindings(text).items()
         if name in exported
+    }
+    if root is None or path is None:
+        return direct_exports
+
+    candidates: dict[str, list[TypeScriptLiteralObjectBinding]] = defaultdict(list)
+    for name, binding in direct_exports.items():
+        candidates[name].append(binding)
+    for match in TS_NAMED_EXPORT_FROM.finditer(text):
+        specifier = match.group(2)
+        target = typescript_resolve_local_module(root, path, specifier)
+        if target is None:
+            continue
+        try:
+            target_text = target.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        target_exports = typescript_exported_literal_object_bindings(
+            target_text,
+            root,
+            target,
+            seen,
+        )
+        for raw_specifier in match.group(1).split(","):
+            parts = typescript_named_specifier_parts(raw_specifier)
+            if parts is None:
+                continue
+            original, exported_name = parts
+            binding = target_exports.get(original)
+            if binding is None:
+                continue
+            candidates[exported_name].append(
+                TypeScriptLiteralObjectBinding(
+                    binding.expression,
+                    binding.expression_offset,
+                    0,
+                    0,
+                    "reexported-local-const-object",
+                )
+            )
+    return {
+        name: bindings[0]
+        for name, bindings in candidates.items()
+        if len(bindings) == 1
     }
 
 
@@ -14485,17 +14537,26 @@ def typescript_imported_literal_object_bindings(
         except OSError:
             continue
         if target not in export_cache:
-            export_cache[target] = typescript_exported_literal_object_bindings(target_text)
+            export_cache[target] = typescript_exported_literal_object_bindings(
+                target_text,
+                root,
+                target,
+            )
         exports = export_cache[target]
         binding = exports.get(original)
         if binding is None:
             continue
+        resolution = (
+            "reexported-local-const-object"
+            if binding.resolution == "reexported-local-const-object"
+            else "imported-local-const-object"
+        )
         resolved[local] = TypeScriptLiteralObjectBinding(
             binding.expression,
             binding.expression_offset,
             0,
             len(code) + 1,
-            "imported-local-const-object",
+            resolution,
         )
     return resolved
 

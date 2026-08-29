@@ -7,13 +7,14 @@
 - The runtime catalog currently contains 25 enabled reporting rules.
 - OpenAI Agents SDK MCP approval metadata now covers TypeScript hosted `hostedMcpTool`
   `requireApproval` policies, Python hosted `HostedMCPTool` tool configs, and Python non-hosted
-  MCP server `require_approval` call sites. The TypeScript hosted check now has 14 public IR labels
-  (12 positive, 2 over-resolution/lookalike negatives), including imported local const-object
-  policies and aliased imports while imported-mutated bindings remain dynamic. The Python hosted
+  MCP server `require_approval` call sites. The TypeScript hosted check now has 16 public IR labels
+  (14 positive, 2 over-resolution/lookalike negatives), including imported local const-object
+  policies, aliased imports, and named local reexports while imported/reexported-mutated bindings
+  remain dynamic. The Python hosted
   check has 12 public IR labels (11 positive, 1 lookalike negative), and the Python non-hosted
   server check has 14 public IR labels (12
   positive, 2 lookalike negatives), including imported local literal approval policies and redacted
-  remote auth/header/client-factory metadata, and the full public IR truth set passes 2,407/2,407.
+  remote auth/header/client-factory metadata, and the full public IR truth set passes 2,409/2,409.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
 - A freshly rebuilt wheel includes all fifteen runtime schemas; a verifier script now guards that
   package artifact expectation.
@@ -761,12 +762,13 @@
 - OpenAI Agents JS `hostedMcpTool({...})` approval settings are now visible as hosted-MCP-specific
   IR metadata instead of being flattened into generic tool approval. Omitted `requireApproval`
   records a disabled default, literal `"never"` records explicit disablement, inline object
-  policies, stable same-file const object policies, and exact imported local const object policies
-  record exact `never`/`always` tool-name branches and read-only hints, and configured `onApproval`
-  callbacks are marked as callback-controlled. Mutated policy objects, imported-mutated policy
-  bindings, shorthand values without stable object proof, and other dynamic `requireApproval`
-  bindings remain binding-only dynamic metadata. The local fixture plus pinned OpenAI hosted MCP
-  examples cover 14/14 labels, bringing the public IR truth set to 2,407 passing labels.
+  policies, stable same-file const object policies, exact imported local const object policies, and
+  exact named local reexported const object policies record exact `never`/`always` tool-name
+  branches and read-only hints, and configured `onApproval` callbacks are marked as
+  callback-controlled. Mutated policy objects, imported/reexported-mutated policy bindings,
+  shorthand values without stable object proof, and other dynamic `requireApproval` bindings remain
+  binding-only dynamic metadata. The local fixture plus pinned OpenAI hosted MCP examples cover
+  16/16 labels, bringing the public IR truth set to 2,409 passing labels.
 - Python OpenAI Agents SDK `HostedMCPTool(tool_config={...})` approval settings are now visible as
   hosted-MCP-specific IR metadata on exact imported tool and capability nodes. Direct `"never"`
   policies record explicit disablement, direct or same-block literal `"always"` policies record

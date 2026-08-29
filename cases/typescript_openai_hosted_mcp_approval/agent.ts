@@ -4,6 +4,7 @@ import {
   importedPolicy,
   mutatedExport,
 } from "./policies";
+import { reexportedMutatedPolicy, reexportedPolicy } from "./barrel";
 
 function fakeHostedMcpTool(options: unknown) {
   return options;
@@ -65,6 +66,16 @@ const agent = new Agent({
       serverLabel: "imported-mutated",
       serverUrl: "https://mcp.example.com/mcp",
       requireApproval: mutatedExport,
+    }),
+    hostedMcpTool({
+      serverLabel: "reexported",
+      serverUrl: "https://mcp.example.com/mcp",
+      requireApproval: reexportedPolicy,
+    }),
+    hostedMcpTool({
+      serverLabel: "reexported-mutated",
+      serverUrl: "https://mcp.example.com/mcp",
+      requireApproval: reexportedMutatedPolicy,
     }),
     fakeHostedMcpTool({
       serverLabel: "fake",
