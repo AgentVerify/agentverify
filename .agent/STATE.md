@@ -9,7 +9,9 @@ catalog workflows.
 
 - Refreshed the full 71-repository schema-v159 engine benchmark after the Vercel Code Mode IR
   additions. The benchmark passes 71/71 repositories, scans 10,797 selected source files plus 155
-  config files, and now records 2,942 relationships / 10,814 symbolized components.
+  config files, and now records 2,942 relationships / 10,814 symbolized components. The benchmark
+  summary now exposes a first-class `typescript_vercel_code_mode` slice with one repository, eight
+  components, and seven approval/tool-surface relationships.
 - Added exact Vercel AI Code Mode model-visible tool-surface inventory for `codeModeTool()` /
   `experimental_toolCaller(...)`, including its sandboxed TypeScript code-execution capability from
   `runCodeMode({ js: input.js, tools })`, generated host-tool prompt surface, and link to the

@@ -30,10 +30,10 @@ kind. Categories and signature kinds can overlap.
 
 Observed framework signatures are LangChain (18 repositories), OpenAI Agents SDK (10), LangGraph
 (8), LlamaIndex (6), Vercel AI SDK (5), CrewAI (4), Agno (3), Google ADK (3), PydanticAI (3),
-AutoGen (2), Microsoft Agent Framework (2), Semantic Kernel (2), smolagents (2), AgentScope (1),
-CAMEL (1), Cline SDK (1), Continue CLI (1), Dify Agent (1), Lagent (1), Marvin (1), Mastra (1), MetaGPT (1),
-Letta Code (1), OpenHands SDK (2), Qwen-Agent (1), Roo Code (1), and Trae Agent (1).
-Provider observations are OpenAI (43), Anthropic (25), Google (20), Azure OpenAI (12), Groq (7),
+AutoGen (2), Microsoft Agent Framework (2), OpenHands SDK (2), Semantic Kernel (2), smolagents (2),
+AgentScope (1), CAMEL (1), Cline SDK (1), Continue CLI (1), Dify Agent (1), Lagent (1), Marvin (1),
+Mastra (1), MetaGPT (1), Letta Code (1), Qwen-Agent (1), Roo Code (1), Trae Agent (1), and Vercel AI Code Mode (1).
+Provider observations are OpenAI (43), Anthropic (25), Google (20), Azure OpenAI (13), Groq (7),
 AWS Bedrock (6), Ollama (5), Cohere, Mistral, and xAI (3 each), DeepSeek (2), and Alibaba
 DashScope and Moonshot AI (1 each). These overlapping exact-import/call, literal-service, and
 model-string observations are lower than research-wide lexical signals.
@@ -785,7 +785,9 @@ The same package now exposes the public `codeModeTool()` surface as a model-visi
 `experimental_toolCaller`: AgentVerify records the `codeModeTool` tool, its sandboxed TypeScript
 `code-execution` capability sourced from `runCodeMode({ js: input.js, tools })`, the generated
 tool-description control that declares `tools.name(input)` host-tool calls and unavailable `fetch`,
-and the edge to the Code Mode approval runtime.
+and the edge to the Code Mode approval runtime. The corpus benchmark now reports this as a
+first-class `typescript_vercel_code_mode` slice: one repository with two framework observations, one
+tool, one capability, two controls, two settings, and seven approval/surface relationships.
 OpenAI Agents Python run-state approval decisions are now inventoried separately from approval-policy
 declaration: exact `Runner.run(...)` or `Runner.run_streamed(...)` results that produce a stable
 `result.to_state()` binding, plus exact `RunState.from_json/from_string(...)` restored states, emit

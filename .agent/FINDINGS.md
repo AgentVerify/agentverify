@@ -3,7 +3,9 @@
 ## Durable facts
 
 - The repository contains a 71-repository pinned research corpus and schema-v159 engine benchmark
-  outputs.
+  outputs. The full-corpus summary now includes a dedicated `typescript_vercel_code_mode` section
+  for Vercel AI Code Mode's exact public tool surface and host-tool approval runtime: one repository,
+  eight components, and seven approval/surface relationships.
 - The runtime catalog currently contains 25 enabled reporting rules.
 - Vercel AI Code Mode's public `codeModeTool()` surface is now inventoried as a model-visible
   `experimental_toolCaller` that routes the model-provided `js` field into

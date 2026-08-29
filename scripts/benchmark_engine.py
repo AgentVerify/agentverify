@@ -737,6 +737,15 @@ def main() -> int:
             and item.attributes.get("analysis")
             == "typescript-openai-agents-run-state-continuity"
         ]
+        typescript_vercel_code_mode_analyses = {
+            "typescript-vercel-code-mode-tool-surface",
+            "typescript-vercel-code-mode-tool-approval-flow",
+        }
+        typescript_vercel_code_mode_components = [
+            item
+            for item in ir.components
+            if item.attributes.get("analysis") in typescript_vercel_code_mode_analyses
+        ]
         python_agno_mcp_confirmation_servers = [
             item
             for item in ir.components
@@ -2329,6 +2338,79 @@ def main() -> int:
                 ),
                 "repositories": bool(typescript_openai_run_state_continuities),
             },
+            "typescript_vercel_code_mode": {
+                "frameworks": sum(
+                    item.kind == "framework" for item in typescript_vercel_code_mode_components
+                ),
+                "tools": sum(item.kind == "tool" for item in typescript_vercel_code_mode_components),
+                "capabilities": sum(
+                    item.kind == "capability" for item in typescript_vercel_code_mode_components
+                ),
+                "controls": sum(
+                    item.kind == "control" for item in typescript_vercel_code_mode_components
+                ),
+                "settings": sum(
+                    item.kind == "control-setting"
+                    for item in typescript_vercel_code_mode_components
+                ),
+                "tool_surface_components": sum(
+                    item.attributes.get("analysis") == "typescript-vercel-code-mode-tool-surface"
+                    for item in typescript_vercel_code_mode_components
+                ),
+                "approval_flow_components": sum(
+                    item.attributes.get("analysis")
+                    == "typescript-vercel-code-mode-tool-approval-flow"
+                    for item in typescript_vercel_code_mode_components
+                ),
+                "tool_surface_edges": sum(
+                    edge.source_kind == "framework"
+                    and edge.relation == "exposes"
+                    and edge.target_kind == "tool"
+                    and edge.attributes.get("analysis") == "typescript-vercel-code-mode-tool-surface"
+                    for edge in ir.relationships
+                ),
+                "capability_edges": sum(
+                    edge.source_kind == "tool"
+                    and edge.relation == "uses"
+                    and edge.target_kind == "capability"
+                    and edge.attributes.get("analysis") == "typescript-vercel-code-mode-tool-surface"
+                    for edge in ir.relationships
+                ),
+                "prompt_edges": sum(
+                    edge.source_kind == "tool"
+                    and edge.relation == "configured-by"
+                    and edge.target_kind == "control-setting"
+                    and edge.target_name == "code-mode-tool-prompt"
+                    and edge.attributes.get("analysis") == "typescript-vercel-code-mode-tool-surface"
+                    for edge in ir.relationships
+                ),
+                "approval_kind_edges": sum(
+                    edge.source_kind == "framework"
+                    and edge.relation == "configured-by"
+                    and edge.target_kind == "control-setting"
+                    and edge.target_name == "code-mode-tool-approval-kind"
+                    and edge.attributes.get("analysis")
+                    == "typescript-vercel-code-mode-tool-approval-flow"
+                    for edge in ir.relationships
+                ),
+                "approval_policy_edges": sum(
+                    edge.relation == "governed-by"
+                    and edge.target_kind == "control"
+                    and edge.target_name == "tool-approval-policy"
+                    and edge.attributes.get("analysis") in typescript_vercel_code_mode_analyses
+                    for edge in ir.relationships
+                ),
+                "approval_continuation_edges": sum(
+                    edge.source_kind == "control"
+                    and edge.relation == "continues-through"
+                    and edge.target_kind == "control"
+                    and edge.target_name == "approval-continuation"
+                    and edge.attributes.get("analysis")
+                    == "typescript-vercel-code-mode-tool-approval-flow"
+                    for edge in ir.relationships
+                ),
+                "repositories": bool(typescript_vercel_code_mode_components),
+            },
             "python_agno_mcp_confirmation": {
                 "servers": len(python_agno_mcp_confirmation_servers),
                 "writable_servers": sum(
@@ -3791,6 +3873,25 @@ def main() -> int:
                     "helper_parameter_state_resumes",
                     "configured_by_edges",
                     "helper_parameter_state_resume_edges",
+                    "repositories",
+                )
+            },
+            "typescript_vercel_code_mode": {
+                name: sum(result["typescript_vercel_code_mode"][name] for result in successful)
+                for name in (
+                    "frameworks",
+                    "tools",
+                    "capabilities",
+                    "controls",
+                    "settings",
+                    "tool_surface_components",
+                    "approval_flow_components",
+                    "tool_surface_edges",
+                    "capability_edges",
+                    "prompt_edges",
+                    "approval_kind_edges",
+                    "approval_policy_edges",
+                    "approval_continuation_edges",
                     "repositories",
                 )
             },
