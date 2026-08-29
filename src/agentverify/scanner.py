@@ -1140,6 +1140,29 @@ def python_assignment_root_name(target: ast.AST) -> str | None:
     return current.id if isinstance(current, ast.Name) else None
 
 
+def python_star_import_allows(root: Path, relative: str, name: str) -> bool:
+    path = root / relative
+    try:
+        text = path.read_text(encoding="utf-8", errors="replace")
+        tree = ast.parse(text, filename=relative)
+    except (OSError, SyntaxError):
+        return False
+    explicit_exports: set[str] | None = None
+    for statement in tree.body:
+        if not (
+            isinstance(statement, ast.Assign)
+            and len(statement.targets) == 1
+            and isinstance(statement.targets[0], ast.Name)
+            and statement.targets[0].id == "__all__"
+        ):
+            continue
+        values = python_literal_string_list(statement.value)
+        explicit_exports = set(values) if values is not None else set()
+    if explicit_exports is not None:
+        return name in explicit_exports
+    return not name.startswith("_")
+
+
 def python_mcp_approval_literal_export_nodes(
     root: Path,
     relative: str,
@@ -1220,6 +1243,39 @@ def python_mcp_approval_literal_export_nodes(
                 continue
             for alias in statement.names:
                 if alias.name == "*":
+                    if requested_names is None:
+                        continue
+                    resolution = resolve_python_import(
+                        root,
+                        relative,
+                        statement,
+                        alias.name,
+                        module_paths,
+                    )
+                    if resolution is None:
+                        continue
+                    target_exports = python_mcp_approval_literal_export_nodes(
+                        root,
+                        resolution.path,
+                        module_paths,
+                        requested_names,
+                        seen,
+                    )
+                    for exported_name, exported in target_exports.items():
+                        if not python_star_import_allows(
+                            root,
+                            resolution.path,
+                            exported_name,
+                        ):
+                            continue
+                        if mutation_counts[exported_name] != 0:
+                            continue
+                        candidates[exported_name].append(
+                            PythonMCPApprovalLiteralExport(
+                                exported.node,
+                                "literal-star-reexport",
+                            )
+                        )
                     continue
                 local_name = alias.asname or alias.name
                 if requested_names is not None and local_name not in requested_names:
@@ -1361,6 +1417,12 @@ def python_openai_hosted_mcp_approval_attributes(
             resolution = resolution.replace(
                 "imported-local-reexport-literal:",
                 "imported-local-reexport-tool-config:",
+                1,
+            )
+        elif resolution.startswith("imported-local-star-reexport-literal:"):
+            resolution = resolution.replace(
+                "imported-local-star-reexport-literal:",
+                "imported-local-star-reexport-tool-config:",
                 1,
             )
         elif resolution == "same-block-literal":
@@ -11183,6 +11245,10 @@ def scan_python(
                 if exported.resolution == "literal-reexport":
                     imported_resolution = (
                         f"imported-local-reexport-literal:{resolution.basis}"
+                    )
+                elif exported.resolution == "literal-star-reexport":
+                    imported_resolution = (
+                        f"imported-local-star-reexport-literal:{resolution.basis}"
                     )
                 imported_mcp_approval_literals[local_name] = (
                     exported.node,

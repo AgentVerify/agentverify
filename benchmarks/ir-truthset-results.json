@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-29T11:57:17.036086+00:00",
+  "generated_at": "2026-08-29T12:12:55.184634+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "3f023ea96ca7cfd32f7c0e4816b7322455f29c9bf53ef72902c76010e4b59b30",
+    "labels_sha256": "c50be4a8e4ee1095be717ec19509367cbc902822dc5898b042570efa922e52ea",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 2417,
-  "passed": 2417,
+  "labels": 2422,
+  "passed": 2422,
   "failed": 0,
   "failure_summary": {
     "observation_mismatch": 0,
@@ -323,7 +323,7 @@
       "recall": 1.0
     },
     "IR-PY-OPENAI-HOSTED-MCP-APPROVAL": {
-      "tp": 17,
+      "tp": 20,
       "fp": 0,
       "tn": 1,
       "fn": 0,
@@ -347,7 +347,7 @@
       "recall": 1.0
     },
     "IR-PY-OPENAI-MCP-SERVER-APPROVAL": {
-      "tp": 14,
+      "tp": 16,
       "fp": 0,
       "tn": 2,
       "fn": 0,
@@ -10164,6 +10164,33 @@
       "passed": true
     },
     {
+      "id": "python-openai-hosted-mcp-approval-star-reexported-always-local",
+      "check_id": "IR-PY-OPENAI-HOSTED-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-mcp-approval-star-reexported-tool-config-local",
+      "check_id": "IR-PY-OPENAI-HOSTED-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-hosted-mcp-approval-star-reexported-mutated-tool-config-local",
+      "check_id": "IR-PY-OPENAI-HOSTED-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
       "id": "python-openai-hosted-mcp-approval-fake-local-negative",
       "check_id": "IR-PY-OPENAI-HOSTED-MCP-APPROVAL",
       "expected": false,
@@ -10282,6 +10309,24 @@
     },
     {
       "id": "python-openai-mcp-server-approval-reexported-mutated-local",
+      "check_id": "IR-PY-OPENAI-MCP-SERVER-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-mcp-server-approval-star-reexported-selective-local",
+      "check_id": "IR-PY-OPENAI-MCP-SERVER-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "python-openai-mcp-server-approval-star-reexported-mutated-local",
       "check_id": "IR-PY-OPENAI-MCP-SERVER-APPROVAL",
       "expected": true,
       "observed": true,

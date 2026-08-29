@@ -11,13 +11,13 @@
   (14 positive, 2 over-resolution/lookalike negatives), including imported local const-object
   policies, aliased imports, and named local reexports while imported/reexported-mutated bindings
   remain dynamic. The Python hosted
-  check has 18 public IR labels (17 positive, 1 lookalike negative), including imported and
-  named-reexported whole `tool_config` dictionaries while imported/reexported-mutated configs remain
+  check has 21 public IR labels (20 positive, 1 lookalike negative), including imported,
+  named-reexported, and star-reexported whole `tool_config` dictionaries while mutated configs remain
   dynamic. The Python non-hosted
-  server check has 16 public IR labels (14
-  positive, 2 lookalike negatives), including imported and named-reexported local literal approval
+  server check has 18 public IR labels (16
+  positive, 2 lookalike negatives), including imported, named-reexported, and star-reexported local literal approval
   policies and redacted remote auth/header/client-factory metadata, and the full public IR truth set
-  passes 2,417/2,417.
+  passes 2,422/2,422.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
 - A freshly rebuilt wheel includes all fifteen runtime schemas; a verifier script now guards that
   package artifact expectation.
@@ -776,24 +776,24 @@
   hosted-MCP-specific IR metadata on exact imported tool and capability nodes. Direct `"never"`
   policies record explicit disablement, direct or same-block literal `"always"` policies record
   always-required approval, shallow dict policies expose exact `always`/`never` tool-name lists and
-  read-only hints, exact imported or named-reexported local literal policies and imported or
-  named-reexported local literal whole `tool_config` dictionaries retain source resolution,
+  read-only hints, exact imported, named-reexported, or star-reexported local literal policies and
+  imported, named-reexported, or star-reexported local literal whole `tool_config` dictionaries retain source resolution,
   configured `on_approval_request` callbacks are callback-controlled, and
   dynamic/imported/reexported-mutated approval or `tool_config` bindings remain binding-only
   metadata. In-place mutations such as `CONFIG["require_approval"] = ...` are treated as dynamic
   rather than over-resolved. The local fixture plus pinned OpenAI Agents Python and Composio hosted
-  MCP examples cover 18/18 labels, bringing the public IR truth set to 2,417 passing labels.
+  MCP examples cover 21/21 labels, bringing the public IR truth set to 2,422 passing labels.
 - Python OpenAI Agents SDK non-hosted MCP server `require_approval` call sites are now visible on
   exact `agents.mcp.MCPServerStdio` components and imported subclasses whose base is exactly
   `agents.mcp.MCPServer` / `agents.mcp.server.MCPServer`. Literal `"never"`/`False` records
   disabled approval, literal `"always"`/`True` records always-required approval, same-block literal
-  bindings and exact imported or named-reexported local literal policies retain source resolution,
+  bindings and exact imported, named-reexported, or star-reexported local literal policies retain source resolution,
   shallow selective dict policies expose exact always/never tool-name lists and read-only hints,
   remote URLs are sanitized, literal `Authorization` header names and `auth`/`httpx_client_factory` bindings are
   recorded without copying secret values, dynamic bindings stay dynamic, and OpenAI-shaped imports
   from other MCP modules do not inherit OpenAI-specific approval semantics. The local fixture plus
-  pinned OpenAI SDK remote transport examples now cover 16/16 labels, bringing the public IR truth
-  set to 2,417 passing labels.
+  pinned OpenAI SDK remote transport examples now cover 18/18 labels, bringing the public IR truth
+  set to 2,422 passing labels.
 
 ## Hypotheses
 

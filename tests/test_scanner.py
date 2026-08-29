@@ -2882,7 +2882,24 @@ def test_python_openai_hosted_mcp_approval_policy_is_exact() -> None:
         for component in ir.components
         if component.kind == "tool" and component.attributes.get("constructor") == "HostedMCPTool"
     }
-    assert set(tools) == {32, 40, 49, 60, 68, 76, 84, 92, 93, 94, 95, 103, 104}
+    assert set(tools) == {
+        13,
+        21,
+        22,
+        32,
+        40,
+        49,
+        60,
+        68,
+        76,
+        84,
+        92,
+        93,
+        94,
+        95,
+        103,
+        104,
+    }
     assert tools[32].attributes == {
         "binding": "literal-tools-list-inline-constructor",
         "constructor": "HostedMCPTool",
@@ -2995,6 +3012,30 @@ def test_python_openai_hosted_mcp_approval_policy_is_exact() -> None:
     assert "mcp_tool_config_resolution" not in tools[104].attributes
     assert tools[104].attributes["mcp_approval_policy"] == "dynamic"
 
+    assert tools[13].attributes["mcp_approval_binding"] == "STAR_REEXPORTED_ALWAYS"
+    assert tools[13].attributes["mcp_approval_resolution"] == (
+        "imported-local-star-reexport-literal:repository-module-single-path"
+    )
+    assert tools[13].attributes["mcp_approval_policy"] == "always-required"
+    assert tools[13].attributes["mcp_approval_requirement"] == "always"
+
+    assert tools[21].attributes["mcp_tool_config_binding"] == (
+        "STAR_REEXPORTED_TOOL_CONFIG"
+    )
+    assert tools[21].attributes["mcp_tool_config_resolution"] == (
+        "imported-local-star-reexport-tool-config:repository-module-single-path"
+    )
+    assert tools[21].attributes["mcp_approval_policy"] == "selective"
+    assert tools[21].attributes["mcp_approval_never_tool_names"] == ["read_config"]
+    assert tools[21].attributes["mcp_approval_never_read_only"] is True
+    assert tools[21].attributes["mcp_approval_always_tool_names"] == ["write_config"]
+
+    assert tools[22].attributes["mcp_tool_config_binding"] == (
+        "STAR_REEXPORTED_MUTATED_TOOL_CONFIG"
+    )
+    assert "mcp_tool_config_resolution" not in tools[22].attributes
+    assert tools[22].attributes["mcp_approval_policy"] == "dynamic"
+
     assert not any(
         component.kind == "tool" and component.name.startswith("FakeHostedMCPTool")
         for component in ir.components
@@ -3004,7 +3045,24 @@ def test_python_openai_hosted_mcp_approval_policy_is_exact() -> None:
         for component in ir.components
         if component.kind == "capability" and component.name == "mcp-access"
     }
-    assert set(capabilities) == {32, 40, 49, 60, 68, 76, 84, 92, 93, 94, 95, 103, 104}
+    assert set(capabilities) == {
+        13,
+        21,
+        22,
+        32,
+        40,
+        49,
+        60,
+        68,
+        76,
+        84,
+        92,
+        93,
+        94,
+        95,
+        103,
+        104,
+    }
     assert capabilities[40].attributes["mcp_approval_resolution"] == (
         "same-block-literal-string"
     )
@@ -3026,6 +3084,13 @@ def test_python_openai_hosted_mcp_approval_policy_is_exact() -> None:
         "imported-local-reexport-tool-config:repository-module-single-path"
     )
     assert capabilities[104].attributes["mcp_approval_policy"] == "dynamic"
+    assert capabilities[13].attributes["mcp_approval_resolution"] == (
+        "imported-local-star-reexport-literal:repository-module-single-path"
+    )
+    assert capabilities[21].attributes["mcp_tool_config_resolution"] == (
+        "imported-local-star-reexport-tool-config:repository-module-single-path"
+    )
+    assert capabilities[22].attributes["mcp_approval_policy"] == "dynamic"
     tool_edges = {
         edge.source_name: edge
         for edge in ir.relationships
@@ -3045,6 +3110,9 @@ def test_python_openai_hosted_mcp_approval_policy_is_exact() -> None:
         "HostedMCPTool@95",
         "HostedMCPTool@103",
         "HostedMCPTool@104",
+        "HostedMCPTool@13",
+        "HostedMCPTool@21",
+        "HostedMCPTool@22",
     }
 
 
@@ -15058,6 +15126,38 @@ def test_python_openai_mcp_server_approval_policy_is_exact() -> None:
     assert servers[54].attributes["mcp_approval_policy"] == "dynamic"
 
     assert "mcp_approval_policy" not in servers[58].attributes
+
+    star_servers = {
+        component.evidence.line: component
+        for component in ir.components
+        if component.kind == "mcp-server" and component.evidence.path == "star_app.py"
+    }
+    assert set(star_servers) == {10, 14}
+    for line in (10, 14):
+        assert star_servers[line].attributes["mcp_approval_contract"] == (
+            "openai-agents-python-mcp-server"
+        )
+        assert star_servers[line].attributes["mcp_approval_source"] == (
+            "callsite-require-approval"
+        )
+        assert star_servers[line].attributes["mcp_approval_constructor"] == "MCPServerStdio"
+    assert star_servers[10].attributes["mcp_approval_binding"] == (
+        "STAR_REEXPORTED_SELECTIVE"
+    )
+    assert star_servers[10].attributes["mcp_approval_resolution"] == (
+        "imported-local-star-reexport-literal:repository-module-single-path"
+    )
+    assert star_servers[10].attributes["mcp_approval_policy"] == "selective"
+    assert star_servers[10].attributes["mcp_approval_never_tool_names"] == [
+        "read_policy"
+    ]
+    assert star_servers[10].attributes["mcp_approval_always_tool_names"] == [
+        "write_policy"
+    ]
+    assert star_servers[14].attributes["mcp_approval_binding"] == (
+        "STAR_REEXPORTED_MUTATED_POLICY"
+    )
+    assert star_servers[14].attributes["mcp_approval_policy"] == "dynamic"
 
     subclass_server = next(
         component
