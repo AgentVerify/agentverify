@@ -848,3 +848,25 @@
   inclusion is an Agent provider-data setting rather than a tool constructor setting.
 - Revisit when imported literal option objects or OpenAI-compatible provider-defined web search
   factories can be tied to exact source-tool/source-agent identity without broad config matching.
+
+## OpenAI Realtime output guardrails are source-agent governance controls
+
+- Decision: Represent exact TypeScript OpenAI Realtime
+  `new RealtimeSession(agent, { outputGuardrails, outputGuardrailSettings })` options as
+  `realtime-session-guardrail-policy` controls tied to the source-proven `RealtimeAgent` passed as
+  the first constructor argument. Record inline-array, typed-const-array-binding, dynamic-expression,
+  and binding-only guardrail sources; record literal guardrail names/counts and direct signed integer
+  `outputGuardrailSettings.debounceTextLength` values when exact.
+- Evidence: The local `typescript_openai_realtime_session_guardrails` fixture covers a typed
+  `RealtimeOutputGuardrail[]` binding with a literal name, an inline guardrail array with
+  `debounceTextLength: -1`, a typed `RealtimeSessionOptions` spread with
+  `debounceTextLength: 500`, a mutated typed-array negative that stays binding-only, and a dynamic
+  debounce negative. The pinned OpenAI Agents JS `examples/docs/voice-agents/guardrails.ts` example
+  contributes a typed guardrail array named `No mention of Dom`, and
+  `examples/docs/voice-agents/guardrailSettings.ts` contributes `debounceTextLength: 500` with a
+  comment-only placeholder array counted as zero concrete guardrails.
+- Alternative: Fold guardrail presence into generic RealtimeSession config metadata. Rejected
+  because guardrails are governance/safety controls with distinct review semantics from model,
+  audio, turn-detection, or auth configuration.
+- Revisit when imported guardrail arrays, helper-created guardrails, input guardrails, or guardrail
+  tripwire/action quality can be tied to exact source-agent identity without broad name matching.

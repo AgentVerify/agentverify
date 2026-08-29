@@ -4752,6 +4752,104 @@ def test_typescript_openai_realtime_session_typed_options_spread_policy_is_exact
     }
 
 
+def test_typescript_openai_realtime_session_guardrail_policy_is_exact() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_openai_realtime_session_guardrails")
+
+    controls = {
+        component.symbol_id: component
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "realtime-session-guardrail-policy"
+    }
+    assert set(controls) == {
+        "ts:agent.ts#control:guardedSession.guardrails@34",
+        "ts:agent.ts#control:inlineSession.guardrails@38",
+        "ts:agent.ts#control:spreadOptionsSession.guardrails@27",
+        "ts:agent.ts#control:mutableSession.guardrails@71",
+        "ts:agent.ts#control:dynamicSettingsSession.guardrails@76",
+    }
+    assert controls["ts:agent.ts#control:guardedSession.guardrails@34"].attributes == {
+        "analysis": "typescript-openai-agents-realtime-session-guardrails",
+        "module": "@openai/agents/realtime",
+        "constructor": "RealtimeSession",
+        "imported_symbol": "RealtimeSession",
+        "local_constructor": "RealtimeSession",
+        "configuration": "RealtimeSession.outputGuardrails",
+        "session_binding": "guardedSession",
+        "guardrail_scope": "realtime-session-output",
+        "source_agent": "Realtime greeter",
+        "source_agent_id": "ts:agent.ts#agent:greeter",
+        "scope": "production",
+        "guardrail_source": "typed-const-array-binding",
+        "guardrail_binding": "namedGuardrails",
+        "guardrail_count": 1,
+        "guardrail_names": ["No mention of Dom"],
+        "guardrail_name_count": 1,
+    }
+    assert controls["ts:agent.ts#control:inlineSession.guardrails@38"].attributes[
+        "guardrail_source"
+    ] == "inline-array"
+    assert controls["ts:agent.ts#control:inlineSession.guardrails@38"].attributes[
+        "guardrail_names"
+    ] == ["No payment advice"]
+    assert controls["ts:agent.ts#control:inlineSession.guardrails@38"].attributes[
+        "debounce_text_length"
+    ] == -1
+    assert controls["ts:agent.ts#control:spreadOptionsSession.guardrails@27"].attributes[
+        "session_options_binding"
+    ] == "typedOptions"
+    assert controls["ts:agent.ts#control:spreadOptionsSession.guardrails@27"].attributes[
+        "session_options_resolution"
+    ] == "typed-const-spread"
+    assert controls["ts:agent.ts#control:spreadOptionsSession.guardrails@27"].attributes[
+        "debounce_text_length"
+    ] == 500
+    assert controls["ts:agent.ts#control:mutableSession.guardrails@71"].attributes == {
+        "analysis": "typescript-openai-agents-realtime-session-guardrails",
+        "module": "@openai/agents/realtime",
+        "constructor": "RealtimeSession",
+        "imported_symbol": "RealtimeSession",
+        "local_constructor": "RealtimeSession",
+        "configuration": "RealtimeSession.outputGuardrails",
+        "session_binding": "mutableSession",
+        "guardrail_scope": "realtime-session-output",
+        "source_agent": "Realtime greeter",
+        "source_agent_id": "ts:agent.ts#agent:greeter",
+        "scope": "production",
+        "guardrail_source": "binding",
+        "guardrail_binding": "mutableGuardrails",
+    }
+    assert "debounce_text_length" not in controls[
+        "ts:agent.ts#control:dynamicSettingsSession.guardrails@76"
+    ].attributes
+
+    edges = {
+        relationship.target_id: relationship
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "governed-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "realtime-session-guardrail-policy"
+    }
+    assert set(edges) == set(controls)
+    assert all(edge.source_id == "ts:agent.ts#agent:greeter" for edge in edges.values())
+    assert edges["ts:agent.ts#control:spreadOptionsSession.guardrails@27"].attributes == {
+        "analysis": "typescript-openai-agents-realtime-session-guardrails",
+        "configuration": "RealtimeSession.outputGuardrails",
+        "session_binding": "spreadOptionsSession",
+        "guardrail_scope": "realtime-session-output",
+        "session_options_binding": "typedOptions",
+        "session_options_resolution": "typed-const-spread",
+        "guardrail_source": "typed-const-array-binding",
+        "guardrail_binding": "namedGuardrails",
+        "guardrail_count": 1,
+        "guardrail_names": ["No mention of Dom"],
+        "guardrail_name_count": 1,
+        "output_guardrail_settings_present": True,
+        "debounce_text_length": 500,
+    }
+
+
 def test_typescript_openai_realtime_session_auth_policy_is_exact() -> None:
     ir = scan_repository(ROOT / "cases/typescript_openai_realtime_session_auth")
 

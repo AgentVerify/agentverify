@@ -103,6 +103,11 @@
   gathering enough real non-example client-side/server-side context. Current auth evidence is IR
   inventory only because `process.env.OPENAI_API_KEY` with websocket/SIP can be legitimate server
   code or unsafe browser bundling depending on deployment context.
+- Explore the next OpenAI Realtime guardrail slice only if it stays exact: imported guardrail arrays,
+  helper-created guardrails, input guardrails, or tripwire/action quality. Current output guardrail
+  inventory covers direct session options, typed `RealtimeOutputGuardrail[]` const arrays, typed
+  `RealtimeSessionOptions` spreads, literal names/counts, and `debounceTextLength`, with mutated
+  arrays and dynamic settings bounded.
 
 ## Deferred until access/authorization
 

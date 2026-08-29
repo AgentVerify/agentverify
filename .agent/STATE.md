@@ -920,3 +920,14 @@ approval metadata, literal predicate metadata, SDK state approval decisions, hel
 `--progress` plus focused
 `--scan-label-paths` only when the target labels are self-contained; broader benchmark acceleration
 likely needs dependency-aware path expansion or scan-result reuse to preserve cross-file evidence.
+
+## Latest local milestone
+
+- Added exact TypeScript OpenAI Realtime output-guardrail inventory. Proven
+  `new RealtimeSession(agent, { outputGuardrails, outputGuardrailSettings })` options now emit
+  `realtime-session-guardrail-policy` controls linked to the source `RealtimeAgent`, including
+  inline arrays, typed `RealtimeOutputGuardrail[]` const arrays, typed `RealtimeSessionOptions`
+  spreads, literal guardrail names/counts, and signed integer `debounceTextLength` values. Dynamic
+  debounce values, mutated guardrail arrays, comment-only placeholders, and lookalike objects remain
+  bounded. Public IR truth set: 2,276/2,276. Engine benchmark: 71/71 repositories, 2,880
+  relationships, 10,664 symbolized components.

@@ -669,6 +669,16 @@
   `websocketSession.ts`, `sipTransport.ts`, and readme voice-agent example now contribute real auth
   evidence, bringing the public IR truth set to 2,264 passing labels and the 71-repository engine
   benchmark to 2,878 relationships / 10,662 symbolized components.
+- OpenAI Realtime output guardrails are now reviewable when source-proven. Exact
+  `new RealtimeSession(agent, { outputGuardrails, outputGuardrailSettings })` options emit
+  `realtime-session-guardrail-policy` controls linked to the resolved `RealtimeAgent`. Inline arrays
+  and typed `RealtimeOutputGuardrail[]` const arrays expose guardrail source/count and literal
+  guardrail names; `outputGuardrailSettings.debounceTextLength` records direct signed integers such
+  as `500` and `-1`. Comment-only placeholder arrays count as zero, mutable guardrail arrays fall
+  back to binding-only metadata, dynamic debounce values remain unresolved, and lookalike objects
+  are ignored. The local fixture plus pinned OpenAI Agents JS `guardrails.ts` and
+  `guardrailSettings.ts` examples bring the public IR truth set to 2,276 passing labels and the
+  71-repository engine benchmark to 2,880 relationships / 10,664 symbolized components.
 
 ## Hypotheses
 

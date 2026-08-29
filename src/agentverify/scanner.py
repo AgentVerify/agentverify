@@ -17371,6 +17371,85 @@ def add_typescript_openai_realtime_session_config_control(
     return "realtime-session-config-policy", control_id
 
 
+def add_typescript_openai_realtime_session_guardrail_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    local_constructor: str,
+    session_binding: str,
+    session_options_binding: str | None,
+    session_options_resolution: str | None,
+    source_agent: tuple[str, str],
+    guardrail_attributes: dict[str, object],
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS RealtimeSession output guardrail evidence."""
+    source_agent_name, source_agent_id = source_agent
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    attributes: dict[str, object] = {
+        "analysis": "typescript-openai-agents-realtime-session-guardrails",
+        "module": "@openai/agents/realtime",
+        "constructor": "RealtimeSession",
+        "imported_symbol": "RealtimeSession",
+        "local_constructor": local_constructor,
+        "configuration": "RealtimeSession.outputGuardrails",
+        "session_binding": session_binding,
+        "guardrail_scope": "realtime-session-output",
+        "source_agent": source_agent_name,
+        "source_agent_id": source_agent_id,
+        "scope": source_scope(relative),
+    }
+    if session_options_binding is not None:
+        attributes["session_options_binding"] = session_options_binding
+    if session_options_resolution is not None:
+        attributes["session_options_resolution"] = session_options_resolution
+    attributes.update(guardrail_attributes)
+    ir.add_component(
+        Component(
+            "control",
+            "realtime-session-guardrail-policy",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    relationship_attributes: dict[str, object] = {
+        "analysis": "typescript-openai-agents-realtime-session-guardrails",
+        "configuration": "RealtimeSession.outputGuardrails",
+        "session_binding": session_binding,
+        "guardrail_scope": "realtime-session-output",
+    }
+    for key in (
+        "session_options_binding",
+        "session_options_resolution",
+        "guardrail_source",
+        "guardrail_binding",
+        "guardrail_count",
+        "guardrail_names",
+        "guardrail_name_count",
+        "output_guardrail_settings_present",
+        "debounce_text_length",
+    ):
+        if key in attributes:
+            relationship_attributes[key] = attributes[key]
+    ir.add_relationship(
+        Relationship(
+            "agent",
+            source_agent_name,
+            "governed-by",
+            "control",
+            "realtime-session-guardrail-policy",
+            Evidence(relative, line, excerpt(lines, line)),
+            relationship_attributes,
+            source_id=source_agent_id,
+            target_id=control_id,
+        )
+    )
+    return "realtime-session-guardrail-policy", control_id
+
+
 def add_typescript_openai_realtime_session_approval_decision_control(
     ir: RepositoryIR,
     *,
@@ -17756,6 +17835,40 @@ def typescript_typed_const_object_bindings(
         if re.search(rf"(?<![\w$]){re.escape(binding_name)}\s*(?:\.|\[)", trailing_code):
             continue
         bindings[binding_name] = (initializer, opening)
+    return bindings
+
+
+def typescript_typed_const_array_bindings(
+    text: str,
+    *,
+    type_names: set[str],
+) -> dict[str, tuple[str, int, int]]:
+    """Return exact const array initializers annotated with selected TypeScript type names."""
+    if not type_names:
+        return {}
+    code = typescript_code_mask(text)
+    type_pattern = "|".join(re.escape(type_name) for type_name in sorted(type_names))
+    assignment = re.compile(
+        rf"\b(?:export\s+)?const\s+([A-Za-z_$][\w$]*)"
+        rf"\s*:\s*(?:ReadonlyArray\s*<\s*)?(?:Readonly\s*<\s*)?(?:{type_pattern})"
+        r"(?:\s*>\s*)?(?:\[\])?\s*=\s*\["
+    )
+    bindings: dict[str, tuple[str, int, int]] = {}
+    for match in assignment.finditer(code):
+        opening = match.end() - 1
+        end = typescript_balanced_end(code, opening, "[", "]")
+        if end is None:
+            continue
+        suffix = code[end:].lstrip()
+        if not suffix.startswith(";"):
+            continue
+        binding_name = match.group(1)
+        trailing_code = code[end:]
+        if re.search(rf"(?<![\w$.]){re.escape(binding_name)}\s*=(?!=)", trailing_code):
+            continue
+        if re.search(rf"(?<![\w$]){re.escape(binding_name)}\s*(?:\.|\[)", trailing_code):
+            continue
+        bindings[binding_name] = (text[opening:end], opening, end)
     return bindings
 
 
@@ -19217,6 +19330,14 @@ def typescript_literal_integer_value(expression: str) -> int | None:
     """Resolve a direct non-negative TypeScript integer literal."""
     code = typescript_code_mask(expression).strip()
     if re.fullmatch(r"\d+", code) is None:
+        return None
+    return int(code)
+
+
+def typescript_literal_signed_integer_value(expression: str) -> int | None:
+    """Resolve a direct signed TypeScript integer literal."""
+    code = typescript_code_mask(expression).strip()
+    if re.fullmatch(r"-?\d+", code) is None:
         return None
     return int(code)
 
@@ -20752,11 +20873,19 @@ def typescript_graph(
         local_name
         for local_name, imported_name in openai_realtime_imports.items()
         if imported_name == "RealtimeSessionOptions"
-        and not typescript_import_binding_is_shadowed(text, local_name)
     }
     realtime_session_option_bindings = typescript_typed_const_object_bindings(
         text,
         type_names=realtime_session_option_type_names,
+    )
+    realtime_output_guardrail_type_names = {
+        local_name
+        for local_name, imported_name in openai_realtime_imports.items()
+        if imported_name == "RealtimeOutputGuardrail"
+    }
+    realtime_output_guardrail_bindings = typescript_typed_const_array_bindings(
+        text,
+        type_names=realtime_output_guardrail_type_names,
     )
     realtime_session_bindings: dict[str, TypeScriptOpenAIRealtimeSessionBinding] = {}
 
@@ -20836,6 +20965,79 @@ def typescript_graph(
                 "session_transport_binding": identifier.group(1),
             }
         return {}
+
+    def realtime_guardrail_array_attributes(
+        expression: str,
+        expression_offset: int,
+    ) -> dict[str, object] | None:
+        attributes: dict[str, object]
+        expression_code = typescript_code_mask(expression).strip()
+        items = typescript_array_items(expression, expression_offset)
+        if items is not None:
+            attributes = {"guardrail_source": "inline-array"}
+            items = [
+                (item, item_offset)
+                for item, item_offset in items
+                if typescript_code_mask(item).strip()
+            ]
+        else:
+            identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", expression_code)
+            if identifier is None:
+                return {
+                    "guardrail_source": "dynamic-expression",
+                }
+            binding_name = identifier.group(0)
+            binding = realtime_output_guardrail_bindings.get(binding_name)
+            if binding is None:
+                return {
+                    "guardrail_source": "binding",
+                    "guardrail_binding": binding_name,
+                }
+            binding_expression, _, binding_end = binding
+            if binding_end > expression_offset:
+                return {
+                    "guardrail_source": "binding",
+                    "guardrail_binding": binding_name,
+                }
+            if re.search(
+                rf"(?<![\w$.]){re.escape(binding_name)}\s*=(?!=)",
+                code[binding_end:expression_offset],
+            ) or re.search(
+                rf"(?<![\w$]){re.escape(binding_name)}\s*(?:\.|\[)",
+                code[binding_end:expression_offset],
+            ):
+                return {
+                    "guardrail_source": "binding",
+                    "guardrail_binding": binding_name,
+                }
+            items = typescript_array_items(binding_expression, binding[1])
+            if items is None:
+                return {
+                    "guardrail_source": "binding",
+                    "guardrail_binding": binding_name,
+                }
+            items = [
+                (item, item_offset)
+                for item, item_offset in items
+                if typescript_code_mask(item).strip()
+            ]
+            attributes = {
+                "guardrail_source": "typed-const-array-binding",
+                "guardrail_binding": binding_name,
+            }
+        attributes["guardrail_count"] = len(items)
+        guardrail_names: list[str] = []
+        for item, _ in items:
+            name_expression = typescript_literal_object_property_expression(item, "name")
+            if name_expression is None:
+                continue
+            guardrail_name = typescript_string_literal_value(name_expression)
+            if guardrail_name is not None:
+                guardrail_names.append(guardrail_name)
+        if guardrail_names:
+            attributes["guardrail_names"] = guardrail_names
+            attributes["guardrail_name_count"] = len(guardrail_names)
+        return attributes
 
     def realtime_api_key_fetch_bindings() -> dict[str, tuple[dict[str, object], int]]:
         bindings: dict[str, tuple[dict[str, object], int]] = {}
@@ -21820,6 +22022,65 @@ def typescript_graph(
                 session_options_binding,
                 session_options_resolution,
             ) = spread_options
+        guardrail_attributes: dict[str, object] = {}
+        guardrail_offsets: list[int] = []
+        output_guardrails_location = typescript_object_property_expression_location(
+            options_expression,
+            "outputGuardrails",
+            options_offset,
+        )
+        if output_guardrails_location is not None:
+            (
+                output_guardrails_expression,
+                output_guardrails_property_offset,
+                output_guardrails_expression_offset,
+            ) = output_guardrails_location
+            output_guardrail_attributes = realtime_guardrail_array_attributes(
+                output_guardrails_expression,
+                output_guardrails_expression_offset,
+            )
+            if output_guardrail_attributes is not None:
+                guardrail_attributes.update(output_guardrail_attributes)
+            guardrail_offsets.append(output_guardrails_property_offset)
+        output_guardrail_settings_location = typescript_object_property_expression_location(
+            options_expression,
+            "outputGuardrailSettings",
+            options_offset,
+        )
+        if output_guardrail_settings_location is not None:
+            (
+                output_guardrail_settings_expression,
+                output_guardrail_settings_property_offset,
+                output_guardrail_settings_expression_offset,
+            ) = output_guardrail_settings_location
+            guardrail_attributes["output_guardrail_settings_present"] = True
+            guardrail_offsets.append(output_guardrail_settings_property_offset)
+            debounce_location = typescript_object_property_expression_location(
+                output_guardrail_settings_expression,
+                "debounceTextLength",
+                output_guardrail_settings_expression_offset,
+            )
+            if debounce_location is not None:
+                debounce_expression, debounce_property_offset, _ = debounce_location
+                debounce_value = typescript_literal_signed_integer_value(debounce_expression)
+                if debounce_value is not None:
+                    guardrail_attributes["debounce_text_length"] = debounce_value
+                    guardrail_offsets.append(debounce_property_offset)
+        if guardrail_attributes and guardrail_offsets:
+            guardrail_line = line_at(text, min(guardrail_offsets))
+            add_typescript_openai_realtime_session_guardrail_control(
+                ir,
+                relative=relative,
+                lines=lines,
+                line=guardrail_line,
+                local_constructor=local_constructor,
+                session_binding=session_name,
+                session_options_binding=session_options_binding,
+                session_options_resolution=session_options_resolution,
+                source_agent=source_agent,
+                guardrail_attributes=guardrail_attributes,
+                symbol_identity=f"{session_name}.guardrails@{guardrail_line}",
+            )
         session_model = None
         session_model_resolution = None
         session_model_offset = None
