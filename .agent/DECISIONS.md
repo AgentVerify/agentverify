@@ -1,5 +1,27 @@
 # AgentVerify decisions
 
+## TypeScript builtin-tool onApproval prompt helpers are source-shape inventory
+
+- Decision: For OpenAI Agents JS `shellTool` and `applyPatchTool`, record exact inline `onApproval`
+  callbacks that return approval objects from a stable block-local `approve` binding. When that
+  binding is a same-file prompt helper call, record the helper call, readline question source, and
+  literal yes/yes-string comparison. If the binding is guarded by a shallow ternary with `false`
+  fallback, record conditional call-result plus fallback rejection instead of treating the callback
+  as unconditional approval.
+- Evidence: The pinned OpenAI JS `examples/tools/local-shell.ts` callback stores
+  `approve = await promptShellApproval(commands)` and returns `{ approve }`; the helper dynamically
+  imports `node:readline/promises`, awaits `rl.question(...)`, normalizes the answer, and returns
+  `approved === 'y' || approved === 'yes'`. The pinned `examples/tools/apply-patch.ts` callback
+  stores `approve = op ? await promptApplyPatchApproval(op) : false`, returns `{ approve }`, and uses
+  the same readline yes/yes-string prompt-helper shape. Both examples also retain existing
+  environment-bypass metadata for `SHELL_AUTO_APPROVE` or `APPLY_PATCH_AUTO_APPROVE`.
+- Alternative: Treat `needsApproval: true` plus any `onApproval` callback as sufficient human-review
+  evidence. Rejected because callbacks can approve automatically, reject, delegate to opaque helpers,
+  or include environment bypasses; source-shape inventory is more faithful than a blanket control
+  claim.
+- Revisit when: Additional exact callback/helper shapes appear in real repositories and can be
+  modeled without resolving arbitrary approval logic.
+
 ## TypeScript hosted MCP onApproval return shape is inventory, not full HITL proof
 
 - Decision: Record exact inline `hostedMcpTool({ onApproval })` callbacks that return literal

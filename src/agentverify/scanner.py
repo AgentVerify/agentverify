@@ -16495,12 +16495,21 @@ def typescript_approval_prompt_function_summaries(
         if name_counts[name] != 1:
             continue
         body_code = typescript_code_mask(body)
+        has_dynamic_readline_import = bool(
+            re.search(
+                r"\bconst\s*\{[\s\S]*?\bcreateInterface\b[\s\S]*?\}\s*=\s*"
+                r"await\s+import\s*\(\s*['\"]node:readline/promises['\"]\s*\)",
+                body,
+            )
+        )
         interface_match = re.search(
             r"\bconst\s+([A-Za-z_$][\w$]*)\s*=\s*"
-            r"readline\s*\.\s*createInterface\s*\(",
+            r"(?:(readline)\s*\.\s*)?createInterface\s*\(",
             body_code,
         )
-        if interface_match is None:
+        if interface_match is None or (
+            interface_match.group(2) is None and not has_dynamic_readline_import
+        ):
             continue
         interface_binding = interface_match.group(1)
         question_match = re.search(
@@ -16511,20 +16520,52 @@ def typescript_approval_prompt_function_summaries(
         if question_match is None:
             continue
         answer_binding = question_match.group(1)
-        answer_comparison = re.compile(
-            rf"{re.escape(answer_binding)}\s*\.\s*toLowerCase\s*\(\s*\)"
-            r"\s*\.\s*trim\s*\(\s*\)\s*===\s*(['\"])(?:y|yes)\1"
-        )
+        normalized_answer_bindings = {answer_binding}
+        for normalization_match in re.finditer(
+            rf"\bconst\s+([A-Za-z_$][\w$]*)\s*=\s*"
+            rf"{re.escape(answer_binding)}"
+            r"(?:\s*\.\s*trim\s*\(\s*\)\s*\.\s*toLowerCase\s*\(\s*\)"
+            r"|\s*\.\s*toLowerCase\s*\(\s*\)\s*\.\s*trim\s*\(\s*\))\s*;",
+            body_code,
+        ):
+            normalized_answer_bindings.add(normalization_match.group(1))
+
+        def yes_comparison_expression(
+            expression: str,
+            answer_binding: str = answer_binding,
+            normalized_answer_bindings: set[str] = normalized_answer_bindings,
+        ) -> bool:
+            answer_patterns = [
+                (
+                    rf"{re.escape(answer_binding)}\s*\.\s*toLowerCase\s*\(\s*\)"
+                    r"\s*\.\s*trim\s*\(\s*\)"
+                ),
+                (
+                    rf"{re.escape(answer_binding)}\s*\.\s*trim\s*\(\s*\)"
+                    r"\s*\.\s*toLowerCase\s*\(\s*\)"
+                ),
+                *[re.escape(binding) for binding in sorted(normalized_answer_bindings)],
+            ]
+            comparison_patterns = [
+                rf"(?:{pattern})\s*===\s*['\"](?:y|yes)['\"]"
+                for pattern in answer_patterns
+            ]
+            comparison = rf"(?:{'|'.join(comparison_patterns)})"
+            return bool(
+                re.fullmatch(
+                    rf"{comparison}(?:\s*\|\|\s*{comparison})*",
+                    expression,
+                )
+            )
+
         for return_match in re.finditer(r"\breturn\s+([\s\S]*?);", body_code):
             expression = body[return_match.start(1) : return_match.end(1)].strip()
-            if answer_comparison.fullmatch(expression):
+            if yes_comparison_expression(expression):
                 resolved[name] = {
-                    "mcp_approval_handler_review_resolution": (
-                        "same-file-helper-readline-question"
-                    ),
-                    "mcp_approval_handler_review_helper": name,
-                    "mcp_approval_handler_review_source": "readline-question",
-                    "mcp_approval_handler_review_decision": "yes-literal-comparison",
+                    "review_resolution": "same-file-helper-readline-question",
+                    "review_helper": name,
+                    "review_source": "readline-question",
+                    "review_decision": "yes-literal-comparison",
                 }
                 break
     return resolved
@@ -21071,6 +21112,16 @@ def add_typescript_tool_observation(
         if approval_policy == "callback-controlled" and approval_expression is not None
         else {}
     )
+    approval_handler_return_attributes = (
+        typescript_openai_on_approval_callback_attributes(
+            approval_handler_expression,
+            approval_prompt_function_summaries=approval_prompt_function_summaries,
+            attribute_prefix="approval_handler",
+        )
+        if approval_handler_expression is not None
+        and constructor in TS_OPENAI_APPROVAL_BUILTINS
+        else {}
+    )
     safety_check_attributes = typescript_openai_safety_check_attributes(call_body, constructor)
     computer_provider_attributes = typescript_openai_computer_provider_attributes(
         call_body, constructor
@@ -21120,6 +21171,7 @@ def add_typescript_tool_observation(
             else {}
         ),
         **approval_predicate_attributes,
+        **approval_handler_return_attributes,
         **safety_check_attributes,
         **computer_provider_attributes,
         **web_search_attributes,
@@ -21500,12 +21552,16 @@ def typescript_openai_needs_approval_attributes(body: str) -> dict[str, object]:
 def typescript_openai_on_approval_callback_attributes(
     callback_expression: str,
     approval_prompt_function_summaries: dict[str, dict[str, object]] | None = None,
+    attribute_prefix: str = "mcp_approval_handler",
 ) -> dict[str, object]:
-    """Resolve exact inline OpenAI hosted MCP onApproval callback metadata."""
+    """Resolve exact inline OpenAI approval-object callback metadata."""
     approval_prompt_function_summaries = approval_prompt_function_summaries or {}
 
     def helper_review_attributes(call_name: str) -> dict[str, object]:
-        return approval_prompt_function_summaries.get(call_name, {})
+        summary = approval_prompt_function_summaries.get(call_name, {})
+        return {
+            f"{attribute_prefix}_{name}": value for name, value in summary.items()
+        }
 
     code = typescript_code_mask(callback_expression)
     arrow = code.find("=>")
@@ -21543,14 +21599,19 @@ def typescript_openai_on_approval_callback_attributes(
         body_expression = body_expression.rstrip(";").strip()
 
     approve_expression = typescript_object_property_expression(body_expression, "approve")
+    if approve_expression is None and typescript_object_has_shorthand_property(
+        body_expression,
+        "approve",
+    ):
+        approve_expression = "approve"
     if approve_expression is None:
         return {}
     approve_expression_code = typescript_code_mask(approve_expression).strip()
     approve_decision = typescript_literal_boolean_value(approve_expression_code)
     if approve_decision is not None:
         return {
-            "mcp_approval_handler_resolution": "inline-approval-object-return",
-            "mcp_approval_handler_decision": (
+            f"{attribute_prefix}_resolution": "inline-approval-object-return",
+            f"{attribute_prefix}_decision": (
                 "always-approve" if approve_decision else "always-reject"
             ),
         }
@@ -21559,10 +21620,10 @@ def typescript_openai_on_approval_callback_attributes(
         approve_expression_code,
     ):
         return {
-            "mcp_approval_handler_resolution": "inline-approval-object-return",
-            "mcp_approval_handler_decision": "dynamic-callback-result",
-            "mcp_approval_handler_approve_source": "call-result",
-            "mcp_approval_handler_approve_call": call_match.group(1).replace(" ", ""),
+            f"{attribute_prefix}_resolution": "inline-approval-object-return",
+            f"{attribute_prefix}_decision": "dynamic-callback-result",
+            f"{attribute_prefix}_approve_source": "call-result",
+            f"{attribute_prefix}_approve_call": call_match.group(1).replace(" ", ""),
             **helper_review_attributes(call_match.group(1).replace(" ", "")),
         }
     binding_match = re.fullmatch(r"[A-Za-z_$][\w$]*", approve_expression_code)
@@ -21574,15 +21635,36 @@ def typescript_openai_on_approval_callback_attributes(
         r"([A-Za-z_$][\w$]*(?:\s*\.\s*[A-Za-z_$][\w$]*)*)\s*\("
     )
     matches = list(binding_pattern.finditer(typescript_code_mask(block_prefix)))
-    if len(matches) != 1:
-        return {}
-    approve_call = matches[0].group(1).replace(" ", "")
+    approve_source = "call-result"
+    fallback_reject = False
+    if len(matches) == 1:
+        approve_call = matches[0].group(1).replace(" ", "")
+    else:
+        conditional_binding_pattern = re.compile(
+            rf"\bconst\s+{re.escape(binding)}\s*=\s*"
+            r"[A-Za-z_$][\w$]*(?:\s*\.\s*[A-Za-z_$][\w$]*)*\s*\?\s*"
+            r"(?:await\s+)?([A-Za-z_$][\w$]*(?:\s*\.\s*[A-Za-z_$][\w$]*)*)\s*\("
+            r"[\s\S]*?\)\s*:\s*false\s*;"
+        )
+        conditional_matches = list(
+            conditional_binding_pattern.finditer(typescript_code_mask(block_prefix))
+        )
+        if len(conditional_matches) != 1:
+            return {}
+        approve_call = conditional_matches[0].group(1).replace(" ", "")
+        approve_source = "conditional-call-result"
+        fallback_reject = True
     return {
-        "mcp_approval_handler_resolution": "inline-result-binding-approval-object-return",
-        "mcp_approval_handler_approve_binding": binding,
-        "mcp_approval_handler_decision": "dynamic-callback-result",
-        "mcp_approval_handler_approve_source": "call-result",
-        "mcp_approval_handler_approve_call": approve_call,
+        f"{attribute_prefix}_resolution": "inline-result-binding-approval-object-return",
+        f"{attribute_prefix}_approve_binding": binding,
+        f"{attribute_prefix}_decision": "dynamic-callback-result",
+        f"{attribute_prefix}_approve_source": approve_source,
+        f"{attribute_prefix}_approve_call": approve_call,
+        **(
+            {f"{attribute_prefix}_fallback_decision": "reject"}
+            if fallback_reject
+            else {}
+        ),
         **helper_review_attributes(approve_call),
     }
 

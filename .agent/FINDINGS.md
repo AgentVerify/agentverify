@@ -24,6 +24,12 @@
   producer-star-reexported, and consumer-star-imported local literal approval policies and redacted
   remote auth/header/client-factory metadata, with ordered local multi-star imports resolving to the
   later visible literal source; the full public IR truth set passes 2,429/2,429.
+- TypeScript OpenAI local builtin tools now preserve `onApproval` callback result shape for exact
+  approval-object returns on `shellTool` and `applyPatchTool`. The pinned OpenAI JS `local-shell.ts`
+  example records the `promptShellApproval` call, same-file readline question source, yes/yes-string
+  comparison, and `SHELL_AUTO_APPROVE` bypass metadata. The pinned `apply-patch.ts` example records a
+  conditional `promptApplyPatchApproval` call with fallback rejection, the same readline
+  prompt/yes-comparison source shape, and `APPLY_PATCH_AUTO_APPROVE` bypass metadata.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
 - A freshly rebuilt wheel includes all fifteen runtime schemas; a verifier script now guards that
   package artifact expectation.

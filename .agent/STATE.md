@@ -24,6 +24,10 @@ catalog workflows.
   `onApproval` return-shape metadata plus same-file readline prompt-helper source-shape metadata in
   local and pinned OpenAI examples, while mutated local/imported/reexported policy objects remain
   dynamic.
+- Added exact TypeScript OpenAI Agents SDK local builtin-tool `onApproval` return-shape metadata for
+  `shellTool` and `applyPatchTool` examples, including shorthand `{ approve }` returns, same-file
+  readline prompt-helper source shapes, and conditional prompt-call fallback rejection for the
+  pinned apply-patch example, while preserving existing auto-approval environment-bypass evidence.
 - Added exact Python OpenAI Agents SDK `HostedMCPTool(tool_config={...})` approval inventory for
   explicit `"never"`, explicit or same-block/imported local literal `"always"`, shallow selective
   dict policies, imported local literal policies, named local reexported literal policies, consumer

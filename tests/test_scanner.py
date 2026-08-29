@@ -2629,6 +2629,99 @@ def test_approval_callback_bypass_is_resolved_to_reachable_privileged_tools() ->
     }
 
 
+def test_typescript_builtin_on_approval_prompt_helpers_are_exact(tmp_path: Path) -> None:
+    (tmp_path / "agent.ts").write_text(
+        textwrap.dedent(
+            """
+            import { Agent, applyPatchTool, shellTool } from "@openai/agents";
+
+            async function promptShellApproval(commands: string[]): Promise<boolean> {
+              const { createInterface } = await import("node:readline/promises");
+              const rl = createInterface({ input: process.stdin, output: process.stdout });
+              try {
+                const answer = await rl.question("Proceed? [y/N] ");
+                const approved = answer.trim().toLowerCase();
+                return approved === "y" || approved === "yes";
+              } finally {
+                rl.close();
+              }
+            }
+
+            async function promptApplyPatchApproval(op: unknown): Promise<boolean> {
+              const { createInterface } = await import("node:readline/promises");
+              const rl = createInterface({ input: process.stdin, output: process.stdout });
+              try {
+                const answer = await rl.question("Proceed? [y/N] ");
+                const approved = answer.trim().toLowerCase();
+                return approved === "y" || approved === "yes";
+              } finally {
+                rl.close();
+              }
+            }
+
+            const agent = new Agent({
+              name: "operator",
+              tools: [
+                shellTool({
+                  shell: {},
+                  needsApproval: true,
+                  onApproval: async (_ctx, approvalItem) => {
+                    const approve = await promptShellApproval(
+                      approvalItem.rawItem.type === "shell_call"
+                        ? approvalItem.rawItem.action.commands
+                        : [],
+                    );
+                    return { approve };
+                  },
+                }),
+                applyPatchTool({
+                  editor: {},
+                  needsApproval: true,
+                  onApproval: async (_ctx, approvalItem) => {
+                    const op =
+                      approvalItem.rawItem.type === "apply_patch_call"
+                        ? approvalItem.rawItem.operation
+                        : undefined;
+                    const approve = op ? await promptApplyPatchApproval(op) : false;
+                    return { approve };
+                  },
+                }),
+              ],
+            });
+            void agent;
+            """
+        ),
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+
+    tools_by_constructor = {
+        component.attributes["constructor"]: component.attributes
+        for component in ir.components
+        if component.kind == "tool"
+    }
+    shell_attributes = tools_by_constructor["shellTool"]
+    assert shell_attributes["approval_handler_approve_source"] == "call-result"
+    assert shell_attributes["approval_handler_approve_call"] == "promptShellApproval"
+    assert shell_attributes["approval_handler_review_resolution"] == (
+        "same-file-helper-readline-question"
+    )
+    assert shell_attributes["approval_handler_review_decision"] == (
+        "yes-literal-comparison"
+    )
+
+    apply_patch_attributes = tools_by_constructor["applyPatchTool"]
+    assert apply_patch_attributes["approval_handler_approve_source"] == (
+        "conditional-call-result"
+    )
+    assert apply_patch_attributes["approval_handler_approve_call"] == (
+        "promptApplyPatchApproval"
+    )
+    assert apply_patch_attributes["approval_handler_fallback_decision"] == "reject"
+    assert apply_patch_attributes["approval_handler_review_source"] == "readline-question"
+
+
 def test_builtin_tool_constructor_approval_is_instance_scoped() -> None:
     ir = scan_repository(ROOT / "cases/builtin_tool_approval")
 
