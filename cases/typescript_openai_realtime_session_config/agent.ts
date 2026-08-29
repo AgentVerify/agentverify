@@ -2,6 +2,8 @@ import { RealtimeAgent, RealtimeSession } from "@openai/agents/realtime";
 
 const dynamicParallelToolCalls = Boolean(process.env.REALTIME_PARALLEL_TOOL_CALLS);
 const dynamicOutputModalities = ["audio"];
+const dynamicAudioFormat = process.env.REALTIME_AUDIO_FORMAT;
+const dynamicTranscriptionLanguages = ["en"];
 
 const greeter = new RealtimeAgent({
   name: "Realtime greeter",
@@ -33,9 +35,36 @@ export const audioSession = new RealtimeSession(greeter, {
   },
 });
 
+export const audioDetailsSession = new RealtimeSession(greeter, {
+  config: {
+    audio: {
+      input: {
+        format: "pcm16",
+        transcription: {
+          model: "gpt-live-transcribe",
+          delay: "low",
+          languages: ["en", "ja"],
+        },
+      },
+      output: {
+        format: "pcm16",
+      },
+    },
+  },
+});
+
 export const dynamicSession = new RealtimeSession(greeter, {
   config: {
     parallelToolCalls: dynamicParallelToolCalls,
     outputModalities: dynamicOutputModalities,
+    audio: {
+      input: {
+        format: dynamicAudioFormat,
+        transcription: {
+          model: process.env.REALTIME_TRANSCRIPTION_MODEL,
+          languages: dynamicTranscriptionLanguages,
+        },
+      },
+    },
   },
 });

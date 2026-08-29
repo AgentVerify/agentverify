@@ -4432,12 +4432,13 @@ def test_typescript_openai_realtime_session_parallel_tool_calls_policy_is_exact(
         and component.name == "realtime-session-config-policy"
     }
     assert set(controls) == {
-        "ts:agent.ts#control:sequentialSession.config@12",
-        "ts:agent.ts#control:parallelSession.config@18",
-        "ts:agent.ts#control:reasoningSession.config@25",
-        "ts:agent.ts#control:audioSession.config@32",
+        "ts:agent.ts#control:sequentialSession.config@14",
+        "ts:agent.ts#control:parallelSession.config@20",
+        "ts:agent.ts#control:reasoningSession.config@27",
+        "ts:agent.ts#control:audioSession.config@34",
+        "ts:agent.ts#control:audioDetailsSession.config@42",
     }
-    assert controls["ts:agent.ts#control:sequentialSession.config@12"].attributes == {
+    assert controls["ts:agent.ts#control:sequentialSession.config@14"].attributes == {
         "analysis": "typescript-openai-agents-realtime-session-config",
         "module": "@openai/agents/realtime",
         "constructor": "RealtimeSession",
@@ -4451,7 +4452,7 @@ def test_typescript_openai_realtime_session_parallel_tool_calls_policy_is_exact(
         "parallel_tool_calls": False,
         "scope": "production",
     }
-    assert controls["ts:agent.ts#control:parallelSession.config@18"].attributes == {
+    assert controls["ts:agent.ts#control:parallelSession.config@20"].attributes == {
         "analysis": "typescript-openai-agents-realtime-session-config",
         "module": "@openai/agents/realtime",
         "constructor": "RealtimeSession",
@@ -4465,7 +4466,7 @@ def test_typescript_openai_realtime_session_parallel_tool_calls_policy_is_exact(
         "parallel_tool_calls": True,
         "scope": "production",
     }
-    assert controls["ts:agent.ts#control:reasoningSession.config@25"].attributes == {
+    assert controls["ts:agent.ts#control:reasoningSession.config@27"].attributes == {
         "analysis": "typescript-openai-agents-realtime-session-config",
         "module": "@openai/agents/realtime",
         "constructor": "RealtimeSession",
@@ -4479,7 +4480,7 @@ def test_typescript_openai_realtime_session_parallel_tool_calls_policy_is_exact(
         "reasoning_effort": "low",
         "scope": "production",
     }
-    assert controls["ts:agent.ts#control:audioSession.config@32"].attributes == {
+    assert controls["ts:agent.ts#control:audioSession.config@34"].attributes == {
         "analysis": "typescript-openai-agents-realtime-session-config",
         "module": "@openai/agents/realtime",
         "constructor": "RealtimeSession",
@@ -4491,6 +4492,24 @@ def test_typescript_openai_realtime_session_parallel_tool_calls_policy_is_exact(
         "source_agent": "Realtime greeter",
         "source_agent_id": "ts:agent.ts#agent:greeter",
         "output_modalities": ["audio"],
+        "scope": "production",
+    }
+    assert controls["ts:agent.ts#control:audioDetailsSession.config@42"].attributes == {
+        "analysis": "typescript-openai-agents-realtime-session-config",
+        "module": "@openai/agents/realtime",
+        "constructor": "RealtimeSession",
+        "imported_symbol": "RealtimeSession",
+        "local_constructor": "RealtimeSession",
+        "configuration": "RealtimeSession.config",
+        "session_binding": "audioDetailsSession",
+        "config_scope": "realtime-session-config",
+        "source_agent": "Realtime greeter",
+        "source_agent_id": "ts:agent.ts#agent:greeter",
+        "audio_input_format": "pcm16",
+        "audio_output_format": "pcm16",
+        "transcription_model": "gpt-live-transcribe",
+        "transcription_delay": "low",
+        "transcription_languages": ["en", "ja"],
         "scope": "production",
     }
 
@@ -4521,9 +4540,9 @@ def test_typescript_openai_realtime_session_parallel_tool_calls_policy_is_exact(
         (
             "Realtime greeter",
             "ts:agent.ts#agent:greeter",
-            "ts:agent.ts#control:sequentialSession.config@12",
+            "ts:agent.ts#control:sequentialSession.config@14",
             "agent.ts",
-            12,
+            14,
             (
                 ("analysis", "typescript-openai-agents-realtime-session-config"),
                 ("binding", "config"),
@@ -4535,9 +4554,9 @@ def test_typescript_openai_realtime_session_parallel_tool_calls_policy_is_exact(
         (
             "Realtime greeter",
             "ts:agent.ts#agent:greeter",
-            "ts:agent.ts#control:parallelSession.config@18",
+            "ts:agent.ts#control:parallelSession.config@20",
             "agent.ts",
-            18,
+            20,
             (
                 ("analysis", "typescript-openai-agents-realtime-session-config"),
                 ("binding", "config"),
@@ -4549,9 +4568,9 @@ def test_typescript_openai_realtime_session_parallel_tool_calls_policy_is_exact(
         (
             "Realtime greeter",
             "ts:agent.ts#agent:greeter",
-            "ts:agent.ts#control:reasoningSession.config@25",
+            "ts:agent.ts#control:reasoningSession.config@27",
             "agent.ts",
-            25,
+            27,
             (
                 ("analysis", "typescript-openai-agents-realtime-session-config"),
                 ("binding", "config"),
@@ -4563,15 +4582,33 @@ def test_typescript_openai_realtime_session_parallel_tool_calls_policy_is_exact(
         (
             "Realtime greeter",
             "ts:agent.ts#agent:greeter",
-            "ts:agent.ts#control:audioSession.config@32",
+            "ts:agent.ts#control:audioSession.config@34",
             "agent.ts",
-            32,
+            34,
             (
                 ("analysis", "typescript-openai-agents-realtime-session-config"),
                 ("binding", "config"),
                 ("configuration", "RealtimeSession-config"),
                 ("output_modalities", ("audio",)),
                 ("session_binding", "audioSession"),
+            ),
+        ),
+        (
+            "Realtime greeter",
+            "ts:agent.ts#agent:greeter",
+            "ts:agent.ts#control:audioDetailsSession.config@42",
+            "agent.ts",
+            42,
+            (
+                ("analysis", "typescript-openai-agents-realtime-session-config"),
+                ("audio_input_format", "pcm16"),
+                ("audio_output_format", "pcm16"),
+                ("binding", "config"),
+                ("configuration", "RealtimeSession-config"),
+                ("session_binding", "audioDetailsSession"),
+                ("transcription_delay", "low"),
+                ("transcription_languages", ("en", "ja")),
+                ("transcription_model", "gpt-live-transcribe"),
             ),
         ),
     }

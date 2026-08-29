@@ -796,21 +796,27 @@
 
 - Decision: Represent exact TypeScript OpenAI Realtime
   `new RealtimeSession(agent, { config: { parallelToolCalls: <boolean>, reasoning: { effort },
-  outputModalities: [...] } })`
+  outputModalities: [...], audio: { input, output } } })`
   configuration as a `realtime-session-config-policy` control tied to the source-proven
   `RealtimeAgent` passed as the session's first constructor argument. Emit only for exact imported
   `RealtimeAgent` and `RealtimeSession` constructors plus direct boolean, string, or literal
-  string-array values; keep dynamic config values and unresolved session-agent arguments unresolved.
+  string-array values, including audio input/output formats and
+  `audio.input.transcription.{model, delay, languages}`; keep dynamic config values and unresolved
+  session-agent arguments unresolved.
 - Evidence: The local realtime-session fixture covers false, true, and dynamic negative
   `parallelToolCalls` values plus a direct low `reasoning.effort` value and a literal
-  `outputModalities: ["audio"]` value with a dynamic-modality negative. The pinned OpenAI Agents JS
+  `outputModalities: ["audio"]` value with a dynamic-modality negative, plus a literal audio
+  details session with dynamic transcription-model negative coverage. The pinned OpenAI Agents JS
   `examples/docs/voice-agents/configureSession.ts` example sets
   `config.outputModalities: ['audio']`, `config.reasoning.effort: 'low'`, and
-  `config.parallelToolCalls: true` for the `Greeter` RealtimeAgent.
+  `config.parallelToolCalls: true`, plus `audio.input.format: 'pcm16'`,
+  `audio.output.format: 'pcm16'`, `audio.input.transcription.model: 'gpt-live-transcribe'`,
+  `audio.input.transcription.delay: 'low'`, and transcription languages `['en', 'ja']` for the
+  `Greeter` RealtimeAgent.
 - Alternative: Fold realtime session config into Agent-level `model-settings-policy`. Rejected
   because `RealtimeSession` configuration is a different constructor scope from `Agent.modelSettings`
   and should not imply the same inheritance or override semantics.
-- Revisit when other RealtimeSession config fields such as transcription model, audio formats,
+- Revisit when other RealtimeSession config fields such as transcription prompts/keywords,
   turn detection, or tool choice can be tied to source-proven realtime agents without broad
   option-object matching.
 

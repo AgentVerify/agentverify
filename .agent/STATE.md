@@ -816,8 +816,9 @@ catalog workflows.
   source-proven `.run(agent, ...)` calls. Exact Agent-level literal
   `modelSettings.reasoning.effort`, `modelSettings.text.verbosity`, and
   `modelSettings.parallelToolCalls` values expose `model-settings-policy` controls. Exact imported
-  RealtimeSession config with `parallelToolCalls`, `reasoning.effort`, and literal
-  `outputModalities` exposes
+  RealtimeSession config with `parallelToolCalls`, `reasoning.effort`, literal
+  `outputModalities`, literal audio input/output formats, and literal audio transcription
+  model/delay/languages exposes
   `realtime-session-config-policy` controls linked to source-proven RealtimeAgents. Exact imported
   `withTrace` callbacks containing
   source-proven SDK `run(agent, ...)` calls, exact Runner instances with source-proven
@@ -852,7 +853,8 @@ semantics distinct from trace-correlation `withTrace(..., { groupId/traceId })` 
   bindings, inline static objects, create/dispose per-run factories, and create-only factories, plus
   exact Agent-level `modelSettings.reasoning.effort`, `modelSettings.text.verbosity`, and
   `modelSettings.parallelToolCalls` metadata, plus exact RealtimeSession `config.parallelToolCalls`,
-  `config.reasoning.effort`, and literal `config.outputModalities` policy. For OpenAI
+  `config.reasoning.effort`, literal `config.outputModalities`, audio input/output format, and
+  audio transcription model/delay/languages policy. For OpenAI
 approval work, keep literal always-approval, callback-controlled
 approval on generic tools/delegated tools/approval-capable builtin tools, delegated-agent adapter
 approval metadata, literal predicate metadata, SDK state approval decisions, helper-parameter

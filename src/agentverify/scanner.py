@@ -17280,6 +17280,11 @@ def add_typescript_openai_realtime_session_config_control(
     parallel_tool_calls: bool | None,
     reasoning_effort: str | None,
     output_modalities: list[str] | None,
+    audio_input_format: str | None,
+    audio_output_format: str | None,
+    transcription_model: str | None,
+    transcription_delay: str | None,
+    transcription_languages: list[str] | None,
     symbol_identity: str,
 ) -> tuple[str, str]:
     """Add exact OpenAI Agents JS RealtimeSession config governance evidence."""
@@ -17304,6 +17309,16 @@ def add_typescript_openai_realtime_session_config_control(
         attributes["reasoning_effort"] = reasoning_effort
     if output_modalities is not None:
         attributes["output_modalities"] = output_modalities
+    if audio_input_format is not None:
+        attributes["audio_input_format"] = audio_input_format
+    if audio_output_format is not None:
+        attributes["audio_output_format"] = audio_output_format
+    if transcription_model is not None:
+        attributes["transcription_model"] = transcription_model
+    if transcription_delay is not None:
+        attributes["transcription_delay"] = transcription_delay
+    if transcription_languages is not None:
+        attributes["transcription_languages"] = transcription_languages
     ir.add_component(
         Component(
             "control",
@@ -21164,6 +21179,59 @@ def typescript_graph(
         )
         if output_modalities_location is not None:
             output_modalities, output_modalities_offset, _ = output_modalities_location
+        audio_input_format = None
+        audio_input_format_offset = None
+        audio_input_format_location = typescript_literal_nested_object_string_property_location(
+            config_expression,
+            body_offset=config_offset,
+            path=("audio", "input", "format"),
+        )
+        if audio_input_format_location is not None:
+            audio_input_format, audio_input_format_offset, _ = audio_input_format_location
+        audio_output_format = None
+        audio_output_format_offset = None
+        audio_output_format_location = typescript_literal_nested_object_string_property_location(
+            config_expression,
+            body_offset=config_offset,
+            path=("audio", "output", "format"),
+        )
+        if audio_output_format_location is not None:
+            audio_output_format, audio_output_format_offset, _ = audio_output_format_location
+        transcription_model = None
+        transcription_model_offset = None
+        transcription_model_location = (
+            typescript_literal_nested_object_string_property_location(
+                config_expression,
+                body_offset=config_offset,
+                path=("audio", "input", "transcription", "model"),
+            )
+        )
+        if transcription_model_location is not None:
+            transcription_model, transcription_model_offset, _ = transcription_model_location
+        transcription_delay = None
+        transcription_delay_offset = None
+        transcription_delay_location = (
+            typescript_literal_nested_object_string_property_location(
+                config_expression,
+                body_offset=config_offset,
+                path=("audio", "input", "transcription", "delay"),
+            )
+        )
+        if transcription_delay_location is not None:
+            transcription_delay, transcription_delay_offset, _ = transcription_delay_location
+        transcription_languages = None
+        transcription_languages_offset = None
+        transcription_languages_location = (
+            typescript_literal_nested_object_string_array_property_location(
+                config_expression,
+                body_offset=config_offset,
+                path=("audio", "input", "transcription", "languages"),
+            )
+        )
+        if transcription_languages_location is not None:
+            transcription_languages, transcription_languages_offset, _ = (
+                transcription_languages_location
+            )
         parallel_tool_calls = None
         parallel_property_offset = None
         parallel_tool_calls_location = typescript_object_property_expression_location(
@@ -21180,6 +21248,11 @@ def typescript_graph(
             reasoning_effort is None
             and parallel_tool_calls is None
             and output_modalities is None
+            and audio_input_format is None
+            and audio_output_format is None
+            and transcription_model is None
+            and transcription_delay is None
+            and transcription_languages is None
         ):
             continue
         policy_offset = min(
@@ -21187,6 +21260,11 @@ def typescript_graph(
             for offset in (
                 reasoning_effort_offset,
                 output_modalities_offset,
+                audio_input_format_offset,
+                audio_output_format_offset,
+                transcription_model_offset,
+                transcription_delay_offset,
+                transcription_languages_offset,
                 parallel_property_offset,
             )
             if offset is not None
@@ -21203,6 +21281,11 @@ def typescript_graph(
             parallel_tool_calls=parallel_tool_calls,
             reasoning_effort=reasoning_effort,
             output_modalities=output_modalities,
+            audio_input_format=audio_input_format,
+            audio_output_format=audio_output_format,
+            transcription_model=transcription_model,
+            transcription_delay=transcription_delay,
+            transcription_languages=transcription_languages,
             symbol_identity=f"{session_name}.config@{policy_line}",
         )
         agent_name, agent_id = source_agent
@@ -21218,6 +21301,16 @@ def typescript_graph(
             config_attributes["reasoning_effort"] = reasoning_effort
         if output_modalities is not None:
             config_attributes["output_modalities"] = output_modalities
+        if audio_input_format is not None:
+            config_attributes["audio_input_format"] = audio_input_format
+        if audio_output_format is not None:
+            config_attributes["audio_output_format"] = audio_output_format
+        if transcription_model is not None:
+            config_attributes["transcription_model"] = transcription_model
+        if transcription_delay is not None:
+            config_attributes["transcription_delay"] = transcription_delay
+        if transcription_languages is not None:
+            config_attributes["transcription_languages"] = transcription_languages
         ir.add_relationship(
             Relationship(
                 "agent",
