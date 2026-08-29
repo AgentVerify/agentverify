@@ -16484,6 +16484,52 @@ def typescript_approval_bypass_function_summaries(
     return {name: tuple(sorted(values)) for name, values in resolved.items()}
 
 
+def typescript_approval_prompt_function_summaries(
+    text: str,
+) -> dict[str, dict[str, object]]:
+    """Resolve unique same-file functions that ask a terminal yes/no approval question."""
+    definitions = typescript_function_definitions(text)
+    name_counts = Counter(name for name, _, _, _ in definitions)
+    resolved: dict[str, dict[str, object]] = {}
+    for name, _, _, body in definitions:
+        if name_counts[name] != 1:
+            continue
+        body_code = typescript_code_mask(body)
+        interface_match = re.search(
+            r"\bconst\s+([A-Za-z_$][\w$]*)\s*=\s*"
+            r"readline\s*\.\s*createInterface\s*\(",
+            body_code,
+        )
+        if interface_match is None:
+            continue
+        interface_binding = interface_match.group(1)
+        question_match = re.search(
+            rf"\bconst\s+([A-Za-z_$][\w$]*)\s*=\s*await\s+"
+            rf"{re.escape(interface_binding)}\s*\.\s*question\s*\(",
+            body_code,
+        )
+        if question_match is None:
+            continue
+        answer_binding = question_match.group(1)
+        answer_comparison = re.compile(
+            rf"{re.escape(answer_binding)}\s*\.\s*toLowerCase\s*\(\s*\)"
+            r"\s*\.\s*trim\s*\(\s*\)\s*===\s*(['\"])(?:y|yes)\1"
+        )
+        for return_match in re.finditer(r"\breturn\s+([\s\S]*?);", body_code):
+            expression = body[return_match.start(1) : return_match.end(1)].strip()
+            if answer_comparison.fullmatch(expression):
+                resolved[name] = {
+                    "mcp_approval_handler_review_resolution": (
+                        "same-file-helper-readline-question"
+                    ),
+                    "mcp_approval_handler_review_helper": name,
+                    "mcp_approval_handler_review_source": "readline-question",
+                    "mcp_approval_handler_review_decision": "yes-literal-comparison",
+                }
+                break
+    return resolved
+
+
 def typescript_direct_approval_bypass_call_names(
     expression: str,
     approval_bypass_function_summaries: dict[str, tuple[str, ...]],
@@ -20982,6 +21028,7 @@ def add_typescript_tool_observation(
     call_offset: int,
     body_offset: int,
     approval_bypass_function_summaries: dict[str, tuple[str, ...]],
+    approval_prompt_function_summaries: dict[str, dict[str, object]],
     immutable_literal_bindings: dict[str, TypeScriptLiteralStringBinding] | None = None,
     immutable_object_bindings: dict[str, TypeScriptLiteralObjectBinding] | None = None,
 ) -> None:
@@ -21033,6 +21080,7 @@ def add_typescript_tool_observation(
         call_body,
         constructor,
         body_offset=body_offset,
+        approval_prompt_function_summaries=approval_prompt_function_summaries,
         immutable_object_bindings=immutable_object_bindings,
     )
     execution_environment = "unresolved"
@@ -21451,8 +21499,14 @@ def typescript_openai_needs_approval_attributes(body: str) -> dict[str, object]:
 
 def typescript_openai_on_approval_callback_attributes(
     callback_expression: str,
+    approval_prompt_function_summaries: dict[str, dict[str, object]] | None = None,
 ) -> dict[str, object]:
     """Resolve exact inline OpenAI hosted MCP onApproval callback metadata."""
+    approval_prompt_function_summaries = approval_prompt_function_summaries or {}
+
+    def helper_review_attributes(call_name: str) -> dict[str, object]:
+        return approval_prompt_function_summaries.get(call_name, {})
+
     code = typescript_code_mask(callback_expression)
     arrow = code.find("=>")
     if arrow < 0:
@@ -21509,6 +21563,7 @@ def typescript_openai_on_approval_callback_attributes(
             "mcp_approval_handler_decision": "dynamic-callback-result",
             "mcp_approval_handler_approve_source": "call-result",
             "mcp_approval_handler_approve_call": call_match.group(1).replace(" ", ""),
+            **helper_review_attributes(call_match.group(1).replace(" ", "")),
         }
     binding_match = re.fullmatch(r"[A-Za-z_$][\w$]*", approve_expression_code)
     if binding_match is None or not block_prefix:
@@ -21521,12 +21576,14 @@ def typescript_openai_on_approval_callback_attributes(
     matches = list(binding_pattern.finditer(typescript_code_mask(block_prefix)))
     if len(matches) != 1:
         return {}
+    approve_call = matches[0].group(1).replace(" ", "")
     return {
         "mcp_approval_handler_resolution": "inline-result-binding-approval-object-return",
         "mcp_approval_handler_approve_binding": binding,
         "mcp_approval_handler_decision": "dynamic-callback-result",
         "mcp_approval_handler_approve_source": "call-result",
-        "mcp_approval_handler_approve_call": matches[0].group(1).replace(" ", ""),
+        "mcp_approval_handler_approve_call": approve_call,
+        **helper_review_attributes(approve_call),
     }
 
 
@@ -21535,6 +21592,7 @@ def typescript_openai_hosted_mcp_approval_attributes(
     constructor: str,
     *,
     body_offset: int = 0,
+    approval_prompt_function_summaries: dict[str, dict[str, object]] | None = None,
     immutable_object_bindings: dict[str, TypeScriptLiteralObjectBinding] | None = None,
 ) -> dict[str, object]:
     """Resolve exact OpenAI Agents JS hostedMcpTool requireApproval metadata."""
@@ -21626,7 +21684,12 @@ def typescript_openai_hosted_mcp_approval_attributes(
     if on_approval is not None:
         attributes["mcp_approval_handler"] = "configured"
         attributes["mcp_approval_handler_policy"] = "callback-controlled"
-        attributes.update(typescript_openai_on_approval_callback_attributes(on_approval))
+        attributes.update(
+            typescript_openai_on_approval_callback_attributes(
+                on_approval,
+                approval_prompt_function_summaries=approval_prompt_function_summaries,
+            )
+        )
     elif require_approval is not None:
         attributes["mcp_approval_handler"] = "agent-loop"
     return attributes
@@ -21839,6 +21902,11 @@ def typescript_graph(
     approval_bypass_function_summaries = (
         typescript_approval_bypass_function_summaries(text)
         if (("onApproval" in text or ".approve(" in text) and openai_imports)
+        else {}
+    )
+    approval_prompt_function_summaries = (
+        typescript_approval_prompt_function_summaries(text)
+        if ("onApproval" in text and "question" in text and openai_imports)
         else {}
     )
     has_mcp_import = "@modelcontextprotocol/" in text or bool(
@@ -22310,6 +22378,7 @@ def typescript_graph(
                 call_offset=match.start(2),
                 body_offset=opening + 1,
                 approval_bypass_function_summaries=approval_bypass_function_summaries,
+                approval_prompt_function_summaries=approval_prompt_function_summaries,
                 immutable_literal_bindings=immutable_literal_bindings,
                 immutable_object_bindings=immutable_object_bindings,
             )
@@ -25820,6 +25889,7 @@ def typescript_graph(
                     call_offset=item_offset,
                     body_offset=item_offset + relative_body_offset,
                     approval_bypass_function_summaries=approval_bypass_function_summaries,
+                    approval_prompt_function_summaries=approval_prompt_function_summaries,
                     immutable_literal_bindings=immutable_literal_bindings,
                     immutable_object_bindings=immutable_object_bindings,
                 )

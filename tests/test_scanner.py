@@ -5720,6 +5720,77 @@ def test_typescript_openai_hosted_mcp_approval_policy_is_exact() -> None:
     assert capability_by_line[75].attributes["mcp_approval_policy"] == "dynamic"
 
 
+def test_typescript_openai_hosted_mcp_on_approval_prompt_helper_is_exact(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "agent.ts").write_text(
+        textwrap.dedent(
+            """
+            import * as readline from "readline/promises";
+            import { stdin, stdout } from "node:process";
+            import { Agent, hostedMcpTool } from "@openai/agents";
+
+            async function promptApproval(item: { name: string }): Promise<boolean> {
+              const rl = readline.createInterface({ input: stdin, output: stdout });
+              const answer = await rl.question(`Approve ${item.name}? (y/n) `);
+              rl.close();
+              return answer.toLowerCase().trim() === "y";
+            }
+
+            async function approveSomehow(): Promise<boolean> {
+              return promptApproval({ name: "nested" });
+            }
+
+            const agent = new Agent({
+              name: "approval agent",
+              tools: [
+                hostedMcpTool({
+                  serverLabel: "prompted",
+                  serverUrl: "https://mcp.example.test/mcp",
+                  requireApproval: "always",
+                  onApproval: async (_context, item) => {
+                    const approval = await promptApproval(item);
+                    return { approve: approval };
+                  },
+                }),
+                hostedMcpTool({
+                  serverLabel: "opaque",
+                  serverUrl: "https://mcp.example.test/mcp",
+                  requireApproval: "always",
+                  onApproval: async () => ({ approve: await approveSomehow() }),
+                }),
+              ],
+            });
+            void agent;
+            """
+        ),
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+
+    tools_by_approval_call = {
+        component.attributes.get("mcp_approval_handler_approve_call"): component
+        for component in ir.components
+        if component.kind == "tool"
+    }
+    prompted_attributes = tools_by_approval_call["promptApproval"].attributes
+    assert prompted_attributes["mcp_approval_handler_resolution"] == (
+        "inline-result-binding-approval-object-return"
+    )
+    assert prompted_attributes["mcp_approval_handler_review_resolution"] == (
+        "same-file-helper-readline-question"
+    )
+    assert prompted_attributes["mcp_approval_handler_review_helper"] == "promptApproval"
+    assert prompted_attributes["mcp_approval_handler_review_source"] == "readline-question"
+    assert prompted_attributes["mcp_approval_handler_review_decision"] == (
+        "yes-literal-comparison"
+    )
+
+    opaque_attributes = tools_by_approval_call["approveSomehow"].attributes
+    assert "mcp_approval_handler_review_resolution" not in opaque_attributes
+
+
 def test_typescript_openai_realtime_session_guardrail_policy_is_exact() -> None:
     ir = scan_repository(ROOT / "cases/typescript_openai_realtime_session_guardrails")
 

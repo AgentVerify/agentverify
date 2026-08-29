@@ -10,8 +10,8 @@
   MCP server `require_approval` call sites. The TypeScript hosted check now has 16 public IR labels
   (14 positive, 2 over-resolution/lookalike negatives), including imported local const-object
   policies, aliased imports, named local reexports, inline literal `onApproval` decisions, and real
-  OpenAI JS result-binding callback call-source metadata while imported/reexported-mutated bindings
-  remain dynamic. The Python hosted
+  OpenAI JS result-binding callback call-source metadata plus same-file readline prompt-helper
+  source-shape metadata while imported/reexported-mutated bindings remain dynamic. The Python hosted
   check has 25 public IR labels (24 positive, 1 lookalike negative), including imported,
   named-reexported, producer-star-reexported, and consumer-star-imported whole `tool_config`
   dictionaries while mutated configs remain dynamic. Ordered local multi-star imports resolve to the

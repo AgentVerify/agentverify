@@ -109,8 +109,9 @@
   `tool_approval_requested` event approve/reject calls are now modeled when the event request's
   `approvalItem` is passed to a proven `RealtimeSession`. `computerTool({ onSafetyCheck })`
   pass-through callbacks now report as `AV-APPROVAL011`, and hosted MCP `onApproval` inline
-  literal/result-binding return shapes are now inventoried, but AgentVerify still does not claim full
-  approval or safety quality without broader predicate/action evidence.
+  literal/result-binding return shapes plus same-file readline prompt-helper source shapes are now
+  inventoried, but AgentVerify still does not claim full approval or safety quality without broader
+  predicate/action evidence.
 - Explore whether any Realtime auth-source patterns should become reporting rules only after
   gathering enough real non-example client-side/server-side context. Current auth evidence is IR
   inventory only because `process.env.OPENAI_API_KEY` with websocket/SIP can be legitimate server
