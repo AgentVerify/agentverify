@@ -5,11 +5,15 @@ from local_mcp import MCPServerSse as FakeMCPServerSse
 
 def build_agent() -> Agent:
     sse_server = MCPServerSse(
-        params={"url": "https://user:pass@example.com/sse?token=secret"},
+        params={"url": "https://user:pass@example.com/sse?token=secret", "headers": {"Authorization": "Bearer secret"}},
         require_approval="always",
     )
     http_server = MCPServerStreamableHttp(
-        params={"url": "https://api.example.com/mcp"},
+        params={
+            "url": "https://api.example.com/mcp",
+            "auth": auth,
+            "httpx_client_factory": factory,
+        },
         require_approval={"read": "never", "write": "always"},
     )
     fake_server = FakeMCPServerSse(

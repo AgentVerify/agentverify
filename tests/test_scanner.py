@@ -14887,22 +14887,32 @@ def test_python_openai_mcp_server_approval_policy_is_exact() -> None:
         for component in ir.components
         if component.kind == "mcp-server" and component.evidence.path == "remote_app.py"
     }
-    assert set(remote_servers) == {7, 11, 15}
+    assert set(remote_servers) == {7, 11, 19}
     assert remote_servers[7].attributes["transport"] == "sse"
     assert remote_servers[7].attributes["url"] == "https://[REDACTED]@example.com/sse"
+    assert remote_servers[7].attributes["mcp_remote_headers"] == "configured"
+    assert remote_servers[7].attributes["mcp_remote_header_names"] == ["Authorization"]
+    assert remote_servers[7].attributes["mcp_remote_auth_sources"] == [
+        "authorization-header"
+    ]
     assert remote_servers[7].attributes["mcp_approval_constructor"] == "MCPServerSse"
     assert remote_servers[7].attributes["mcp_approval_policy"] == "always-required"
     assert remote_servers[11].attributes["transport"] == "streamable-http"
     assert remote_servers[11].attributes["url"] == "https://api.example.com/mcp"
+    assert remote_servers[11].attributes["mcp_remote_auth"] == "configured"
+    assert remote_servers[11].attributes["mcp_remote_auth_binding"] == "auth"
+    assert remote_servers[11].attributes["mcp_remote_auth_sources"] == ["auth-param"]
+    assert remote_servers[11].attributes["mcp_remote_http_client_factory"] == "configured"
+    assert remote_servers[11].attributes["mcp_remote_http_client_factory_binding"] == "factory"
     assert remote_servers[11].attributes["mcp_approval_constructor"] == (
         "MCPServerStreamableHttp"
     )
     assert remote_servers[11].attributes["mcp_approval_policy"] == "selective"
     assert remote_servers[11].attributes["mcp_approval_never_tool_names"] == ["read"]
     assert remote_servers[11].attributes["mcp_approval_always_tool_names"] == ["write"]
-    assert remote_servers[15].attributes["transport"] == "sse"
-    assert remote_servers[15].attributes["url"] == "https://fake.example.com/sse"
-    assert "mcp_approval_policy" not in remote_servers[15].attributes
+    assert remote_servers[19].attributes["transport"] == "sse"
+    assert remote_servers[19].attributes["url"] == "https://fake.example.com/sse"
+    assert "mcp_approval_policy" not in remote_servers[19].attributes
 
     remote_edges = {
         edge.target_id: edge

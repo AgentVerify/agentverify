@@ -58,10 +58,11 @@
   quality or new exact helper shapes that preserve call-site and source-agent identity.
 - Continue OpenAI Agents Python safety-governance extraction where evidence remains exact: callbacks
   that distinguish explicit user/policy review from unconditional acknowledgement, imported hosted
-  or non-hosted MCP approval policy objects, remote MCP auth/URL exposure quality only when
-  deployment context is source-proven, and production sticky-approval defaults that can be separated from
-  prompt-selected `always_approve`/`always_reject` persistence, without resolving arbitrary boolean
-  expressions or collapsing duplicate callback names across lexical scopes.
+  or non-hosted MCP approval policy objects, any reporting-grade remote MCP auth/URL exposure
+  quality only when deployment context is source-proven, and production sticky-approval defaults
+  that can be separated from prompt-selected `always_approve`/`always_reject` persistence, without
+  resolving arbitrary boolean expressions or collapsing duplicate callback names across lexical
+  scopes.
 
 ## P2
 

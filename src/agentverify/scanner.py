@@ -857,6 +857,63 @@ def sanitized_mcp_url_attributes(url: str) -> dict[str, object]:
         return {"url": "[INVALID URL REDACTED]"}
 
 
+def python_mcp_remote_auth_attributes(
+    params_entries: dict[str, ast.AST] | None,
+) -> dict[str, object]:
+    """Return source-shape-only auth metadata for remote MCP params.
+
+    Secret values are intentionally not copied into IR; only literal header names and binding names
+    are recorded.
+    """
+    if params_entries is None:
+        return {}
+
+    attributes: dict[str, object] = {}
+    auth_sources: set[str] = set()
+
+    headers_node = params_entries.get("headers")
+    if headers_node is not None:
+        attributes["mcp_remote_headers"] = "configured"
+        if isinstance(headers_node, ast.Dict):
+            header_names: list[str] = []
+            for key in headers_node.keys:
+                if not isinstance(key, ast.Constant) or not isinstance(key.value, str):
+                    attributes["mcp_remote_headers_resolution"] = "dynamic"
+                    break
+                header_names.append(key.value)
+            else:
+                attributes["mcp_remote_header_names"] = sorted(set(header_names), key=str.casefold)
+                if any(name.casefold() == "authorization" for name in header_names):
+                    auth_sources.add("authorization-header")
+        elif isinstance(headers_node, ast.Name):
+            attributes["mcp_remote_headers_binding"] = headers_node.id
+        else:
+            attributes["mcp_remote_headers_resolution"] = "dynamic"
+
+    auth_node = params_entries.get("auth")
+    if auth_node is not None and not (
+        isinstance(auth_node, ast.Constant) and auth_node.value is None
+    ):
+        attributes["mcp_remote_auth"] = "configured"
+        auth_sources.add("auth-param")
+        if isinstance(auth_node, ast.Name):
+            attributes["mcp_remote_auth_binding"] = auth_node.id
+        else:
+            attributes["mcp_remote_auth_resolution"] = "dynamic"
+
+    httpx_client_factory_node = params_entries.get("httpx_client_factory")
+    if httpx_client_factory_node is not None:
+        attributes["mcp_remote_http_client_factory"] = "configured"
+        if isinstance(httpx_client_factory_node, ast.Name):
+            attributes["mcp_remote_http_client_factory_binding"] = httpx_client_factory_node.id
+        else:
+            attributes["mcp_remote_http_client_factory_resolution"] = "dynamic"
+
+    if auth_sources:
+        attributes["mcp_remote_auth_sources"] = sorted(auth_sources)
+    return attributes
+
+
 def literal_string_arguments(node: ast.AST | None) -> list[str | None] | None:
     """Return a literal-preserving argument sequence, including an unresolved suffix."""
     if isinstance(node, (ast.List, ast.Tuple)):
@@ -6791,6 +6848,7 @@ class PythonVisitor(ast.NodeVisitor):
         *,
         name: str,
         url_node: ast.AST | None,
+        params_entries: dict[str, ast.AST] | None,
         constructor: str,
         transport: str,
         analysis: str,
@@ -6809,6 +6867,7 @@ class PythonVisitor(ast.NodeVisitor):
             attributes.update(sanitized_mcp_url_attributes(url_node.value))
         else:
             attributes["url_resolution"] = "unresolved"
+        attributes.update(python_mcp_remote_auth_attributes(params_entries))
         if resolution := self.mcp_server_binding_resolutions.get(id(node)):
             attributes["binding_resolution"] = resolution
         self.ir.add_component(
@@ -8572,6 +8631,7 @@ class PythonVisitor(ast.NodeVisitor):
                     node,
                     name=server_name,
                     url_node=url_node,
+                    params_entries=params_entries,
                     constructor=constructor,
                     transport=PYTHON_MCP_REMOTE_SERVER_TRANSPORTS[constructor],
                     analysis="python-import-bound-mcp-constructor",
