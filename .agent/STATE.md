@@ -27,8 +27,8 @@ catalog workflows.
   for `MCPServerStdio(...)`, `MCPServerSse(...)`, `MCPServerStreamableHttp(...)`, and imported
   subclasses of exact `agents.mcp.MCPServer`, including literal never/always booleans, same-block
   literal string/dict bindings, selective tool-list policies, dynamic bindings, report-safe remote
-  URL metadata, and OpenAI-vs-lookalike import separation. Regenerated public IR truth-set results
-  now cover 2,396/2,396 passing labels.
+  URL metadata, OpenAI-vs-lookalike import separation, and pinned OpenAI SDK remote transport
+  corpus labels. Regenerated public IR truth-set results now cover 2,398/2,398 passing labels.
 - Added exact TypeScript OpenAI Agents SDK Agent guardrail tripwire metadata for direct returned
   `tripwireTriggered` objects in inline guardrails and stable typed `InputGuardrail`/
   `OutputGuardrail` bindings. Regenerated public IR truth-set results then covered 2,387/2,387
