@@ -14833,6 +14833,56 @@ def test_python_agent_mcp_servers_require_exact_direct_literal_bindings() -> Non
     assert optional_server.symbol_id is None
 
 
+def test_python_openai_mcp_server_approval_policy_is_exact() -> None:
+    ir = scan_repository(ROOT / "cases/python_openai_mcp_approval_policy")
+
+    servers = {
+        component.evidence.line: component
+        for component in ir.components
+        if component.kind == "mcp-server" and component.evidence.path == "app.py"
+    }
+    assert set(servers) == {20, 24, 28, 32, 36}
+    for line in (20, 24, 28, 32):
+        assert servers[line].attributes["mcp_approval_contract"] == (
+            "openai-agents-python-mcp-server"
+        )
+        assert servers[line].attributes["mcp_approval_source"] == "callsite-require-approval"
+        assert servers[line].attributes["mcp_approval_constructor"] == "MCPServerStdio"
+
+    assert servers[20].attributes["mcp_approval_policy"] == "disabled-explicit"
+    assert servers[20].attributes["mcp_approval_requirement"] == "never"
+    assert servers[20].attributes["approval_policy"] == "disabled-explicit"
+
+    assert servers[24].attributes["mcp_approval_binding"] == "require_approval"
+    assert servers[24].attributes["mcp_approval_resolution"] == "same-block-literal-string"
+    assert servers[24].attributes["mcp_approval_policy"] == "always-required"
+    assert servers[24].attributes["mcp_approval_requirement"] == "always"
+
+    assert servers[28].attributes["mcp_approval_binding"] == "selective_policy"
+    assert servers[28].attributes["mcp_approval_resolution"] == "same-block-literal"
+    assert servers[28].attributes["mcp_approval_policy"] == "selective"
+    assert servers[28].attributes["mcp_approval_never_tool_names"] == ["read_file"]
+    assert servers[28].attributes["mcp_approval_never_read_only"] is True
+    assert servers[28].attributes["mcp_approval_always_tool_names"] == ["write_file"]
+
+    assert servers[32].attributes["mcp_approval_binding"] == "dynamic_policy"
+    assert servers[32].attributes["mcp_approval_policy"] == "dynamic"
+
+    assert "mcp_approval_policy" not in servers[36].attributes
+
+    subclass_server = next(
+        component
+        for component in ir.components
+        if component.kind == "mcp-server" and component.evidence.path == "subclass_app.py"
+    )
+    assert subclass_server.evidence.line == 7
+    assert subclass_server.attributes["analysis"] == "python-imported-mcp-server-subclass"
+    assert subclass_server.attributes["adapter_base_module"] == "agents.mcp.server"
+    assert subclass_server.attributes["mcp_approval_constructor"] == "ProjectMCPServer"
+    assert subclass_server.attributes["mcp_approval_policy"] == "always-required"
+    assert subclass_server.attributes["mcp_approval_requirement"] is True
+
+
 def test_mcp_package_launchers_require_literal_mcp_structure_and_auto_install() -> None:
     ir = scan_repository(ROOT / "cases/mcp_package_launchers")
     servers = [component for component in ir.components if component.kind == "mcp-server"]

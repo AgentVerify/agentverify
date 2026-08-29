@@ -1,5 +1,22 @@
 # AgentVerify decisions
 
+## Python OpenAI MCP server approval remains IR inventory until risk-scoped reporting evidence exists
+
+- Decision: Record exact non-hosted OpenAI Agents Python MCP server `require_approval` call-site
+  semantics as IR metadata, not a new user-facing reporting rule yet.
+- Evidence: The SDK implementation and tests show `require_approval` can be disabled, always
+  required, selective, or callable/dynamic. The scanner can now prove direct `MCPServerStdio` calls
+  and imported subclasses of exact `agents.mcp.MCPServer`, while keeping `local_mcp` lookalikes out
+  of OpenAI-specific approval semantics. Current validated labels are local/source-shape coverage;
+  a noisy review rule for examples or tests would overstate production risk without additional
+  real production cases.
+- Alternative: Immediately flag disabled/non-always MCP server approval as a high-severity rule.
+  Rejected because explicit `"never"` can be appropriate for trusted/read-only servers and because
+  a user-facing finding should be scoped to reachable risky capabilities or production evidence.
+- Revisit when: AgentVerify can connect these call-site policies to discovered mutating MCP
+  capabilities or when pinned production repositories show disabled approval on reachable local MCP
+  tools.
+
 ## Rule catalog is a machine contract
 
 - Decision: Treat the runtime rule catalog as an externally consumable schema-versioned contract.

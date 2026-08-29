@@ -816,6 +816,14 @@ MCP_LAUNCHER_CONSTRUCTORS = {
     "StdioServerParameters",
 }
 MCP_IN_PROCESS_SERVER_CONSTRUCTORS = {"FastMCP"}
+OPENAI_AGENTS_MCP_SERVER_CONSTRUCTORS = frozenset(
+    {
+        "MCPServer",
+        "MCPServerSse",
+        "MCPServerStdio",
+        "MCPServerStreamableHttp",
+    }
+)
 
 
 def is_mcp_server_constructor_module(module: str, constructor: str) -> bool:
@@ -1047,30 +1055,22 @@ def python_dict_like_entries(node: ast.AST | None) -> dict[str, ast.AST] | None:
     return None
 
 
-def python_openai_hosted_mcp_approval_attributes(
-    call: ast.Call,
-    resolve_literal_string_binding: Callable[[ast.Name], tuple[str, str] | None],
+def python_openai_mcp_require_approval_attributes(
+    require_approval: ast.AST | None,
+    resolve_literal_binding: Callable[[ast.Name], tuple[ast.AST, str] | None],
 ) -> dict[str, object]:
-    """Resolve exact Python OpenAI HostedMCPTool tool_config approval metadata."""
-    tool_config = next(
-        (keyword.value for keyword in call.keywords if keyword.arg == "tool_config"),
-        None,
-    )
-    config_entries = python_dict_like_entries(tool_config)
-    if config_entries is None:
-        return {}
-    require_approval = config_entries.get("require_approval")
+    """Resolve OpenAI Agents SDK MCP require_approval metadata."""
     if require_approval is None:
         return {}
 
     attributes: dict[str, object] = {}
     if isinstance(require_approval, ast.Name):
         attributes["mcp_approval_binding"] = require_approval.id
-        resolved = resolve_literal_string_binding(require_approval)
+        resolved = resolve_literal_binding(require_approval)
         if resolved is None:
             attributes["mcp_approval_policy"] = "dynamic"
             return attributes
-        require_approval = ast.Constant(value=resolved[0])
+        require_approval = resolved[0]
         attributes["mcp_approval_resolution"] = resolved[1]
 
     if isinstance(require_approval, ast.Constant):
@@ -1127,6 +1127,24 @@ def python_openai_hosted_mcp_approval_attributes(
     if always_names:
         attributes["mcp_approval_always_tool_names"] = sorted(always_names)
     return attributes
+
+
+def python_openai_hosted_mcp_approval_attributes(
+    call: ast.Call,
+    resolve_literal_binding: Callable[[ast.Name], tuple[ast.AST, str] | None],
+) -> dict[str, object]:
+    """Resolve exact Python OpenAI HostedMCPTool tool_config approval metadata."""
+    tool_config = next(
+        (keyword.value for keyword in call.keywords if keyword.arg == "tool_config"),
+        None,
+    )
+    config_entries = python_dict_like_entries(tool_config)
+    if config_entries is None:
+        return {}
+    return python_openai_mcp_require_approval_attributes(
+        config_entries.get("require_approval"),
+        resolve_literal_binding,
+    )
 
 
 OPENHANDS_BUILTIN_TOOL_CAPABILITIES = {
@@ -6297,6 +6315,7 @@ class PythonVisitor(ast.NodeVisitor):
         module_literal_string_sets: dict[str, tuple[str, ...]],
         approval_bypass_function_summaries: dict[str, tuple[str, ...]],
         computer_safety_check_function_summaries: dict[tuple[tuple[str, ...], str], str],
+        openai_mcp_approval_call_attributes: dict[int, dict[str, object]],
     ) -> None:
         self.ir = ir
         self.root = root
@@ -6348,6 +6367,7 @@ class PythonVisitor(ast.NodeVisitor):
         self.module_literal_string_sets = module_literal_string_sets
         self.approval_bypass_function_summaries = approval_bypass_function_summaries
         self.computer_safety_check_function_summaries = computer_safety_check_function_summaries
+        self.openai_mcp_approval_call_attributes = openai_mcp_approval_call_attributes
         self.function_stack: list[str] = []
         self.function_depth = 0
         self.imported_symbol_paths: dict[str, str] = {}
@@ -6723,6 +6743,7 @@ class PythonVisitor(ast.NodeVisitor):
             "analysis": analysis,
             "frontend": "python",
             "scope": source_scope(self.path),
+            **self.openai_mcp_approval_call_attributes.get(id(node), {}),
         }
         if command is not None:
             attributes["command"] = command
@@ -10628,7 +10649,7 @@ def scan_python(
         else {}
     )
 
-    def same_block_literal_string_binding(name: ast.Name) -> tuple[str, str] | None:
+    def same_block_literal_binding(name: ast.Name) -> tuple[ast.AST, str] | None:
         block_info = enclosing_statement_block(name)
         if block_info is None:
             return None
@@ -10648,8 +10669,13 @@ def scan_python(
             if (
                 isinstance(target, ast.Name)
                 and target.id == name.id
-                and isinstance(value, ast.Constant)
-                and isinstance(value.value, str)
+                and (
+                    (
+                        isinstance(value, ast.Constant)
+                        and isinstance(value.value, (str, bool))
+                    )
+                    or python_dict_like_entries(value) is not None
+                )
                 and not any(
                     name.id in statement_mutations(candidate)
                     for candidate in block[index + 1 : use_index]
@@ -10658,7 +10684,13 @@ def scan_python(
                 matches.append((index, value))
         if len(matches) != 1:
             return None
-        return matches[0][1].value, "same-block-literal-string"
+        value = matches[0][1]
+        resolution = (
+            "same-block-literal-string"
+            if isinstance(value, ast.Constant) and isinstance(value.value, str)
+            else "same-block-literal"
+        )
+        return value, resolution
 
     def exact_agents_hosted_mcp_tool_call(call: ast.Call) -> bool:
         constructor = dotted_name(call.func)
@@ -10677,7 +10709,7 @@ def scan_python(
     def hosted_mcp_tool_attributes(call: ast.Call) -> dict[str, object]:
         attributes = python_openai_hosted_mcp_approval_attributes(
             call,
-            same_block_literal_string_binding,
+            same_block_literal_binding,
         )
         if not attributes:
             return attributes
@@ -11006,6 +11038,53 @@ def scan_python(
         and import_binding_counts[name] == 1
         and nonimport_binding_counts[name] == 0
     }
+
+    openai_mcp_constructor_bindings = {
+        name: constructor
+        for name, statement in imported_mcp_constructors.items()
+        if (statement.module or "") in {"agents.mcp", "agents.mcp.server"}
+        and (constructor := imported_mcp_constructor_names.get(name))
+        in OPENAI_AGENTS_MCP_SERVER_CONSTRUCTORS
+    }
+
+    def openai_mcp_server_constructor(call: ast.Call) -> str | None:
+        if not isinstance(call.func, ast.Name):
+            return None
+        if constructor := openai_mcp_constructor_bindings.get(call.func.id):
+            return constructor
+        adapter = imported_mcp_adapter_constructors.get(call.func.id)
+        if adapter is None:
+            return None
+        target = adapter[0]
+        if (
+            target.base_name == "MCPServer"
+            and target.base_module in {"agents.mcp", "agents.mcp.server"}
+        ):
+            return target.name
+        return None
+
+    openai_mcp_approval_call_attributes: dict[int, dict[str, object]] = {}
+    for call in (candidate for candidate in nodes if isinstance(candidate, ast.Call)):
+        if (constructor := openai_mcp_server_constructor(call)) is None:
+            continue
+        require_approval = next(
+            (keyword.value for keyword in call.keywords if keyword.arg == "require_approval"),
+            None,
+        )
+        attributes = python_openai_mcp_require_approval_attributes(
+            require_approval,
+            same_block_literal_binding,
+        )
+        if attributes:
+            attributes = {
+                **attributes,
+                "mcp_approval_source": "callsite-require-approval",
+                "mcp_approval_contract": "openai-agents-python-mcp-server",
+                "mcp_approval_constructor": constructor,
+                "approval_policy": attributes["mcp_approval_policy"],
+                "approval_source": "callsite-require-approval",
+            }
+            openai_mcp_approval_call_attributes[id(call)] = attributes
 
     local_tool_constructor_classes = {
         statement.name
@@ -11576,6 +11655,7 @@ def scan_python(
                     "analysis": "python-imported-mcp-server-subclass",
                     "frontend": "python",
                     "scope": source_scope(relative),
+                    **openai_mcp_approval_call_attributes.get(id(node.value), {}),
                 },
                 symbol_id,
             )
@@ -12716,6 +12796,7 @@ def scan_python(
             if "on_safety_check" in text and re.search(r"\b(?:from|import)\s+agents\b", text)
             else {}
         ),
+        openai_mcp_approval_call_attributes=openai_mcp_approval_call_attributes,
     ).visit(tree)
 
 

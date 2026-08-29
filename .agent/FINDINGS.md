@@ -5,6 +5,10 @@
 - The repository contains a 71-repository pinned research corpus and schema-v135 engine benchmark
   outputs.
 - The runtime catalog currently contains 25 enabled reporting rules.
+- Python OpenAI Agents SDK MCP approval metadata now covers both hosted `HostedMCPTool` tool configs
+  and non-hosted `MCPServerStdio`/exact-`MCPServer` subclass `require_approval` call sites. The
+  non-hosted check has 6 public IR labels (5 positive, 1 lookalike negative), and the full public IR
+  truth set passes 2,393/2,393.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
 - A freshly rebuilt wheel includes all fifteen runtime schemas; a verifier script now guards that
   package artifact expectation.
@@ -685,7 +689,7 @@
   contribute dynamic-expression or literal tripwire source counts; mutated arrays and settings-only
   sessions remain unresolved. The local fixture plus pinned OpenAI Agents JS
   `examples/docs/voice-agents/guardrails.ts` bring the Realtime guardrail truth-set slice to
-  18/18 labels within the 2,387-label public IR truth set.
+  18/18 labels within the then-current 2,387-label public IR truth set.
 - OpenAI Agents JS Agent-level input/output guardrails are now reviewable when source-proven.
   Exact `new Agent({ inputGuardrails })` and `new Agent({ outputGuardrails })` constructor options
   emit `agent-guardrail-policy` controls linked to the source agent, including
@@ -764,8 +768,16 @@
   always-required approval, shallow dict policies expose exact `always`/`never` tool-name lists and
   read-only hints, configured `on_approval_request` callbacks are callback-controlled, and dynamic
   bindings remain binding-only metadata. The local fixture plus pinned OpenAI Agents Python and
-  Composio hosted MCP examples cover 9/9 labels, bringing the public IR truth set to 2,387 passing
-  labels.
+  Composio hosted MCP examples cover 9/9 labels, bringing the then-current public IR truth set to
+  2,387 passing labels.
+- Python OpenAI Agents SDK non-hosted MCP server `require_approval` call sites are now visible on
+  exact `agents.mcp.MCPServerStdio` components and imported subclasses whose base is exactly
+  `agents.mcp.MCPServer` / `agents.mcp.server.MCPServer`. Literal `"never"`/`False` records
+  disabled approval, literal `"always"`/`True` records always-required approval, same-block literal
+  bindings retain source resolution, shallow selective dict policies expose exact always/never
+  tool-name lists and read-only hints, dynamic bindings stay dynamic, and OpenAI-shaped imports from
+  other MCP modules do not inherit OpenAI-specific approval semantics. The local fixture covers 6/6
+  labels, bringing the public IR truth set to 2,393 passing labels.
 
 ## Hypotheses
 
