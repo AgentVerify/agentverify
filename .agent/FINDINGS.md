@@ -15,8 +15,10 @@
   named-reexported, producer-star-reexported, and consumer-star-imported whole `tool_config`
   dictionaries while mutated configs remain dynamic. Ordered local multi-star imports resolve to the
   later visible literal source, and same-file direct approval callbacks returning
-  `{"approve": request... <literal>}` now record exact handler predicate metadata. The Python
-  non-hosted server check has 21
+  `{"approve": request... <literal>}` now record exact handler predicate metadata. Same-function
+  result-binding callbacks such as the pinned OpenAI hosted MCP `on_approval.py` example now record
+  the approval result binding, approve binding, and call source, without claiming the called helper's
+  internals when its source is absent. The Python non-hosted server check has 21
   public IR labels (19 positive, 2 lookalike negatives), including imported, named-reexported,
   producer-star-reexported, and consumer-star-imported local literal approval policies and redacted
   remote auth/header/client-factory metadata, with ordered local multi-star imports resolving to the

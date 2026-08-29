@@ -3218,6 +3218,57 @@ def test_python_openai_hosted_mcp_approval_callback_shadow_stays_unresolved(
     assert "mcp_approval_handler_resolution" not in tool.attributes
 
 
+def test_python_openai_hosted_mcp_approval_callback_result_binding_is_exact(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "agent.py").write_text(
+        textwrap.dedent(
+            """
+            from agents import Agent, HostedMCPTool
+
+            def confirm_with_fallback(message, default=False):
+                return default
+
+            def prompt_approval(request):
+                approved = confirm_with_fallback(
+                    f"Approve running {request.data.name}?",
+                    default=True,
+                )
+                result = {"approve": approved}
+                if not approved:
+                    result["reason"] = "User denied"
+                return result
+
+            def build_agent():
+                return Agent(
+                    name='result binding callback',
+                    tools=[
+                        HostedMCPTool(
+                            tool_config={'type': 'mcp', 'require_approval': 'always'},
+                            on_approval_request=prompt_approval,
+                        )
+                    ],
+                )
+            """
+        )
+    )
+    ir = scan_repository(tmp_path)
+    tool = next(
+        component
+        for component in ir.components
+        if component.kind == "tool"
+        and component.attributes.get("constructor") == "HostedMCPTool"
+    )
+    assert tool.attributes["mcp_approval_handler_resolution"] == (
+        "same-file-result-binding-approval-dict-return"
+    )
+    assert tool.attributes["mcp_approval_handler_result_binding"] == "result"
+    assert tool.attributes["mcp_approval_handler_approve_binding"] == "approved"
+    assert tool.attributes["mcp_approval_handler_decision"] == "dynamic-callback-result"
+    assert tool.attributes["mcp_approval_handler_approve_source"] == "call-result"
+    assert tool.attributes["mcp_approval_handler_approve_call"] == "confirm_with_fallback"
+
+
 def test_python_computer_tool_has_exact_agent_and_capability_identity() -> None:
     ir = scan_repository(ROOT / "cases/python_computer_tool")
     tools = [

@@ -27,7 +27,8 @@ catalog workflows.
   dict policies, imported local literal policies, named local reexported literal policies, consumer
   star-imported literal policies, imported, named-reexported, or producer-star-reexported literal
   whole `tool_config` dictionaries, and consumer-star-imported `tool_config` dictionaries,
-  configured approval callbacks with exact same-file direct approval-dict return predicates,
+  configured approval callbacks with exact same-file direct approval-dict return predicates and
+  exact same-function result-binding approval dictionaries from the pinned OpenAI example,
   dynamic/imported-mutated bindings, dynamic imported/reexported-mutated `tool_config` bindings, and
   exact ordered local multi-star imports when the later visible source is literal, plus exact hosted
   MCP capability edges. The public IR truth set now covers 2,429/2,429 passing labels.

@@ -1462,7 +1462,7 @@ def python_openai_hosted_mcp_approval_attributes(
 def python_openai_hosted_mcp_approval_callback_attributes(
     function: ast.FunctionDef | ast.AsyncFunctionDef,
 ) -> dict[str, object]:
-    """Resolve exact direct-return HostedMCPTool approval callback metadata."""
+    """Resolve exact same-function HostedMCPTool approval callback metadata."""
     parameters = [*function.args.posonlyargs, *function.args.args]
     if not parameters:
         return {}
@@ -1476,34 +1476,6 @@ def python_openai_hosted_mcp_approval_callback_attributes(
             and isinstance(statement.value.value, str)
         )
     ]
-    if len(body) != 1 or not isinstance(body[0], ast.Return) or body[0].value is None:
-        return {}
-    return_value = body[0].value
-    entries = python_dict_like_entries(return_value)
-    if entries is None:
-        return {}
-    approve_expression = entries.get("approve")
-    if approve_expression is None:
-        return {}
-    attributes: dict[str, object] = {
-        "mcp_approval_handler_resolution": "same-file-direct-approval-dict-return"
-    }
-    if isinstance(approve_expression, ast.Constant) and isinstance(
-        approve_expression.value, bool
-    ):
-        attributes["mcp_approval_handler_decision"] = (
-            "always-approve" if approve_expression.value else "always-reject"
-        )
-        return attributes
-    if not (
-        isinstance(approve_expression, ast.Compare)
-        and len(approve_expression.ops) == 1
-        and len(approve_expression.comparators) == 1
-        and isinstance(approve_expression.ops[0], (ast.Eq, ast.NotEq))
-        and isinstance(approve_expression.comparators[0], ast.Constant)
-        and isinstance(approve_expression.comparators[0].value, (str, int, bool))
-    ):
-        return {}
 
     def request_field_path(node: ast.AST) -> str | None:
         parts: list[str] = []
@@ -1515,25 +1487,133 @@ def python_openai_hosted_mcp_approval_callback_attributes(
             return None
         return ".".join(reversed(parts)) or None
 
-    field = request_field_path(approve_expression.left)
-    if field is None:
+    def assignment_value(statement: ast.stmt, name: str) -> ast.AST | None:
+        if (
+            isinstance(statement, ast.Assign)
+            and len(statement.targets) == 1
+            and isinstance(statement.targets[0], ast.Name)
+            and statement.targets[0].id == name
+        ):
+            return statement.value
+        if (
+            isinstance(statement, ast.AnnAssign)
+            and isinstance(statement.target, ast.Name)
+            and statement.target.id == name
+            and statement.value is not None
+        ):
+            return statement.value
+        return None
+
+    def mutates_approve_key(statement: ast.stmt, result_name: str) -> bool:
+        for node in ast.walk(statement):
+            if not (
+                isinstance(node, ast.Subscript)
+                and isinstance(node.ctx, (ast.Store, ast.Del))
+                and isinstance(node.value, ast.Name)
+                and node.value.id == result_name
+                and isinstance(node.slice, ast.Constant)
+            ):
+                continue
+            if node.slice.value == "approve":
+                return True
+        return False
+
+    def expression_attributes(
+        approve_expression: ast.AST,
+        resolution: str,
+        extra: dict[str, object] | None = None,
+    ) -> dict[str, object]:
+        attributes: dict[str, object] = {"mcp_approval_handler_resolution": resolution}
+        if extra:
+            attributes.update(extra)
+        if isinstance(approve_expression, ast.Constant) and isinstance(
+            approve_expression.value, bool
+        ):
+            attributes["mcp_approval_handler_decision"] = (
+                "always-approve" if approve_expression.value else "always-reject"
+            )
+            return attributes
+        if (
+            isinstance(approve_expression, ast.Call)
+            and (call_name := dotted_name(approve_expression.func))
+        ):
+            attributes["mcp_approval_handler_decision"] = "dynamic-callback-result"
+            attributes["mcp_approval_handler_approve_source"] = "call-result"
+            attributes["mcp_approval_handler_approve_call"] = call_name
+            return attributes
+        if not (
+            isinstance(approve_expression, ast.Compare)
+            and len(approve_expression.ops) == 1
+            and len(approve_expression.comparators) == 1
+            and isinstance(approve_expression.ops[0], (ast.Eq, ast.NotEq))
+            and isinstance(approve_expression.comparators[0], ast.Constant)
+            and isinstance(approve_expression.comparators[0].value, (str, int, bool))
+        ):
+            return {}
+        field = request_field_path(approve_expression.left)
+        if field is None:
+            return {}
+        predicate = (
+            "request-field-equals-literal"
+            if isinstance(approve_expression.ops[0], ast.Eq)
+            else "request-field-not-equals-literal"
+        )
+        attributes.update(
+            {
+                "mcp_approval_handler_decision": "conditional-approve",
+                "mcp_approval_handler_predicate": predicate,
+                "mcp_approval_handler_predicate_field": field,
+                "mcp_approval_handler_predicate_values": [
+                    approve_expression.comparators[0].value
+                ],
+            }
+        )
+        return attributes
+
+    if not body or not isinstance(body[-1], ast.Return) or body[-1].value is None:
         return {}
-    predicate = (
-        "request-field-equals-literal"
-        if isinstance(approve_expression.ops[0], ast.Eq)
-        else "request-field-not-equals-literal"
+    return_value = body[-1].value
+    entries = python_dict_like_entries(return_value)
+    if entries is not None and "approve" in entries and len(body) == 1:
+        return expression_attributes(
+            entries["approve"],
+            "same-file-direct-approval-dict-return",
+        )
+
+    if not isinstance(return_value, ast.Name):
+        return {}
+    result_name = return_value.id
+    result_assignments = [
+        (index, value)
+        for index, statement in enumerate(body[:-1])
+        if (value := assignment_value(statement, result_name)) is not None
+    ]
+    if len(result_assignments) != 1:
+        return {}
+    result_index, result_value = result_assignments[0]
+    entries = python_dict_like_entries(result_value)
+    if entries is None or "approve" not in entries:
+        return {}
+    if any(mutates_approve_key(statement, result_name) for statement in body[result_index + 1 : -1]):
+        return {}
+    approve_expression = entries["approve"]
+    extra: dict[str, object] = {"mcp_approval_handler_result_binding": result_name}
+    if isinstance(approve_expression, ast.Name):
+        approve_name = approve_expression.id
+        approve_assignments = [
+            (index, value)
+            for index, statement in enumerate(body[:result_index])
+            if (value := assignment_value(statement, approve_name)) is not None
+        ]
+        if len(approve_assignments) != 1:
+            return {}
+        approve_expression = approve_assignments[0][1]
+        extra["mcp_approval_handler_approve_binding"] = approve_name
+    return expression_attributes(
+        approve_expression,
+        "same-file-result-binding-approval-dict-return",
+        extra,
     )
-    attributes.update(
-        {
-            "mcp_approval_handler_decision": "conditional-approve",
-            "mcp_approval_handler_predicate": predicate,
-            "mcp_approval_handler_predicate_field": field,
-            "mcp_approval_handler_predicate_values": [
-                approve_expression.comparators[0].value
-            ],
-        }
-    )
-    return attributes
 
 
 OPENHANDS_BUILTIN_TOOL_CAPABILITIES = {
