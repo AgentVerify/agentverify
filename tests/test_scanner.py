@@ -4768,6 +4768,7 @@ def test_typescript_openai_agent_guardrail_policy_is_exact() -> None:
         "ts:agent.ts#control:supportAgent.inputGuardrails@75",
         "ts:agent.ts#control:assistantAgent.outputGuardrails@84",
         "ts:agent.ts#control:supportAgent.inputGuardrails@87",
+        "ts:agent.ts#control:throwingAgent.inputGuardrails@108",
     }
     assert controls["ts:agent.ts#control:supportAgent.inputGuardrails@26"].attributes == {
         "analysis": "typescript-openai-agents-agent-guardrails",
@@ -4858,6 +4859,12 @@ def test_typescript_openai_agent_guardrail_policy_is_exact() -> None:
         "guardrail_bindings": ["dynamicAssignedGuardrails"],
         "guardrail_update": "property-assignment",
     }
+    assert controls["ts:agent.ts#control:throwingAgent.inputGuardrails@108"].attributes[
+        "guardrail_execution_outcomes"
+    ] == ["direct-throw"]
+    assert controls["ts:agent.ts#control:throwingAgent.inputGuardrails@108"].attributes[
+        "guardrail_direct_throw_count"
+    ] == 1
 
     edges = {
         relationship.target_id: relationship
@@ -4897,6 +4904,9 @@ def test_typescript_openai_agent_guardrail_policy_is_exact() -> None:
         "guardrail_tripwire_count": 1,
         "guardrail_literal_false_tripwire_count": 1,
     }
+    assert edges["ts:agent.ts#control:throwingAgent.inputGuardrails@108"].attributes[
+        "guardrail_execution_outcomes"
+    ] == ["direct-throw"]
 
 
 def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:

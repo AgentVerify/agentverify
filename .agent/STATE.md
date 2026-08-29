@@ -9,9 +9,12 @@ catalog workflows.
 
 - Added exact TypeScript OpenAI Agents SDK Agent guardrail tripwire metadata for direct returned
   `tripwireTriggered` objects in inline guardrails and stable typed `InputGuardrail`/
-  `OutputGuardrail` bindings. Regenerated public IR truth-set results now cover 2,335/2,335
+  `OutputGuardrail` bindings. Regenerated public IR truth-set results now cover 2,341/2,341
   passing labels, and the 71-repository engine benchmark still reports 2,900 relationships /
   10,689 symbolized components.
+- Added exact TypeScript OpenAI Agents SDK Agent guardrail direct-throw metadata for stable guardrail
+  bindings whose `execute` body directly throws, including official `GuardrailExecutionError`
+  fallback examples.
 - Added exact TypeScript OpenAI RealtimeSession output guardrail tripwire metadata for direct
   returned `tripwireTriggered` objects in inline and typed `RealtimeOutputGuardrail[]` bindings,
   including typed `RealtimeSessionOptions` spreads, while mutated arrays and settings-only

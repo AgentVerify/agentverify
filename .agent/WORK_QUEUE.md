@@ -113,8 +113,9 @@
   guardrail arrays, helper-created guardrails, cross-file guardrail assignment helpers, or richer
   predicate/action semantics beyond direct returned `tripwireTriggered` source classification.
   Constructor `inputGuardrails`/`outputGuardrails`, stable same-file post-construction property
-  assignments, and direct literal-vs-computed tripwire metadata are now inventoried; dynamic arrays,
-  mutated bindings, and rebound agents should remain binding-only or unresolved.
+  assignments, direct literal-vs-computed tripwire metadata, and first-statement direct-throw
+  metadata are now inventoried; dynamic arrays, mutated bindings, and rebound agents should remain
+  binding-only or unresolved.
 - Explore richer OpenAI Agents JS tool guardrails only if evidence stays exact: imported literal
   guardrail arrays, helper-created tool guardrails, additional action/tripwire metadata, or
   source-agent composition edges that connect guarded tools back to agents without overclaiming

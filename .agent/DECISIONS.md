@@ -949,6 +949,23 @@
 - Revisit when helper-created guardrails, imported guardrail bindings, or richer predicate semantics
   can be resolved without broad callback interpretation.
 
+## OpenAI Agents JS Agent guardrail direct throws are failure-mode metadata
+
+- Decision: Record `guardrail_execution_outcomes: ["direct-throw"]` and
+  `guardrail_direct_throw_count` on exact TypeScript OpenAI Agents SDK Agent guardrail controls only
+  when a stable inline or typed guardrail `execute` body has `throw` as its first direct statement.
+  Do not infer throwing behavior through dynamic arrays, mutated bindings, nested branches, or
+  arbitrary exception flows.
+- Evidence: The local `typescript_openai_agent_guardrails` fixture includes a stable typed
+  `InputGuardrail` whose `execute` directly throws. The pinned OpenAI Agents JS
+  `examples/docs/running-agents/exceptions1.ts` file defines unstable input and output guardrails
+  that directly throw before fallback guardrails are installed after `GuardrailExecutionError`.
+- Alternative: Treat any caught `GuardrailExecutionError` as evidence that the configured guardrail
+  throws. Rejected because errors can arise from external calls, runtime state, or different
+  guardrails; the IR should stay tied to the exact configured guardrail source.
+- Revisit when exception behavior can be tied to helper-created or imported guardrails without
+  broad control-flow interpretation.
+
 ## OpenAI Agents JS tool guardrails are source-tool governance controls
 
 - Decision: Represent exact TypeScript OpenAI Agents SDK

@@ -17333,6 +17333,8 @@ def add_typescript_openai_agent_guardrail_control(
         "guardrail_literal_false_tripwire_count",
         "guardrail_literal_true_tripwire_count",
         "guardrail_dynamic_tripwire_count",
+        "guardrail_execution_outcomes",
+        "guardrail_direct_throw_count",
     ):
         if key in attributes:
             relationship_attributes[key] = attributes[key]
@@ -21650,6 +21652,29 @@ def typescript_graph(
             return {}
         execute_code = typescript_code_mask(execute_expression)
         tripwire_sources: list[str] = []
+        execution_outcomes: list[str] = []
+
+        def maybe_add_direct_throw(expression: str) -> None:
+            expression_code = typescript_code_mask(expression)
+            opening = len(expression_code) - len(expression_code.lstrip())
+            if opening >= len(expression_code):
+                return
+            if expression_code[opening] == "{":
+                end = typescript_balanced_end(expression_code, opening, "{", "}")
+                if end is None:
+                    return
+                body_code = expression_code[opening + 1 : end - 1]
+            else:
+                arrow_match = re.search(r"=>\s*\{", expression_code)
+                if arrow_match is None:
+                    return
+                arrow_opening = expression_code.find("{", arrow_match.start())
+                end = typescript_balanced_end(expression_code, arrow_opening, "{", "}")
+                if end is None:
+                    return
+                body_code = expression_code[arrow_opening + 1 : end - 1]
+            if re.match(r"\s*throw\b", body_code):
+                execution_outcomes.append("direct-throw")
 
         def add_tripwire_source(returned_object: str) -> None:
             tripwire_expression = typescript_object_property_expression(
@@ -21680,12 +21705,14 @@ def typescript_graph(
             if end is not None:
                 add_tripwire_source(execute_expression[opening:end])
 
-        if not tripwire_sources:
+        maybe_add_direct_throw(execute_expression)
+
+        if not tripwire_sources and not execution_outcomes:
             return {}
-        attributes: dict[str, object] = {
-            "guardrail_tripwire_sources": tripwire_sources,
-            "guardrail_tripwire_count": len(tripwire_sources),
-        }
+        attributes: dict[str, object] = {}
+        if tripwire_sources:
+            attributes["guardrail_tripwire_sources"] = tripwire_sources
+            attributes["guardrail_tripwire_count"] = len(tripwire_sources)
         literal_false_count = tripwire_sources.count("literal-false")
         literal_true_count = tripwire_sources.count("literal-true")
         dynamic_count = tripwire_sources.count("dynamic-expression")
@@ -21695,6 +21722,11 @@ def typescript_graph(
             attributes["guardrail_literal_true_tripwire_count"] = literal_true_count
         if dynamic_count:
             attributes["guardrail_dynamic_tripwire_count"] = dynamic_count
+        if execution_outcomes:
+            attributes["guardrail_execution_outcomes"] = execution_outcomes
+            direct_throw_count = execution_outcomes.count("direct-throw")
+            if direct_throw_count:
+                attributes["guardrail_direct_throw_count"] = direct_throw_count
         return attributes
 
     def openai_agent_guardrail_item_tripwire_attributes(
@@ -21777,6 +21809,7 @@ def typescript_graph(
         guardrail_names: list[str] = []
         guardrail_bindings: list[str] = list(attributes.get("guardrail_bindings", []))
         guardrail_tripwire_sources: list[str] = []
+        guardrail_execution_outcomes: list[str] = []
         for item, item_offset in concrete_items:
             guardrail_name, guardrail_binding = openai_agent_guardrail_item_name(
                 item,
@@ -21797,6 +21830,11 @@ def typescript_graph(
                 guardrail_tripwire_sources.extend(
                     source for source in tripwire_sources if isinstance(source, str)
                 )
+            execution_outcomes = tripwire_attributes.get("guardrail_execution_outcomes")
+            if isinstance(execution_outcomes, list):
+                guardrail_execution_outcomes.extend(
+                    outcome for outcome in execution_outcomes if isinstance(outcome, str)
+                )
         if guardrail_bindings:
             attributes["guardrail_bindings"] = guardrail_bindings
         if guardrail_names:
@@ -21814,6 +21852,11 @@ def typescript_graph(
                 attributes["guardrail_literal_true_tripwire_count"] = literal_true_count
             if dynamic_count:
                 attributes["guardrail_dynamic_tripwire_count"] = dynamic_count
+        if guardrail_execution_outcomes:
+            attributes["guardrail_execution_outcomes"] = guardrail_execution_outcomes
+            direct_throw_count = guardrail_execution_outcomes.count("direct-throw")
+            if direct_throw_count:
+                attributes["guardrail_direct_throw_count"] = direct_throw_count
         return attributes
 
     def realtime_api_key_fetch_bindings() -> dict[str, tuple[dict[str, object], int]]:

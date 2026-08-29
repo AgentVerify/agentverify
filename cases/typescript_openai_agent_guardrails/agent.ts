@@ -95,3 +95,15 @@ reboundAgent = new Agent({
 reboundAgent.inputGuardrails = [fallbackInputGuardrail];
 
 looseAgent.inputGuardrails = [fallbackInputGuardrail];
+
+const throwingInputGuardrail: InputGuardrail = {
+  name: "Fail closed input guardrail",
+  async execute() {
+    throw new Error("Input guardrail failed");
+  },
+};
+
+const throwingAgent = new Agent({
+  name: "Throwing guardrail agent",
+  inputGuardrails: [throwingInputGuardrail],
+});
