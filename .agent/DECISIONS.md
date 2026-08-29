@@ -801,8 +801,10 @@
   `RealtimeAgent` passed as the session's first constructor argument. Emit only for exact imported
   `RealtimeAgent` and `RealtimeSession` constructors plus direct boolean, string, or literal
   string-array values, including audio input/output formats and
-  `audio.input.transcription.{model, delay, languages}`; keep dynamic config values and unresolved
-  session-agent arguments unresolved.
+  `audio.input.transcription.{model, delay, prompt, keywords, languages}`; keep dynamic config
+  values and unresolved session-agent arguments unresolved. Do not persist full transcription prompt
+  text in IR attributes; record literal prompt presence and length only, alongside literal keyword
+  arrays and counts.
 - Evidence: The local realtime-session fixture covers false, true, and dynamic negative
   `parallelToolCalls` values plus a direct low `reasoning.effort` value and a literal
   `outputModalities: ["audio"]` value with a dynamic-modality negative, plus a literal audio
@@ -811,14 +813,13 @@
   `config.outputModalities: ['audio']`, `config.reasoning.effort: 'low'`, and
   `config.parallelToolCalls: true`, plus `audio.input.format: 'pcm16'`,
   `audio.output.format: 'pcm16'`, `audio.input.transcription.model: 'gpt-live-transcribe'`,
-  `audio.input.transcription.delay: 'low'`, and transcription languages `['en', 'ja']` for the
-  `Greeter` RealtimeAgent.
+  `audio.input.transcription.delay: 'low'`, transcription prompt length, transcription keywords,
+  and transcription languages `['en', 'ja']` for the `Greeter` RealtimeAgent.
 - Alternative: Fold realtime session config into Agent-level `model-settings-policy`. Rejected
   because `RealtimeSession` configuration is a different constructor scope from `Agent.modelSettings`
   and should not imply the same inheritance or override semantics.
-- Revisit when other RealtimeSession config fields such as transcription prompts/keywords,
-  turn detection, or tool choice can be tied to source-proven realtime agents without broad
-  option-object matching.
+- Revisit when other RealtimeSession config fields such as turn detection or tool choice can be tied
+  to source-proven realtime agents without broad option-object matching.
 
 ## OpenAI Agents JS web-search scope is tool/provider policy metadata
 

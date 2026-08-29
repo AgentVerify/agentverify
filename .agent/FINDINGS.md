@@ -627,11 +627,13 @@
   examples bring the public IR truth set to 2,210 passing labels.
 - OpenAI Realtime session-level `parallelToolCalls` concurrency, `config.reasoning.effort`, literal
   `config.outputModalities`, audio input/output formats, and audio transcription model/delay/
-  languages are now separately reviewable when source-proven. Exact
+  languages plus transcription prompt/keywords are now separately reviewable when source-proven.
+  Exact prompt content is not retained; controls record literal prompt presence and length plus
+  literal keyword arrays/counts. Exact
   `RealtimeSession(agent, { config: { parallelToolCalls, outputModalities, audio, reasoning } })`
   settings emit `realtime-session-config-policy` controls linked to the resolved `RealtimeAgent`;
   dynamic scalar and array values remain unresolved. The local fixture plus pinned OpenAI Agents JS
-  `configureSession.ts` voice-agent example bring the public IR truth set to 2,225 passing labels.
+  `configureSession.ts` voice-agent example bring the public IR truth set to 2,227 passing labels.
 
 ## Hypotheses
 

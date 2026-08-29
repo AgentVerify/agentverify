@@ -701,6 +701,11 @@ catalog workflows.
   one session config control. Focused RealtimeSession config labels pass 9/9, full public IR labels
   pass 2,219/2,219, and the full schema-v152 engine benchmark refresh passes 71/71 repositories
   with 2,859 relationships and 10,643 symbolized components.
+- Extended OpenAI Realtime `RealtimeSession` audio transcription config inventory to exact literal
+  prompts and keywords on the same source-proven session config policy. The IR records literal
+  prompt presence and length, not prompt content, plus literal keyword arrays/counts; dynamic prompt
+  and keyword bindings remain unresolved. Focused RealtimeSession config labels pass 17/17 and full
+  public IR labels pass 2,227/2,227.
 
 ## Current findings
 
@@ -818,7 +823,7 @@ catalog workflows.
   `modelSettings.parallelToolCalls` values expose `model-settings-policy` controls. Exact imported
   RealtimeSession config with `parallelToolCalls`, `reasoning.effort`, literal
   `outputModalities`, literal audio input/output formats, and literal audio transcription
-  model/delay/languages exposes
+  model/delay/languages plus privacy-preserving prompt/keyword metadata exposes
   `realtime-session-config-policy` controls linked to source-proven RealtimeAgents. Exact imported
   `withTrace` callbacks containing
   source-proven SDK `run(agent, ...)` calls, exact Runner instances with source-proven
@@ -854,7 +859,7 @@ semantics distinct from trace-correlation `withTrace(..., { groupId/traceId })` 
   exact Agent-level `modelSettings.reasoning.effort`, `modelSettings.text.verbosity`, and
   `modelSettings.parallelToolCalls` metadata, plus exact RealtimeSession `config.parallelToolCalls`,
   `config.reasoning.effort`, literal `config.outputModalities`, audio input/output format, and
-  audio transcription model/delay/languages policy. For OpenAI
+  audio transcription model/delay/languages plus privacy-preserving prompt/keyword policy. For OpenAI
 approval work, keep literal always-approval, callback-controlled
 approval on generic tools/delegated tools/approval-capable builtin tools, delegated-agent adapter
 approval metadata, literal predicate metadata, SDK state approval decisions, helper-parameter

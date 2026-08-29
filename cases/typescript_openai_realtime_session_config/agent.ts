@@ -4,6 +4,7 @@ const dynamicParallelToolCalls = Boolean(process.env.REALTIME_PARALLEL_TOOL_CALL
 const dynamicOutputModalities = ["audio"];
 const dynamicAudioFormat = process.env.REALTIME_AUDIO_FORMAT;
 const dynamicTranscriptionLanguages = ["en"];
+const dynamicTranscriptionKeywords = ["OpenAI Agents SDK"];
 
 const greeter = new RealtimeAgent({
   name: "Realtime greeter",
@@ -43,6 +44,8 @@ export const audioDetailsSession = new RealtimeSession(greeter, {
         transcription: {
           model: "gpt-live-transcribe",
           delay: "low",
+          prompt: "A software support conversation about the OpenAI Agents SDK.",
+          keywords: ["OpenAI Agents SDK", "RealtimeSession"],
           languages: ["en", "ja"],
         },
       },
@@ -62,6 +65,8 @@ export const dynamicSession = new RealtimeSession(greeter, {
         format: dynamicAudioFormat,
         transcription: {
           model: process.env.REALTIME_TRANSCRIPTION_MODEL,
+          prompt: process.env.REALTIME_TRANSCRIPTION_PROMPT,
+          keywords: dynamicTranscriptionKeywords,
           languages: dynamicTranscriptionLanguages,
         },
       },

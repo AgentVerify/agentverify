@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-29T00:12:37.872856+00:00",
+  "generated_at": "2026-08-29T00:39:14.693732+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "0abf797bd5761eaabcbc361003bbaf51630b580634e37567c9bf17e80e49d1df",
+    "labels_sha256": "66712c6192aafd2b29f63ccfd8113723b0cdb0355e473bcf22dd594dd9756517",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 2225,
-  "passed": 2225,
+  "labels": 2227,
+  "passed": 2227,
   "failed": 0,
   "failure_summary": {
     "observation_mismatch": 0,
@@ -629,7 +629,7 @@
     "IR-TS-OPENAI-REALTIME-SESSION-CONFIG": {
       "tp": 12,
       "fp": 0,
-      "tn": 3,
+      "tn": 5,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -19947,6 +19947,24 @@
     },
     {
       "id": "typescript-openai-realtime-session-transcription-model-dynamic-local-negative",
+      "check_id": "IR-TS-OPENAI-REALTIME-SESSION-CONFIG",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-realtime-session-transcription-prompt-dynamic-local-negative",
+      "check_id": "IR-TS-OPENAI-REALTIME-SESSION-CONFIG",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-realtime-session-transcription-keywords-dynamic-local-negative",
       "check_id": "IR-TS-OPENAI-REALTIME-SESSION-CONFIG",
       "expected": false,
       "observed": false,

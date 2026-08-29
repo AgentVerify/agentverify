@@ -17285,6 +17285,8 @@ def add_typescript_openai_realtime_session_config_control(
     transcription_model: str | None,
     transcription_delay: str | None,
     transcription_languages: list[str] | None,
+    transcription_prompt_length: int | None,
+    transcription_keywords: list[str] | None,
     symbol_identity: str,
 ) -> tuple[str, str]:
     """Add exact OpenAI Agents JS RealtimeSession config governance evidence."""
@@ -17319,6 +17321,12 @@ def add_typescript_openai_realtime_session_config_control(
         attributes["transcription_delay"] = transcription_delay
     if transcription_languages is not None:
         attributes["transcription_languages"] = transcription_languages
+    if transcription_prompt_length is not None:
+        attributes["transcription_prompt_literal"] = True
+        attributes["transcription_prompt_length"] = transcription_prompt_length
+    if transcription_keywords is not None:
+        attributes["transcription_keywords"] = transcription_keywords
+        attributes["transcription_keyword_count"] = len(transcription_keywords)
     ir.add_component(
         Component(
             "control",
@@ -21232,6 +21240,31 @@ def typescript_graph(
             transcription_languages, transcription_languages_offset, _ = (
                 transcription_languages_location
             )
+        transcription_prompt_length = None
+        transcription_prompt_offset = None
+        transcription_prompt_location = (
+            typescript_literal_nested_object_string_property_location(
+                config_expression,
+                body_offset=config_offset,
+                path=("audio", "input", "transcription", "prompt"),
+            )
+        )
+        if transcription_prompt_location is not None:
+            transcription_prompt, transcription_prompt_offset, _ = transcription_prompt_location
+            transcription_prompt_length = len(transcription_prompt)
+        transcription_keywords = None
+        transcription_keywords_offset = None
+        transcription_keywords_location = (
+            typescript_literal_nested_object_string_array_property_location(
+                config_expression,
+                body_offset=config_offset,
+                path=("audio", "input", "transcription", "keywords"),
+            )
+        )
+        if transcription_keywords_location is not None:
+            transcription_keywords, transcription_keywords_offset, _ = (
+                transcription_keywords_location
+            )
         parallel_tool_calls = None
         parallel_property_offset = None
         parallel_tool_calls_location = typescript_object_property_expression_location(
@@ -21253,6 +21286,8 @@ def typescript_graph(
             and transcription_model is None
             and transcription_delay is None
             and transcription_languages is None
+            and transcription_prompt_length is None
+            and transcription_keywords is None
         ):
             continue
         policy_offset = min(
@@ -21264,6 +21299,8 @@ def typescript_graph(
                 audio_output_format_offset,
                 transcription_model_offset,
                 transcription_delay_offset,
+                transcription_prompt_offset,
+                transcription_keywords_offset,
                 transcription_languages_offset,
                 parallel_property_offset,
             )
@@ -21286,6 +21323,8 @@ def typescript_graph(
             transcription_model=transcription_model,
             transcription_delay=transcription_delay,
             transcription_languages=transcription_languages,
+            transcription_prompt_length=transcription_prompt_length,
+            transcription_keywords=transcription_keywords,
             symbol_identity=f"{session_name}.config@{policy_line}",
         )
         agent_name, agent_id = source_agent
@@ -21311,6 +21350,12 @@ def typescript_graph(
             config_attributes["transcription_delay"] = transcription_delay
         if transcription_languages is not None:
             config_attributes["transcription_languages"] = transcription_languages
+        if transcription_prompt_length is not None:
+            config_attributes["transcription_prompt_literal"] = True
+            config_attributes["transcription_prompt_length"] = transcription_prompt_length
+        if transcription_keywords is not None:
+            config_attributes["transcription_keywords"] = transcription_keywords
+            config_attributes["transcription_keyword_count"] = len(transcription_keywords)
         ir.add_relationship(
             Relationship(
                 "agent",
