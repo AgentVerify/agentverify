@@ -7,6 +7,10 @@ catalog workflows.
 
 ## Completed recently
 
+- Strengthened `agentverify benchmark verify-engine` so it now recomputes selected first-class
+  detector metric summaries from successful repository entries, starting with the OpenAI Agents JS
+  streaming-run and Codex-tool slices. The checked verification output now lists 33 aggregate fields
+  instead of only the 12 core file/relationship totals, and CLI tests cover metric-summary drift.
 - Exposed OpenAI Agents JS Codex extension tool inventory as a first-class engine benchmark metric.
   The 71-repository snapshot still passes 71/71 repositories with 2,975 relationships / 10,848
   symbolized components, and now includes `typescript_openai_codex_tool`: eight Codex-specific

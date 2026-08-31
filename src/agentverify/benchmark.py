@@ -31,6 +31,29 @@ CORE_ENGINE_TOTAL_FIELDS = (
     "parse_warnings",
     "suppressed_findings",
 )
+ENGINE_METRIC_SUMMARY_FIELDS = (
+    ("typescript_openai_run_streaming", "total"),
+    ("typescript_openai_run_streaming", "direct_run"),
+    ("typescript_openai_run_streaming", "runner_run"),
+    ("typescript_openai_run_streaming", "configured_by_edges"),
+    ("typescript_openai_run_streaming", "repositories"),
+    ("typescript_openai_codex_tool", "components"),
+    ("typescript_openai_codex_tool", "tools"),
+    ("typescript_openai_codex_tool", "controls"),
+    ("typescript_openai_codex_tool", "approval_policy_controls"),
+    ("typescript_openai_codex_tool", "thread_option_controls"),
+    ("typescript_openai_codex_tool", "approval_policy_never"),
+    ("typescript_openai_codex_tool", "workspace_write_sandbox"),
+    ("typescript_openai_codex_tool", "network_access_enabled"),
+    ("typescript_openai_codex_tool", "web_search_disabled"),
+    ("typescript_openai_codex_tool", "stream_callbacks"),
+    ("typescript_openai_codex_tool", "run_context_thread_reuse"),
+    ("typescript_openai_codex_tool", "working_directory_literal"),
+    ("typescript_openai_codex_tool", "working_directory_binding"),
+    ("typescript_openai_codex_tool", "agent_tool_edges"),
+    ("typescript_openai_codex_tool", "configured_by_edges"),
+    ("typescript_openai_codex_tool", "repositories"),
+)
 BENCHMARK_VERIFICATION_ERRORS = (
     OSError,
     RuntimeError,
@@ -72,6 +95,14 @@ def load_engine_results_verification_schema() -> dict:
     schema = json.loads(render_schema("engine-results-verification"))
     Draft202012Validator.check_schema(schema)
     return schema
+
+
+def integer_metric_value(value: object, path: Path, field: str) -> int:
+    if isinstance(value, bool):
+        return int(value)
+    if isinstance(value, int):
+        return value
+    raise RuntimeError(f"{path}: {field} must be an integer or boolean")
 
 
 def outcome_metric_id(outcome: dict) -> str:
@@ -364,6 +395,29 @@ def verify_engine_results(
         total = sum(result[field] for result in repositories)
         if summary[field] != total:
             raise RuntimeError(f"{path}: summary.{field} does not match repository total")
+    checked_fields = list(CORE_ENGINE_TOTAL_FIELDS)
+    ok_repositories = [result for result in repositories if result.get("status") == "ok"]
+    for metric, field in ENGINE_METRIC_SUMMARY_FIELDS:
+        metric_field = f"{metric}.{field}"
+        try:
+            summary_value = integer_metric_value(summary[metric][field], path, f"summary.{metric_field}")
+        except KeyError as exc:
+            raise RuntimeError(f"{path}: summary.{metric_field} is missing") from exc
+        total = 0
+        for result in ok_repositories:
+            try:
+                value = result[metric][field]
+            except KeyError as exc:
+                repository = result.get("repository", "<unknown>")
+                raise RuntimeError(
+                    f"{path}: repository {repository} missing {metric_field}"
+                ) from exc
+            total += integer_metric_value(value, path, f"repository.{metric_field}")
+        if summary_value != total:
+            raise RuntimeError(
+                f"{path}: summary.{metric_field} does not match ok repository total"
+            )
+        checked_fields.append(metric_field)
 
     result = {
         "engine_results_verification_format": "AgentVerify Engine Results Verification",
@@ -377,7 +431,7 @@ def verify_engine_results(
         "successful": successful,
         "summary_repositories": summary["repositories"],
         "summary_successful": summary["successful"],
-        "aggregate_total_fields_checked": list(CORE_ENGINE_TOTAL_FIELDS),
+        "aggregate_total_fields_checked": checked_fields,
     }
     Draft202012Validator(load_engine_results_verification_schema()).validate(result)
     return result

@@ -22,6 +22,27 @@
     "ambiguous_repeated_binding_targets",
     "resolved_import_edges",
     "parse_warnings",
-    "suppressed_findings"
+    "suppressed_findings",
+    "typescript_openai_run_streaming.total",
+    "typescript_openai_run_streaming.direct_run",
+    "typescript_openai_run_streaming.runner_run",
+    "typescript_openai_run_streaming.configured_by_edges",
+    "typescript_openai_run_streaming.repositories",
+    "typescript_openai_codex_tool.components",
+    "typescript_openai_codex_tool.tools",
+    "typescript_openai_codex_tool.controls",
+    "typescript_openai_codex_tool.approval_policy_controls",
+    "typescript_openai_codex_tool.thread_option_controls",
+    "typescript_openai_codex_tool.approval_policy_never",
+    "typescript_openai_codex_tool.workspace_write_sandbox",
+    "typescript_openai_codex_tool.network_access_enabled",
+    "typescript_openai_codex_tool.web_search_disabled",
+    "typescript_openai_codex_tool.stream_callbacks",
+    "typescript_openai_codex_tool.run_context_thread_reuse",
+    "typescript_openai_codex_tool.working_directory_literal",
+    "typescript_openai_codex_tool.working_directory_binding",
+    "typescript_openai_codex_tool.agent_tool_edges",
+    "typescript_openai_codex_tool.configured_by_edges",
+    "typescript_openai_codex_tool.repositories"
   ]
 }
