@@ -43,6 +43,21 @@ const inlineAgent = new Agent<{ codexThreadId_engineer?: string }>({
   ],
 });
 
+const threadOptionsAgent = new Agent({
+  name: "Thread Options Codex reviewer",
+  instructions: "Use Codex without an explicit approval policy.",
+  tools: [
+    makeCodex({
+      sandboxMode: "workspace-write",
+      defaultThreadOptions: {
+        model: "gpt-5.4",
+        networkAccessEnabled: true,
+        webSearchEnabled: false,
+      },
+    }),
+  ],
+});
+
 const mutableCodex = makeCodex({
   sandboxMode: "workspace-write",
   defaultThreadOptions: {
@@ -60,4 +75,5 @@ function onCodexStream() {}
 
 void agent;
 void inlineAgent;
+void threadOptionsAgent;
 void mutableAgent;

@@ -7613,6 +7613,7 @@ def test_typescript_openai_agents_codex_tool_flow_is_exact() -> None:
     assert set(tools) == {
         "ts:agent.ts#tool:codex.codexTool",
         "ts:agent.ts#tool:inlineAgent.inlineCodexTool@29",
+        "ts:agent.ts#tool:threadOptionsAgent.inlineCodexTool@50",
     }
     assert tools["ts:agent.ts#tool:codex.codexTool"].attributes == {
         "analysis": "typescript-openai-agents-codex-tool",
@@ -7640,6 +7641,16 @@ def test_typescript_openai_agents_codex_tool_flow_is_exact() -> None:
     assert tools["ts:agent.ts#tool:inlineAgent.inlineCodexTool@29"].attributes[
         "use_run_context_thread_id"
     ] is True
+    assert (
+        "approval_policy"
+        not in tools["ts:agent.ts#tool:threadOptionsAgent.inlineCodexTool@50"].attributes
+    )
+    assert tools["ts:agent.ts#tool:threadOptionsAgent.inlineCodexTool@50"].attributes[
+        "network_access_enabled"
+    ] is True
+    assert tools["ts:agent.ts#tool:threadOptionsAgent.inlineCodexTool@50"].attributes[
+        "web_search_enabled"
+    ] is False
 
     controls = {
         component.symbol_id: component
@@ -7661,6 +7672,22 @@ def test_typescript_openai_agents_codex_tool_flow_is_exact() -> None:
     assert controls[
         "ts:agent.ts#control:inlineAgent.inlineCodexTool@29.defaultThreadOptions"
     ].attributes["tool_name"] == "codex_engineer"
+    thread_option_controls = {
+        component.symbol_id: component
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "codex-thread-options-policy"
+        and component.attributes.get("analysis") == "typescript-openai-agents-codex-tool"
+    }
+    assert set(thread_option_controls) == {
+        "ts:agent.ts#control:threadOptionsAgent.inlineCodexTool@50.defaultThreadOptions"
+    }
+    assert (
+        "approval_policy"
+        not in thread_option_controls[
+            "ts:agent.ts#control:threadOptionsAgent.inlineCodexTool@50.defaultThreadOptions"
+        ].attributes
+    )
 
     agent_edges = {
         (relationship.source_id, relationship.target_id): relationship
@@ -7675,6 +7702,10 @@ def test_typescript_openai_agents_codex_tool_flow_is_exact() -> None:
         (
             "ts:agent.ts#agent:inlineAgent",
             "ts:agent.ts#tool:inlineAgent.inlineCodexTool@29",
+        ),
+        (
+            "ts:agent.ts#agent:threadOptionsAgent",
+            "ts:agent.ts#tool:threadOptionsAgent.inlineCodexTool@50",
         ),
     }
     assert all("mutableAgent" not in source_id for source_id, _ in agent_edges)
@@ -7696,6 +7727,10 @@ def test_typescript_openai_agents_codex_tool_flow_is_exact() -> None:
             "ts:agent.ts#tool:inlineAgent.inlineCodexTool@29",
             "ts:agent.ts#control:inlineAgent.inlineCodexTool@29.defaultThreadOptions",
         ),
+        (
+            "ts:agent.ts#tool:threadOptionsAgent.inlineCodexTool@50",
+            "ts:agent.ts#control:threadOptionsAgent.inlineCodexTool@50.defaultThreadOptions",
+        ),
     }
     assert control_edges[
         (
@@ -7703,6 +7738,15 @@ def test_typescript_openai_agents_codex_tool_flow_is_exact() -> None:
             "ts:agent.ts#control:inlineAgent.inlineCodexTool@29.defaultThreadOptions",
         )
     ].attributes["use_run_context_thread_id"] is True
+    assert (
+        control_edges[
+            (
+                "ts:agent.ts#tool:threadOptionsAgent.inlineCodexTool@50",
+                "ts:agent.ts#control:threadOptionsAgent.inlineCodexTool@50.defaultThreadOptions",
+            )
+        ].target_name
+        == "codex-thread-options-policy"
+    )
 
 
 def test_typescript_openai_realtime_session_auth_policy_is_exact() -> None:
