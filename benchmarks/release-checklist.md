@@ -47,6 +47,9 @@ tooling that validates benchmark gate artifacts before publication.
 The checked
 [`examples/engine-results-verification.json`](../examples/engine-results-verification.json) file
 does the same for full-corpus engine metric snapshots.
+If release tooling also publishes editor or review-bot contracts, start from
+[`examples/github-editor-contracts.yml`](../examples/github-editor-contracts.yml) so the exported
+manifest, verifier output, schemas, and uploaded bundle are produced by the installed CLI.
 
 Before publishing public regression numbers:
 

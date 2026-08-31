@@ -40,6 +40,7 @@ REQUIRED_BENCHMARK_RESULT_FILES = frozenset(
     }
 )
 REQUIRED_BENCHMARK_WORKFLOW_FILE = "examples/github-benchmark-verify.yml"
+REQUIRED_EDITOR_CONTRACTS_WORKFLOW_FILE = "examples/github-editor-contracts.yml"
 REQUIRED_BENCHMARK_WORKFLOW_FRAGMENTS = frozenset(
     {
         "permissions:\n  contents: read",
@@ -81,11 +82,33 @@ REQUIRED_SOURCE_WORKFLOW_FRAGMENTS = {
             "category: agentverify",
         }
     ),
+    REQUIRED_EDITOR_CONTRACTS_WORKFLOW_FILE: frozenset(
+        {
+            "permissions:\n  contents: read",
+            "agentverify contracts",
+            "--output-dir agentverify-editor-contracts",
+            "--sample-root examples/safe_agent",
+            "--output agentverify-editor-contract-manifest.json",
+            "--verify-dir agentverify-editor-contracts",
+            "--output agentverify-editor-contract-verification.json",
+            "agentverify schema editor-contract-manifest",
+            "agentverify schema editor-contract-verification",
+            "Draft202012Validator(manifest_schema).validate(manifest)",
+            "Draft202012Validator(verification_schema).validate(verification)",
+            'verification.get("passed") is not True',
+            "actions/upload-artifact@v5",
+            "name: agentverify-editor-contracts",
+            "agentverify-editor-contracts",
+            "agentverify-editor-contract-manifest.json",
+            "agentverify-editor-contract-verification.json",
+        }
+    ),
 }
 FORBIDDEN_SOURCE_WORKFLOW_FRAGMENTS = {
     REQUIRED_BENCHMARK_WORKFLOW_FILE: FORBIDDEN_BENCHMARK_WORKFLOW_FRAGMENTS,
     "examples/github-policy-gate.yml": frozenset({"security-events: write"}),
     "examples/github-code-scanning.yml": frozenset({"--policy", "--fail-on"}),
+    REQUIRED_EDITOR_CONTRACTS_WORKFLOW_FILE: frozenset({"security-events: write"}),
 }
 REQUIRED_SOURCE_FILES = frozenset(
     {
@@ -112,6 +135,7 @@ REQUIRED_SOURCE_FILES = frozenset(
         "examples/github-benchmark-verify.yml",
         "examples/github-code-scanning.yml",
         "examples/github-code-scanning.sarif",
+        "examples/github-editor-contracts.yml",
         "examples/github-policy-gate.yml",
         "examples/org-policy.json",
         "examples/policy-trust-root.json",

@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CI_WORKFLOW = ROOT / ".github/workflows/ci.yml"
 GITHUB_BENCHMARK_VERIFY = ROOT / "examples/github-benchmark-verify.yml"
 GITHUB_CODE_SCANNING = ROOT / "examples/github-code-scanning.yml"
+GITHUB_EDITOR_CONTRACTS = ROOT / "examples/github-editor-contracts.yml"
 GITHUB_POLICY_GATE = ROOT / "examples/github-policy-gate.yml"
 SPEC = importlib.util.spec_from_file_location(
     "verify_distribution", ROOT / "scripts/verify_distribution.py"
@@ -201,6 +202,35 @@ def test_github_code_scanning_example_uploads_sarif_without_policy_gate() -> Non
         code_scanning_docs
     )
     assert "[GitHub code-scanning workflow](examples/github-code-scanning.yml)" in readme
+
+
+def test_github_editor_contracts_example_exports_and_verifies_contract_bundle() -> None:
+    workflow = GITHUB_EDITOR_CONTRACTS.read_text(encoding="utf-8")
+    editor_docs = (ROOT / "docs/editor-integration.md").read_text(encoding="utf-8")
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+
+    assert "permissions:\n  contents: read" in workflow
+    assert "security-events: write" not in workflow
+    assert "agentverify contracts" in workflow
+    assert "--output-dir agentverify-editor-contracts" in workflow
+    assert "--sample-root examples/safe_agent" in workflow
+    assert "--output agentverify-editor-contract-manifest.json" in workflow
+    assert "--verify-dir agentverify-editor-contracts" in workflow
+    assert "--output agentverify-editor-contract-verification.json" in workflow
+    assert "agentverify schema editor-contract-manifest" in workflow
+    assert "agentverify schema editor-contract-verification" in workflow
+    assert "Draft202012Validator(manifest_schema).validate(manifest)" in workflow
+    assert "Draft202012Validator(verification_schema).validate(verification)" in workflow
+    assert 'verification.get("passed") is not True' in workflow
+    assert "actions/upload-artifact@v5" in workflow
+    assert "name: agentverify-editor-contracts" in workflow
+    assert "python -m pip install agentverify==0.1.0" in workflow
+    assert "[`examples/github-editor-contracts.yml`](../examples/github-editor-contracts.yml)" in (
+        editor_docs
+    )
+    assert "[`examples/github-editor-contracts.yml`](examples/github-editor-contracts.yml)" in (
+        readme
+    )
 
 
 def test_github_benchmark_verify_example_is_read_only_and_exports_verifier_json() -> None:
@@ -459,6 +489,25 @@ def test_distribution_verifier_rejects_code_scanning_without_sarif_upload(
     )
 
     with pytest.raises(RuntimeError, match="github/codeql-action/upload-sarif@v4"):
+        verify_sdist(sdist)
+
+
+def test_distribution_verifier_rejects_editor_contracts_without_bundle_verification(
+    tmp_path: Path,
+) -> None:
+    sdist = tmp_path / "agentverify-0.1.0.tar.gz"
+    workflow_file = "examples/github-editor-contracts.yml"
+    workflow = (ROOT / workflow_file).read_text(encoding="utf-8").replace(
+        "--verify-dir agentverify-editor-contracts",
+        "--verify-dir unchecked-editor-contracts",
+    )
+    write_sdist(
+        sdist,
+        set(REQUIRED_SOURCE_FILES) | set(REQUIRED_BENCHMARK_RESULT_FILES),
+        file_contents={workflow_file: workflow},
+    )
+
+    with pytest.raises(RuntimeError, match="--verify-dir agentverify-editor-contracts"):
         verify_sdist(sdist)
 
 

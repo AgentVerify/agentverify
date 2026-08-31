@@ -94,8 +94,6 @@
 - Improve editor and CI integration examples beyond the installed `agentverify contracts` bundle:
   add SARIF/editor examples, policy-aware diagnostic grouping, or sample extension fixtures when
   they can be validated locally.
-- Improve installed CLI examples for benchmark verification and schema exports in CI/editor
-  workflows; policy-gate GitHub Actions now has a checked workflow example.
 - Profile and reduce the remaining full public IR truth-set runtime. Focused label filters,
   optional `--progress` timing, and explicit `--scan-label-paths` development scans now make
   detector-specific iteration measurable and fast for self-contained labels, but complete corpus

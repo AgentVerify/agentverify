@@ -1,0 +1,65 @@
+name: AgentVerify editor contracts
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  editor-contracts:
+    name: Export and verify editor contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: Install AgentVerify
+        run: python -m pip install agentverify==0.1.0
+      - name: Export editor contract bundle
+        run: >
+          agentverify contracts
+          --output-dir agentverify-editor-contracts
+          --sample-root examples/safe_agent
+          --output agentverify-editor-contract-manifest.json
+      - name: Verify exported contract bundle
+        run: >
+          agentverify contracts
+          --verify-dir agentverify-editor-contracts
+          --output agentverify-editor-contract-verification.json
+      - name: Validate contract JSON
+        run: |
+          agentverify schema editor-contract-manifest --output agentverify-editor-contract-manifest.schema.json
+          agentverify schema editor-contract-verification --output agentverify-editor-contract-verification.schema.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+
+          manifest_schema = json.loads(
+              Path("agentverify-editor-contract-manifest.schema.json").read_text()
+          )
+          manifest = json.loads(Path("agentverify-editor-contract-manifest.json").read_text())
+          Draft202012Validator(manifest_schema).validate(manifest)
+          verification_schema = json.loads(
+              Path("agentverify-editor-contract-verification.schema.json").read_text()
+          )
+          verification = json.loads(
+              Path("agentverify-editor-contract-verification.json").read_text()
+          )
+          Draft202012Validator(verification_schema).validate(verification)
+          if verification.get("passed") is not True:
+              raise SystemExit("AgentVerify editor contract verification failed")
+          PY
+      - name: Upload editor contract bundle
+        uses: actions/upload-artifact@v5
+        with:
+          name: agentverify-editor-contracts
+          path: |
+            agentverify-editor-contracts
+            agentverify-editor-contract-manifest.json
+            agentverify-editor-contract-verification.json

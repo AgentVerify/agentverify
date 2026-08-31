@@ -140,6 +140,10 @@
   `scripts/evaluate_truthset.py`. The benchmark-result schema allows the field for current
   artifacts while preserving compatibility with older result files, and verifier invariant checks
   reject the field if it disagrees with per-outcome pass status.
+- Editor/review-bot contract export now has a checked GitHub Actions example. The workflow uses only
+  read-only repository permissions, exports contracts with the installed CLI, validates both manifest
+  and verifier JSON against bundled schemas, verifies the artifact bundle before upload, and is
+  enforced by source-distribution workflow-fragment checks.
 - Benchmark verification now treats benchmark result aggregates as derived evidence: it rejects
   mismatches between `labels` and outcome count, `passed` and per-outcome pass status, or `metrics`
   and the expected/observed outcome matrix.

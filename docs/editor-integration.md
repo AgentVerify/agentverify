@@ -60,6 +60,12 @@ agentverify schema editor-contract-verification
 From a source checkout, `python scripts/export_editor_contracts.py` is a thin wrapper around the
 same installed package exporter.
 
+For GitHub Actions, start from the copyable
+[`examples/github-editor-contracts.yml`](../examples/github-editor-contracts.yml) workflow. It
+exports the bundle, writes the manifest and verification JSON as first-class artifacts, validates
+both JSON files against the installed schemas, and uploads the verified bundle for editor extension,
+review-bot, or custom CI bootstrap jobs.
+
 Editors should use `rule_id`, `result_kind`, `severity`, `confidence`, and `remediation` from the
 rules catalog when rendering diagnostics. Normal JSON reports preserve stable finding fingerprints,
 source evidence, Agent IR paths, suppression status, baseline summaries, policy summaries, and the

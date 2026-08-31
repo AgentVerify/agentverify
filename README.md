@@ -167,6 +167,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`examples/github-code-scanning.yml`](examples/github-code-scanning.yml) — copyable SARIF upload workflow
 - [`examples/github-code-scanning.sarif`](examples/github-code-scanning.sarif) — checked SARIF upload payload example
 - [`docs/editor-integration.md`](docs/editor-integration.md) — exportable schemas and rule catalog for editor/CI tooling
+- [`examples/github-editor-contracts.yml`](examples/github-editor-contracts.yml) — copyable editor-contract export workflow
 - [`docs/pre-commit.md`](docs/pre-commit.md) — local and tagged-release hook setup
 - [`docs/backlog.md`](docs/backlog.md) — prioritized issue-ready future work
 - [`benchmarks/engine-results.json`](benchmarks/engine-results.json) — full-corpus engine metrics
@@ -249,7 +250,10 @@ For editor or custom CI integrations, `agentverify contracts --sample-root examp
 exports the report schema, rules schema, current rules catalog, and optional sample report into a
 local artifact directory with a schema-backed digest manifest. `agentverify contracts --verify-dir`
 rechecks copied bundles before consumers load them, and its JSON result validates against
-`agentverify schema editor-contract-verification`. The editor guide also includes a checked
+`agentverify schema editor-contract-verification`. The copyable
+[`examples/github-editor-contracts.yml`](examples/github-editor-contracts.yml) workflow exports,
+schema-validates, verifies, and uploads that bundle as a CI artifact for editor or review-bot
+bootstrap jobs. The editor guide also includes a checked
 [`examples/editor-diagnostics.json`](examples/editor-diagnostics.json) mapping from AgentVerify
 findings to Language Server Protocol-style diagnostics.
 

@@ -7,6 +7,11 @@ catalog workflows.
 
 ## Completed recently
 
+- Added a copyable `examples/github-editor-contracts.yml` workflow for editor/review-bot
+  integrations. It exports editor contracts from the installed CLI, validates the manifest and
+  verification JSON against bundled schemas, verifies the copied bundle before upload, and ships as a
+  source-distribution-required workflow with regression tests for read-only permissions and required
+  command fragments.
 - Added optional top-level `all_labels_passed` to benchmark-result artifacts emitted by
   `scripts/evaluate_truthset.py` and accepted by the bundled benchmark-result schema. The verifier
   recomputes the boolean when present, so stale all-pass claims fail release checks without making
