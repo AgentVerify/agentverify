@@ -705,7 +705,7 @@ def test_cli_verifies_checked_in_benchmark_results(capsys) -> None:
         ),
         (
             "agent-ir",
-            2522,
+            2528,
             0,
             {
                 "observation_mismatch": 0,
@@ -765,10 +765,10 @@ def test_cli_benchmark_verify_summary_format(capsys) -> None:
         "Passed: true\n"
         "All labels passed: true\n"
         "Results: 2\n"
-        "Labels: 3252/3252 passed (0 failed)\n"
+        "Labels: 3258/3258 passed (0 failed)\n"
         "Digests: 2/2 ok\n"
         "- benchmarks/truthset-results.json: 730/730 passed, reporting-rules, public-regression\n"
-        "- benchmarks/ir-truthset-results.json: 2522/2522 passed, agent-ir, public-regression\n"
+        "- benchmarks/ir-truthset-results.json: 2528/2528 passed, agent-ir, public-regression\n"
     )
 
 

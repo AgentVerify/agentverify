@@ -7,6 +7,13 @@ catalog workflows.
 
 ## Completed recently
 
+- Extended exact TypeScript OpenAI Agents SDK Agent guardrail inventory through relative imported
+  typed `InputGuardrail[]` / `OutputGuardrail[]` const arrays, including exact named local
+  reexports. Imported guardrail controls now preserve literal names and `tripwireTriggered`
+  source counts on both the control and agent governance edge, while ambiguous two-source star
+  barrels remain binding-only. The local guardrail fixture now covers direct import, named
+  reexport, and ambiguous barrel negatives; focused guardrail labels pass 49/49, the full public
+  IR truth set passes 2,528/2,528, and benchmark verification confirms the refreshed digest.
 - Added opt-in source-validated scanner IR caching to `scripts/evaluate_truthset.py` via
   `--scan-cache-dir`. Cache entries are keyed by target, selected-path scope, scanned source-file
   digest, and AgentVerify package source digest, then rehydrate `RepositoryIR` from JSON only when

@@ -165,13 +165,14 @@
   direct session options, typed `RealtimeOutputGuardrail[]` const arrays, typed
   `RealtimeSessionOptions` spreads, literal names/counts, direct tripwire source counts, and
   `debounceTextLength`, with mutated arrays and dynamic settings bounded.
-- Explore richer OpenAI Agents JS Agent guardrails only if evidence stays exact: imported literal
-  guardrail arrays, helper-created guardrails, cross-file guardrail assignment helpers, or richer
-  predicate/action semantics beyond direct returned `tripwireTriggered` source classification.
-  Constructor `inputGuardrails`/`outputGuardrails`, stable same-file post-construction property
-  assignments, direct literal-vs-computed tripwire metadata, and first-statement direct-throw
-  metadata are now inventoried; dynamic arrays, mutated bindings, and rebound agents should remain
-  binding-only or unresolved.
+- Explore richer OpenAI Agents JS Agent guardrails only if evidence stays exact: helper-created
+  guardrails, imported helper-created guardrail arrays, cross-file guardrail assignment helpers, or
+  richer predicate/action semantics beyond direct returned `tripwireTriggered` source
+  classification. Constructor `inputGuardrails`/`outputGuardrails`, stable same-file
+  post-construction property assignments, direct literal-vs-computed tripwire metadata,
+  first-statement direct-throw metadata, and exact relative imported typed guardrail arrays
+  including named reexports are now inventoried; dynamic arrays, mutated bindings, ambiguous star
+  barrels, and rebound agents should remain binding-only or unresolved.
 - Explore richer OpenAI Agents JS tool guardrails only if evidence stays exact: imported literal
   guardrail arrays, helper-created tool guardrails, helper predicate calls, or imported guarded-tool
   composition edges without overclaiming dynamic tool lists. Direct

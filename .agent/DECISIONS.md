@@ -1391,6 +1391,24 @@
 - Revisit when exception behavior can be tied to helper-created or imported guardrails without
   broad control-flow interpretation.
 
+## OpenAI Agents JS imported Agent guardrail arrays require exact export provenance
+
+- Decision: Resolve TypeScript OpenAI Agents SDK Agent guardrail arrays across relative named imports
+  only when the imported binding points to a unique exported typed const array whose type is imported
+  from `@openai/agents` as `InputGuardrail` or `OutputGuardrail`. Preserve direct named local
+  reexports and unambiguous star reexports, but leave ambiguous duplicate star-barrel exports
+  binding-only.
+- Evidence: The local `typescript_openai_agent_guardrails` fixture now includes a direct imported
+  `InputGuardrail[]`, a named-reexported generic `OutputGuardrail<typeof schema>[]`, and an
+  ambiguous barrel exporting two `ambiguousInputGuardrails` definitions. Focused public labels pass
+  49/49, with positive imported controls carrying literal guardrail names/tripwire counts and
+  negative ambiguous labels proving those attributes are not over-resolved.
+- Alternative: Treat any imported array identifier as a guardrail list if its local name looks like
+  a guardrail. Rejected because barrels and reexports can conceal conflicting definitions, and the
+  analyzer should prefer binding-only evidence over stale or arbitrary cross-file attribution.
+- Revisit when helper-created imported guardrail arrays or cross-file guardrail assignment helpers
+  can be tied to exact source identity without broad data-flow interpretation.
+
 ## OpenAI Agents JS tool guardrail reject predicates are shallow condition metadata
 
 - Decision: Record `guardrail_reject_condition_sources` and

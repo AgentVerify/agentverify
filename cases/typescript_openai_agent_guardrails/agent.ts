@@ -3,6 +3,9 @@ import {
   InputGuardrail,
   OutputGuardrail,
 } from "@openai/agents";
+import { ambiguousInputGuardrails } from "./ambiguous-barrel";
+import { importedInputGuardrails } from "./guardrails";
+import { reexportedOutputGuardrails } from "./reexports";
 
 const typedInputGuardrail: InputGuardrail = {
   name: "Math homework guardrail",
@@ -106,4 +109,15 @@ const throwingInputGuardrail: InputGuardrail = {
 const throwingAgent = new Agent({
   name: "Throwing guardrail agent",
   inputGuardrails: [throwingInputGuardrail],
+});
+
+const importedGuardrailAgent = new Agent({
+  name: "Imported guardrail agent",
+  inputGuardrails: importedInputGuardrails,
+  outputGuardrails: reexportedOutputGuardrails,
+});
+
+const ambiguousImportedGuardrailAgent = new Agent({
+  name: "Ambiguous imported guardrail agent",
+  inputGuardrails: ambiguousInputGuardrails,
 });

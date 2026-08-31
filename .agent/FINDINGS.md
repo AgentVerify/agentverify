@@ -922,6 +922,14 @@
   `throw`. The local fixture and pinned OpenAI Agents JS `examples/docs/running-agents/exceptions1.ts`
   unstable input/output guardrails now distinguish guardrail failure/fallback setup from normal
   tripwire predicates, bringing the Agent guardrail truth-set slice to 43/43 labels.
+- OpenAI Agents JS Agent guardrails now resolve exact relative imported typed guardrail arrays.
+  Stable exported `InputGuardrail[]` / `OutputGuardrail[]` const arrays imported directly, or via
+  exact named local reexports, preserve guardrail names and direct `tripwireTriggered` metadata on
+  `new Agent({ inputGuardrails, outputGuardrails })` controls and governance edges. Ambiguous
+  barrels that can export the same guardrail binding from multiple modules remain binding-only, so
+  AgentVerify does not over-attribute names or literal tripwires across conflicting sources. The
+  local guardrail fixture raises the Agent guardrail truth-set slice to 49/49 labels and the full
+  public IR truth set to 2,528/2,528 labels.
 - OpenAI Agents JS tool guardrails now expose exact shallow reject-condition metadata when an
   `if` branch directly returns `rejectContent` behavior and the predicate uses a literal
   `.includes(...)` or literal string non-equality check. Local dynamic and mutated guardrail

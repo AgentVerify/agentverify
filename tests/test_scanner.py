@@ -6778,16 +6778,19 @@ def test_typescript_openai_agent_guardrail_policy_is_exact() -> None:
         if component.kind == "control" and component.name == "agent-guardrail-policy"
     }
     assert set(controls) == {
-        "ts:agent.ts#control:supportAgent.inputGuardrails@26",
-        "ts:agent.ts#control:assistantAgent.outputGuardrails@40",
-        "ts:agent.ts#control:mutableAgent.outputGuardrails@59",
-        "ts:agent.ts#control:dynamicAgent.inputGuardrails@65",
-        "ts:agent.ts#control:supportAgent.inputGuardrails@75",
-        "ts:agent.ts#control:assistantAgent.outputGuardrails@84",
-        "ts:agent.ts#control:supportAgent.inputGuardrails@87",
-        "ts:agent.ts#control:throwingAgent.inputGuardrails@108",
+        "ts:agent.ts#control:supportAgent.inputGuardrails@29",
+        "ts:agent.ts#control:assistantAgent.outputGuardrails@43",
+        "ts:agent.ts#control:mutableAgent.outputGuardrails@62",
+        "ts:agent.ts#control:dynamicAgent.inputGuardrails@68",
+        "ts:agent.ts#control:supportAgent.inputGuardrails@78",
+        "ts:agent.ts#control:assistantAgent.outputGuardrails@87",
+        "ts:agent.ts#control:supportAgent.inputGuardrails@90",
+        "ts:agent.ts#control:throwingAgent.inputGuardrails@111",
+        "ts:agent.ts#control:importedGuardrailAgent.inputGuardrails@116",
+        "ts:agent.ts#control:importedGuardrailAgent.outputGuardrails@117",
+        "ts:agent.ts#control:ambiguousImportedGuardrailAgent.inputGuardrails@122",
     }
-    assert controls["ts:agent.ts#control:supportAgent.inputGuardrails@26"].attributes == {
+    assert controls["ts:agent.ts#control:supportAgent.inputGuardrails@29"].attributes == {
         "analysis": "typescript-openai-agents-agent-guardrails",
         "module": "@openai/agents",
         "constructor": "Agent",
@@ -6807,31 +6810,31 @@ def test_typescript_openai_agent_guardrail_policy_is_exact() -> None:
         "guardrail_tripwire_count": 2,
         "guardrail_literal_false_tripwire_count": 2,
     }
-    assert controls["ts:agent.ts#control:assistantAgent.outputGuardrails@40"].attributes[
+    assert controls["ts:agent.ts#control:assistantAgent.outputGuardrails@43"].attributes[
         "guardrail_names"
     ] == ["Phone number guardrail"]
-    assert controls["ts:agent.ts#control:assistantAgent.outputGuardrails@40"].attributes[
+    assert controls["ts:agent.ts#control:assistantAgent.outputGuardrails@43"].attributes[
         "guardrail_tripwire_sources"
     ] == ["literal-false"]
-    assert controls["ts:agent.ts#control:assistantAgent.outputGuardrails@40"].attributes[
+    assert controls["ts:agent.ts#control:assistantAgent.outputGuardrails@43"].attributes[
         "guardrail_kind"
     ] == "output"
     assert "guardrail_names" not in controls[
-        "ts:agent.ts#control:mutableAgent.outputGuardrails@59"
+        "ts:agent.ts#control:mutableAgent.outputGuardrails@62"
     ].attributes
     assert "guardrail_tripwire_sources" not in controls[
-        "ts:agent.ts#control:mutableAgent.outputGuardrails@59"
+        "ts:agent.ts#control:mutableAgent.outputGuardrails@62"
     ].attributes
-    assert controls["ts:agent.ts#control:mutableAgent.outputGuardrails@59"].attributes[
+    assert controls["ts:agent.ts#control:mutableAgent.outputGuardrails@62"].attributes[
         "guardrail_bindings"
     ] == ["mutableOutputGuardrail"]
-    assert controls["ts:agent.ts#control:dynamicAgent.inputGuardrails@65"].attributes[
+    assert controls["ts:agent.ts#control:dynamicAgent.inputGuardrails@68"].attributes[
         "guardrail_source"
     ] == "binding"
     assert "guardrail_tripwire_sources" not in controls[
-        "ts:agent.ts#control:dynamicAgent.inputGuardrails@65"
+        "ts:agent.ts#control:dynamicAgent.inputGuardrails@68"
     ].attributes
-    assert controls["ts:agent.ts#control:supportAgent.inputGuardrails@75"].attributes == {
+    assert controls["ts:agent.ts#control:supportAgent.inputGuardrails@78"].attributes == {
         "analysis": "typescript-openai-agents-agent-guardrails",
         "module": "@openai/agents",
         "constructor": "Agent",
@@ -6852,16 +6855,16 @@ def test_typescript_openai_agent_guardrail_policy_is_exact() -> None:
         "guardrail_tripwire_count": 1,
         "guardrail_literal_false_tripwire_count": 1,
     }
-    assert controls["ts:agent.ts#control:assistantAgent.outputGuardrails@84"].attributes[
+    assert controls["ts:agent.ts#control:assistantAgent.outputGuardrails@87"].attributes[
         "guardrail_names"
     ] == ["Phone number fallback guardrail"]
-    assert controls["ts:agent.ts#control:assistantAgent.outputGuardrails@84"].attributes[
+    assert controls["ts:agent.ts#control:assistantAgent.outputGuardrails@87"].attributes[
         "guardrail_update"
     ] == "property-assignment"
-    assert controls["ts:agent.ts#control:assistantAgent.outputGuardrails@84"].attributes[
+    assert controls["ts:agent.ts#control:assistantAgent.outputGuardrails@87"].attributes[
         "guardrail_tripwire_sources"
     ] == ["literal-false"]
-    assert controls["ts:agent.ts#control:supportAgent.inputGuardrails@87"].attributes == {
+    assert controls["ts:agent.ts#control:supportAgent.inputGuardrails@90"].attributes == {
         "analysis": "typescript-openai-agents-agent-guardrails",
         "module": "@openai/agents",
         "constructor": "Agent",
@@ -6876,12 +6879,52 @@ def test_typescript_openai_agent_guardrail_policy_is_exact() -> None:
         "guardrail_bindings": ["dynamicAssignedGuardrails"],
         "guardrail_update": "property-assignment",
     }
-    assert controls["ts:agent.ts#control:throwingAgent.inputGuardrails@108"].attributes[
+    assert controls["ts:agent.ts#control:throwingAgent.inputGuardrails@111"].attributes[
         "guardrail_execution_outcomes"
     ] == ["direct-throw"]
-    assert controls["ts:agent.ts#control:throwingAgent.inputGuardrails@108"].attributes[
+    assert controls["ts:agent.ts#control:throwingAgent.inputGuardrails@111"].attributes[
         "guardrail_direct_throw_count"
     ] == 1
+    assert controls[
+        "ts:agent.ts#control:importedGuardrailAgent.inputGuardrails@116"
+    ].attributes == {
+        "analysis": "typescript-openai-agents-agent-guardrails",
+        "module": "@openai/agents",
+        "constructor": "Agent",
+        "imported_symbol": "Agent",
+        "configuration": "Agent.inputGuardrails",
+        "guardrail_kind": "input",
+        "guardrail_scope": "agent-input",
+        "source_agent": "Imported guardrail agent",
+        "source_agent_id": "ts:agent.ts#agent:importedGuardrailAgent",
+        "scope": "production",
+        "guardrail_source": "imported-local-typed-const-array",
+        "guardrail_bindings": ["importedInputGuardrails"],
+        "guardrail_count": 1,
+        "guardrail_names": ["Imported homework guardrail"],
+        "guardrail_name_count": 1,
+        "guardrail_tripwire_sources": ["literal-false"],
+        "guardrail_tripwire_count": 1,
+        "guardrail_literal_false_tripwire_count": 1,
+    }
+    assert controls[
+        "ts:agent.ts#control:importedGuardrailAgent.outputGuardrails@117"
+    ].attributes["guardrail_source"] == "imported-local-reexported-typed-const-array"
+    assert controls[
+        "ts:agent.ts#control:importedGuardrailAgent.outputGuardrails@117"
+    ].attributes["guardrail_names"] == ["Imported answer guardrail"]
+    assert controls[
+        "ts:agent.ts#control:importedGuardrailAgent.outputGuardrails@117"
+    ].attributes["guardrail_literal_true_tripwire_count"] == 1
+    assert controls[
+        "ts:agent.ts#control:ambiguousImportedGuardrailAgent.inputGuardrails@122"
+    ].attributes["guardrail_source"] == "binding"
+    assert "guardrail_names" not in controls[
+        "ts:agent.ts#control:ambiguousImportedGuardrailAgent.inputGuardrails@122"
+    ].attributes
+    assert "guardrail_tripwire_sources" not in controls[
+        "ts:agent.ts#control:ambiguousImportedGuardrailAgent.inputGuardrails@122"
+    ].attributes
 
     edges = {
         relationship.target_id: relationship
@@ -6892,7 +6935,7 @@ def test_typescript_openai_agent_guardrail_policy_is_exact() -> None:
         and relationship.target_name == "agent-guardrail-policy"
     }
     assert set(edges) == set(controls)
-    assert edges["ts:agent.ts#control:supportAgent.inputGuardrails@26"].attributes == {
+    assert edges["ts:agent.ts#control:supportAgent.inputGuardrails@29"].attributes == {
         "analysis": "typescript-openai-agents-agent-guardrails",
         "configuration": "Agent.inputGuardrails",
         "guardrail_kind": "input",
@@ -6906,7 +6949,7 @@ def test_typescript_openai_agent_guardrail_policy_is_exact() -> None:
         "guardrail_tripwire_count": 2,
         "guardrail_literal_false_tripwire_count": 2,
     }
-    assert edges["ts:agent.ts#control:supportAgent.inputGuardrails@75"].attributes == {
+    assert edges["ts:agent.ts#control:supportAgent.inputGuardrails@78"].attributes == {
         "analysis": "typescript-openai-agents-agent-guardrails",
         "configuration": "Agent.inputGuardrails",
         "guardrail_kind": "input",
@@ -6921,9 +6964,15 @@ def test_typescript_openai_agent_guardrail_policy_is_exact() -> None:
         "guardrail_tripwire_count": 1,
         "guardrail_literal_false_tripwire_count": 1,
     }
-    assert edges["ts:agent.ts#control:throwingAgent.inputGuardrails@108"].attributes[
+    assert edges["ts:agent.ts#control:throwingAgent.inputGuardrails@111"].attributes[
         "guardrail_execution_outcomes"
     ] == ["direct-throw"]
+    assert edges[
+        "ts:agent.ts#control:importedGuardrailAgent.inputGuardrails@116"
+    ].attributes["guardrail_source"] == "imported-local-typed-const-array"
+    assert edges[
+        "ts:agent.ts#control:importedGuardrailAgent.outputGuardrails@117"
+    ].attributes["guardrail_source"] == "imported-local-reexported-typed-const-array"
 
 
 def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:
