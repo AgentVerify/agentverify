@@ -12,7 +12,9 @@ catalog workflows.
   discover and recompute every flat summary metric field represented by per-repository entries. The
   checked verification output now lists 606 aggregate fields instead of only the 12 core
   file/relationship totals, including OpenAI streaming-run/Codex-tool slices and reporting-rule
-  finding counts; CLI tests cover metric-summary drift.
+  finding counts; CLI tests cover metric-summary drift. Added
+  `agentverify benchmark verify-engine --format summary` for compact human-facing CI logs while the
+  default remains JSON for release artifacts.
 - Exposed OpenAI Agents JS Codex extension tool inventory as a first-class engine benchmark metric.
   The 71-repository snapshot still passes 71/71 repositories with 2,975 relationships / 10,848
   symbolized components, and now includes `typescript_openai_codex_tool`: eight Codex-specific

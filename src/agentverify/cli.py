@@ -15,6 +15,7 @@ from .benchmark import (
     ENGINE_RESULTS_VERIFICATION_ERRORS,
     render_benchmark_verification,
     render_engine_results_verification,
+    render_engine_results_verification_summary,
     verify_benchmark_results,
     verify_engine_results,
 )
@@ -284,11 +285,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="engine-results schema; defaults to the AgentVerify bundled schema",
     )
     benchmark_verify_engine.add_argument(
+        "--format",
+        choices=("json", "summary"),
+        default="json",
+        help="verification output format; defaults to json",
+    )
+    benchmark_verify_engine.add_argument(
         "-o",
         "--output",
         type=Path,
         metavar="PATH",
-        help="write verification JSON to PATH instead of standard output",
+        help="write verification output to PATH instead of standard output",
     )
     holdout = subparsers.add_parser("holdout", help="validate holdout setup artifacts")
     holdout_subparsers = holdout.add_subparsers(dest="holdout_command", required=True)
@@ -426,7 +433,12 @@ def main(argv: list[str] | None = None) -> int:
             except ENGINE_RESULTS_VERIFICATION_ERRORS as error:
                 print(f"agentverify: engine-results verification failed: {error}", file=sys.stderr)
                 return 2
-            return emit_output(render_engine_results_verification(payload), args.output) or 0
+            rendered = (
+                render_engine_results_verification_summary(payload)
+                if args.format == "summary"
+                else render_engine_results_verification(payload)
+            )
+            return emit_output(rendered, args.output) or 0
         try:
             payload = verify_benchmark_results(
                 args.results,

@@ -118,7 +118,9 @@ anchor, and source-snippet mismatches. It can fail closed on release-claim requi
 `--require-all-passed`.
 `agentverify benchmark verify-engine` validates full-corpus engine metric snapshots against the
 bundled engine-results schema and checks that core summary totals plus flat per-repository detector
-metric totals match the packaged repository entries.
+metric totals match the packaged repository entries. Use
+`agentverify benchmark verify-engine --format summary` for compact CI logs while keeping JSON as the
+default machine-readable artifact format.
 Use `--format summary` for compact CI logs: it reports scan totals, baseline/policy status, counts by
 severity/result kind/rule, and the top evidence locations without printing the full component graph.
 `agentverify rules` lists every enabled reporting rule with its result kind, default severity,

@@ -812,6 +812,21 @@ def test_cli_benchmark_verify_engine_writes_output_file(tmp_path: Path, capsys) 
     Draft202012Validator(schema).validate(payload)
 
 
+def test_cli_benchmark_verify_engine_summary_format(capsys) -> None:
+    assert cli.main(["benchmark", "verify-engine", "--format", "summary"]) == 0
+
+    captured = capsys.readouterr()
+    assert captured.err == ""
+    assert captured.out == (
+        "AgentVerify Engine Results Verification\n"
+        "Result: benchmarks/engine-results.json\n"
+        "Passed: true\n"
+        "Repositories: 71/71 successful\n"
+        "Engine schema version: 159\n"
+        "Aggregate fields checked: 606 (12 core, 594 metric)\n"
+    )
+
+
 def test_checked_engine_results_verification_example_matches_cli_output(capsys) -> None:
     assert cli.main(["benchmark", "verify-engine"]) == 0
 

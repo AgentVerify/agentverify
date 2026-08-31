@@ -188,7 +188,9 @@ more named corpus repositories before paying the full-corpus cost; release evide
 the default unfiltered 71-repository run. `agentverify benchmark verify-engine` now recomputes 606
 aggregate fields: the 12 core aggregate fields plus every flat summary metric field represented by
 successful repository entries, so release checks fail if detector summaries drift from the packaged
-snapshot.
+snapshot. `agentverify benchmark verify-engine --format summary` provides a compact human-facing
+view of the same pass/fail state and checked-field count while the default JSON output remains the
+machine-readable release artifact.
 
 The locked collector prioritizes manifests, production SSRF/URL-safety sources, and then general
 security/agent/tool/MCP sources within the 220-file cap. It adds at most 20 local source files:

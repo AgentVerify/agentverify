@@ -460,3 +460,24 @@ def render_benchmark_verification(payload: dict[str, object]) -> str:
 
 def render_engine_results_verification(payload: dict[str, object]) -> str:
     return json.dumps(payload, indent=2) + "\n"
+
+
+def render_engine_results_verification_summary(payload: dict[str, object]) -> str:
+    fields = payload["aggregate_total_fields_checked"]
+    if not isinstance(fields, list):
+        raise TypeError("aggregate_total_fields_checked must be an array")
+    core_fields = [field for field in fields if field in CORE_ENGINE_TOTAL_FIELDS]
+    metric_fields = [field for field in fields if field not in CORE_ENGINE_TOTAL_FIELDS]
+    return "\n".join(
+        [
+            "AgentVerify Engine Results Verification",
+            f"Result: {payload['result']}",
+            f"Passed: {str(payload['passed']).lower()}",
+            f"Repositories: {payload['successful']}/{payload['repositories']} successful",
+            f"Engine schema version: {payload['engine_schema_version']}",
+            (
+                "Aggregate fields checked: "
+                f"{len(fields)} ({len(core_fields)} core, {len(metric_fields)} metric)"
+            ),
+        ]
+    ) + "\n"
