@@ -7,7 +7,7 @@ from pathlib import Path
 from jsonschema import Draft202012Validator
 
 from agentverify.benchmark import load_benchmark_result_schema, verify_result
-from agentverify.ir import RepositoryIR
+from agentverify.ir import Component, Evidence, RepositoryIR
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location(
@@ -279,6 +279,163 @@ def test_evaluator_summary_format_prints_compact_failure_breakdown(
     assert "failure_summary: observation_mismatch=1 anchor_mismatch=0 source_mismatch=0" in captured.out
     assert "failed_checks:" in captured.out
     assert "IR-MISSING: failed=1 tp=0 fp=0 tn=0 fn=1 precision=n/a recall=0.0" in captured.out
+
+
+def test_evaluator_scan_cache_reuses_source_validated_ir(
+    tmp_path: Path, monkeypatch, capsys
+) -> None:
+    target = tmp_path / "repo"
+    target.mkdir()
+    (target / "agent.py").write_text("agent = 'cached'\n", encoding="utf-8")
+    labels = tmp_path / "labels.json"
+    labels.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "labels": [
+                    {
+                        "id": "cached-agent",
+                        "target": {"kind": "local", "path": str(target)},
+                        "check_id": "IR-CACHE",
+                        "path": "agent.py",
+                        "line": 1,
+                        "expected": True,
+                        "component": {"kind": "agent", "name": "cached"},
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    scans: list[Path] = []
+
+    def fake_scan_repository(path: Path) -> RepositoryIR:
+        scans.append(path)
+        ir = RepositoryIR(str(path))
+        ir.add_component(Component("agent", "cached", Evidence("agent.py", 1, "agent = 'cached'")))
+        return ir
+
+    monkeypatch.setattr(evaluate_truthset, "scan_repository", fake_scan_repository)
+    cache_dir = tmp_path / "scan-cache"
+    first_output = tmp_path / "first.json"
+
+    assert (
+        evaluate_truthset.main(
+            [
+                "--labels",
+                str(labels),
+                "--output",
+                str(first_output),
+                "--scan-cache-dir",
+                str(cache_dir),
+                "--progress",
+                "--format",
+                "summary",
+            ]
+        )
+        == 0
+    )
+
+    first_streams = capsys.readouterr()
+    assert "cache=miss" in first_streams.err
+    assert len(list(cache_dir.glob("*.json"))) == 1
+
+    def fail_if_scanned(path: Path) -> RepositoryIR:
+        raise AssertionError(f"unexpected scan for {path}")
+
+    monkeypatch.setattr(evaluate_truthset, "scan_repository", fail_if_scanned)
+    second_output = tmp_path / "second.json"
+
+    assert (
+        evaluate_truthset.main(
+            [
+                "--labels",
+                str(labels),
+                "--output",
+                str(second_output),
+                "--scan-cache-dir",
+                str(cache_dir),
+                "--progress",
+                "--format",
+                "summary",
+            ]
+        )
+        == 0
+    )
+
+    second_streams = capsys.readouterr()
+    assert scans == [target]
+    assert "cache=hit" in second_streams.err
+    assert json.loads(second_output.read_text(encoding="utf-8"))["passed"] == 1
+
+
+def test_evaluator_scan_cache_invalidates_when_source_changes(
+    tmp_path: Path, monkeypatch, capsys
+) -> None:
+    target = tmp_path / "repo"
+    target.mkdir()
+    source = target / "agent.py"
+    source.write_text("agent = 'first'\n", encoding="utf-8")
+    labels = tmp_path / "labels.json"
+    labels.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "labels": [
+                    {
+                        "id": "cached-agent",
+                        "target": {"kind": "local", "path": str(target)},
+                        "check_id": "IR-CACHE",
+                        "path": "agent.py",
+                        "line": 1,
+                        "expected": True,
+                        "component": {"kind": "agent", "name": "fresh"},
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    scans = 0
+
+    def fake_scan_repository(path: Path) -> RepositoryIR:
+        nonlocal scans
+        scans += 1
+        ir = RepositoryIR(str(path))
+        ir.add_component(Component("agent", "fresh", Evidence("agent.py", 1, source.read_text())))
+        return ir
+
+    monkeypatch.setattr(evaluate_truthset, "scan_repository", fake_scan_repository)
+    cache_dir = tmp_path / "scan-cache"
+
+    assert (
+        evaluate_truthset.main(
+            ["--labels", str(labels), "--output", str(tmp_path / "first.json"), "--scan-cache-dir", str(cache_dir)]
+        )
+        == 0
+    )
+    assert scans == 1
+    assert "cache=" not in capsys.readouterr().err
+
+    source.write_text("agent = 'second'\n", encoding="utf-8")
+
+    assert (
+        evaluate_truthset.main(
+            [
+                "--labels",
+                str(labels),
+                "--output",
+                str(tmp_path / "second.json"),
+                "--scan-cache-dir",
+                str(cache_dir),
+                "--progress",
+            ]
+        )
+        == 0
+    )
+
+    assert scans == 2
+    assert "cache=miss" in capsys.readouterr().err
 
 
 def test_evaluator_can_scan_only_evaluated_label_paths_for_development(

@@ -122,3 +122,80 @@ class RepositoryIR:
         result = asdict(self)
         result["root"] = str(Path(self.root).resolve())
         return result
+
+    @classmethod
+    def from_dict(cls, payload: dict[str, Any]) -> RepositoryIR:
+        """Rehydrate a RepositoryIR produced by ``to_dict`` or ``render_json``."""
+
+        def evidence(value: dict[str, Any]) -> Evidence:
+            return Evidence(
+                path=str(value["path"]),
+                line=int(value["line"]),
+                excerpt=str(value.get("excerpt", "")),
+            )
+
+        def optional_string(value: Any) -> str | None:
+            return None if value is None else str(value)
+
+        ir = cls(
+            root=str(payload["root"]),
+            scan_scope=str(payload.get("scan_scope", "repository")),
+            path_filters=[str(item) for item in payload.get("path_filters", [])],
+            baseline_summary=dict(payload.get("baseline_summary", {})),
+            policy_summary=dict(payload.get("policy_summary", {})),
+            files_scanned=int(payload.get("files_scanned", 0)),
+            config_files_scanned=int(payload.get("config_files_scanned", 0)),
+            suppressed_findings=int(payload.get("suppressed_findings", 0)),
+            errors=[str(item) for item in payload.get("errors", [])],
+        )
+        ir.components = [
+            Component(
+                kind=str(item["kind"]),
+                name=str(item["name"]),
+                evidence=evidence(item["evidence"]),
+                attributes=dict(item.get("attributes", {})),
+                symbol_id=optional_string(item.get("symbol_id")),
+            )
+            for item in payload.get("components", [])
+        ]
+        ir.relationships = [
+            Relationship(
+                source_kind=str(item["source_kind"]),
+                source_name=str(item["source_name"]),
+                relation=str(item["relation"]),
+                target_kind=str(item["target_kind"]),
+                target_name=str(item["target_name"]),
+                evidence=evidence(item["evidence"]),
+                attributes=dict(item.get("attributes", {})),
+                source_id=optional_string(item.get("source_id")),
+                target_id=optional_string(item.get("target_id")),
+            )
+            for item in payload.get("relationships", [])
+        ]
+        ir.findings = [
+            Finding(
+                rule_id=str(item["rule_id"]),
+                severity=str(item["severity"]),
+                confidence=str(item["confidence"]),
+                message=str(item["message"]),
+                evidence=evidence(item["evidence"]),
+                remediation=str(item["remediation"]),
+                fingerprint=str(item["fingerprint"]),
+                result_kind=str(item.get("result_kind", "finding")),
+                ir_path=tuple(str(value) for value in item.get("ir_path", [])),
+                analysis=dict(item.get("analysis", {})),
+            )
+            for item in payload.get("findings", [])
+        ]
+        ir.suppressions = [
+            Suppression(
+                rule_id=str(item["rule_id"]),
+                reason=str(item["reason"]),
+                finding=evidence(item["finding"]),
+                directive=evidence(item["directive"]),
+                expires_on=optional_string(item.get("expires_on")),
+                status=str(item.get("status", "active")),
+            )
+            for item in payload.get("suppressions", [])
+        ]
+        return ir

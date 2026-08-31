@@ -567,6 +567,11 @@
   printing pass/fail counts, benchmark scope/filter metadata, mismatch summary, and failed-check
   metrics to stdout while preserving the full benchmark-result JSON file for schema verification and
   detailed outcome inspection.
+- `scripts/evaluate_truthset.py --scan-cache-dir` provides the safer benchmark-iteration path when
+  a slice needs full repository-wide semantics. Cache entries are source-digest-validated and
+  scanner/rule/IR-implementation-digest-validated before `RepositoryIR` is rehydrated from JSON.
+  A real two-pass `IR-TS-TOOL-GRAPH` run showed initial cache misses, then cache hits under roughly
+  0.05 seconds per target, with result JSON equal except for `generated_at`.
 - Python `SyntaxWarning`s from third-party source parsing are not useful AgentVerify diagnostics and
   can bury benchmark progress output. Wrapping repository scans in a `SyntaxWarning` filter keeps
   scanner stderr clean while preserving AgentVerify IR errors for parse failures and skipped files.

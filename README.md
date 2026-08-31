@@ -227,6 +227,9 @@ PYTHONPATH=src python3 scripts/evaluate_truthset.py --labels benchmarks/ir-truth
 PYTHONPATH=src python3 scripts/evaluate_truthset.py --labels benchmarks/ir-truthset.json \
   --output /tmp/agentverify-sandbox-results.json --check-id IR-TS-OPENAI-SANDBOX \
   --scan-label-paths --progress --format summary
+PYTHONPATH=src python3 scripts/evaluate_truthset.py --labels benchmarks/ir-truthset.json \
+  --output /tmp/agentverify-ir-results.json --scan-cache-dir .agentverify-cache/scans \
+  --progress --format summary
 PYTHONPATH=src python3 scripts/evaluate_truthset.py --evaluation-kind sealed-holdout \
   --manifest path/to/holdout-manifest.json --labels path/to/sealed-labels.json \
   --output path/to/holdout-results.json
@@ -248,6 +251,10 @@ Add `--expand-local-imports` for focused slices whose labels depend on sibling l
 reexports; this records `benchmark.scan_path_expansion: local-import-closure`. `--format summary`
 prints a compact pass/fail and failed-check breakdown while still writing the full benchmark-result
 JSON file.
+For repeated local iterations that need repository-wide semantics, add
+`--scan-cache-dir .agentverify-cache/scans`; cached IR is reused only when the scanned source-file
+digest and scanner/rule implementation digest still match. The cache is for local speed, not a
+checked release artifact.
 Full public-regression release results should still use repository-wide scans.
 
 The default CI workflow runs the installed CLI benchmark gate against the checked-in public

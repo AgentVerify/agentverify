@@ -469,6 +469,22 @@
 - Revisit when: broader public IR slices show whether local import/export closure is sufficient, or
   scanner result caching can preserve repository-wide evidence while avoiding repeated parse work.
 
+## Truth-set scan cache must be source- and implementation-validated
+
+- Decision: Add `scripts/evaluate_truthset.py --scan-cache-dir` as an explicit local development
+  cache for scanner IR. Cache entries store `RepositoryIR.to_dict()` output and are reused only when
+  the target identity, selected-path scope, scanned source-file digest, and scanner/rule/IR
+  implementation digest still match. The benchmark-result JSON is unchanged by cache use.
+- Evidence: Full expanded selected-path profiling still missed 172/2,522 public IR labels because
+  several detectors require architecture-wide sidecars or scanner-wide context. A real two-pass
+  `IR-TS-TOOL-GRAPH` smoke using full scans showed cache-fill misses followed by cache hits below
+  0.05 seconds per target, with identical result JSON except timestamp.
+- Alternative: Cache only by repository commit or local directory path. Rejected because local
+  fixtures and scanner edits are common in development; stale cached IR would create misleading
+  truth-set results.
+- Revisit when: cache-hit source hashing becomes a bottleneck on the largest public corpus targets,
+  or the scanner gets a native stable IR persistence contract.
+
 ## Signed policy CI fixtures must use ephemeral keys
 
 - Decision: Prove signed-policy verification in CI with a generated in-memory Ed25519 key and

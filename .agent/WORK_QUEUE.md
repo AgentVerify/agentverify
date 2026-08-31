@@ -116,9 +116,11 @@
   measurable and fast for many cross-file-focused labels, including `IR-TS-TOOL-GRAPH`. A full
   expanded selected-path profiling run passed 2,350/2,522 public IR labels; the remaining 172 misses
   cluster in detectors that rely on non-import-neighbor architecture sidecars or global summaries
-  rather than simple source imports. Repository-wide release scans are still authoritative. The next
-  credible speedup should either add explicit detector-side selected-path dependency hooks for those
-  large architecture slices, or implement scan-result reuse that preserves full-repository evidence.
+  rather than simple source imports. Repository-wide release scans are still authoritative. Opt-in
+  `--scan-cache-dir` now preserves repository-wide semantics across repeated local runs by
+  revalidating source and scanner/rule/IR implementation digests before reusing cached IR. Next
+  performance work should benchmark cache-hit overhead across the full public IR set and then decide
+  whether detector-side selected-path dependency hooks are still worth their complexity.
 - Explore exact interprocedural OpenAI Agents JS history-state continuation only if it can remain
   source-proven. The real `examples/docs/running-agents/chatLoop.ts` caller-owned concat feedback
   and `examples/agent-patterns/routing.ts` direct triage-agent alias are now covered; dynamic

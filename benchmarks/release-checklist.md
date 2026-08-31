@@ -38,8 +38,10 @@ per-target timings to stderr. The result records `benchmark.scan_scope: selected
 add `--expand-local-imports` when a focused label depends on sibling local imports or reexports.
 That records `benchmark.scan_path_expansion: local-import-closure`. Add `--format summary` when a
 development run may fail and you want a compact failed-check breakdown in stdout while preserving
-the full JSON result file. Release evidence should still come from the repository-wide commands
-above.
+the full JSON result file. For repeated local iterations that need full repository-wide semantics,
+add `--scan-cache-dir .agentverify-cache/scans`; cached IR is reused only when the scanned source
+digest and scanner/rule implementation digest match. Release evidence should still come from the
+repository-wide commands above, not from committing cache files.
 
 For GitHub Actions, start from the copyable
 [`examples/github-benchmark-verify.yml`](../examples/github-benchmark-verify.yml) workflow. It runs

@@ -14,7 +14,11 @@ from collections.abc import Iterable
 from datetime import UTC, datetime
 from pathlib import Path
 
+from agentverify import ir as ir_module
+from agentverify import rules as rules_module
+from agentverify import scanner as scanner_module
 from agentverify.benchmark import apply_label_filter, failure_summary_from_outcomes
+from agentverify.ir import RepositoryIR
 from agentverify.scanner import scan_repository
 
 CLAIM_SCOPE = {
@@ -84,6 +88,14 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help=(
             "with --scan-label-paths, also include a recursive local import/export closure "
             "from the selected label files"
+        ),
+    )
+    parser.add_argument(
+        "--scan-cache-dir",
+        type=Path,
+        help=(
+            "development shortcut: cache and reuse source-validated scanner IR JSON per target; "
+            "invalidates when scanned source files or scanner/rule implementation files change"
         ),
     )
     return parser.parse_args(argv)
@@ -347,6 +359,190 @@ def print_result_summary(payload: dict[str, object]) -> None:
         )
 
 
+SCAN_CACHE_SCHEMA_VERSION = 1
+SCAN_CONFIG_NAMES = {"mcp.json", ".mcp.json", "claude_desktop_config.json"}
+
+
+def selected_path_applies(relative_path: Path, selectors: tuple[Path, ...] | None) -> bool:
+    if selectors is None:
+        return True
+    return any(relative_path == selector or selector in relative_path.parents for selector in selectors)
+
+
+def scan_cache_selectors(selected_paths: list[str] | None) -> tuple[Path, ...] | None:
+    if selected_paths is None:
+        return None
+    selectors = []
+    for value in selected_paths:
+        if value == "":
+            continue
+        selector = Path(value)
+        if selector.is_absolute() or ".." in selector.parts:
+            raise ValueError(f"selected path must stay inside the scan root: {value}")
+        normalized = Path(*[part for part in selector.parts if part not in {"", "."}])
+        selectors.append(normalized)
+    return tuple(sorted(set(selectors), key=lambda item: item.as_posix()))
+
+
+def relevant_scan_files(root: Path, selected_paths: list[str] | None) -> list[Path]:
+    selectors = scan_cache_selectors(selected_paths)
+    relevant: list[Path] = []
+    for path in scanner_module.repository_files(root):
+        relative = path.relative_to(root)
+        if path.is_symlink() or not path.is_file() or not selected_path_applies(relative, selectors):
+            continue
+        if (
+            path.suffix.lower() in scanner_module.SOURCE_SUFFIXES
+            or path.name in SCAN_CONFIG_NAMES
+            or scanner_module.is_container_config(path)
+        ):
+            relevant.append(path)
+    return sorted(relevant, key=lambda item: item.relative_to(root).as_posix())
+
+
+def source_digest(root: Path, selected_paths: list[str] | None) -> dict[str, object]:
+    root = root.resolve()
+    digest = hashlib.sha256()
+    files = relevant_scan_files(root, selected_paths)
+    total_bytes = 0
+    for path in files:
+        relative = path.relative_to(root).as_posix()
+        content = path.read_bytes()
+        total_bytes += len(content)
+        digest.update(relative.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(hashlib.sha256(content).hexdigest().encode("ascii"))
+        digest.update(b"\0")
+    return {
+        "sha256": digest.hexdigest(),
+        "files": len(files),
+        "bytes": total_bytes,
+    }
+
+
+def implementation_digest() -> str:
+    digest = hashlib.sha256()
+    for module in (ir_module, rules_module, scanner_module):
+        digest.update(module.__name__.encode("utf-8"))
+        digest.update(b"\0")
+        if module.__file__ is None:
+            digest.update(b"<unknown-module-path>")
+            digest.update(b"\0")
+            continue
+        module_path = Path(module.__file__)
+        digest.update(module_path.name.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(module_path.read_bytes())
+        digest.update(b"\0")
+    return digest.hexdigest()
+
+
+def scan_cache_key(
+    target: dict[str, object],
+    root: Path,
+    selected_paths: list[str] | None,
+) -> str:
+    selectors = scan_cache_selectors(selected_paths)
+    payload = {
+        "schema_version": SCAN_CACHE_SCHEMA_VERSION,
+        "target": target,
+        "root": str(root.resolve()),
+        "selected_paths": None
+        if selectors is None
+        else [selector.as_posix() for selector in selectors],
+    }
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+
+
+def load_cached_scan(
+    cache_dir: Path,
+    *,
+    key: str,
+    source: dict[str, object],
+    implementation_sha256: str,
+) -> RepositoryIR | None:
+    path = cache_dir / f"{key}.json"
+    if not path.is_file():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    if (
+        payload.get("schema_version") != SCAN_CACHE_SCHEMA_VERSION
+        or payload.get("source_digest") != source
+        or payload.get("implementation_sha256") != implementation_sha256
+        or not isinstance(payload.get("ir"), dict)
+    ):
+        return None
+    return RepositoryIR.from_dict(payload["ir"])
+
+
+def write_cached_scan(
+    cache_dir: Path,
+    *,
+    key: str,
+    target: dict[str, object],
+    source: dict[str, object],
+    implementation_sha256: str,
+    selected_paths: list[str] | None,
+    ir: RepositoryIR,
+) -> None:
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    selectors = scan_cache_selectors(selected_paths)
+    payload = {
+        "schema_version": SCAN_CACHE_SCHEMA_VERSION,
+        "created_at": datetime.now(UTC).isoformat(),
+        "target": target,
+        "source_digest": source,
+        "implementation_sha256": implementation_sha256,
+        "selected_paths": None
+        if selectors is None
+        else [selector.as_posix() for selector in selectors],
+        "ir": ir.to_dict(),
+    }
+    (cache_dir / f"{key}.json").write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+
+def scan_with_optional_cache(
+    path: Path,
+    *,
+    target: dict[str, object],
+    selected_paths: list[str] | None,
+    scan_cache_dir: Path | None,
+) -> tuple[RepositoryIR, str]:
+    if scan_cache_dir is None:
+        if selected_paths is None:
+            return scan_repository(path), "disabled"
+        return scan_repository(path, selected_paths=selected_paths), "disabled"
+
+    key = scan_cache_key(target, path, selected_paths)
+    source = source_digest(path, selected_paths)
+    implementation_sha256 = implementation_digest()
+    if cached := load_cached_scan(
+        scan_cache_dir,
+        key=key,
+        source=source,
+        implementation_sha256=implementation_sha256,
+    ):
+        return cached, "hit"
+    if selected_paths is None:
+        ir = scan_repository(path)
+    else:
+        ir = scan_repository(path, selected_paths=selected_paths)
+    write_cached_scan(
+        scan_cache_dir,
+        key=key,
+        target=target,
+        source=source,
+        implementation_sha256=implementation_sha256,
+        selected_paths=selected_paths,
+        ir=ir,
+    )
+    return ir, "miss"
+
+
 def target_path(target: dict, cache_dir: Path) -> Path:
     if target["kind"] == "local":
         return Path(target["path"])
@@ -415,15 +611,19 @@ def main(argv: list[str] | None = None) -> int:
                 selected_paths = sorted(
                     expand_selected_paths_with_local_imports(path, set(selected_paths))
                 )
-            if selected_paths is None:
-                scans[key] = scan_repository(path)
-            else:
-                scans[key] = scan_repository(path, selected_paths=selected_paths)
+            scans[key], cache_status = scan_with_optional_cache(
+                path,
+                target=target,
+                selected_paths=selected_paths,
+                scan_cache_dir=args.scan_cache_dir,
+            )
             if args.progress:
                 elapsed = time.perf_counter() - started
+                cache_suffix = "" if cache_status == "disabled" else f" cache={cache_status}"
                 print(
                     "agentverify: scanned "
-                    f"{path} labels={target_label_counts[key]} seconds={elapsed:.3f}",
+                    f"{path} labels={target_label_counts[key]} seconds={elapsed:.3f}"
+                    f"{cache_suffix}",
                     file=sys.stderr,
                 )
         ir = scans[key]
