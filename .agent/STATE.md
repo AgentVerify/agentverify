@@ -11,7 +11,9 @@ catalog workflows.
   a committed local digest trust root (`agentverify-policy-trust-root.json`) with
   `--require-trusted` before scanning. Policy docs now tell users to generate and commit the trust
   root after finalizing composed policy inputs, and source-distribution checks require the workflow's
-  trusted-policy fragments.
+  trusted-policy fragments. The checked example trust root is now regression-tested against a fresh
+  `agentverify policy examples/repository-policy.json --export-trust-root` export so policy edits
+  cannot silently leave stale example digests.
 - Strengthened `agentverify benchmark verify-engine` so it now recomputes flat detector metric
   summaries from successful repository entries, then generalized the verifier to
   discover and recompute every flat summary metric field represented by per-repository entries. The

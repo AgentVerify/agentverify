@@ -1162,6 +1162,31 @@ def test_example_policy_trust_root_matches_composed_policy(capsys) -> None:
     assert trust_root["matched_sources"] == ["org-policy.json", "repository-policy.json"]
 
 
+def test_example_policy_trust_root_matches_fresh_export(
+    tmp_path: Path, capsys
+) -> None:
+    generated_trust_root = tmp_path / "policy-trust-root.json"
+
+    assert (
+        cli.main(
+            [
+                "policy",
+                str(ROOT / "examples/repository-policy.json"),
+                "--export-trust-root",
+                "--output",
+                str(generated_trust_root),
+            ]
+        )
+        == 0
+    )
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    generated = json.loads(generated_trust_root.read_text(encoding="utf-8"))
+    checked = json.loads((ROOT / "examples/policy-trust-root.json").read_text(encoding="utf-8"))
+    assert generated == checked
+
+
 def test_example_policies_gate_every_high_approval_review() -> None:
     expected = sorted(
         rule_id
