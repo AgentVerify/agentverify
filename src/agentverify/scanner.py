@@ -24172,6 +24172,33 @@ def typescript_graph(
                 )
                 if helper_attributes is not None:
                     add_condition_attributes(helper_attributes)
+            condition_identifier = re.fullmatch(
+                r"[A-Za-z_$][\w$]*",
+                condition_code.strip(),
+            )
+            if condition_identifier is None:
+                continue
+            binding_name = condition_identifier.group(0)
+            binding_pattern = re.compile(
+                rf"\b(?:const|let)\s+{re.escape(binding_name)}"
+                r"\s*(?::\s*[^=;\n]+)?=\s*(?:await\s+)?"
+                r"([A-Za-z_$][\w$]*)\s*\("
+            )
+            for binding_match in reversed(
+                list(binding_pattern.finditer(expression_code[: if_match.start()])),
+            ):
+                helper_attributes = openai_tool_guardrail_condition_helper_summaries.get(
+                    binding_match.group(1),
+                )
+                if helper_attributes is None:
+                    continue
+                if re.search(
+                    rf"(?<![\w$.]){re.escape(binding_name)}\s*=(?!=)",
+                    expression_code[binding_match.end() : if_match.start()],
+                ):
+                    continue
+                add_condition_attributes(helper_attributes)
+                break
 
         if not condition_sources:
             return {}

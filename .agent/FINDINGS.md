@@ -2,6 +2,11 @@
 
 ## Durable facts
 
+- OpenAI Agents JS tool guardrails can safely inherit helper predicate metadata through stable
+  boolean result bindings. When a reject-content branch is guarded by a local `const`/`let` whose
+  initializer is an exact helper call and the binding is not reassigned before the branch, the IR
+  can retain the helper name/source and literal reject-condition evidence without broadening into
+  arbitrary boolean data flow.
 - OpenAI Agents JS tool guardrails can safely inherit reject-condition literals from exact imported
   helper predicates when exported function identity is unique. The existing
   `typescript_imported_function_body_bindings` resolver handles relative named imports and exact

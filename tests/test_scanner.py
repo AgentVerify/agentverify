@@ -7007,6 +7007,7 @@ def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:
         "ts:exported-tools.ts#control:exportedGuardrailTool.outputGuardrails@14",
         "ts:agent.ts#control:helperPredicateTool.inputGuardrails@154",
         "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@185",
+        "ts:agent.ts#control:helperResultBindingTool.inputGuardrails@215",
     }
     assert controls["ts:agent.ts#control:classifyTool.inputGuardrails@44"].attributes == {
         "analysis": "typescript-openai-agents-tool-guardrails",
@@ -7117,6 +7118,12 @@ def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:
     assert controls[
         "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@185"
     ].attributes["guardrail_reject_condition_helper_sources"] == ["imported-local-function"]
+    assert controls[
+        "ts:agent.ts#control:helperResultBindingTool.inputGuardrails@215"
+    ].attributes["guardrail_reject_condition_literals"] == ["classified"]
+    assert controls[
+        "ts:agent.ts#control:helperResultBindingTool.inputGuardrails@215"
+    ].attributes["guardrail_reject_condition_helpers"] == ["containsClassifiedTerm"]
     assert "guardrail_names" not in controls[
         "ts:agent.ts#control:ambiguousImportedGuardrailTool.inputGuardrails@109"
     ].attributes
@@ -7233,6 +7240,12 @@ def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:
     assert agent_edges[
         "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@185"
     ].attributes["guardrail_reject_condition_helper_sources"] == ["imported-local-function"]
+    assert agent_edges[
+        "ts:agent.ts#control:helperResultBindingTool.inputGuardrails@215"
+    ].source_id == "ts:agent.ts#agent:helperResultBindingAgent"
+    assert agent_edges[
+        "ts:agent.ts#control:helperResultBindingTool.inputGuardrails@215"
+    ].attributes["guardrail_reject_condition_literals"] == ["classified"]
 
 
 def test_typescript_openai_agent_clone_is_exact() -> None:

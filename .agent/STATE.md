@@ -7,13 +7,18 @@ catalog workflows.
 
 ## Completed recently
 
+- Extended TypeScript OpenAI Agents JS tool-guardrail helper predicates through stable helper-result
+  bindings. Reject-content branches now inherit exact helper metadata when an `if` condition uses a
+  local boolean binding assigned from a proven helper call, provided the binding is not reassigned
+  before the branch. Focused `IR-TS-OPENAI-TOOL-GUARDRAILS` labels pass 53/53, the full reporting
+  truth set passes 733/733, the full public IR truth set passes 2,575/2,575, and benchmark
+  verification passes 3,308/3,308 combined public-regression labels.
 - Extended TypeScript OpenAI Agents JS tool-guardrail helper predicate metadata through exact
   relative imported helper functions. Imported helpers now reuse the existing unique exported
   function-body resolver, recording helper source provenance such as `imported-local-function`
   while preserving literal reject-condition metadata on tool controls and Agent governance edges.
-  Focused `IR-TS-OPENAI-TOOL-GUARDRAILS` labels pass 50/50, the full reporting truth set passes
-  733/733, the full public IR truth set passes 2,572/2,572, and benchmark verification passes
-  3,305/3,305 combined public-regression labels.
+  Focused `IR-TS-OPENAI-TOOL-GUARDRAILS` labels passed 50/50 before the helper-result binding
+  expansion; the current aggregate public-regression counts are recorded in the latest entry above.
 - Extended TypeScript OpenAI Agents JS tool-guardrail reject-condition metadata through exact
   same-file helper predicates. Unique helper functions that return literal string checks can now
   annotate guarded `if (helper(...)) return rejectContent(...)` branches with

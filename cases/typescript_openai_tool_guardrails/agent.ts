@@ -193,3 +193,33 @@ const importedHelperPredicateAgent = new Agent({
 });
 
 void importedHelperPredicateAgent;
+
+const helperResultBindingGuardrail = defineToolInputGuardrail({
+  name: "helper_result_binding_guardrail",
+  run: async ({ toolCall }) => {
+    const args = JSON.parse(toolCall.arguments) as { text?: string };
+    const shouldReject = containsClassifiedTerm(args.text);
+    if (shouldReject) {
+      return ToolGuardrailFunctionOutputFactory.rejectContent(
+        "Remove helper-bound classified terms before calling this tool.",
+      );
+    }
+    return ToolGuardrailFunctionOutputFactory.allow();
+  },
+});
+
+const helperResultBindingTool = tool({
+  name: "helper_result_binding_tool",
+  description: "Uses a helper result binding guardrail.",
+  parameters: z.object({ text: z.string() }),
+  inputGuardrails: [helperResultBindingGuardrail],
+  execute: ({ text }) => text,
+});
+
+const helperResultBindingAgent = new Agent({
+  name: "Helper result binding tool guardrail classifier",
+  instructions: "Classify with a helper result binding guardrail.",
+  tools: [helperResultBindingTool],
+});
+
+void helperResultBindingAgent;

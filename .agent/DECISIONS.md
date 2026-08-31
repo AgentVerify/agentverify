@@ -1503,8 +1503,22 @@
 - Alternative: Add a separate import resolver, follow arbitrary call graphs, or match helper names
   across files. Rejected because the existing resolver already enforces unique local export
   provenance and shadowing checks; broader call-graph matching would blur evidence identity.
-- Revisit when imported helper chains, arrow-expression helpers, or package-level helpers can be
-  bounded with comparable exactness.
+- Later helper-result binding support is recorded in the local mutation-bounded decision below.
+
+## OpenAI Agents JS tool guardrail helper-result bindings are local and mutation-bounded
+
+- Decision: When a guardrail reject-content `if` condition is a local identifier, look backward for
+  a same-scope `const`/`let` initializer that is an exact direct call to a proven helper summary and
+  reject the metadata if that binding is reassigned before the branch.
+- Evidence: The local `typescript_openai_tool_guardrails` fixture records
+  `const shouldReject = containsClassifiedTerm(args.text); if (shouldReject) ... rejectContent`,
+  and focused public IR labels pass 53/53 with helper/literal metadata on the tool control, tool
+  governance edge, and Agent governance edge.
+- Alternative: Track arbitrary boolean aliases, compound expressions, or post-branch mutations.
+  Rejected because a narrow pre-branch initializer check gives useful coverage without claiming
+  general data-flow precision.
+- Revisit when compound helper predicates can be decomposed with similarly tight mutation and scope
+  evidence.
 
 ## OpenAI Agents JS imported tool guardrail arrays require exact export provenance
 

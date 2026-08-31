@@ -183,9 +183,9 @@
   `tool({ inputGuardrails, outputGuardrails })`,
   `defineToolInputGuardrail`/`defineToolOutputGuardrail` bindings, exact relative imported typed
   guardrail arrays including named reexports, allow/reject-content actions, shallow literal reject
-  predicates, same-file and exact imported helper predicate calls, exact same-file
-  Agent-to-tool-guardrail edges, and exact imported guarded-tool Agent bridge edges are now
-  inventoried as a separate source-tool policy slice; ambiguous barrels stay binding-only.
+  predicates, same-file and exact imported helper predicate calls, stable helper-result bindings,
+  exact same-file Agent-to-tool-guardrail edges, and exact imported guarded-tool Agent bridge edges
+  are now inventoried as a separate source-tool policy slice; ambiguous barrels stay binding-only.
 
 ## Deferred until access/authorization
 
