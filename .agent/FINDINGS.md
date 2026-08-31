@@ -2,6 +2,9 @@
 
 ## Durable facts
 
+- Source-distribution verification now validates packaged `benchmarks/engine-results.json` against
+  `src/agentverify/schemas/agentverify-engine-results-v1.schema.json`; malformed release archives
+  fail even when the expected filename is present.
 - The engine benchmark generator now validates the complete payload against the installed
   `engine-results` schema before writing an output file, so future full-corpus or filtered benchmark
   refreshes fail early if the release evidence artifact shape drifts.

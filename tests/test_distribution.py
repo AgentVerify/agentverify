@@ -38,6 +38,8 @@ REQUIRED_SOURCE_WORKFLOW_FRAGMENTS = verify_distribution.REQUIRED_SOURCE_WORKFLO
 REQUIRED_SOURCE_FILES = verify_distribution.REQUIRED_SOURCE_FILES
 REQUIRED_ENTRY_POINTS = verify_distribution.REQUIRED_ENTRY_POINTS
 REQUIRED_RUNTIME_DEPENDENCIES = verify_distribution.REQUIRED_RUNTIME_DEPENDENCIES
+ENGINE_RESULTS_FILE = verify_distribution.ENGINE_RESULTS_FILE
+ENGINE_RESULTS_SCHEMA_FILE = verify_distribution.ENGINE_RESULTS_SCHEMA_FILE
 latest_sdist = verify_distribution.latest_sdist
 latest_wheel = verify_distribution.latest_wheel
 verify_sdist = verify_distribution.verify_sdist
@@ -79,7 +81,10 @@ def write_sdist(
         for name in sorted(names):
             if name in file_contents:
                 content = file_contents[name].encode("utf-8")
-            elif name in REQUIRED_SOURCE_WORKFLOW_FRAGMENTS:
+            elif (
+                name in REQUIRED_SOURCE_WORKFLOW_FRAGMENTS
+                or name in {ENGINE_RESULTS_FILE, ENGINE_RESULTS_SCHEMA_FILE}
+            ):
                 content = (ROOT / name).read_bytes()
             else:
                 content = b"{}\n" if name.endswith(".json") else b"placeholder\n"
@@ -130,6 +135,13 @@ def test_distribution_verifier_accepts_required_source_artifacts(tmp_path: Path)
     assert payload["forbidden_benchmark_workflow_fragments"] == []
     assert payload["missing_source_workflow_fragments"] == {}
     assert payload["forbidden_source_workflow_fragments"] == {}
+    assert payload["engine_results_validation"] == {
+        "checked": True,
+        "passed": True,
+        "schema_file": ENGINE_RESULTS_SCHEMA_FILE,
+        "results_file": ENGINE_RESULTS_FILE,
+        "errors": [],
+    }
 
 
 def test_ci_workflow_verifies_checked_in_benchmark_results() -> None:
@@ -314,6 +326,22 @@ def test_distribution_verifier_rejects_missing_benchmark_result_artifact(
     )
 
     with pytest.raises(RuntimeError, match="missing_benchmark_result_files"):
+        verify_sdist(sdist)
+
+
+def test_distribution_verifier_rejects_invalid_engine_results(
+    tmp_path: Path,
+) -> None:
+    sdist = tmp_path / "agentverify-0.1.0.tar.gz"
+    payload = json.loads((ROOT / ENGINE_RESULTS_FILE).read_text(encoding="utf-8"))
+    payload.pop("repositories")
+    write_sdist(
+        sdist,
+        set(REQUIRED_SOURCE_FILES) | set(REQUIRED_BENCHMARK_RESULT_FILES),
+        file_contents={ENGINE_RESULTS_FILE: json.dumps(payload)},
+    )
+
+    with pytest.raises(RuntimeError, match="'repositories' is a required property"):
         verify_sdist(sdist)
 
 

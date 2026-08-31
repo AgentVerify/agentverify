@@ -7,6 +7,10 @@ catalog workflows.
 
 ## Completed recently
 
+- Extended source-distribution verification from presence checks to content validation for
+  `benchmarks/engine-results.json`: release archives must now include the source copy of the
+  engine-results schema and the verifier validates the packaged snapshot against it. Distribution
+  tests cover the valid checked snapshot path and a malformed missing-repositories archive.
 - Added generator-side validation for `scripts/benchmark_engine.py`: every generated
   engine-results payload is validated against the bundled `agentverify schema engine-results`
   contract before it is written. Unit tests cover both the checked 71-repository snapshot and a

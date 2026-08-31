@@ -12,6 +12,11 @@ import venv
 import zipfile
 from pathlib import Path, PurePosixPath
 
+from jsonschema import Draft202012Validator
+from jsonschema import exceptions as jsonschema_exceptions
+
+ENGINE_RESULTS_FILE = "benchmarks/engine-results.json"
+ENGINE_RESULTS_SCHEMA_FILE = "src/agentverify/schemas/agentverify-engine-results-v1.schema.json"
 REQUIRED_ENTRY_POINTS = {"agentverify": "agentverify.cli:main"}
 REQUIRED_RUNTIME_DEPENDENCIES = {"cryptography>=46.0", "jsonschema>=4.23"}
 REQUIRED_BENCHMARK_RESULT_FILES = frozenset(
@@ -69,7 +74,7 @@ REQUIRED_SOURCE_FILES = frozenset(
         "README.md",
         "pyproject.toml",
         "benchmarks/benchmark-results-v1.schema.json",
-        "benchmarks/engine-results.json",
+        ENGINE_RESULTS_FILE,
         "benchmarks/holdout-design.md",
         "benchmarks/holdout-labels.template.json",
         "benchmarks/holdout-manifest.template.json",
@@ -95,6 +100,7 @@ REQUIRED_SOURCE_FILES = frozenset(
         "examples/safe_agent/agent.py",
         "scripts/export_editor_contracts.py",
         "scripts/verify_signed_policy_example.py",
+        ENGINE_RESULTS_SCHEMA_FILE,
     }
 )
 REQUIRED_SCHEMA_FILES = frozenset(
@@ -167,6 +173,47 @@ def sdist_file_text(path: Path, target_name: str) -> str:
                 return ""
             return extracted.read().decode("utf-8", errors="replace")
     return ""
+
+
+def validate_sdist_engine_results(path: Path, names: set[str]) -> dict[str, object]:
+    required = {ENGINE_RESULTS_FILE, ENGINE_RESULTS_SCHEMA_FILE}
+    missing = sorted(required - names)
+    if missing:
+        return {
+            "checked": False,
+            "passed": False,
+            "schema_file": ENGINE_RESULTS_SCHEMA_FILE,
+            "results_file": ENGINE_RESULTS_FILE,
+            "errors": [f"missing {name}" for name in missing],
+        }
+    try:
+        schema = json.loads(sdist_file_text(path, ENGINE_RESULTS_SCHEMA_FILE))
+        payload = json.loads(sdist_file_text(path, ENGINE_RESULTS_FILE))
+        Draft202012Validator.check_schema(schema)
+        Draft202012Validator(schema).validate(payload)
+    except (json.JSONDecodeError, jsonschema_exceptions.SchemaError) as error:
+        return {
+            "checked": True,
+            "passed": False,
+            "schema_file": ENGINE_RESULTS_SCHEMA_FILE,
+            "results_file": ENGINE_RESULTS_FILE,
+            "errors": [str(error)],
+        }
+    except jsonschema_exceptions.ValidationError as error:
+        return {
+            "checked": True,
+            "passed": False,
+            "schema_file": ENGINE_RESULTS_SCHEMA_FILE,
+            "results_file": ENGINE_RESULTS_FILE,
+            "errors": [error.message],
+        }
+    return {
+        "checked": True,
+        "passed": True,
+        "schema_file": ENGINE_RESULTS_SCHEMA_FILE,
+        "results_file": ENGINE_RESULTS_FILE,
+        "errors": [],
+    }
 
 
 def entry_points(path: Path) -> dict[str, str]:
@@ -644,6 +691,7 @@ def verify_sdist(path: Path) -> dict[str, object]:
     present = sorted(required & names)
     missing_benchmark_results = sorted(REQUIRED_BENCHMARK_RESULT_FILES - names)
     present_benchmark_results = sorted(REQUIRED_BENCHMARK_RESULT_FILES & names)
+    engine_results_validation = validate_sdist_engine_results(path, names)
     workflow_texts = {
         workflow_file: sdist_file_text(path, workflow_file)
         for workflow_file in REQUIRED_SOURCE_WORKFLOW_FRAGMENTS
@@ -692,10 +740,12 @@ def verify_sdist(path: Path) -> dict[str, object]:
         "forbidden_benchmark_workflow_fragments": forbidden_benchmark_workflow_fragments,
         "missing_source_workflow_fragments": missing_source_workflow_fragments,
         "forbidden_source_workflow_fragments": forbidden_source_workflow_fragments,
+        "engine_results_validation": engine_results_validation,
         "passed": not (
             missing
             or missing_source_workflow_fragments
             or forbidden_source_workflow_fragments
+            or not engine_results_validation["passed"]
         ),
     }
     if not payload["passed"]:
