@@ -10,7 +10,9 @@ from collections import Counter
 from datetime import UTC, datetime
 from pathlib import Path
 
-from agentverify.report import render_bom
+from jsonschema import Draft202012Validator
+
+from agentverify.report import render_bom, render_schema
 from agentverify.scanner import scan_repository
 
 PUBLISHED_NAME_KINDS = {
@@ -94,6 +96,12 @@ def filter_repositories(
         missing = ", ".join(missing_repositories)
         raise SystemExit(f"unknown --repository value(s): {missing}")
     return filtered_repositories
+
+
+def validate_engine_results(payload: dict[str, object]) -> None:
+    schema = json.loads(render_schema("engine-results"))
+    Draft202012Validator.check_schema(schema)
+    Draft202012Validator(schema).validate(payload)
 
 
 def main() -> int:
@@ -4307,6 +4315,7 @@ def main() -> int:
         for rule_id, count in summary["findings"].items()
     ):
         raise RuntimeError("finding repository counts do not match finding totals")
+    validate_engine_results(payload)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(payload["summary"], indent=2))

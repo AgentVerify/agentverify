@@ -7,6 +7,11 @@ catalog workflows.
 
 ## Completed recently
 
+- Added generator-side validation for `scripts/benchmark_engine.py`: every generated
+  engine-results payload is validated against the bundled `agentverify schema engine-results`
+  contract before it is written. Unit tests cover both the checked 71-repository snapshot and a
+  malformed missing-repositories negative case, and a focused Vercel benchmark run exercised the
+  validation hook on the real script path.
 - Bundled a structural engine-results schema behind `agentverify schema engine-results`, validated
   the checked 71-repository `benchmarks/engine-results.json` snapshot against it, and extended
   distribution verification so wheels must ship the schema and source distributions must ship the

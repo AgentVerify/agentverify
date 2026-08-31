@@ -2,6 +2,9 @@
 
 ## Durable facts
 
+- The engine benchmark generator now validates the complete payload against the installed
+  `engine-results` schema before writing an output file, so future full-corpus or filtered benchmark
+  refreshes fail early if the release evidence artifact shape drifts.
 - Engine-result snapshots are now schema-backed installed machine contracts:
   `agentverify schema engine-results` validates the top-level full-corpus benchmark artifact shape
   while intentionally allowing metric maps to grow as detectors add new slices. Distribution checks
