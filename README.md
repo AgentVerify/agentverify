@@ -204,7 +204,8 @@ pushes, pull requests, and a weekly schedule. It uses a job-scoped token and a s
 see the integration guide before adding an enforcement threshold. This repository also keeps a
 project-specific [self-scan workflow](.github/workflows/code-scanning.yml) that scans only `src/`.
 For policy-only GitHub Actions gates, start from the checked
-[`examples/github-policy-gate.yml`](examples/github-policy-gate.yml) workflow.
+[`examples/github-policy-gate.yml`](examples/github-policy-gate.yml) workflow; it validates
+`agentverify-policy.json` against a committed `agentverify-policy-trust-root.json` before scanning.
 
 The bundled [pre-commit hook manifest](.pre-commit-hooks.yaml) supports repository-wide local scans;
 the setup guide and [copyable local config](examples/pre-commit-config.yaml) avoid assuming a public
@@ -251,7 +252,7 @@ verification keeps the copyable GitHub workflow examples tied to their contracts
 verification emits, validates, and uploads both `agentverify-benchmark-verification.json` and
 `agentverify-engine-results-verification.json`, and prints compact summary logs for both verifier
 passes; policy-gate and code-scanning examples keep their
-expected permissions and gate/upload commands.
+expected permissions, trusted-policy validation, and gate/upload commands.
 For editor or custom CI integrations, `agentverify contracts --sample-root examples/safe_agent`
 exports the report schema, rules schema, current rules catalog, and optional sample report into a
 local artifact directory with a schema-backed digest manifest. `agentverify contracts --verify-dir`

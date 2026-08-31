@@ -192,12 +192,18 @@ suppression with a rule ID, reason, and expiry date; a baseline records accepted
 ## GitHub Actions policy gate
 
 [`examples/github-policy-gate.yml`](../examples/github-policy-gate.yml) is a copyable policy-only
-workflow. It uses only `contents: read`, validates the policy before scanning, emits compact summary
-output for CI logs, and requires expiry dates on inline suppressions:
+workflow. It uses only `contents: read`, validates the policy against a committed local digest
+trust root before scanning, emits compact summary output for CI logs, and requires expiry dates on
+inline suppressions. Generate the trust root after finalizing the composed policy with
+`agentverify policy agentverify-policy.json --export-trust-root --output agentverify-policy-trust-root.json`
+and commit both files:
 
 ```yaml
-- name: Validate policy composition
-  run: agentverify policy agentverify-policy.json
+- name: Validate trusted policy composition
+  run: >
+    agentverify policy agentverify-policy.json
+    --trust-root agentverify-policy-trust-root.json
+    --require-trusted
 - name: Enforce policy
   run: >
     agentverify scan .

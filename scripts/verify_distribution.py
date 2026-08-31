@@ -67,6 +67,8 @@ REQUIRED_SOURCE_WORKFLOW_FRAGMENTS = {
         {
             "permissions:\n  contents: read",
             "agentverify policy agentverify-policy.json",
+            "--trust-root agentverify-policy-trust-root.json",
+            "--require-trusted",
             "agentverify scan .",
             "--format summary",
             "--policy agentverify-policy.json",

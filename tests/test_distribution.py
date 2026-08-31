@@ -176,6 +176,8 @@ def test_github_policy_gate_example_is_read_only_and_fail_closed() -> None:
     assert "permissions:\n  contents: read" in workflow
     assert "security-events: write" not in workflow
     assert "agentverify policy agentverify-policy.json" in workflow
+    assert "--trust-root agentverify-policy-trust-root.json" in workflow
+    assert "--require-trusted" in workflow
     assert "--policy agentverify-policy.json" in workflow
     assert "--format summary" in workflow
     assert "--require-suppression-expiry" in workflow

@@ -24,8 +24,11 @@ jobs:
         # Pin an organization-approved release in production, for example:
         # python -m pip install agentverify==0.1.0
         run: python -m pip install agentverify
-      - name: Validate policy composition
-        run: agentverify policy agentverify-policy.json
+      - name: Validate trusted policy composition
+        run: >
+          agentverify policy agentverify-policy.json
+          --trust-root agentverify-policy-trust-root.json
+          --require-trusted
       - name: Enforce policy
         run: >
           agentverify scan .
