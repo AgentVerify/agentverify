@@ -7,6 +7,13 @@ catalog workflows.
 
 ## Completed recently
 
+- Added exact Vercel `WorkflowAgent` observability IR for constructor-level `telemetry` options and
+  lifecycle/tool callback properties on source-proven `@ai-sdk/workflow` agents. The new controls
+  are linked back to the source agent and intentionally represent instrumentation-hook inventory,
+  not durable audit completeness. Six real Vercel labels under
+  `IR-TS-WORKFLOW-AGENT-OBSERVABILITY` pass, and the public IR truth set now passes
+  2,478/2,478 labels. The full 71-repository schema-v159 engine benchmark was refreshed and now
+  records 2,945 relationships / 10,817 symbolized components.
 - Accepted narrow trailing TypeScript `as` / `satisfies` assertions after exact AI SDK provider
   model calls for Vercel `WorkflowAgent.model` detection. Direct model properties, same-file const
   bindings, imported bindings, and exact reexports now preserve exact model attribution through

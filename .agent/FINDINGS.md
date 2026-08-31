@@ -20,9 +20,10 @@
   require both the wheel schema file and the source-distribution `benchmarks/engine-results.json`
   evidence artifact.
 - The repository contains a 71-repository pinned research corpus and schema-v159 engine benchmark
-  outputs. The full-corpus summary now includes a dedicated `typescript_vercel_code_mode` section
-  for Vercel AI Code Mode's exact public tool surface and host-tool approval runtime: one repository,
-  eight components, and seven approval/surface relationships.
+  outputs. The refreshed full-corpus summary records 2,945 relationships and 10,817 symbolized
+  components. It includes a dedicated `typescript_vercel_code_mode` section for Vercel AI Code
+  Mode's exact public tool surface and host-tool approval runtime: one repository, eight components,
+  and seven approval/surface relationships.
 - The runtime catalog currently contains 25 enabled reporting rules.
 - Vercel AI Code Mode's public `codeModeTool()` surface is now inventoried as a model-visible
   `experimental_toolCaller` that routes the model-provided `js` field into
@@ -36,6 +37,14 @@
   mutated bindings/exports, and ambiguous star reexports remain unresolved. The focused
   WorkflowAgent-model truth set passes 17/17 labels, and the full public IR truth set passes
   2,472/2,472 labels.
+- Vercel `WorkflowAgent` constructor-level observability hooks are now inventoried when the
+  constructor import is exact. `telemetry: createTelemetryOptions(...)` emits a
+  `workflow-agent-telemetry` control, and lifecycle/tool callback properties such as
+  `onEnd`, `experimental_onStart`, and `onToolExecutionStart` emit a
+  `workflow-agent-callbacks` control linked to the source agent. The pinned Vercel AI
+  `agent-chat.ts` and `telemetry-agent.ts` examples supply six real public labels. These controls
+  prove configured instrumentation hooks only; durable storage, actor attribution, and delivery
+  guarantees remain separate audit evidence.
 - Vercel AI Code Mode's host-tool approval runtime is now inventoried as a framework approval flow:
   `invokeHostTool(...)` checks `hostTool.needsApproval` before `executeHostTool(...)`, interrupt
   mode returns the `ai-sdk-code-mode/tool-approval` payload, callback denial throws before execution,

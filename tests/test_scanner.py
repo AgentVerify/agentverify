@@ -2703,6 +2703,101 @@ def test_typescript_workflow_agent_uses_object_tool_binding(tmp_path: Path) -> N
     }
 
 
+def test_typescript_workflow_agent_observability_controls_are_exact(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "agent.ts").write_text(
+        textwrap.dedent(
+            """
+            import { WorkflowAgent } from "@ai-sdk/workflow";
+
+            const model = {};
+            const agent = new WorkflowAgent({
+              model,
+              telemetry: createTelemetryOptions({ functionId: "agent-run" }),
+              experimental_onStart: recordCallback({
+                name: "experimental_onStart",
+              }) satisfies WorkflowAgentOnStartCallback<any, any>,
+              onToolExecutionStart: recordCallback({
+                name: "onToolExecutionStart",
+              }),
+              onToolExecutionEnd: async event => record(event),
+              onEnd: recordCallback({ name: "onEnd" }),
+            });
+            const disabled = new WorkflowAgent({
+              model,
+              telemetry: undefined,
+              onEnd: false,
+            });
+            void agent;
+            void disabled;
+            """
+        ),
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+
+    observability_controls = {
+        component.name: component.attributes
+        for component in ir.components
+        if component.kind == "control"
+        and component.attributes.get("analysis")
+        == "typescript-vercel-workflow-agent-observability"
+    }
+    assert observability_controls == {
+        "workflow-agent-telemetry": {
+            "analysis": "typescript-vercel-workflow-agent-observability",
+            "module": "@ai-sdk/workflow",
+            "constructor": "WorkflowAgent",
+            "imported_symbol": "WorkflowAgent",
+            "configuration": "WorkflowAgent.telemetry",
+            "observability_scope": "workflow-agent-telemetry",
+            "telemetry_resolution": "factory-call",
+            "source_agent": "agent",
+            "source_agent_id": "ts:agent.ts#agent:agent",
+            "scope": "production",
+            "telemetry_factory": "createTelemetryOptions",
+        },
+        "workflow-agent-callbacks": {
+            "analysis": "typescript-vercel-workflow-agent-observability",
+            "module": "@ai-sdk/workflow",
+            "constructor": "WorkflowAgent",
+            "imported_symbol": "WorkflowAgent",
+            "configuration": "WorkflowAgent.callbacks",
+            "observability_scope": "workflow-agent-callbacks",
+            "callbacks": [
+                "experimental_onStart",
+                "onToolExecutionStart",
+                "onToolExecutionEnd",
+                "onEnd",
+            ],
+            "callback_count": 4,
+            "callback_handler_resolution": "configured-expression",
+            "source_agent": "agent",
+            "source_agent_id": "ts:agent.ts#agent:agent",
+            "scope": "production",
+            "callback_handlers": ["recordCallback"],
+        },
+    }
+    assert {
+        (
+            relationship.source_name,
+            relationship.relation,
+            relationship.target_name,
+            relationship.attributes.get("configuration"),
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.target_kind == "control"
+        and relationship.attributes.get("analysis")
+        == "typescript-vercel-workflow-agent-observability"
+    } == {
+        ("agent", "configured-by", "workflow-agent-telemetry", "WorkflowAgent-telemetry"),
+        ("agent", "configured-by", "workflow-agent-callbacks", "WorkflowAgent-callbacks"),
+    }
+
+
 def test_typescript_workflow_agent_uses_imported_object_tool_binding(tmp_path: Path) -> None:
     (tmp_path / "tools.ts").write_text(
         textwrap.dedent(

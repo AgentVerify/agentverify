@@ -783,9 +783,10 @@ source-agent-linked `model-settings-policy` controls for direct AI SDK provider 
 top-level `model` property, such as `anthropic("claude-sonnet-4-20250514")`. Stable same-file
 `const` model bindings and imported sibling model bindings also resolve when the initializer is
 exactly one immutable AI SDK provider model call, including exact named imports, named reexports,
-or unambiguous star reexports for sibling modules. Casts, wrappers, mutated bindings/exports, and
-ambiguous star reexports remain unresolved until their provenance can be proven without general
-expression guessing.
+or unambiguous star reexports for sibling modules. Narrow trailing TypeScript-only `as` and
+`satisfies` assertions are accepted for direct and bound provider model calls; runtime wrappers,
+fallbacks, mutated bindings/exports, and ambiguous star reexports remain unresolved until their
+provenance can be proven without general expression guessing.
 For `WorkflowAgent.tools`, AgentVerify links stable same-file tool-set bindings plus direct relative
 named imports, exact named reexports, or unambiguous star reexports of immutable exported const
 tool-set objects to already-inventoried object-tool components. Imported tool-set edges preserve the
@@ -799,6 +800,11 @@ caller-tool provenance is unambiguous.
 Reassigned bindings, property-mutated local tool sets, duplicate tool identities, conflicting
 barrels, partial config objects, and broader module composition remain unresolved until their object
 identity can be proven.
+Constructor-level `WorkflowAgent.telemetry` and lifecycle/tool callback properties now emit
+source-agent-linked observability controls when they appear on an exact `WorkflowAgent` constructor.
+This is intentionally inventory evidence, not a durable-audit finding: callback configuration and
+telemetry options prove instrumentation hooks, while retention, delivery, and actor attribution need
+separate source proof.
 Vercel AI Code Mode's host-tool runtime now contributes approval-flow IR when the source uniquely
 proves that `hostTool.needsApproval` is checked before `executeHostTool(...)`, interrupt mode emits
 the `ai-sdk-code-mode/tool-approval` payload, callback denial throws before execution, and
@@ -1175,7 +1181,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 730-label rule truth set and 2,472-label IR component/relationship set are curated regression
+The 730-label rule truth set and 2,478-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

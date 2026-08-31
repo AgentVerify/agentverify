@@ -32,8 +32,10 @@
   `WorkflowAgent.model`; trailing static TypeScript `as`/`satisfies` assertions are accepted for
   direct and bound provider-model calls, so future work should focus on richer runtime model wrapper
   shapes or additional type syntax only with comparable proof,
-  approval-resumption/event flows, reportable Vercel approval findings only with matching real
-  evidence, or additional execute-helper alias chains only when comparable ambiguity guards exist.
+  approval-resumption/event flows, richer telemetry sink/retention proof beyond the now-covered
+  constructor telemetry and callback-hook inventory, reportable Vercel approval findings only with
+  matching real evidence, or additional execute-helper alias chains only when comparable ambiguity
+  guards exist.
 - Extend Vercel AI Code Mode only when runtime provenance stays exact: current IR covers the
   host-tool approval gate, interrupt payload kind, denial-before-execute behavior, and
   continuation approval-id validation, plus the public `codeModeTool()` /

@@ -19512,6 +19512,118 @@ def add_typescript_vercel_workflow_agent_model_control(
     return "model-settings-policy", control_id
 
 
+TYPESCRIPT_VERCEL_WORKFLOW_AGENT_CALLBACK_PROPERTIES = (
+    "experimental_onStart",
+    "experimental_onStepStart",
+    "onToolExecutionStart",
+    "onToolExecutionEnd",
+    "onEnd",
+    "onError",
+)
+
+
+def typescript_call_callee_with_static_type_suffix(expression: str) -> str | None:
+    """Return a direct call callee when the suffix is empty or TS type-only."""
+    code = typescript_code_mask(expression)
+    leading = len(code) - len(code.lstrip())
+    code = code[leading:]
+    match = re.match(r"([A-Za-z_$][\w$]*)\s*\(", code)
+    if match is None:
+        return None
+    opening = code.find("(", match.start(), match.end())
+    end = typescript_balanced_end(code, opening, "(", ")")
+    if end is None:
+        return None
+    if not typescript_trailing_expression_is_static_type_assertion(code[end:]):
+        return None
+    return match.group(1)
+
+
+def add_typescript_vercel_workflow_agent_telemetry_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    source_agent: tuple[str, str],
+    telemetry_resolution: str,
+    symbol_identity: str,
+    telemetry_factory: str | None = None,
+    telemetry_binding: str | None = None,
+) -> tuple[str, str]:
+    """Add Vercel WorkflowAgent telemetry configuration evidence."""
+    source_agent_name, source_agent_id = source_agent
+    attributes: dict[str, object] = {
+        "analysis": "typescript-vercel-workflow-agent-observability",
+        "module": "@ai-sdk/workflow",
+        "constructor": "WorkflowAgent",
+        "imported_symbol": "WorkflowAgent",
+        "configuration": "WorkflowAgent.telemetry",
+        "observability_scope": "workflow-agent-telemetry",
+        "telemetry_resolution": telemetry_resolution,
+        "source_agent": source_agent_name,
+        "source_agent_id": source_agent_id,
+        "scope": source_scope(relative),
+    }
+    if telemetry_factory is not None:
+        attributes["telemetry_factory"] = telemetry_factory
+    if telemetry_binding is not None:
+        attributes["telemetry_binding"] = telemetry_binding
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    ir.add_component(
+        Component(
+            "control",
+            "workflow-agent-telemetry",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    return "workflow-agent-telemetry", control_id
+
+
+def add_typescript_vercel_workflow_agent_callback_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    source_agent: tuple[str, str],
+    callbacks: list[str],
+    callback_handlers: list[str],
+    symbol_identity: str,
+) -> tuple[str, str]:
+    """Add Vercel WorkflowAgent lifecycle/tool callback configuration evidence."""
+    source_agent_name, source_agent_id = source_agent
+    attributes: dict[str, object] = {
+        "analysis": "typescript-vercel-workflow-agent-observability",
+        "module": "@ai-sdk/workflow",
+        "constructor": "WorkflowAgent",
+        "imported_symbol": "WorkflowAgent",
+        "configuration": "WorkflowAgent.callbacks",
+        "observability_scope": "workflow-agent-callbacks",
+        "callbacks": callbacks,
+        "callback_count": len(callbacks),
+        "callback_handler_resolution": "configured-expression",
+        "source_agent": source_agent_name,
+        "source_agent_id": source_agent_id,
+        "scope": source_scope(relative),
+    }
+    if callback_handlers:
+        attributes["callback_handlers"] = callback_handlers
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    ir.add_component(
+        Component(
+            "control",
+            "workflow-agent-callbacks",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    return "workflow-agent-callbacks", control_id
+
+
 def add_typescript_openai_agent_guardrail_control(
     ir: RepositoryIR,
     *,
@@ -25370,6 +25482,136 @@ def typescript_graph(
                                 target_id=model_control_id,
                             )
                         )
+            telemetry_location = typescript_object_property_expression_location(
+                body,
+                "telemetry",
+                opening + 1,
+            )
+            if telemetry_location is not None:
+                telemetry_expression, telemetry_property_offset, _ = telemetry_location
+                telemetry_code = typescript_code_mask(telemetry_expression).strip()
+                if telemetry_code and telemetry_code not in {"undefined", "null", "false"}:
+                    telemetry_resolution = "configured-expression"
+                    telemetry_factory = None
+                    telemetry_binding = None
+                    if telemetry_code.startswith("{"):
+                        telemetry_resolution = "inline-options"
+                    elif identifier := re.fullmatch(r"[A-Za-z_$][\w$]*", telemetry_code):
+                        telemetry_resolution = "binding"
+                        telemetry_binding = identifier.group(0)
+                    else:
+                        telemetry_factory = (
+                            typescript_call_callee_with_static_type_suffix(
+                                telemetry_expression
+                            )
+                        )
+                        if telemetry_factory is not None:
+                            telemetry_resolution = "factory-call"
+                    telemetry_line = line_at(text, telemetry_property_offset)
+                    telemetry_name, telemetry_id = (
+                        add_typescript_vercel_workflow_agent_telemetry_control(
+                            ir,
+                            relative=relative,
+                            lines=lines,
+                            line=telemetry_line,
+                            source_agent=(agent_name, agent_id),
+                            telemetry_resolution=telemetry_resolution,
+                            telemetry_factory=telemetry_factory,
+                            telemetry_binding=telemetry_binding,
+                            symbol_identity=f"{agent_identity}.telemetry@{telemetry_line}",
+                        )
+                    )
+                    telemetry_attributes: dict[str, object] = {
+                        "analysis": "typescript-vercel-workflow-agent-observability",
+                        "configuration": "WorkflowAgent-telemetry",
+                        "binding": "telemetry",
+                        "telemetry_resolution": telemetry_resolution,
+                    }
+                    if telemetry_factory is not None:
+                        telemetry_attributes["telemetry_factory"] = telemetry_factory
+                    if telemetry_binding is not None:
+                        telemetry_attributes["telemetry_binding"] = telemetry_binding
+                    ir.add_relationship(
+                        Relationship(
+                            "agent",
+                            agent_name,
+                            "configured-by",
+                            "control",
+                            telemetry_name,
+                            Evidence(
+                                relative,
+                                telemetry_line,
+                                excerpt(lines, telemetry_line),
+                            ),
+                            telemetry_attributes,
+                            source_id=agent_id,
+                            target_id=telemetry_id,
+                        )
+                    )
+            callback_entries: list[tuple[int, str, str | None]] = []
+            for callback_name in TYPESCRIPT_VERCEL_WORKFLOW_AGENT_CALLBACK_PROPERTIES:
+                callback_location = typescript_object_property_expression_location(
+                    body,
+                    callback_name,
+                    opening + 1,
+                )
+                if callback_location is None:
+                    continue
+                callback_expression, callback_property_offset, _ = callback_location
+                callback_code = typescript_code_mask(callback_expression).strip()
+                if not callback_code or callback_code in {"undefined", "null", "false"}:
+                    continue
+                callback_entries.append(
+                    (
+                        callback_property_offset,
+                        callback_name,
+                        typescript_call_callee_with_static_type_suffix(
+                            callback_expression
+                        ),
+                    )
+                )
+            if callback_entries:
+                callback_entries.sort()
+                callback_names = [entry[1] for entry in callback_entries]
+                callback_handlers = sorted(
+                    {
+                        handler
+                        for _offset, _callback_name, handler in callback_entries
+                        if handler is not None
+                    }
+                )
+                callback_line = line_at(text, callback_entries[0][0])
+                callback_control_name, callback_control_id = (
+                    add_typescript_vercel_workflow_agent_callback_control(
+                        ir,
+                        relative=relative,
+                        lines=lines,
+                        line=callback_line,
+                        source_agent=(agent_name, agent_id),
+                        callbacks=callback_names,
+                        callback_handlers=callback_handlers,
+                        symbol_identity=f"{agent_identity}.callbacks@{callback_line}",
+                    )
+                )
+                ir.add_relationship(
+                    Relationship(
+                        "agent",
+                        agent_name,
+                        "configured-by",
+                        "control",
+                        callback_control_name,
+                        Evidence(relative, callback_line, excerpt(lines, callback_line)),
+                        {
+                            "analysis": "typescript-vercel-workflow-agent-observability",
+                            "configuration": "WorkflowAgent-callbacks",
+                            "binding": "callback-properties",
+                            "callbacks": callback_names,
+                            "callback_count": len(callback_names),
+                        },
+                        source_id=agent_id,
+                        target_id=callback_control_id,
+                    )
+                )
         if constructor == "Agent" and exact_openai_agent_import:
             model_settings_location = typescript_object_property_expression_location(
                 body,
