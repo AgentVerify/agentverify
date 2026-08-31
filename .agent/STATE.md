@@ -7,13 +7,20 @@ catalog workflows.
 
 ## Completed recently
 
+- Extended exact TypeScript OpenAI Agents JS Codex extension tool inventory through relative
+  imported `codexTool({...})` bindings from sibling modules, including exact named local reexports
+  and unambiguous star reexports. Imported Codex tools now preserve producer-file tool/control
+  identity, consumer Agent-to-tool edges, thread-option governance metadata, and binding-source
+  resolution, while ambiguous two-source star barrels remain unresolved. Focused Codex-tool labels
+  pass 38/38, the full public IR truth set now passes 2,558/2,558, and benchmark verification
+  passes 3,288/3,288 combined public-regression labels.
 - Extended exact TypeScript OpenAI RealtimeSession output-guardrail inventory through relative
   imported typed `RealtimeOutputGuardrail[]` arrays, including exact named local reexports used
   directly or through exact typed `RealtimeSessionOptions` spreads. Imported Realtime guardrails now
   preserve names, literal/dynamic `tripwireTriggered` metadata, debounce settings from spread
   options, and source-agent governance edges; ambiguous two-source star barrels remain binding-only.
-  Focused Realtime guardrail labels pass 25/25, and the full public IR truth set now passes
-  2,545/2,545.
+  Focused Realtime guardrail labels pass 25/25; the current public IR aggregate is recorded in the
+  latest entry above.
 - Extended exact TypeScript OpenAI Agents SDK tool guardrail inventory through relative imported
   typed `ToolInputGuardrailDefinition[]` / `ToolOutputGuardrailDefinition[]` arrays, including exact
   named local reexports. Imported tool guardrail controls now preserve literal names, allow/reject
@@ -98,8 +105,8 @@ catalog workflows.
   `run(agent, input, {...})` calls and stable `Runner.run(agent, input, {...})` calls. The new
   `streaming-run` control records streaming runtime mode and event-surface scope without treating
   streaming as durable audit proof. Eight labels under `IR-TS-OPENAI-RUN-STREAMING` pass from the
-  local conversation fixture and the pinned hosted MCP human-in-the-loop example; the full public
-  IR truth set now passes 2,522/2,522, and the refreshed 71-repository engine benchmark records
+  local conversation fixture and the pinned hosted MCP human-in-the-loop example; the refreshed
+  71-repository engine benchmark records
   2,975 relationships / 10,848 symbolized components. The benchmark summary now includes a
   first-class `typescript_openai_run_streaming` slice with 17 controls: 11 direct `run(...)`,
   six stable `Runner.run(...)`, and 17 configured-by edges in one repository.
@@ -109,18 +116,16 @@ catalog workflows.
   sandbox mode, default Codex thread model/reasoning, `approvalPolicy: "never"`, network/web-search
   toggles, stream callbacks, run-context thread reuse, top-level or default-thread working-directory
   values including shorthand bindings, and default thread options without explicit approval policy.
-  Mutated tool bindings are not treated as executable agent tools. Twenty-five labels under
-  `IR-TS-OPENAI-CODEX-TOOL` pass in
-  focused evaluation; the full public IR truth set passes 2,514/2,514, and the then-current
-  71-repository engine benchmark recorded 2,958 relationships / 10,831 symbolized components.
+  Mutated tool bindings are not treated as executable agent tools. This same-file/inline slice was
+  later extended with imported/reexported Codex bindings; see the current Codex entry above for the
+  latest public-IR counts.
 - Added exact Vercel `WorkflowAgent` framework-runtime approval IR for the pinned
   `packages/workflow/src/workflow-agent.ts` implementation: the scanner records the
   `tool.needsApproval` run-loop policy, writable-stream `tool-approval-request` chunk format, and
   approval-response continuation path that revalidates through `validateApprovedToolApprovals(...)`
   before approved execution or `execution-denied` results. Seven real labels under
-  `IR-APPROVAL-CONTROL` pass; the full public IR truth set passes 2,514/2,514 after refresh, and
-  the then-current 71-repository engine benchmark recorded 2,958 relationships / 10,831 symbolized
-  components.
+  `IR-APPROVAL-CONTROL` passed in the then-current public IR refresh, and the then-current
+  71-repository engine benchmark recorded 2,958 relationships / 10,831 symbolized components.
 - Extended exact Vercel `WorkflowAgent` observability IR from constructor options to same-file
   `agent.stream({ ... })` telemetry and callback options when the agent binding is source-proven
   and unreassigned before the stream call. The pinned Vercel AI `telemetry-agent.ts` stream

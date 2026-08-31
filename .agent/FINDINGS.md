@@ -47,10 +47,13 @@
 - The runtime catalog currently contains 25 enabled reporting rules.
 - OpenAI Agents JS `codexTool(...)` from
   `@openai/agents-extensions/experimental/codex` is now source-proven IR when the tool is passed
-  directly or through an immutable same-file binding into an exact `@openai/agents` `Agent`
-  literal `tools` array. The scanner records Codex thread options such as
-  `approvalPolicy: "never"`, sandbox mode, network/web-search toggles, stream callbacks, and
-  run-context thread reuse. The engine benchmark now exposes this as
+  directly, through an immutable same-file binding, or through an exact relative imported/named
+  reexported/unambiguous star-reexported binding into an exact `@openai/agents` `Agent` literal
+  `tools` array. The scanner records Codex thread options such as `approvalPolicy: "never"`,
+  sandbox mode, network/web-search toggles, stream callbacks, and run-context thread reuse; ambiguous
+  two-source barrels and mutated bindings remain unresolved. The public Codex-tool slice now passes
+  38/38 labels, and the full public IR truth set passes 2,558/2,558. The engine benchmark exposes
+  the real same-file OpenAI examples as
   `typescript_openai_codex_tool`: four Codex tools, four policy controls, three explicit
   `approvalPolicy: "never"` controls, one default thread-options control without explicit approval
   policy, four agent-tool edges, and four configured-by edges. This is inventory for a
@@ -883,8 +886,8 @@
   `RealtimeOutputGuardrail[]` arrays. Direct imports and exact named local reexports used through
   typed `RealtimeSessionOptions` spreads preserve literal names, direct `tripwireTriggered`
   metadata, debounce settings, and source-agent governance edges, while ambiguous same-name barrels
-  remain binding-only. The local Realtime guardrail fixture raises the slice to 25/25 labels and the
-  full public IR truth set to 2,545/2,545 labels.
+  remain binding-only. The local Realtime guardrail fixture raised the slice to 25/25 labels in the
+  then-current public IR refresh.
 - OpenAI Agents JS Agent-level input/output guardrails are now reviewable when source-proven.
   Exact `new Agent({ inputGuardrails })` and `new Agent({ outputGuardrails })` constructor options
   emit `agent-guardrail-policy` controls linked to the source agent, including
@@ -1003,8 +1006,8 @@
   `stream: true` appears on exact direct `run(...)` or stable `Runner.run(...)` calls with a
   source-proven agent. The local conversation fixture and pinned hosted MCP human-in-the-loop
   example prove both direct and Runner-run forms, raising the new
-  `IR-TS-OPENAI-RUN-STREAMING` slice to 8/8 labels and the full public IR truth set to
-  2,522/2,522. The refreshed engine benchmark exposes this as
+  `IR-TS-OPENAI-RUN-STREAMING` slice to 8/8 labels in the then-current public IR refresh. The
+  refreshed engine benchmark exposes this as
   `typescript_openai_run_streaming`: 17 controls, 11 direct `run(...)`, six stable
   `Runner.run(...)`, and 17 configured-by edges in one repository. This intentionally does not
   claim audit persistence, actor attribution, or human review quality; those require separate

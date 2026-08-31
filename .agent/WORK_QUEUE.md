@@ -72,10 +72,10 @@
   approval/rejection decisions resolved from same-file or narrow exported sibling
   `RealtimeSession` bindings, plus exact `session.connect({ apiKey })` auth-source and transport
   context resolved from direct `RealtimeSession` bindings, plus exact Codex extension
-  `codexTool(...)` inventory for stable same-file bindings or inline literal tools with
-  `defaultThreadOptions.approvalPolicy`, sandbox mode, network/web-search toggles, stream callback,
-  top-level or default-thread working-directory values including shorthand bindings, and
-  run-context thread reuse metadata, without broadening into ambiguous
+  `codexTool(...)` inventory for stable same-file/imported/reexported bindings or inline literal
+  tools with `defaultThreadOptions.approvalPolicy`, sandbox mode, network/web-search toggles,
+  stream callback, top-level or default-thread working-directory values including shorthand
+  bindings, and run-context thread reuse metadata, without broadening into ambiguous
   helper/config composition, arbitrary spread objects, or lookalike event emitters/connectors. Exact
   same-file, exact imported sibling, and exact named/star-reexported sibling `Agent.clone({...})`
   lineage/list-property sharing semantics are now covered; future clone work should focus on list

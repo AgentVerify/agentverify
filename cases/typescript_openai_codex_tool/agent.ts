@@ -78,3 +78,33 @@ void agent;
 void inlineAgent;
 void threadOptionsAgent;
 void mutableAgent;
+
+import { importedCodex } from "./codex-tools";
+import { reexportedCodex } from "./codex-reexports";
+import { importedCodex as starCodex } from "./codex-star-barrel";
+import { ambiguousCodex } from "./codex-ambiguous-barrel";
+
+const importedAgent = new Agent({
+  name: "Imported Codex reviewer",
+  tools: [importedCodex],
+});
+
+const reexportedAgent = new Agent({
+  name: "Reexported Codex reviewer",
+  tools: [reexportedCodex],
+});
+
+const starAgent = new Agent({
+  name: "Star Codex reviewer",
+  tools: [starCodex],
+});
+
+const ambiguousImportedAgent = new Agent({
+  name: "Ambiguous imported Codex reviewer",
+  tools: [ambiguousCodex],
+});
+
+void importedAgent;
+void reexportedAgent;
+void starAgent;
+void ambiguousImportedAgent;

@@ -7738,6 +7738,9 @@ def test_typescript_openai_agents_codex_tool_flow_is_exact() -> None:
         "ts:agent.ts#tool:codex.codexTool",
         "ts:agent.ts#tool:inlineAgent.inlineCodexTool@29",
         "ts:agent.ts#tool:threadOptionsAgent.inlineCodexTool@50",
+        "ts:codex-tools.ts#tool:importedCodex.codexTool",
+        "ts:codex-tools.ts#tool:reexportedCodex.codexTool",
+        "ts:codex-tools.ts#tool:starCodex.codexTool",
     }
     assert tools["ts:agent.ts#tool:codex.codexTool"].attributes == {
         "analysis": "typescript-openai-agents-codex-tool",
@@ -7787,6 +7790,21 @@ def test_typescript_openai_agents_codex_tool_flow_is_exact() -> None:
     assert tools["ts:agent.ts#tool:threadOptionsAgent.inlineCodexTool@50"].attributes[
         "working_directory_configuration"
     ] == "codexTool.workingDirectory"
+    assert tools["ts:codex-tools.ts#tool:importedCodex.codexTool"].attributes[
+        "tool_binding_source"
+    ] == "imported-local-codex-tool"
+    assert tools["ts:codex-tools.ts#tool:importedCodex.codexTool"].attributes[
+        "tool_name"
+    ] == "imported_codex_reviewer"
+    assert tools["ts:codex-tools.ts#tool:importedCodex.codexTool"].attributes[
+        "network_access_enabled"
+    ] is False
+    assert tools["ts:codex-tools.ts#tool:reexportedCodex.codexTool"].attributes[
+        "tool_binding_source"
+    ] == "imported-local-reexported-codex-tool"
+    assert tools["ts:codex-tools.ts#tool:starCodex.codexTool"].attributes[
+        "tool_binding_source"
+    ] == "imported-local-star-reexported-codex-tool"
 
     controls = {
         component.symbol_id: component
@@ -7798,6 +7816,9 @@ def test_typescript_openai_agents_codex_tool_flow_is_exact() -> None:
     assert set(controls) == {
         "ts:agent.ts#control:codex.codexTool.defaultThreadOptions",
         "ts:agent.ts#control:inlineAgent.inlineCodexTool@29.defaultThreadOptions",
+        "ts:codex-tools.ts#control:importedCodex.codexTool.defaultThreadOptions",
+        "ts:codex-tools.ts#control:reexportedCodex.codexTool.defaultThreadOptions",
+        "ts:codex-tools.ts#control:starCodex.codexTool.defaultThreadOptions",
     }
     assert all(
         control.attributes["configuration"] == "codexTool.defaultThreadOptions"
@@ -7808,6 +7829,9 @@ def test_typescript_openai_agents_codex_tool_flow_is_exact() -> None:
     assert controls[
         "ts:agent.ts#control:inlineAgent.inlineCodexTool@29.defaultThreadOptions"
     ].attributes["tool_name"] == "codex_engineer"
+    assert controls[
+        "ts:codex-tools.ts#control:reexportedCodex.codexTool.defaultThreadOptions"
+    ].attributes["tool_binding_source"] == "imported-local-reexported-codex-tool"
     thread_option_controls = {
         component.symbol_id: component
         for component in ir.components
@@ -7843,8 +7867,27 @@ def test_typescript_openai_agents_codex_tool_flow_is_exact() -> None:
             "ts:agent.ts#agent:threadOptionsAgent",
             "ts:agent.ts#tool:threadOptionsAgent.inlineCodexTool@50",
         ),
+        (
+            "ts:agent.ts#agent:importedAgent",
+            "ts:codex-tools.ts#tool:importedCodex.codexTool",
+        ),
+        (
+            "ts:agent.ts#agent:reexportedAgent",
+            "ts:codex-tools.ts#tool:reexportedCodex.codexTool",
+        ),
+        (
+            "ts:agent.ts#agent:starAgent",
+            "ts:codex-tools.ts#tool:starCodex.codexTool",
+        ),
     }
     assert all("mutableAgent" not in source_id for source_id, _ in agent_edges)
+    assert all("ambiguousImportedAgent" not in source_id for source_id, _ in agent_edges)
+    assert agent_edges[
+        (
+            "ts:agent.ts#agent:importedAgent",
+            "ts:codex-tools.ts#tool:importedCodex.codexTool",
+        )
+    ].evidence.line == 89
 
     control_edges = {
         (relationship.source_id, relationship.target_id): relationship
@@ -7866,6 +7909,18 @@ def test_typescript_openai_agents_codex_tool_flow_is_exact() -> None:
         (
             "ts:agent.ts#tool:threadOptionsAgent.inlineCodexTool@50",
             "ts:agent.ts#control:threadOptionsAgent.inlineCodexTool@50.defaultThreadOptions",
+        ),
+        (
+            "ts:codex-tools.ts#tool:importedCodex.codexTool",
+            "ts:codex-tools.ts#control:importedCodex.codexTool.defaultThreadOptions",
+        ),
+        (
+            "ts:codex-tools.ts#tool:reexportedCodex.codexTool",
+            "ts:codex-tools.ts#control:reexportedCodex.codexTool.defaultThreadOptions",
+        ),
+        (
+            "ts:codex-tools.ts#tool:starCodex.codexTool",
+            "ts:codex-tools.ts#control:starCodex.codexTool.defaultThreadOptions",
         ),
     }
     assert control_edges[

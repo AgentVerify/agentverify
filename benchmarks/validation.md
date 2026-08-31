@@ -1760,13 +1760,14 @@ Twelve OpenAI Agents JS trace labels pin local and real `withTrace(..., { groupI
 `withTrace(..., { traceId })` correlation evidence, including the real `routing.ts` dynamic
 `conversationId` group binding, the real Codex tool example's generated trace ID with a logged
 OpenAI platform trace URL, and local missing-option negatives.
-Twenty-five OpenAI Agents JS Codex-tool labels pin exact `codexTool(...)` values that reach Agent
-literal `tools` arrays, including same-file binding and inline forms, real
+Thirty-eight OpenAI Agents JS Codex-tool labels pin exact `codexTool(...)` values that reach Agent
+literal `tools` arrays, including same-file binding, inline forms, exact relative imported/named
+reexported/star-reexported bindings, an ambiguous two-source star-barrel negative, real
 `approvalPolicy: 'never'` default-thread options, workspace-write sandbox mode,
-network/web-search toggles, stream
-callback bindings, run-context thread reuse, top-level/default-thread working-directory values,
-default thread options without explicit approval, and a mutated-binding negative.
-All 2,522 IR labels pass (1,937 positives and 585 negatives). The checked
+network/web-search toggles, stream callback bindings, run-context thread reuse,
+top-level/default-thread working-directory values, default thread options without explicit
+approval, and a mutated-binding negative.
+All 2,558 IR labels pass (1,966 positives and 592 negatives). The checked
 `benchmarks/ir-truthset-results.json` file contains the current per-check precision/recall
 breakdown, including the Vercel WorkflowAgent same-file/imported/reexported model-binding labels,
 direct/named-reexported/star-reexported execute-helper tool-graph labels, real Vercel

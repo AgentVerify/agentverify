@@ -13682,6 +13682,18 @@ class TypeScriptToolObjectBinding:
 
 
 @dataclass(frozen=True)
+class TypeScriptCodexToolBinding:
+    path: str
+    text: str
+    expression_offset: int
+    declaration_end: int
+    local_factory: str
+    attributes: dict[str, object]
+    evidence_offset: int
+    resolution: str = "same-file-codex-tool"
+
+
+@dataclass(frozen=True)
 class TypeScriptFunctionBodyBinding:
     path: str
     text: str
@@ -46243,8 +46255,228 @@ def add_typescript_openai_agents_codex_tool_flow(
             approval_policy_offset,
         )
 
+    def initializer_after_equals(
+        module_text: str,
+        equals_end: int,
+    ) -> tuple[str, int, int] | None:
+        module_code = typescript_code_mask(module_text)
+        cursor = equals_end
+        while cursor < len(module_code) and module_code[cursor].isspace():
+            cursor += 1
+        expression_start = cursor
+        depths = {"(": 0, "[": 0, "{": 0}
+        closing = {")": "(", "]": "[", "}": "{"}
+        while cursor < len(module_code):
+            character = module_code[cursor]
+            if character in depths:
+                depths[character] += 1
+            elif character in closing and depths[closing[character]]:
+                depths[closing[character]] -= 1
+            elif character == ";" and not any(depths.values()):
+                break
+            cursor += 1
+        expression = module_text[expression_start:cursor].strip()
+        if not expression:
+            return None
+        leading = len(module_text[expression_start:cursor]) - len(
+            module_text[expression_start:cursor].lstrip()
+        )
+        return expression, expression_start + leading, cursor
+
+    def exported_codex_tool_bindings(
+        path: Path,
+        module_text: str,
+        *,
+        seen: frozenset[Path] = frozenset(),
+    ) -> dict[str, TypeScriptCodexToolBinding]:
+        try:
+            canonical_path = path.resolve()
+        except OSError:
+            return {}
+        if canonical_path in seen:
+            return {}
+        seen = seen | {canonical_path}
+        module_code = typescript_code_mask(module_text)
+        module_relative = path.relative_to(root).as_posix()
+        codex_imports = {
+            local
+            for local, imported in typescript_named_import_bindings(
+                module_text,
+                "@openai/agents-extensions/experimental/codex",
+            ).items()
+            if imported == "codexTool"
+            and not typescript_import_binding_is_shadowed(module_text, local)
+        }
+        candidates: dict[str, list[TypeScriptCodexToolBinding]] = defaultdict(list)
+        exported_const_pattern = re.compile(
+            r"\bexport\s+const\s+([A-Za-z_$][\w$]*)"
+            r"\s*(?::\s*(?:[^=;\n]|=(?!>))+)?="
+        )
+        for match in exported_const_pattern.finditer(module_code):
+            exported_name = match.group(1)
+            initializer = initializer_after_equals(module_text, match.end())
+            if initializer is None:
+                continue
+            expression, expression_offset, declaration_end = initializer
+            call = typescript_call_parts(expression)
+            if call is None:
+                continue
+            local_factory, call_body, call_body_offset = call
+            if local_factory not in codex_imports:
+                continue
+            options = literal_object_arg(call_body, expression_offset + call_body_offset)
+            if options is None:
+                continue
+            options_expression, options_offset = options
+            attributes, evidence_offset, approval_policy_offset = codex_tool_attributes(
+                options_expression,
+                options_offset,
+            )
+            if not typescript_const_provider_binding_is_stable(
+                module_text,
+                exported_name,
+                declaration_end,
+            ):
+                continue
+            candidates[exported_name].append(
+                TypeScriptCodexToolBinding(
+                    module_relative,
+                    module_text,
+                    expression_offset,
+                    declaration_end,
+                    local_factory,
+                    attributes,
+                    approval_policy_offset
+                    if approval_policy_offset is not None
+                    else evidence_offset
+                    if evidence_offset is not None
+                    else expression_offset,
+                    "exported-local-codex-tool",
+                )
+            )
+        for match in TS_NAMED_EXPORT_FROM.finditer(module_text):
+            target = typescript_resolve_local_module(root, path, match.group(2))
+            if target is None:
+                continue
+            try:
+                target_text = target.read_text(encoding="utf-8-sig", errors="ignore")
+            except OSError:
+                continue
+            target_exports = exported_codex_tool_bindings(
+                target,
+                target_text,
+                seen=seen,
+            )
+            for raw_specifier in match.group(1).split(","):
+                parts = typescript_named_specifier_parts(raw_specifier)
+                if parts is None:
+                    continue
+                original, exported_name = parts
+                binding = target_exports.get(original)
+                if binding is None:
+                    continue
+                candidates[exported_name].append(
+                    TypeScriptCodexToolBinding(
+                        binding.path,
+                        binding.text,
+                        binding.expression_offset,
+                        0,
+                        binding.local_factory,
+                        binding.attributes,
+                        binding.evidence_offset,
+                        "reexported-local-codex-tool",
+                    )
+                )
+        for match in TS_STAR_EXPORT_FROM.finditer(module_text):
+            target = typescript_resolve_local_module(root, path, match.group(1))
+            if target is None:
+                continue
+            try:
+                target_text = target.read_text(encoding="utf-8-sig", errors="ignore")
+            except OSError:
+                continue
+            target_exports = exported_codex_tool_bindings(
+                target,
+                target_text,
+                seen=seen,
+            )
+            for exported_name, binding in target_exports.items():
+                candidates[exported_name].append(
+                    TypeScriptCodexToolBinding(
+                        binding.path,
+                        binding.text,
+                        binding.expression_offset,
+                        0,
+                        binding.local_factory,
+                        binding.attributes,
+                        binding.evidence_offset,
+                        "star-reexported-local-codex-tool",
+                    )
+                )
+        return {
+            name: bindings[0]
+            for name, bindings in candidates.items()
+            if len(bindings) == 1
+        }
+
+    def imported_codex_tool_bindings(
+        path: Path,
+        module_text: str,
+    ) -> dict[str, TypeScriptCodexToolBinding]:
+        import_counts: Counter[str] = Counter()
+        imported_bindings: list[tuple[int, str, str, str]] = []
+        for match in TS_NAMED_IMPORT.finditer(module_text):
+            specifier = match.group(2)
+            for raw_specifier in match.group(1).split(","):
+                parts = typescript_named_specifier_parts(raw_specifier)
+                if parts is None:
+                    continue
+                original, local = parts
+                import_counts[local] += 1
+                imported_bindings.append((match.end(), specifier, original, local))
+
+        resolved: dict[str, TypeScriptCodexToolBinding] = {}
+        export_cache: dict[Path, dict[str, TypeScriptCodexToolBinding]] = {}
+        shadowed_imports = typescript_import_bindings_shadowed(
+            module_text,
+            set(import_counts),
+        )
+        for import_end, specifier, original, local in imported_bindings:
+            if import_counts[local] != 1 or local in shadowed_imports:
+                continue
+            target = typescript_resolve_local_module(root, path, specifier)
+            if target is None:
+                continue
+            try:
+                target_text = target.read_text(encoding="utf-8-sig", errors="ignore")
+            except OSError:
+                continue
+            if target not in export_cache:
+                export_cache[target] = exported_codex_tool_bindings(target, target_text)
+            binding = export_cache[target].get(original)
+            if binding is None:
+                continue
+            resolution = (
+                "imported-local-reexported-codex-tool"
+                if binding.resolution == "reexported-local-codex-tool"
+                else "imported-local-star-reexported-codex-tool"
+                if binding.resolution == "star-reexported-local-codex-tool"
+                else "imported-local-codex-tool"
+            )
+            resolved[local] = TypeScriptCodexToolBinding(
+                binding.path,
+                binding.text,
+                binding.expression_offset,
+                import_end,
+                binding.local_factory,
+                binding.attributes,
+                binding.evidence_offset,
+                resolution,
+            )
+        return resolved
+
     for relative, text in read_sources().items():
-        if "codexTool" not in text or "new Agent" not in text:
+        if "new Agent" not in text:
             continue
         codex_imports = {
             local
@@ -46259,11 +46491,11 @@ def add_typescript_openai_agents_codex_tool_flow(
             for local, imported in typescript_named_import_bindings(text, "@openai/agents").items()
             if imported == "Agent" and not typescript_import_binding_is_shadowed(text, local)
         }
-        if not codex_imports or not agent_imports:
+        if not agent_imports:
             continue
         code = typescript_code_mask(text)
         lines = text.splitlines()
-        codex_bindings: dict[str, tuple[str, int, dict[str, object], int]] = {}
+        codex_bindings: dict[str, TypeScriptCodexToolBinding] = {}
         for binding_name, expression, expression_offset in typescript_variable_initializers(text):
             call = typescript_call_parts(expression)
             if call is None:
@@ -46279,16 +46511,23 @@ def add_typescript_openai_agents_codex_tool_flow(
                 options_expression,
                 options_offset,
             )
-            codex_bindings[binding_name] = (
-                local_factory,
+            codex_bindings[binding_name] = TypeScriptCodexToolBinding(
+                relative,
+                text,
                 expression_offset,
+                expression_offset,
+                local_factory,
                 attributes,
                 approval_policy_offset
                 if approval_policy_offset is not None
                 else evidence_offset
                 if evidence_offset is not None
                 else expression_offset,
+                "same-file-codex-tool",
             )
+        codex_bindings.update(imported_codex_tool_bindings(root / relative, text))
+        if not codex_imports and not codex_bindings:
+            continue
 
         agent_pattern = re.compile(
             r"\bconst\s+([A-Za-z_$][\w$]*)"
@@ -46336,6 +46575,7 @@ def add_typescript_openai_agents_codex_tool_flow(
                 captured_local_constructor: str = local_constructor,
                 captured_agent_binding: str = agent_binding,
                 captured_agent_id: str = agent_id,
+                captured_agent_tool_evidence: Evidence | None = None,
             ) -> None:
                 nonlocal emitted_agent
                 if not emitted_agent:
@@ -46427,7 +46667,7 @@ def add_typescript_openai_agents_codex_tool_flow(
                         "uses",
                         "tool",
                         "Codex tool",
-                        evidence,
+                        captured_agent_tool_evidence or evidence,
                         edge_attributes,
                         source_id=captured_agent_id,
                         target_id=tool_id,
@@ -46482,24 +46722,44 @@ def add_typescript_openai_agents_codex_tool_flow(
                     binding = codex_bindings.get(binding_name)
                     if binding is None:
                         continue
-                    local_factory, expression_offset, attributes, evidence_offset = binding
-                    if expression_offset > item_offset:
+                    if binding.declaration_end > item_offset:
                         continue
+                    attributes = dict(binding.attributes)
+                    imported_binding = binding.resolution != "same-file-codex-tool"
+                    if imported_binding:
+                        attributes["tool_binding_source"] = binding.resolution
                     if re.search(
                         rf"(?<![\w$.]){re.escape(binding_name)}\s*=(?!=)",
-                        code[expression_offset:item_offset],
+                        code[binding.declaration_end:item_offset],
                     ) or re.search(
                         rf"(?<![\w$]){re.escape(binding_name)}\s*(?:\.|\[)",
-                        code[expression_offset:item_offset],
+                        code[binding.declaration_end:item_offset],
                     ):
                         continue
+                    kwargs: dict[str, object] = {}
+                    if imported_binding:
+                        tool_source_lines = binding.text.splitlines()
+                        item_line = line_at(text, item_offset)
+                        kwargs = {
+                            "tool_line": line_at(binding.text, binding.expression_offset),
+                            "captured_relative": binding.path,
+                            "captured_lines": tool_source_lines,
+                            "captured_text": binding.text,
+                            "captured_agent_tool_evidence": Evidence(
+                                relative,
+                                item_line,
+                                excerpt(lines, item_line),
+                            ),
+                        }
+                    else:
+                        kwargs = {"tool_line": line_at(text, item_offset)}
                     emit_codex_tool(
-                        local_factory=local_factory,
-                        tool_line=line_at(text, item_offset),
-                        tool_evidence_offset=evidence_offset,
+                        local_factory=binding.local_factory,
+                        tool_evidence_offset=binding.evidence_offset,
                         tool_symbol_name=f"{binding_name}.codexTool",
                         tool_reference=binding_name,
                         attributes=attributes,
+                        **kwargs,
                     )
                     continue
                 call = typescript_call_parts(item)
