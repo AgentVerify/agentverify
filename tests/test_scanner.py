@@ -7003,6 +7003,8 @@ def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:
         "ts:agent.ts#control:importedGuardrailTool.inputGuardrails@100",
         "ts:agent.ts#control:importedGuardrailTool.outputGuardrails@101",
         "ts:agent.ts#control:ambiguousImportedGuardrailTool.inputGuardrails@109",
+        "ts:exported-tools.ts#control:exportedGuardrailTool.inputGuardrails@13",
+        "ts:exported-tools.ts#control:exportedGuardrailTool.outputGuardrails@14",
     }
     assert controls["ts:agent.ts#control:classifyTool.inputGuardrails@44"].attributes == {
         "analysis": "typescript-openai-agents-tool-guardrails",
@@ -7084,6 +7086,15 @@ def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:
     assert controls[
         "ts:agent.ts#control:ambiguousImportedGuardrailTool.inputGuardrails@109"
     ].attributes["guardrail_source"] == "binding"
+    assert controls[
+        "ts:exported-tools.ts#control:exportedGuardrailTool.inputGuardrails@13"
+    ].attributes["source_tool_id"] == "ts:exported-tools.ts#tool:exportedGuardrailTool"
+    assert controls[
+        "ts:exported-tools.ts#control:exportedGuardrailTool.inputGuardrails@13"
+    ].attributes["guardrail_reject_condition_literals"] == ["private"]
+    assert controls[
+        "ts:exported-tools.ts#control:exportedGuardrailTool.outputGuardrails@14"
+    ].attributes["guardrail_actions"] == ["allow"]
     assert "guardrail_names" not in controls[
         "ts:agent.ts#control:ambiguousImportedGuardrailTool.inputGuardrails@109"
     ].attributes
@@ -7161,6 +7172,24 @@ def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:
     assert agent_edges[
         "ts:agent.ts#control:importedGuardrailTool.outputGuardrails@101"
     ].attributes["guardrail_source"] == "imported-local-reexported-typed-const-array"
+    assert agent_edges[
+        "ts:exported-tools.ts#control:exportedGuardrailTool.inputGuardrails@13"
+    ].source_id == "ts:agent.ts#agent:importedToolAgent"
+    assert agent_edges[
+        "ts:exported-tools.ts#control:exportedGuardrailTool.inputGuardrails@13"
+    ].attributes["via_tool_id"] == "ts:exported-tools.ts#tool:exportedGuardrailTool"
+    assert agent_edges[
+        "ts:exported-tools.ts#control:exportedGuardrailTool.inputGuardrails@13"
+    ].attributes["tool_guardrail_control_path"] == "exported-tools.ts"
+    assert agent_edges[
+        "ts:exported-tools.ts#control:exportedGuardrailTool.inputGuardrails@13"
+    ].attributes["guardrail_reject_condition_literals"] == ["private"]
+    assert agent_edges[
+        "ts:exported-tools.ts#control:exportedGuardrailTool.outputGuardrails@14"
+    ].source_id == "ts:agent.ts#agent:importedToolAgent"
+    assert agent_edges[
+        "ts:exported-tools.ts#control:exportedGuardrailTool.outputGuardrails@14"
+    ].attributes["tool_guardrail_control_line"] == 14
 
 
 def test_typescript_openai_agent_clone_is_exact() -> None:

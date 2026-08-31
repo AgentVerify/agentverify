@@ -1459,8 +1459,22 @@
 - Alternative: Infer Agent governance for imported tools, repeated tool bindings, or any object
   with `inputGuardrails`/`outputGuardrails`. Rejected because the current IR can only source-prove
   the tool guardrail control and Agent attachment in same-file, unambiguous bindings.
-- Revisit when imported guarded tool controls can be resolved with stable target identity across
-  files.
+- Later imported guarded-tool support is recorded in the exact tool-identity decision below.
+
+## OpenAI Agents JS imported guarded tools govern consumer Agents through exact tool identity
+
+- Decision: Add repository-level Agent-to-`tool-guardrail-policy` governance edges when an existing
+  exact Agent-to-tool `uses` relationship targets a tool whose producer-file
+  `tool-guardrail-policy` control records the same `source_tool_id`. Use the consumer Agent
+  relationship as evidence and carry producer guardrail metadata on the edge.
+- Evidence: The local `typescript_openai_tool_guardrails` fixture now exports a guarded
+  `tool(...)` from a sibling module, imports it into an Agent `tools` array, and passes focused
+  public IR labels 44/44 for both producer controls and imported Agent bridge edges.
+- Alternative: Reparse producer files from the consumer Agent site or infer governance from matching
+  tool names. Rejected because the IR already has stable exact IDs, and name matching would
+  overclaim ambiguous barrels or rebound tools.
+- Revisit when helper-created or factory-created guarded tools need richer interprocedural metadata
+  beyond the existing control/source-tool join.
 
 ## OpenAI Agents JS imported tool guardrail arrays require exact export provenance
 
@@ -1472,8 +1486,9 @@
 - Evidence: The local `typescript_openai_tool_guardrails` fixture now includes a directly imported
   input guardrail array with a shallow `String(...).includes("private")` reject predicate, a
   named-reexported output guardrail array with an allow action, and an ambiguous barrel exporting two
-  same-named input guardrail arrays. Focused public labels pass 40/40, including Agent-to-tool
-  bridge labels, and ambiguous negatives prove names/actions are not over-resolved.
+  same-named input guardrail arrays. Focused public labels passed the then-current typed-array
+  slice, including Agent-to-tool bridge labels, and ambiguous negatives prove names/actions are not
+  over-resolved.
 - Alternative: Only support same-file `defineToolInputGuardrail` /
   `defineToolOutputGuardrail` bindings. Rejected because SDK tool definitions commonly centralize
   reusable guardrail arrays beside other shared tool configuration, and exact typed exports provide

@@ -19918,6 +19918,93 @@ def add_typescript_openai_tool_guardrail_control(
     return "tool-guardrail-policy", control_id
 
 
+def add_typescript_openai_imported_tool_guardrail_edges(ir: RepositoryIR) -> None:
+    """Bridge exact Agent tool uses to guardrail controls emitted in another source file."""
+    controls_by_tool_id: dict[str, list[Component]] = defaultdict(list)
+    for component in ir.components:
+        if (
+            component.kind != "control"
+            or component.name != "tool-guardrail-policy"
+            or component.attributes.get("analysis") != "typescript-openai-agents-tool-guardrails"
+        ):
+            continue
+        source_tool_id = component.attributes.get("source_tool_id")
+        if isinstance(source_tool_id, str):
+            controls_by_tool_id[source_tool_id].append(component)
+
+    existing_edges = {
+        (relationship.source_id, relationship.target_id)
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.relation == "governed-by"
+        and relationship.target_kind == "control"
+        and relationship.target_name == "tool-guardrail-policy"
+    }
+    for relationship in list(ir.relationships):
+        if (
+            relationship.source_kind != "agent"
+            or relationship.relation != "uses"
+            or relationship.target_kind != "tool"
+            or relationship.source_id is None
+            or relationship.target_id is None
+        ):
+            continue
+        for control in controls_by_tool_id.get(relationship.target_id, ()):
+            if control.symbol_id is None:
+                continue
+            edge_key = (relationship.source_id, control.symbol_id)
+            if edge_key in existing_edges:
+                continue
+            existing_edges.add(edge_key)
+            guardrail_kind = control.attributes.get("guardrail_kind")
+            guardrail_relationship_attributes: dict[str, object] = {
+                "analysis": "typescript-openai-agents-tool-guardrails",
+                "configuration": "Agent.tools.toolGuardrails",
+                "via_tool": relationship.target_name,
+                "via_tool_id": relationship.target_id,
+                "tool_guardrail_control_path": control.evidence.path,
+                "tool_guardrail_control_line": control.evidence.line,
+            }
+            if isinstance(guardrail_kind, str):
+                guardrail_relationship_attributes["tool_configuration"] = (
+                    f"tool.{guardrail_kind}Guardrails"
+                )
+                guardrail_relationship_attributes["guardrail_kind"] = guardrail_kind
+                guardrail_relationship_attributes["guardrail_scope"] = (
+                    f"tool-{guardrail_kind}"
+                )
+            for key in (
+                "guardrail_source",
+                "guardrail_count",
+                "guardrail_bindings",
+                "guardrail_names",
+                "guardrail_name_count",
+                "guardrail_actions",
+                "guardrail_action_count",
+                "guardrail_reject_content",
+                "guardrail_reject_condition_sources",
+                "guardrail_reject_condition_count",
+                "guardrail_reject_condition_literals",
+                "guardrail_reject_condition_literal_count",
+                "source_tool",
+            ):
+                if key in control.attributes:
+                    guardrail_relationship_attributes[key] = control.attributes[key]
+            ir.add_relationship(
+                Relationship(
+                    "agent",
+                    relationship.source_name,
+                    "governed-by",
+                    "control",
+                    "tool-guardrail-policy",
+                    relationship.evidence,
+                    guardrail_relationship_attributes,
+                    source_id=relationship.source_id,
+                    target_id=control.symbol_id,
+                )
+            )
+
+
 def add_typescript_openai_realtime_session_config_control(
     ir: RepositoryIR,
     *,
@@ -47016,6 +47103,7 @@ def _scan_repository(
             )
         else:
             scan_typescript(ir, root, path, text)
+    add_typescript_openai_imported_tool_guardrail_edges(ir)
     add_typescript_configurable_ssrf_composition(ir, root, registry_paths)
     add_typescript_flowise_secure_request_composition(ir, root, registry_paths)
     add_typescript_flowise_secure_fetch_composition(ir, root, registry_paths)

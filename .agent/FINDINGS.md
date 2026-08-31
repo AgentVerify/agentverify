@@ -2,6 +2,18 @@
 
 ## Durable facts
 
+- OpenAI Agents JS imported guarded tools now carry tool-guardrail governance to consumer Agents
+  when identity is exact. The pinned SDK and local fixture expose reusable guarded
+  `tool({ inputGuardrails, outputGuardrails })` exports that are imported into another file's
+  `new Agent({ tools: [...] })`; repository-level IR already contains both the producer-file
+  `tool-guardrail-policy` controls with `source_tool_id` and the consumer-file Agent-to-tool
+  `uses` edge, so a conservative join can add Agent `governed-by` edges without reinterpreting
+  dynamic tool lists. Confidence is high for exact relative imports/reexports and existing exact
+  tool IDs, while dynamic/mutated tool arrays and opaque guardrail factories remain bounded.
+- OpenAI Agents JS Realtime input guardrails are not modeled at the pinned SDK revision. The pinned
+  OpenAI Agents JS corpus exposes Realtime output guardrail APIs and examples, but no stable
+  `RealtimeInputGuardrail` / RealtimeSession `inputGuardrails` surface. Avoid inventing a Realtime
+  input-guardrail rule until the SDK adds a concrete API shape or the corpus carries real examples.
 - Editor diagnostic projections are now schema-backed installed contracts:
   `agentverify schema editor-diagnostics` validates both plain LSP-style diagnostics and
   policy-aware diagnostic groups, while `agentverify contracts` exports the schema as a required
@@ -951,8 +963,8 @@
   imported directly, or via exact named local reexports, preserve names, allow/reject-content action
   metadata, shallow reject predicate literals, tool governance edges, and Agent-to-tool-guardrail
   bridge edges. Ambiguous barrels exporting the same guardrail array name from multiple modules stay
-  binding-only. The local tool guardrail fixture raises the tool guardrail slice to 40/40 labels and
-  the full public IR truth set to 2,538/2,538 labels.
+  binding-only. The local tool guardrail fixture established the typed-array slice before the later
+  imported guarded-tool Agent bridge expansion.
 - OpenAI Agents JS Agents now get exact governance edges to tool guardrail controls when their
   `tools` array references a same-file tool binding with proven guardrails. Dynamic and mutated tool
   guardrails remain bounded through their existing tool controls, while a lookalike object negative
@@ -1042,8 +1054,8 @@
 ## Warm public-regression scan cache is no longer the benchmark bottleneck
 
 - Finding: After the Python ComputerTool scanner change and full artifact refresh, a warm-cache full
-  IR truth-set run passed 2,562/2,562 labels with `scan_cache: hit=157 miss=0` in about 2.8 seconds
-  wall time, and a warm-cache full reporting-rule run passed 733/733 labels with
+  IR truth-set run hit all then-current labels with `scan_cache: hit=157 miss=0` in about 2.8
+  seconds wall time, and a warm-cache full reporting-rule run passed 733/733 labels with
   `scan_cache: hit=118 miss=0` in about 2.1 seconds wall time.
 - Confidence: High for the current local corpus/cache layout.
 - Implication: More near-term benchmark performance work should focus on cold-cache invalidation

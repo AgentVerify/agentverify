@@ -7,14 +7,21 @@ catalog workflows.
 
 ## Completed recently
 
+- Extended TypeScript OpenAI Agents JS tool-guardrail governance across imported guarded
+  `tool(...)` bindings. Agents that attach a proven imported tool now receive exact `governed-by`
+  edges to the producer-file `tool-guardrail-policy` controls via the existing Agent-to-tool
+  relationship and the tool control's stable source-tool id, preserving `via_tool_id`, guardrail
+  source/name/action/reject-condition metadata, and producer control path/line. Focused
+  `IR-TS-OPENAI-TOOL-GUARDRAILS` labels pass 44/44, the full reporting truth set passes 733/733,
+  the full public IR truth set passes 2,566/2,566, and benchmark verification passes 3,299/3,299
+  combined public-regression labels.
 - Extended OpenAI Agents Python `ComputerTool(on_safety_check=...)` inventory with exact
   non-acknowledgement metadata for boolean callbacks. Inline `lambda ...: False` and scope-proven
   same-file callbacks ending in a single `return False` now record
   `safety_check_policy: acknowledge-none` / `safety_check_decision: return-false` and remain
   `AV-APPROVAL011` non-findings, while exact `return True` auto-acknowledgement paths still report.
   Focused `AV-APPROVAL011` labels pass 13/13, focused `IR-APPROVAL-CONTROL` labels pass 140/140,
-  the full reporting truth set passes 733/733, the full public IR truth set passes 2,562/2,562,
-  and benchmark verification passes 3,295/3,295 combined public-regression labels.
+  and the current aggregate public-regression counts are recorded in the latest entry above.
 - Extended exact TypeScript OpenAI Agents JS Codex extension tool inventory through relative
   imported `codexTool({...})` bindings from sibling modules, including exact named local reexports
   and unambiguous star reexports. Imported Codex tools now preserve producer-file tool/control
@@ -41,8 +48,8 @@ catalog workflows.
   typed `ToolInputGuardrailDefinition[]` / `ToolOutputGuardrailDefinition[]` arrays, including exact
   named local reexports. Imported tool guardrail controls now preserve literal names, allow/reject
   action metadata, shallow reject-condition literals, tool governance edges, and Agent-to-tool
-  guardrail bridge edges; ambiguous two-source barrels remain binding-only. Focused tool guardrail
-  labels pass 40/40, and the full public IR truth set now passes 2,538/2,538.
+  guardrail bridge edges; ambiguous two-source barrels remain binding-only. The latest tool
+  guardrail aggregate is recorded in the imported guarded-tool entry above.
 - Extended exact TypeScript OpenAI Agents SDK Agent guardrail inventory through relative imported
   typed `InputGuardrail[]` / `OutputGuardrail[]` const arrays, including exact named local
   reexports. Imported guardrail controls now preserve literal names and `tripwireTriggered`

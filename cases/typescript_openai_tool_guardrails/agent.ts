@@ -119,3 +119,13 @@ const importedGuardrailAgent = new Agent({
 void importedGuardrailTool;
 void ambiguousImportedGuardrailTool;
 void importedGuardrailAgent;
+
+import { exportedGuardrailTool } from "./exported-tools";
+
+const importedToolAgent = new Agent({
+  name: "Imported exported tool guardrail classifier",
+  instructions: "Classify with an imported guarded tool.",
+  tools: [exportedGuardrailTool],
+});
+
+void importedToolAgent;
