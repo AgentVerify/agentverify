@@ -1,5 +1,21 @@
 # AgentVerify decisions
 
+## Editor contract verification keeps JSON default with opt-in summary logs
+
+- Decision: Keep `agentverify contracts --verify-dir` JSON as the default output and add
+  `--format summary` only as an explicit human-facing log mode. Export mode still emits the JSON
+  manifest; requesting summary without `--verify-dir` fails with a usage error.
+- Evidence: Editor extensions, review bots, and CI bootstrap jobs need stable schema-backed JSON
+  governed by `agentverify schema editor-contract-verification`, while GitHub Actions users benefit
+  from the same compact pass/fail log style already added for benchmark verifiers. The copyable
+  editor-contract workflow now writes the JSON verifier artifact, then prints the summary from a
+  second verification pass.
+- Alternative: Change the default output to summary or add summary fields to the verifier schema.
+  Rejected because downstream automation should not lose the machine-readable artifact by default,
+  and the existing JSON schema already carries the structured evidence needed by integrations.
+- Revisit when: A downstream editor or CI consumer needs a stable text-summary contract rather than
+  best-effort human logs.
+
 ## Engine-results schema validates artifact structure while allowing metric growth
 
 - Decision: Expose `benchmarks/engine-results.json` through an installed structural schema via

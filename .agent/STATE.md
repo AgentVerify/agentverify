@@ -7,6 +7,12 @@ catalog workflows.
 
 ## Completed recently
 
+- Added `agentverify contracts --verify-dir ... --format summary` for compact human-facing editor
+  contract verification logs while keeping JSON as the default machine-readable verifier artifact.
+  The copyable GitHub editor-contract workflow now writes
+  `agentverify-editor-contract-verification.json`, prints the compact summary, validates both
+  manifest/verifier JSON files against bundled schemas, and distribution checks require the summary
+  step so packaged examples stay tied to the CLI contract.
 - Hardened the copyable GitHub Actions policy gate so it validates `agentverify-policy.json` against
   a committed local digest trust root (`agentverify-policy-trust-root.json`) with
   `--require-trusted` before scanning. Policy docs now tell users to generate and commit the trust

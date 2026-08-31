@@ -7,7 +7,11 @@ from pathlib import Path
 from jsonschema import Draft202012Validator
 
 from agentverify import cli
-from agentverify.contracts import export_editor_contracts, verify_editor_contracts
+from agentverify.contracts import (
+    export_editor_contracts,
+    render_editor_contract_verification_summary,
+    verify_editor_contracts,
+)
 from agentverify.report import render_json, render_sarif, render_schema
 from agentverify.scanner import scan_repository
 
@@ -150,6 +154,27 @@ def test_editor_contract_verifier_accepts_exported_bundle(tmp_path: Path) -> Non
     }
 
 
+def test_editor_contract_verification_summary_accepts_exported_bundle(tmp_path: Path) -> None:
+    export_editor_contracts(
+        tmp_path,
+        sample_root=ROOT / "examples/safe_agent",
+    )
+    verification = verify_editor_contracts(tmp_path)
+
+    assert render_editor_contract_verification_summary(verification) == (
+        "AgentVerify Editor Contract Verification\n"
+        f"Directory: {tmp_path}\n"
+        "Passed: true\n"
+        "Manifest schema valid: true\n"
+        "Required artifacts present: true\n"
+        "Artifacts: 4 total (3 required)\n"
+        "Artifact files: 4/4 present\n"
+        "Digests: 4/4 ok\n"
+        "Byte counts: 4/4 ok\n"
+        "Content validation: 4/4 ok\n"
+    )
+
+
 def test_editor_contract_verifier_rejects_digest_drift(tmp_path: Path) -> None:
     export_editor_contracts(
         tmp_path,
@@ -235,6 +260,36 @@ def test_editor_contract_verifier_rejects_manifest_path_traversal(tmp_path: Path
     assert any("invalid artifact path: ../outside.json" in error for error in verification["errors"])
 
 
+def test_cli_contract_verifier_prints_summary(tmp_path: Path, capsys) -> None:
+    bundle = tmp_path / "contracts"
+    export_editor_contracts(bundle, sample_root=ROOT / "examples/safe_agent")
+
+    assert cli.main(["contracts", "--verify-dir", str(bundle), "--format", "summary"]) == 0
+
+    captured = capsys.readouterr()
+    assert captured.err == ""
+    assert captured.out == (
+        "AgentVerify Editor Contract Verification\n"
+        f"Directory: {bundle}\n"
+        "Passed: true\n"
+        "Manifest schema valid: true\n"
+        "Required artifacts present: true\n"
+        "Artifacts: 4 total (3 required)\n"
+        "Artifact files: 4/4 present\n"
+        "Digests: 4/4 ok\n"
+        "Byte counts: 4/4 ok\n"
+        "Content validation: 4/4 ok\n"
+    )
+
+
+def test_cli_contract_summary_format_requires_verify_dir(capsys) -> None:
+    assert cli.main(["contracts", "--format", "summary"]) == 2
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err == "agentverify: --format summary requires --verify-dir\n"
+
+
 def test_cli_contract_verifier_rejects_missing_required_artifact(
     tmp_path: Path, capsys
 ) -> None:
@@ -277,7 +332,9 @@ def test_editor_integration_docs_reference_exported_artifacts() -> None:
     assert "agentverify schema editor-contract-manifest" in docs
     assert "agentverify schema editor-contract-verification" in docs
     assert "agentverify contracts --verify-dir agentverify-editor-contracts" in docs
+    assert "agentverify contracts --verify-dir agentverify-editor-contracts --format summary" in docs
     assert "agentverify contracts --verify-dir" in readme
+    assert "agentverify contracts --verify-dir agentverify-editor-contracts --format summary" in readme
     assert "`kind`" in docs
     assert "`contract`" in docs
     assert "`required`" in docs

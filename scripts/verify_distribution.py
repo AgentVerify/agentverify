@@ -93,6 +93,8 @@ REQUIRED_SOURCE_WORKFLOW_FRAGMENTS = {
             "--output agentverify-editor-contract-manifest.json",
             "--verify-dir agentverify-editor-contracts",
             "--output agentverify-editor-contract-verification.json",
+            "Print editor contract verification summary",
+            "--format summary",
             "agentverify schema editor-contract-manifest",
             "agentverify schema editor-contract-verification",
             "Draft202012Validator(manifest_schema).validate(manifest)",

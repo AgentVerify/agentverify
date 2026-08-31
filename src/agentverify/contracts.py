@@ -259,3 +259,34 @@ def verify_editor_contracts(bundle_dir: Path) -> dict[str, object]:
 
 def render_editor_contract_verification(payload: dict[str, object]) -> str:
     return json.dumps(payload, indent=2, sort_keys=True) + "\n"
+
+
+def render_editor_contract_verification_summary(payload: dict[str, object]) -> str:
+    artifacts = payload["artifacts"]
+    if not isinstance(artifacts, list):
+        raise TypeError("artifacts must be an array")
+    required = [artifact for artifact in artifacts if artifact.get("required") is True]
+    content_checked = [
+        artifact for artifact in artifacts if isinstance(artifact.get("content_valid"), bool)
+    ]
+    lines = [
+        "AgentVerify Editor Contract Verification",
+        f"Directory: {payload['directory']}",
+        f"Passed: {str(payload['passed']).lower()}",
+        f"Manifest schema valid: {str(payload['manifest_schema_valid']).lower()}",
+        f"Required artifacts present: {str(payload['required_artifacts_present']).lower()}",
+        f"Artifacts: {len(artifacts)} total ({len(required)} required)",
+        f"Artifact files: {sum(1 for artifact in artifacts if artifact['present'] is True)}/{len(artifacts)} present",
+        f"Digests: {sum(1 for artifact in artifacts if artifact['digest_ok'] is True)}/{len(artifacts)} ok",
+        f"Byte counts: {sum(1 for artifact in artifacts if artifact['bytes_ok'] is True)}/{len(artifacts)} ok",
+        (
+            "Content validation: "
+            f"{sum(1 for artifact in content_checked if artifact['content_valid'] is True)}/"
+            f"{len(content_checked)} ok"
+        ),
+    ]
+    errors = payload.get("errors", [])
+    if errors:
+        lines.append(f"Errors: {len(errors)}")
+        lines.extend(f"- {error}" for error in errors)
+    return "\n".join(lines) + "\n"

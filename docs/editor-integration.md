@@ -51,6 +51,9 @@ and validates the rules catalog and sample report against the schemas in the bun
 status `1` when the bundle is present but fails verification, and `2` when the manifest or output
 path cannot be read or written.
 
+Use `agentverify contracts --verify-dir agentverify-editor-contracts --format summary` for compact
+CI logs while keeping JSON as the default machine-readable artifact format.
+
 The verifier JSON is also schema-backed for CI logs and editor bootstrap code:
 
 ```console

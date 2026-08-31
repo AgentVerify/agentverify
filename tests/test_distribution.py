@@ -219,6 +219,8 @@ def test_github_editor_contracts_example_exports_and_verifies_contract_bundle() 
     assert "--output agentverify-editor-contract-manifest.json" in workflow
     assert "--verify-dir agentverify-editor-contracts" in workflow
     assert "--output agentverify-editor-contract-verification.json" in workflow
+    assert "Print editor contract verification summary" in workflow
+    assert "--format summary" in workflow
     assert "agentverify schema editor-contract-manifest" in workflow
     assert "agentverify schema editor-contract-verification" in workflow
     assert "Draft202012Validator(manifest_schema).validate(manifest)" in workflow

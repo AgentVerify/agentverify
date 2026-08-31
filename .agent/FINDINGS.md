@@ -2,6 +2,10 @@
 
 ## Durable facts
 
+- `agentverify contracts --verify-dir ... --format summary` now provides compact editor-contract
+  verification logs: pass/fail status, manifest validity, required-artifact presence, artifact file,
+  digest, byte-count, and content-validation counts, plus errors when present. JSON remains the
+  default schema-backed verifier artifact for editor and CI integrations.
 - `agentverify benchmark verify-engine` is now the installed validation path for full-corpus engine
   snapshots. It validates the engine-results schema, checks core summary aggregate consistency,
   recomputes every flat summary metric total represented by successful repository entries, and emits

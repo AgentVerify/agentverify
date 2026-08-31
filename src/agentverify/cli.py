@@ -25,6 +25,7 @@ from .contracts import (
     export_editor_contracts,
     render_editor_contract_manifest,
     render_editor_contract_verification,
+    render_editor_contract_verification_summary,
     verify_editor_contracts,
 )
 from .holdout import (
@@ -171,11 +172,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="verify an exported contract bundle directory instead of exporting a new bundle",
     )
     contracts.add_argument(
+        "--format",
+        choices=("json", "summary"),
+        default="json",
+        help="verification output format; exports always emit the JSON manifest",
+    )
+    contracts.add_argument(
         "-o",
         "--output",
         type=Path,
         metavar="PATH",
-        help="write the export manifest to PATH instead of standard output",
+        help="write the manifest or verification output to PATH instead of standard output",
     )
     policy = subparsers.add_parser("policy", help="validate and explain a schema-v1 policy")
     policy.add_argument("path", type=Path)
@@ -423,10 +430,18 @@ def main(argv: list[str] | None = None) -> int:
             except CONTRACT_VERIFICATION_ERRORS as error:
                 print(f"agentverify: cannot verify contracts: {error}", file=sys.stderr)
                 return 2
-            output_error = emit_output(render_editor_contract_verification(verification), args.output)
+            rendered = (
+                render_editor_contract_verification_summary(verification)
+                if args.format == "summary"
+                else render_editor_contract_verification(verification)
+            )
+            output_error = emit_output(rendered, args.output)
             if output_error:
                 return output_error
             return 0 if verification["passed"] is True else 1
+        if args.format != "json":
+            print("agentverify: --format summary requires --verify-dir", file=sys.stderr)
+            return 2
         try:
             manifest = export_editor_contracts(args.output_dir, sample_root=args.sample_root)
         except OSError as error:
