@@ -2,6 +2,12 @@
 
 ## Durable facts
 
+- Editor/review-bot integrations now have a checked policy-aware diagnostic grouping example:
+  `examples/editor-policy-diagnostics.json` is regenerated in tests from the real
+  `approval_callback_bypass` scan plus composed example policy. It demonstrates joining
+  `policy_summary.gates[].matched_fingerprints` back to diagnostic fingerprints, preserving normal
+  per-finding diagnostics while exposing gate-level policy groups and per-diagnostic
+  `policy_gate_ids`.
 - `agentverify contracts --verify-dir ... --format summary` now provides compact editor-contract
   verification logs: pass/fail status, manifest validity, required-artifact presence, artifact file,
   digest, byte-count, and content-validation counts, plus errors when present. JSON remains the

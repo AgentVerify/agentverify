@@ -12,6 +12,7 @@ from agentverify.contracts import (
     render_editor_contract_verification_summary,
     verify_editor_contracts,
 )
+from agentverify.policy import evaluate_policy, load_policy
 from agentverify.report import render_json, render_sarif, render_schema
 from agentverify.scanner import scan_repository
 
@@ -50,6 +51,67 @@ def _editor_diagnostic(finding: dict[str, object]) -> dict[str, object]:
             "confidence": finding["confidence"],
             "ir_path": finding["ir_path"],
         },
+    }
+
+
+def _policy_aware_editor_diagnostics(report: dict[str, object]) -> dict[str, object]:
+    policy_summary = report["policy_summary"]
+    assert isinstance(policy_summary, dict)
+    gates = policy_summary["gates"]
+    assert isinstance(gates, list)
+    gate_ids_by_fingerprint: dict[str, list[str]] = {}
+    for gate in gates:
+        assert isinstance(gate, dict)
+        gate_id = gate["id"]
+        assert isinstance(gate_id, str)
+        fingerprints = gate["matched_fingerprints"]
+        assert isinstance(fingerprints, list)
+        for fingerprint in fingerprints:
+            assert isinstance(fingerprint, str)
+            gate_ids_by_fingerprint.setdefault(fingerprint, []).append(gate_id)
+
+    diagnostics = []
+    findings = report["findings"]
+    assert isinstance(findings, list)
+    for finding in findings:
+        assert isinstance(finding, dict)
+        diagnostic = _editor_diagnostic(finding)
+        fingerprint = diagnostic["data"]["fingerprint"]
+        assert isinstance(fingerprint, str)
+        policy_gate_ids = gate_ids_by_fingerprint.get(fingerprint, [])
+        diagnostic["data"]["policy_gate_ids"] = policy_gate_ids
+        diagnostic["data"]["policy_status"] = "failed" if policy_gate_ids else "not_matched"
+        diagnostics.append(diagnostic)
+
+    return {
+        "schema_version": 1,
+        "source_report": (
+            "agentverify scan cases/approval_callback_bypass "
+            "--policy examples/repository-policy.json --format json"
+        ),
+        "policy": {
+            "name": policy_summary["name"],
+            "source": policy_summary["source"],
+            "passed": policy_summary["passed"],
+            "evaluated_after_baseline": policy_summary["evaluated_after_baseline"],
+        },
+        "policy_groups": [
+            {
+                "gate_id": gate["id"],
+                "policy_source": gate["policy_source"],
+                "passed": gate["passed"],
+                "matched_count": gate["matched_count"],
+                "max_count": gate["max_count"],
+                "min_severity": gate["min_severity"],
+                "result_kinds": gate["result_kinds"],
+                "rules": gate["rules"],
+                "matched_summary": gate["matched_summary"],
+                "diagnostic_fingerprints": gate["matched_fingerprints"],
+            }
+            for gate in gates
+            if isinstance(gate, dict)
+        ],
+        "diagnostics": diagnostics,
     }
 
 
@@ -324,7 +386,9 @@ def test_editor_integration_docs_reference_exported_artifacts() -> None:
 
     assert "agentverify contracts" in docs
     assert "Mapping findings to editor diagnostics" in docs
+    assert "Grouping diagnostics by policy gate" in docs
     assert "[`examples/editor-diagnostics.json`](../examples/editor-diagnostics.json)" in docs
+    assert "[`examples/editor-policy-diagnostics.json`](../examples/editor-policy-diagnostics.json)" in docs
     assert "python scripts/export_editor_contracts.py" in docs
     assert "agentverify-rules.json" in docs
     assert "agentverify-report-v1.schema.json" in docs
@@ -339,6 +403,7 @@ def test_editor_integration_docs_reference_exported_artifacts() -> None:
     assert "`contract`" in docs
     assert "`required`" in docs
     assert "[`examples/editor-diagnostics.json`](examples/editor-diagnostics.json)" in readme
+    assert "[`examples/editor-policy-diagnostics.json`](examples/editor-policy-diagnostics.json)" in readme
     assert "[`docs/editor-integration.md`](docs/editor-integration.md)" in readme
     assert "agentverify schema editor-contract-manifest" in readme
     assert "agentverify schema editor-contract-verification" in readme
@@ -360,6 +425,53 @@ def test_editor_diagnostics_example_matches_real_report() -> None:
 
     actual = json.loads((ROOT / "examples/editor-diagnostics.json").read_text(encoding="utf-8"))
     assert actual == expected
+
+
+def test_policy_aware_editor_diagnostics_example_matches_real_report() -> None:
+    ir = scan_repository(ROOT / "cases/approval_callback_bypass")
+    policy, digest = load_policy(ROOT / "examples/repository-policy.json")
+    assert evaluate_policy(ir, policy, source="repository-policy.json", digest=digest) is False
+    report = json.loads(render_json(ir))
+    expected = _policy_aware_editor_diagnostics(report)
+
+    actual = json.loads(
+        (ROOT / "examples/editor-policy-diagnostics.json").read_text(encoding="utf-8")
+    )
+    assert actual == expected
+    assert actual["policy"] == {
+        "evaluated_after_baseline": True,
+        "name": "repository-release",
+        "passed": False,
+        "source": "repository-policy.json",
+    }
+    assert [
+        (group["gate_id"], group["matched_count"], group["diagnostic_fingerprints"])
+        for group in actual["policy_groups"]
+    ] == [
+        (
+            "no-high-findings",
+            3,
+            [
+                "5e5452debc6b9e8d4ea7",
+                "84dcafbc505e4199b55d",
+                "9f9ac1defce2aa37955c",
+            ],
+        ),
+        (
+            "no-approval-bypass-reviews",
+            5,
+            [
+                "20307b0f1b5d860a0ad8",
+                "2682967b944c8ac818e2",
+                "413cb57720e84fd08add",
+                "5a9a2d9476d188172939",
+                "d5a58f65bc93cd9183c3",
+            ],
+        ),
+    ]
+    assert {diagnostic["data"]["policy_status"] for diagnostic in actual["diagnostics"]} == {
+        "failed"
+    }
 
 
 def test_github_code_scanning_sarif_example_matches_real_report() -> None:

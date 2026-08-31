@@ -1,0 +1,311 @@
+{
+  "diagnostics": [
+    {
+      "code": "AV-APPROVAL001",
+      "data": {
+        "confidence": "medium",
+        "fingerprint": "20307b0f1b5d860a0ad8",
+        "ir_path": [],
+        "policy_gate_ids": [
+          "no-approval-bypass-reviews"
+        ],
+        "policy_status": "failed",
+        "result_kind": "review"
+      },
+      "message": "Configuration or code exposes an approval-bypass path Remediation: Disable auto-approval for privileged tools or scope it to an explicit low-risk allowlist.",
+      "range": {
+        "end": {
+          "character": 22,
+          "line": 10
+        },
+        "start": {
+          "character": 0,
+          "line": 10
+        }
+      },
+      "severity": 1,
+      "source": "agentverify",
+      "uri": "approval.py"
+    },
+    {
+      "code": "AV-APPROVAL001",
+      "data": {
+        "confidence": "medium",
+        "fingerprint": "5a9a2d9476d188172939",
+        "ir_path": [],
+        "policy_gate_ids": [
+          "no-approval-bypass-reviews"
+        ],
+        "policy_status": "failed",
+        "result_kind": "review"
+      },
+      "message": "Configuration or code exposes an approval-bypass path Remediation: Disable auto-approval for privileged tools or scope it to an explicit low-risk allowlist.",
+      "range": {
+        "end": {
+          "character": 23,
+          "line": 20
+        },
+        "start": {
+          "character": 0,
+          "line": 20
+        }
+      },
+      "severity": 1,
+      "source": "agentverify",
+      "uri": "approval.py"
+    },
+    {
+      "code": "AV-APPROVAL003",
+      "data": {
+        "confidence": "high",
+        "fingerprint": "84dcafbc505e4199b55d",
+        "ir_path": [
+          "agent:operator",
+          "tool:ShellTool@33",
+          "capability:shell-execution"
+        ],
+        "policy_gate_ids": [
+          "no-high-findings"
+        ],
+        "policy_status": "failed",
+        "result_kind": "finding"
+      },
+      "message": "An environment variable can auto-approve a reachable local shell tool Remediation: Remove the environment-driven approval shortcut and require an authenticated, per-action decision before executing the tool.",
+      "range": {
+        "end": {
+          "character": 10,
+          "line": 32
+        },
+        "start": {
+          "character": 0,
+          "line": 32
+        }
+      },
+      "severity": 1,
+      "source": "agentverify",
+      "uri": "approval.py"
+    },
+    {
+      "code": "AV-APPROVAL001",
+      "data": {
+        "confidence": "medium",
+        "fingerprint": "d5a58f65bc93cd9183c3",
+        "ir_path": [],
+        "policy_gate_ids": [
+          "no-approval-bypass-reviews"
+        ],
+        "policy_status": "failed",
+        "result_kind": "review"
+      },
+      "message": "Configuration or code exposes an approval-bypass path Remediation: Disable auto-approval for privileged tools or scope it to an explicit low-risk allowlist.",
+      "range": {
+        "end": {
+          "character": 45,
+          "line": 3
+        },
+        "start": {
+          "character": 0,
+          "line": 3
+        }
+      },
+      "severity": 1,
+      "source": "agentverify",
+      "uri": "approval.ts"
+    },
+    {
+      "code": "AV-APPROVAL001",
+      "data": {
+        "confidence": "medium",
+        "fingerprint": "2682967b944c8ac818e2",
+        "ir_path": [],
+        "policy_gate_ids": [
+          "no-approval-bypass-reviews"
+        ],
+        "policy_status": "failed",
+        "result_kind": "review"
+      },
+      "message": "Configuration or code exposes an approval-bypass path Remediation: Disable auto-approval for privileged tools or scope it to an explicit low-risk allowlist.",
+      "range": {
+        "end": {
+          "character": 51,
+          "line": 10
+        },
+        "start": {
+          "character": 0,
+          "line": 10
+        }
+      },
+      "severity": 1,
+      "source": "agentverify",
+      "uri": "approval.ts"
+    },
+    {
+      "code": "AV-APPROVAL001",
+      "data": {
+        "confidence": "medium",
+        "fingerprint": "413cb57720e84fd08add",
+        "ir_path": [],
+        "policy_gate_ids": [
+          "no-approval-bypass-reviews"
+        ],
+        "policy_status": "failed",
+        "result_kind": "review"
+      },
+      "message": "Configuration or code exposes an approval-bypass path Remediation: Disable auto-approval for privileged tools or scope it to an explicit low-risk allowlist.",
+      "range": {
+        "end": {
+          "character": 46,
+          "line": 17
+        },
+        "start": {
+          "character": 0,
+          "line": 17
+        }
+      },
+      "severity": 1,
+      "source": "agentverify",
+      "uri": "approval.ts"
+    },
+    {
+      "code": "AV-APPROVAL003",
+      "data": {
+        "confidence": "high",
+        "fingerprint": "9f9ac1defce2aa37955c",
+        "ir_path": [
+          "agent:operator",
+          "tool:shellTool@27",
+          "capability:shell-execution"
+        ],
+        "policy_gate_ids": [
+          "no-high-findings"
+        ],
+        "policy_status": "failed",
+        "result_kind": "finding"
+      },
+      "message": "An environment variable can auto-approve a reachable local shell tool Remediation: Remove the environment-driven approval shortcut and require an authenticated, per-action decision before executing the tool.",
+      "range": {
+        "end": {
+          "character": 11,
+          "line": 26
+        },
+        "start": {
+          "character": 0,
+          "line": 26
+        }
+      },
+      "severity": 1,
+      "source": "agentverify",
+      "uri": "approval.ts"
+    },
+    {
+      "code": "AV-APPROVAL003",
+      "data": {
+        "confidence": "high",
+        "fingerprint": "5e5452debc6b9e8d4ea7",
+        "ir_path": [
+          "agent:operator",
+          "tool:applyPatchTool@32",
+          "capability:filesystem"
+        ],
+        "policy_gate_ids": [
+          "no-high-findings"
+        ],
+        "policy_status": "failed",
+        "result_kind": "finding"
+      },
+      "message": "An environment variable can auto-approve a reachable filesystem-write tool Remediation: Remove the environment-driven approval shortcut and require an authenticated, per-action decision before executing the tool.",
+      "range": {
+        "end": {
+          "character": 16,
+          "line": 31
+        },
+        "start": {
+          "character": 0,
+          "line": 31
+        }
+      },
+      "severity": 1,
+      "source": "agentverify",
+      "uri": "approval.ts"
+    }
+  ],
+  "policy": {
+    "evaluated_after_baseline": true,
+    "name": "repository-release",
+    "passed": false,
+    "source": "repository-policy.json"
+  },
+  "policy_groups": [
+    {
+      "diagnostic_fingerprints": [
+        "5e5452debc6b9e8d4ea7",
+        "84dcafbc505e4199b55d",
+        "9f9ac1defce2aa37955c"
+      ],
+      "gate_id": "no-high-findings",
+      "matched_count": 3,
+      "matched_summary": {
+        "by_result_kind": {
+          "finding": 3
+        },
+        "by_rule": {
+          "AV-APPROVAL003": 3
+        },
+        "by_severity": {
+          "high": 3
+        }
+      },
+      "max_count": 0,
+      "min_severity": "high",
+      "passed": false,
+      "policy_source": "org-policy.json",
+      "result_kinds": [
+        "finding"
+      ],
+      "rules": []
+    },
+    {
+      "diagnostic_fingerprints": [
+        "20307b0f1b5d860a0ad8",
+        "2682967b944c8ac818e2",
+        "413cb57720e84fd08add",
+        "5a9a2d9476d188172939",
+        "d5a58f65bc93cd9183c3"
+      ],
+      "gate_id": "no-approval-bypass-reviews",
+      "matched_count": 5,
+      "matched_summary": {
+        "by_result_kind": {
+          "review": 5
+        },
+        "by_rule": {
+          "AV-APPROVAL001": 5
+        },
+        "by_severity": {
+          "high": 5
+        }
+      },
+      "max_count": 0,
+      "min_severity": "high",
+      "passed": false,
+      "policy_source": "repository-policy.json",
+      "result_kinds": [
+        "review"
+      ],
+      "rules": [
+        "AV-APPROVAL001",
+        "AV-APPROVAL002",
+        "AV-APPROVAL004",
+        "AV-APPROVAL005",
+        "AV-APPROVAL006",
+        "AV-APPROVAL007",
+        "AV-APPROVAL008",
+        "AV-APPROVAL009",
+        "AV-APPROVAL010",
+        "AV-APPROVAL011"
+      ]
+    }
+  ],
+  "schema_version": 1,
+  "source_report": "agentverify scan cases/approval_callback_bypass --policy examples/repository-policy.json --format json"
+}

@@ -96,3 +96,21 @@ agentverify scan cases/approval_callback_bypass --format json
 The example intentionally includes both `review` and `finding` result kinds. Editors can choose to
 render `review` diagnostics with a different icon or grouping while still preserving AgentVerify's
 policy semantics.
+
+## Grouping diagnostics by policy gate
+
+When a scan runs with `--policy`, the JSON report includes `policy_summary.gates[]`. Each gate lists
+the `matched_fingerprints` that contributed to its pass/fail decision. Editor extensions and review
+bots can join those fingerprints back to diagnostic `data.fingerprint` to show policy-aware groups
+without duplicating finding bodies or hiding lower-level diagnostics.
+
+[`examples/editor-policy-diagnostics.json`](../examples/editor-policy-diagnostics.json) is a checked
+example derived from:
+
+```console
+agentverify scan cases/approval_callback_bypass --policy examples/repository-policy.json --format json
+```
+
+The example keeps ordinary LSP-style diagnostics in `diagnostics[]`, adds `policy_gate_ids` and
+`policy_status` to each diagnostic's `data`, and exposes `policy_groups[]` with the policy source,
+gate threshold, matched summary, and the diagnostic fingerprints matched by that gate.

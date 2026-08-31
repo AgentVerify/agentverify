@@ -235,6 +235,10 @@ def test_github_editor_contracts_example_exports_and_verifies_contract_bundle() 
     assert "[`examples/github-editor-contracts.yml`](examples/github-editor-contracts.yml)" in (
         readme
     )
+    assert (
+        "[`examples/editor-policy-diagnostics.json`](examples/editor-policy-diagnostics.json)"
+        in readme
+    )
 
 
 def test_github_benchmark_verify_example_is_read_only_and_exports_verifier_json() -> None:

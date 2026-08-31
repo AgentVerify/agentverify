@@ -7,6 +7,12 @@ catalog workflows.
 
 ## Completed recently
 
+- Added a checked policy-aware editor diagnostics example derived from
+  `agentverify scan cases/approval_callback_bypass --policy examples/repository-policy.json --format json`.
+  The fixture shows how editor/review-bot integrations can join ordinary LSP-style diagnostics to
+  `policy_summary.gates[].matched_fingerprints`, adding per-diagnostic `policy_gate_ids` and
+  top-level `policy_groups` without duplicating finding bodies. Tests regenerate the fixture from
+  the scanner and policy evaluator, and source-distribution verification now requires it.
 - Added `agentverify contracts --verify-dir ... --format summary` for compact human-facing editor
   contract verification logs while keeping JSON as the default machine-readable verifier artifact.
   The copyable GitHub editor-contract workflow now writes

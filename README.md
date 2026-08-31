@@ -173,6 +173,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`examples/github-code-scanning.sarif`](examples/github-code-scanning.sarif) — checked SARIF upload payload example
 - [`docs/editor-integration.md`](docs/editor-integration.md) — exportable schemas and rule catalog for editor/CI tooling
 - [`examples/github-editor-contracts.yml`](examples/github-editor-contracts.yml) — copyable editor-contract export workflow
+- [`examples/editor-policy-diagnostics.json`](examples/editor-policy-diagnostics.json) — checked policy-aware editor diagnostic grouping
 - [`docs/pre-commit.md`](docs/pre-commit.md) — local and tagged-release hook setup
 - [`docs/backlog.md`](docs/backlog.md) — prioritized issue-ready future work
 - [`benchmarks/engine-results.json`](benchmarks/engine-results.json) — full-corpus engine metrics
@@ -264,7 +265,9 @@ rechecks copied bundles before consumers load them, and its JSON result validate
 schema-validates, verifies, and uploads that bundle as a CI artifact for editor or review-bot
 bootstrap jobs. The editor guide also includes a checked
 [`examples/editor-diagnostics.json`](examples/editor-diagnostics.json) mapping from AgentVerify
-findings to Language Server Protocol-style diagnostics.
+findings to Language Server Protocol-style diagnostics and
+[`examples/editor-policy-diagnostics.json`](examples/editor-policy-diagnostics.json) for grouping
+diagnostics by policy gate through matched finding fingerprints.
 
 The collector reuses commits from `research/repository-data.json` by default and samples up to 220
 source/manifest roots plus at most 20 bounded local source dependencies reached from MCP

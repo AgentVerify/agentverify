@@ -135,6 +135,7 @@ REQUIRED_SOURCE_FILES = frozenset(
         "examples/ci-policy.json",
         "examples/benchmark-verification.json",
         "examples/editor-diagnostics.json",
+        "examples/editor-policy-diagnostics.json",
         "examples/engine-results-verification.json",
         "examples/github-benchmark-verify.yml",
         "examples/github-code-scanning.yml",
