@@ -82,6 +82,10 @@ tool. The same model command passes through `shell-quote` classification and rea
   same-file typed guardrail bindings, post-construction fallback assignments, direct tripwire
   returns, direct throws, exact relative imported typed guardrail arrays, exact named reexports, and
   ambiguous barrel negatives that stay binding-only.
+- `cases/typescript_openai_tool_guardrails`: OpenAI Agents JS tool guardrails cover inline arrays,
+  same-file `defineToolInputGuardrail` / `defineToolOutputGuardrail` bindings, allow/reject-content
+  actions, shallow reject predicates, exact relative imported typed guardrail arrays, exact named
+  reexports, ambiguous barrel negatives, and Agent-to-tool-guardrail bridge edges.
 - `cases/typescript_bun_shell`: Cline inline tools distinguish dynamic Bun `sh -c`, a fixed command,
   direct argv execution, and string-only near misses.
 - `cases/typescript_tool_registrations`: import-aware Mastra factory properties and MCP registrations

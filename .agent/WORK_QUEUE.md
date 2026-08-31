@@ -173,13 +173,14 @@
   first-statement direct-throw metadata, and exact relative imported typed guardrail arrays
   including named reexports are now inventoried; dynamic arrays, mutated bindings, ambiguous star
   barrels, and rebound agents should remain binding-only or unresolved.
-- Explore richer OpenAI Agents JS tool guardrails only if evidence stays exact: imported literal
-  guardrail arrays, helper-created tool guardrails, helper predicate calls, or imported guarded-tool
-  composition edges without overclaiming dynamic tool lists. Direct
+- Explore richer OpenAI Agents JS tool guardrails only if evidence stays exact: helper-created tool
+  guardrail arrays, imported factory-created guardrails, helper predicate calls, or imported
+  guarded-tool composition edges without overclaiming dynamic tool lists. Direct
   `tool({ inputGuardrails, outputGuardrails })`,
-  `defineToolInputGuardrail`/`defineToolOutputGuardrail` bindings, allow/reject-content actions,
-  shallow literal reject predicates, and exact same-file Agent-to-tool-guardrail edges are now
-  inventoried as a separate source-tool policy slice.
+  `defineToolInputGuardrail`/`defineToolOutputGuardrail` bindings, exact relative imported typed
+  guardrail arrays including named reexports, allow/reject-content actions, shallow literal reject
+  predicates, and exact same-file Agent-to-tool-guardrail edges are now inventoried as a separate
+  source-tool policy slice; ambiguous barrels stay binding-only.
 
 ## Deferred until access/authorization
 

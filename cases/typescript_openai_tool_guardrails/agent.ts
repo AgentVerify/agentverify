@@ -88,3 +88,34 @@ const agent = new Agent({
   instructions: "Classify incoming text.",
   tools: [classifyTool, dynamicTool, mutableTool],
 });
+
+import { ambiguousToolInputGuardrails } from "./tool-ambiguous-barrel";
+import { importedToolInputGuardrails } from "./tool-guardrails";
+import { reexportedToolOutputGuardrails } from "./tool-reexports";
+
+const importedGuardrailTool = tool({
+  name: "imported_guardrail_tool",
+  description: "Uses imported typed tool guardrail arrays.",
+  parameters: z.object({ text: z.string() }),
+  inputGuardrails: importedToolInputGuardrails,
+  outputGuardrails: reexportedToolOutputGuardrails,
+  execute: ({ text }) => text,
+});
+
+const ambiguousImportedGuardrailTool = tool({
+  name: "ambiguous_imported_guardrail_tool",
+  description: "Uses an ambiguous imported tool guardrail array.",
+  parameters: z.object({ text: z.string() }),
+  inputGuardrails: ambiguousToolInputGuardrails,
+  execute: ({ text }) => text,
+});
+
+const importedGuardrailAgent = new Agent({
+  name: "Imported tool guardrail classifier",
+  instructions: "Classify with imported guardrail tools.",
+  tools: [importedGuardrailTool, ambiguousImportedGuardrailTool],
+});
+
+void importedGuardrailTool;
+void ambiguousImportedGuardrailTool;
+void importedGuardrailAgent;

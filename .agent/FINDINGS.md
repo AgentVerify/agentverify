@@ -936,6 +936,13 @@
   configurations remain bounded, while pinned OpenAI Agents JS `examples/basic/tools.ts` and
   `examples/docs/guardrails/toolGuardrails.ts` raise the tool guardrail truth-set slice to 23/23
   labels.
+- OpenAI Agents JS tool guardrails now resolve exact relative imported typed guardrail arrays.
+  Stable exported `ToolInputGuardrailDefinition[]` / `ToolOutputGuardrailDefinition[]` arrays
+  imported directly, or via exact named local reexports, preserve names, allow/reject-content action
+  metadata, shallow reject predicate literals, tool governance edges, and Agent-to-tool-guardrail
+  bridge edges. Ambiguous barrels exporting the same guardrail array name from multiple modules stay
+  binding-only. The local tool guardrail fixture raises the tool guardrail slice to 40/40 labels and
+  the full public IR truth set to 2,538/2,538 labels.
 - OpenAI Agents JS Agents now get exact governance edges to tool guardrail controls when their
   `tools` array references a same-file tool binding with proven guardrails. Dynamic and mutated tool
   guardrails remain bounded through their existing tool controls, while a lookalike object negative

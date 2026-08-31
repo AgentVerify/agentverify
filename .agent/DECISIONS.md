@@ -1440,6 +1440,25 @@
 - Revisit when imported guarded tool controls can be resolved with stable target identity across
   files.
 
+## OpenAI Agents JS imported tool guardrail arrays require exact export provenance
+
+- Decision: Resolve TypeScript OpenAI Agents SDK tool guardrail arrays across relative named imports
+  only when the imported binding points to a unique exported typed const array whose type is imported
+  from `@openai/agents` as `ToolInputGuardrailDefinition` or
+  `ToolOutputGuardrailDefinition`. Preserve direct named local reexports and unambiguous star
+  reexports, but leave ambiguous duplicate star-barrel exports binding-only.
+- Evidence: The local `typescript_openai_tool_guardrails` fixture now includes a directly imported
+  input guardrail array with a shallow `String(...).includes("private")` reject predicate, a
+  named-reexported output guardrail array with an allow action, and an ambiguous barrel exporting two
+  same-named input guardrail arrays. Focused public labels pass 40/40, including Agent-to-tool
+  bridge labels, and ambiguous negatives prove names/actions are not over-resolved.
+- Alternative: Only support same-file `defineToolInputGuardrail` /
+  `defineToolOutputGuardrail` bindings. Rejected because SDK tool definitions commonly centralize
+  reusable guardrail arrays beside other shared tool configuration, and exact typed exports provide
+  enough provenance to remain conservative.
+- Revisit when imported arrays containing factory-created guardrail bindings can carry the factory
+  body metadata without broad cross-module name matching.
+
 ## OpenAI Agents JS Agent.clone is exact lineage with explicit list semantics
 
 - Decision: Represent exact TypeScript OpenAI Agents SDK `Agent.clone({...})` calls as Agent

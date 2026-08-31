@@ -20663,6 +20663,180 @@ def typescript_imported_openai_agent_guardrail_array_bindings(
     return resolved
 
 
+def typescript_openai_tool_guardrail_type_names(text: str, guardrail_kind: str) -> set[str]:
+    imported_symbol = (
+        "ToolInputGuardrailDefinition"
+        if guardrail_kind == "input"
+        else "ToolOutputGuardrailDefinition"
+    )
+    return {
+        local_name
+        for local_name, original_name in typescript_named_import_bindings(
+            text,
+            "@openai/agents",
+        ).items()
+        if original_name == imported_symbol
+    }
+
+
+def typescript_exported_openai_tool_guardrail_array_bindings(
+    root: Path,
+    path: Path,
+    text: str,
+    *,
+    guardrail_kind: str,
+    seen: frozenset[Path] = frozenset(),
+) -> dict[str, TypeScriptLiteralArrayBinding]:
+    """Return exported typed tool guardrail arrays and exact local reexports."""
+    try:
+        canonical_path = path.resolve()
+    except OSError:
+        return {}
+    if canonical_path in seen:
+        return {}
+    seen = seen | {canonical_path}
+    code = typescript_code_mask(text)
+    exported = {
+        match.group(1)
+        for match in re.finditer(
+            r"\bexport\s+const\s+([A-Za-z_$][\w$]*)\s*(?:\:\s*[^=;\n]+)?=",
+            code,
+        )
+    }
+    candidates: dict[str, list[TypeScriptLiteralArrayBinding]] = defaultdict(list)
+    type_names = typescript_openai_tool_guardrail_type_names(text, guardrail_kind)
+    for name, binding in typescript_typed_const_array_bindings(
+        text,
+        type_names=type_names,
+    ).items():
+        if name not in exported:
+            continue
+        expression, expression_offset, declaration_end = binding
+        candidates[name].append(
+            TypeScriptLiteralArrayBinding(
+                expression,
+                expression_offset,
+                declaration_end,
+                "exported-local-typed-const-array",
+            )
+        )
+    for match in TS_NAMED_EXPORT_FROM.finditer(text):
+        target = typescript_resolve_local_module(root, path, match.group(2))
+        if target is None:
+            continue
+        try:
+            target_text = target.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        target_exports = typescript_exported_openai_tool_guardrail_array_bindings(
+            root,
+            target,
+            target_text,
+            guardrail_kind=guardrail_kind,
+            seen=seen,
+        )
+        for raw_specifier in match.group(1).split(","):
+            parts = typescript_named_specifier_parts(raw_specifier)
+            if parts is None:
+                continue
+            original, exported_name = parts
+            binding = target_exports.get(original)
+            if binding is None:
+                continue
+            candidates[exported_name].append(
+                TypeScriptLiteralArrayBinding(
+                    binding.expression,
+                    binding.expression_offset,
+                    0,
+                    "reexported-local-typed-const-array",
+                )
+            )
+    for match in TS_STAR_EXPORT_FROM.finditer(text):
+        target = typescript_resolve_local_module(root, path, match.group(1))
+        if target is None:
+            continue
+        try:
+            target_text = target.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        target_exports = typescript_exported_openai_tool_guardrail_array_bindings(
+            root,
+            target,
+            target_text,
+            guardrail_kind=guardrail_kind,
+            seen=seen,
+        )
+        for exported_name, binding in target_exports.items():
+            candidates[exported_name].append(
+                TypeScriptLiteralArrayBinding(
+                    binding.expression,
+                    binding.expression_offset,
+                    0,
+                    "star-reexported-local-typed-const-array",
+                )
+            )
+    return {name: bindings[0] for name, bindings in candidates.items() if len(bindings) == 1}
+
+
+def typescript_imported_openai_tool_guardrail_array_bindings(
+    root: Path,
+    path: Path,
+    text: str,
+    *,
+    guardrail_kind: str,
+) -> dict[str, TypeScriptLiteralArrayBinding]:
+    """Resolve exact relative imports of exported typed OpenAI tool guardrail arrays."""
+    import_counts: Counter[str] = Counter()
+    imported_bindings: list[tuple[int, str, str, str]] = []
+    for match in TS_NAMED_IMPORT.finditer(text):
+        specifier = match.group(2)
+        for raw_specifier in match.group(1).split(","):
+            parts = typescript_named_specifier_parts(raw_specifier)
+            if parts is None:
+                continue
+            original, local = parts
+            import_counts[local] += 1
+            imported_bindings.append((match.end(), specifier, original, local))
+
+    resolved: dict[str, TypeScriptLiteralArrayBinding] = {}
+    export_cache: dict[Path, dict[str, TypeScriptLiteralArrayBinding]] = {}
+    shadowed_imports = typescript_import_bindings_shadowed(text, set(import_counts))
+    for import_end, specifier, original, local in imported_bindings:
+        if import_counts[local] != 1 or local in shadowed_imports:
+            continue
+        target = typescript_resolve_local_module(root, path, specifier)
+        if target is None:
+            continue
+        try:
+            target_text = target.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        if target not in export_cache:
+            export_cache[target] = typescript_exported_openai_tool_guardrail_array_bindings(
+                root,
+                target,
+                target_text,
+                guardrail_kind=guardrail_kind,
+            )
+        binding = export_cache[target].get(original)
+        if binding is None:
+            continue
+        resolution = (
+            "imported-local-reexported-typed-const-array"
+            if binding.resolution == "reexported-local-typed-const-array"
+            else "imported-local-star-reexported-typed-const-array"
+            if binding.resolution == "star-reexported-local-typed-const-array"
+            else "imported-local-typed-const-array"
+        )
+        resolved[local] = TypeScriptLiteralArrayBinding(
+            binding.expression,
+            binding.expression_offset,
+            import_end,
+            resolution,
+        )
+    return resolved
+
+
 def add_typescript_openai_trace_id_control(
     ir: RepositoryIR,
     *,
@@ -23699,6 +23873,20 @@ def typescript_graph(
         "input": openai_tool_guardrail_definition_bindings(guardrail_kind="input"),
         "output": openai_tool_guardrail_definition_bindings(guardrail_kind="output"),
     }
+    openai_tool_imported_guardrail_array_bindings = {
+        "input": typescript_imported_openai_tool_guardrail_array_bindings(
+            root,
+            path,
+            text,
+            guardrail_kind="input",
+        ),
+        "output": typescript_imported_openai_tool_guardrail_array_bindings(
+            root,
+            path,
+            text,
+            guardrail_kind="output",
+        ),
+    }
 
     def openai_tool_guardrail_item_attributes(
         item: str,
@@ -23745,27 +23933,45 @@ def typescript_graph(
         *,
         guardrail_kind: str,
     ) -> dict[str, object] | None:
+        guardrail_source = "inline-array"
+        initial_guardrail_bindings: list[str] = []
         items = typescript_array_items(expression, expression_offset)
         if items is None:
             expression_code = typescript_code_mask(expression).strip()
             identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", expression_code)
             if identifier is None:
                 return {"guardrail_source": "dynamic-expression"}
-            return {
-                "guardrail_source": "binding",
-                "guardrail_bindings": [identifier.group(0)],
-            }
+            binding_name = identifier.group(0)
+            imported_binding = openai_tool_imported_guardrail_array_bindings[
+                guardrail_kind
+            ].get(binding_name)
+            if imported_binding is None:
+                return {
+                    "guardrail_source": "binding",
+                    "guardrail_bindings": [binding_name],
+                }
+            items = typescript_array_items(
+                imported_binding.expression,
+                imported_binding.expression_offset,
+            )
+            if items is None:
+                return {
+                    "guardrail_source": "binding",
+                    "guardrail_bindings": [binding_name],
+                }
+            guardrail_source = imported_binding.resolution
+            initial_guardrail_bindings = [binding_name]
         concrete_items = [
             (item, item_offset)
             for item, item_offset in items
             if typescript_code_mask(item).strip()
         ]
         attributes: dict[str, object] = {
-            "guardrail_source": "inline-array",
+            "guardrail_source": guardrail_source,
             "guardrail_count": len(concrete_items),
         }
         guardrail_names: list[str] = []
-        guardrail_bindings: list[str] = []
+        guardrail_bindings: list[str] = list(initial_guardrail_bindings)
         guardrail_actions: set[str] = set()
         guardrail_reject_condition_sources: list[str] = []
         guardrail_reject_condition_literals: list[str] = []

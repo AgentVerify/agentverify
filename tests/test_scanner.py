@@ -6988,6 +6988,9 @@ def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:
         "ts:agent.ts#control:classifyTool.outputGuardrails@45",
         "ts:agent.ts#control:dynamicTool.inputGuardrails@62",
         "ts:agent.ts#control:mutableTool.inputGuardrails@76",
+        "ts:agent.ts#control:importedGuardrailTool.inputGuardrails@100",
+        "ts:agent.ts#control:importedGuardrailTool.outputGuardrails@101",
+        "ts:agent.ts#control:ambiguousImportedGuardrailTool.inputGuardrails@109",
     }
     assert controls["ts:agent.ts#control:classifyTool.inputGuardrails@44"].attributes == {
         "analysis": "typescript-openai-agents-tool-guardrails",
@@ -7050,6 +7053,27 @@ def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:
     ] == ["mutableGuardrail"]
     assert "guardrail_reject_condition_sources" not in controls[
         "ts:agent.ts#control:mutableTool.inputGuardrails@76"
+    ].attributes
+    assert controls[
+        "ts:agent.ts#control:importedGuardrailTool.inputGuardrails@100"
+    ].attributes["guardrail_source"] == "imported-local-typed-const-array"
+    assert controls[
+        "ts:agent.ts#control:importedGuardrailTool.inputGuardrails@100"
+    ].attributes["guardrail_names"] == ["imported_private_input_guardrail"]
+    assert controls[
+        "ts:agent.ts#control:importedGuardrailTool.inputGuardrails@100"
+    ].attributes["guardrail_reject_condition_literals"] == ["private"]
+    assert controls[
+        "ts:agent.ts#control:importedGuardrailTool.outputGuardrails@101"
+    ].attributes["guardrail_source"] == "imported-local-reexported-typed-const-array"
+    assert controls[
+        "ts:agent.ts#control:importedGuardrailTool.outputGuardrails@101"
+    ].attributes["guardrail_actions"] == ["allow"]
+    assert controls[
+        "ts:agent.ts#control:ambiguousImportedGuardrailTool.inputGuardrails@109"
+    ].attributes["guardrail_source"] == "binding"
+    assert "guardrail_names" not in controls[
+        "ts:agent.ts#control:ambiguousImportedGuardrailTool.inputGuardrails@109"
     ].attributes
 
     edges = {
@@ -7116,6 +7140,15 @@ def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:
         "guardrail_reject_condition_literals": ["sk-"],
         "guardrail_reject_condition_literal_count": 1,
     }
+    assert agent_edges[
+        "ts:agent.ts#control:importedGuardrailTool.inputGuardrails@100"
+    ].source_id == "ts:agent.ts#agent:importedGuardrailAgent"
+    assert agent_edges[
+        "ts:agent.ts#control:importedGuardrailTool.inputGuardrails@100"
+    ].attributes["guardrail_source"] == "imported-local-typed-const-array"
+    assert agent_edges[
+        "ts:agent.ts#control:importedGuardrailTool.outputGuardrails@101"
+    ].attributes["guardrail_source"] == "imported-local-reexported-typed-const-array"
 
 
 def test_typescript_openai_agent_clone_is_exact() -> None:

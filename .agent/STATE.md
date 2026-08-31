@@ -7,6 +7,12 @@ catalog workflows.
 
 ## Completed recently
 
+- Extended exact TypeScript OpenAI Agents SDK tool guardrail inventory through relative imported
+  typed `ToolInputGuardrailDefinition[]` / `ToolOutputGuardrailDefinition[]` arrays, including exact
+  named local reexports. Imported tool guardrail controls now preserve literal names, allow/reject
+  action metadata, shallow reject-condition literals, tool governance edges, and Agent-to-tool
+  guardrail bridge edges; ambiguous two-source barrels remain binding-only. Focused tool guardrail
+  labels pass 40/40, and the full public IR truth set now passes 2,538/2,538.
 - Extended exact TypeScript OpenAI Agents SDK Agent guardrail inventory through relative imported
   typed `InputGuardrail[]` / `OutputGuardrail[]` const arrays, including exact named local
   reexports. Imported guardrail controls now preserve literal names and `tripwireTriggered`
