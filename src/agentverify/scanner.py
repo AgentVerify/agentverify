@@ -19438,6 +19438,52 @@ def add_typescript_openai_run_turn_limit_control(
     return "agent-turn-limit", control_id
 
 
+def add_typescript_openai_run_streaming_control(
+    ir: RepositoryIR,
+    *,
+    relative: str,
+    lines: list[str],
+    line: int,
+    configuration: str,
+    analysis: str,
+    source_agent: tuple[str, str],
+    symbol_identity: str,
+    local_function: str | None = None,
+    runner_binding: str | None = None,
+) -> tuple[str, str]:
+    """Add exact OpenAI Agents JS run/Runner.run streaming-mode evidence."""
+    source_agent_name, source_agent_id = source_agent
+    attributes: dict[str, object] = {
+        "analysis": analysis,
+        "module": "@openai/agents",
+        "configuration": configuration,
+        "stream": True,
+        "runtime_mode": "streaming",
+        "stream_scope": "agent-run-events",
+        "source_agent": source_agent_name,
+        "source_agent_id": source_agent_id,
+        "scope": source_scope(relative),
+    }
+    if local_function is not None:
+        attributes["imported_symbol"] = "run"
+        attributes["local_function"] = local_function
+    if runner_binding is not None:
+        attributes["constructor"] = "Runner"
+        attributes["imported_symbol"] = "Runner"
+        attributes["runner_binding"] = runner_binding
+    control_id = source_symbol("ts", relative, "control", symbol_identity)
+    ir.add_component(
+        Component(
+            "control",
+            "streaming-run",
+            Evidence(relative, line, excerpt(lines, line)),
+            attributes,
+            control_id,
+        )
+    )
+    return "streaming-run", control_id
+
+
 def add_typescript_openai_agent_tool_choice_control(
     ir: RepositoryIR,
     *,
@@ -29102,6 +29148,22 @@ def typescript_graph(
             return None
         return int(max_turns_code), line_at(text, max_turns_property_offset)
 
+    def literal_stream_true_from_options(
+        options: str,
+        options_offset: int,
+    ) -> tuple[bool, int] | None:
+        stream_location = typescript_object_property_expression_location(
+            options,
+            "stream",
+            options_offset,
+        )
+        if stream_location is None:
+            return None
+        stream_expression, stream_property_offset, _ = stream_location
+        if typescript_literal_boolean_value(stream_expression) is not True:
+            return None
+        return True, line_at(text, stream_property_offset)
+
     for match in re.finditer(r"\b([A-Za-z_$][\w$]*)\s*\(", code):
         if match.start() > 0 and code[match.start() - 1] == ".":
             continue
@@ -29174,6 +29236,39 @@ def typescript_graph(
                     },
                     source_id=source_agent_id,
                     target_id=turn_limit_id,
+                )
+            )
+        if stream_true := literal_stream_true_from_options(arguments[2][0], arguments[2][1]):
+            _, stream_line = stream_true
+            source_agent_name, source_agent_id = agent_target
+            stream_name, stream_id = add_typescript_openai_run_streaming_control(
+                ir,
+                relative=relative,
+                lines=lines,
+                line=stream_line,
+                configuration="run.stream",
+                analysis="typescript-openai-agents-run-streaming",
+                source_agent=agent_target,
+                local_function=match.group(1),
+                symbol_identity=f"{match.group(1)}.stream@{stream_line}:run{run_line}",
+            )
+            ir.add_relationship(
+                Relationship(
+                    "agent",
+                    source_agent_name,
+                    "configured-by",
+                    "control",
+                    stream_name,
+                    Evidence(relative, run_line, excerpt(lines, run_line)),
+                    {
+                        "analysis": "typescript-openai-agents-run-streaming",
+                        "configuration": "run-stream",
+                        "binding": "stream",
+                        "stream": True,
+                        "local_function": match.group(1),
+                    },
+                    source_id=source_agent_id,
+                    target_id=stream_id,
                 )
             )
         if conversation_session := conversation_session_from_options(arguments[2][0]):
@@ -29556,6 +29651,41 @@ def typescript_graph(
                     },
                     source_id=source_agent_id,
                     target_id=turn_limit_id,
+                )
+            )
+        if len(arguments) >= 3 and (
+            stream_true := literal_stream_true_from_options(arguments[2][0], arguments[2][1])
+        ):
+            _, stream_line = stream_true
+            source_agent_name, source_agent_id = agent_target
+            stream_name, stream_id = add_typescript_openai_run_streaming_control(
+                ir,
+                relative=relative,
+                lines=lines,
+                line=stream_line,
+                configuration="Runner.run.stream",
+                analysis="typescript-openai-agents-runner-run-streaming",
+                source_agent=agent_target,
+                runner_binding=runner_name,
+                symbol_identity=f"{runner_name}.run.stream@{stream_line}:run{run_line}",
+            )
+            ir.add_relationship(
+                Relationship(
+                    "agent",
+                    source_agent_name,
+                    "configured-by",
+                    "control",
+                    stream_name,
+                    Evidence(relative, run_line, excerpt(lines, run_line)),
+                    {
+                        "analysis": "typescript-openai-agents-runner-run-streaming",
+                        "configuration": "Runner-run-stream",
+                        "binding": "stream",
+                        "stream": True,
+                        "runner_binding": runner_name,
+                    },
+                    source_id=source_agent_id,
+                    target_id=stream_id,
                 )
             )
         runtime_control = None

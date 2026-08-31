@@ -10025,6 +10025,53 @@ def test_typescript_openai_conversation_id_requires_exact_server_conversation() 
         "runner_binding": "runner",
     }
 
+    streaming_run_controls = {
+        (component.evidence.path, component.evidence.line, component.symbol_id): component
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "streaming-run"
+        and component.attributes.get("analysis")
+        in {
+            "typescript-openai-agents-run-streaming",
+            "typescript-openai-agents-runner-run-streaming",
+        }
+    }
+    assert set(streaming_run_controls) == {
+        ("positive.ts", 44, "ts:positive.ts#control:run.stream@44:run44"),
+        ("positive.ts", 46, "ts:positive.ts#control:runner.run.stream@46:run46"),
+    }
+    assert streaming_run_controls[
+        ("positive.ts", 44, "ts:positive.ts#control:run.stream@44:run44")
+    ].attributes == {
+        "analysis": "typescript-openai-agents-run-streaming",
+        "module": "@openai/agents",
+        "configuration": "run.stream",
+        "stream": True,
+        "runtime_mode": "streaming",
+        "stream_scope": "agent-run-events",
+        "source_agent": "Server Conversation Agent",
+        "source_agent_id": "ts:positive.ts#agent:agent",
+        "scope": "production",
+        "imported_symbol": "run",
+        "local_function": "run",
+    }
+    assert streaming_run_controls[
+        ("positive.ts", 46, "ts:positive.ts#control:runner.run.stream@46:run46")
+    ].attributes == {
+        "analysis": "typescript-openai-agents-runner-run-streaming",
+        "module": "@openai/agents",
+        "configuration": "Runner.run.stream",
+        "stream": True,
+        "runtime_mode": "streaming",
+        "stream_scope": "agent-run-events",
+        "source_agent": "Server Conversation Agent",
+        "source_agent_id": "ts:positive.ts#agent:agent",
+        "scope": "production",
+        "constructor": "Runner",
+        "imported_symbol": "Runner",
+        "runner_binding": "runner",
+    }
+
     approval_decision_controls = {
         (component.evidence.path, component.evidence.line, component.symbol_id): component
         for component in ir.components

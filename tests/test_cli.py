@@ -673,22 +673,22 @@ def test_cli_verifies_checked_in_benchmark_results(capsys) -> None:
         )
         for item in payload["results"]
     ] == [
-            (
-                "reporting-rules",
-                730,
-                0,
-                {
+        (
+            "reporting-rules",
+            730,
+            0,
+            {
                 "observation_mismatch": 0,
                 "anchor_mismatch": 0,
                 "source_mismatch": 0,
             },
             True,
         ),
-            (
-                "agent-ir",
-                2514,
-                0,
-                {
+        (
+            "agent-ir",
+            2522,
+            0,
+            {
                 "observation_mismatch": 0,
                 "anchor_mismatch": 0,
                 "source_mismatch": 0,

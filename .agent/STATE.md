@@ -7,6 +7,12 @@ catalog workflows.
 
 ## Completed recently
 
+- Added exact OpenAI Agents JS streaming-run IR for literal `stream: true` on source-proven direct
+  `run(agent, input, {...})` calls and stable `Runner.run(agent, input, {...})` calls. The new
+  `streaming-run` control records streaming runtime mode and event-surface scope without treating
+  streaming as durable audit proof. Eight labels under `IR-TS-OPENAI-RUN-STREAMING` pass from the
+  local conversation fixture and the pinned hosted MCP human-in-the-loop example; the full public
+  IR truth set now passes 2,522/2,522.
 - Added exact OpenAI Agents JS Codex extension tool IR for `codexTool(...)` when a source-proven
   `@openai/agents` `Agent` includes either a stable same-file Codex tool binding or an inline
   `codexTool({...})` call in its literal `tools` array. The scanner records workspace-write

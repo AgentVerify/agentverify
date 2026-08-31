@@ -930,6 +930,13 @@
   from other MCP modules do not inherit OpenAI-specific approval semantics. The local fixture plus
   pinned OpenAI SDK remote transport examples now cover 21/21 labels, bringing the public IR truth
   set to 2,429 passing labels.
+- OpenAI Agents JS streaming run mode is now represented as event-surface inventory when literal
+  `stream: true` appears on exact direct `run(...)` or stable `Runner.run(...)` calls with a
+  source-proven agent. The local conversation fixture and pinned hosted MCP human-in-the-loop
+  example prove both direct and Runner-run forms, raising the new
+  `IR-TS-OPENAI-RUN-STREAMING` slice to 8/8 labels and the full public IR truth set to
+  2,522/2,522. This intentionally does not claim audit persistence, actor attribution, or human
+  review quality; those require separate stream-consumer evidence.
 
 ## Hypotheses
 

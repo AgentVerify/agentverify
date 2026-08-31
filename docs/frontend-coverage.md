@@ -864,7 +864,10 @@ settings metadata. Exact delegated `agent.asTool({ runConfig: { workflowName } }
 same-instance `.run(agent, ...)` calls supply source-proven agents. Exact direct
 `run(agent, input, { maxTurns })` and stable exact
 `runner.run(agent, input, { maxTurns })` calls emit per-run `agent-turn-limit` controls on the
-source-proven run agent. Exact Agent-level `modelSettings.toolChoice` string settings emit
+source-proven run agent. Exact direct `run(agent, input, { stream: true })` and stable exact
+`runner.run(agent, input, { stream: true })` calls emit `streaming-run` controls on the
+source-proven run agent as streaming event-surface inventory, not durable audit proof. Exact
+Agent-level `modelSettings.toolChoice` string settings emit
 `tool-choice-policy` controls on the source agent. Stable exact Runner-level
 `modelSettings.toolChoice` string settings emit per-run `tool-choice-policy` controls when later
 same-instance `.run(agent, ...)` calls supply source-proven agents. The pinned `routing.ts` example
@@ -879,7 +882,9 @@ translator agents-as-tools example contributes a three-turn delegated limit plus
 Agent-level sequential tool-call settings through `parallelToolCalls: false`. The Blaxel and
 Cloudflare sandbox extension examples contribute Runner workflow names for normal and streaming
 branches; the sandbox capabilities and hosted MCP human-in-the-loop examples contribute direct-run
-and Runner-run `maxTurns` bounds; the forcing-tool-use and programmatic tool-calling examples
+and Runner-run `maxTurns` bounds, and the hosted MCP human-in-the-loop example contributes
+Runner-run streaming mode controls for the initial and resumed interruption loops; the
+forcing-tool-use and programmatic tool-calling examples
 contribute `required` and `programmatic_tool_calling` Agent-level tool-choice policy; the hosted MCP
 human-in-the-loop example also contributes Runner-level `required` initial-run and `auto` resume-run
 tool-choice policy; the voice-agent configure-session example contributes realtime session-level

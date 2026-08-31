@@ -1045,6 +1045,25 @@
 - Revisit when: Runner constructor defaults, exported Runner factories, or inherited run options
   can be linked to exact source-agent identity without broad receiver/name matching.
 
+## OpenAI Agents JS run-call streaming is event-surface inventory
+
+- Decision: Represent exact TypeScript OpenAI Agents SDK direct
+  `run(agent, input, { stream: true })` calls and stable exact
+  `runner.run(agent, input, { stream: true })` calls as `streaming-run` controls on the
+  source-proven run agent. Emit only for literal `stream: true` in the third options argument,
+  preserve the imported direct-run local binding or stable Runner binding, and do not infer through
+  missing, false, dynamic, or reassigned options.
+- Evidence: The local conversation fixture proves both direct imported `run(...)` streaming and
+  stable `Runner.run(...)` streaming state-resume shapes. The pinned OpenAI Agents JS hosted MCP
+  human-in-the-loop example contributes two stable Runner-run streaming branches around the
+  interruption loop.
+- Alternative: Treat streaming as durable observability or audit coverage. Rejected because
+  `stream: true` proves the run exposes streaming events, not that those events are persisted,
+  reviewed, attributed to an actor, or exported to an audit sink.
+- Revisit when: downstream stream consumers such as `toTextStream(...)`, event handlers, persisted
+  event logs, or interruption-review UIs can be linked to exact source-agent identity without
+  broad callback/name matching.
+
 ## OpenAI Agents JS Agent toolChoice is source-agent model-settings policy
 
 - Decision: Represent exact TypeScript OpenAI Agents SDK
