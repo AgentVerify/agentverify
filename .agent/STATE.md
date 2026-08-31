@@ -7,6 +7,10 @@ catalog workflows.
 
 ## Completed recently
 
+- Added evaluator regression coverage for dependency-aware `--scan-label-paths` expansion through
+  AgentVerify symbol IDs. Focused benchmark development scans now explicitly cover cross-file
+  relationship/component labels whose evidence path differs from the source component path, matching
+  the imported WorkflowAgent execute-helper benchmark shape.
 - Added conservative cross-file TypeScript Vercel `WorkflowAgent.tools` capability propagation for
   direct relative named imports of stable exported `execute` helper functions. Exactly one object
   tool using an imported helper now gets concrete code-execution/shell/filesystem/network

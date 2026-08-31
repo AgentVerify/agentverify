@@ -314,6 +314,89 @@ def test_evaluator_can_scan_only_evaluated_label_paths_for_development(
     assert verified["scan_scope"] == "selected-label-paths"
 
 
+def test_evaluator_selected_label_paths_include_symbol_id_files(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    target = tmp_path / "repo"
+    target.mkdir()
+    (target / "agent.ts").write_text("// tool owner\n", encoding="utf-8")
+    (target / "helpers.ts").write_text("// capability evidence\n", encoding="utf-8")
+    (target / "components.py").write_text("# component owner\n", encoding="utf-8")
+    labels = tmp_path / "labels.json"
+    labels.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "labels": [
+                    {
+                        "id": "cross-file-edge",
+                        "target": {"kind": "local", "path": str(target)},
+                        "check_id": "IR-CROSS-FILE",
+                        "path": "helpers.ts",
+                        "line": 1,
+                        "expected": False,
+                        "relationship": {
+                            "source_kind": "tool",
+                            "source_name": "delegate",
+                            "source_id": "ts:agent.ts#tool:delegate",
+                            "relation": "uses",
+                            "target_kind": "capability",
+                            "target_name": "code-execution",
+                        },
+                    },
+                    {
+                        "id": "component-symbol-path",
+                        "target": {"kind": "local", "path": str(target)},
+                        "check_id": "IR-CROSS-FILE",
+                        "path": "helpers.ts",
+                        "line": 1,
+                        "expected": False,
+                        "component": {
+                            "kind": "agent",
+                            "name": "importedAgent",
+                            "symbol_id": "py:components.py#agent:importedAgent",
+                        },
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    selected_scans: list[tuple[Path, tuple[str, ...] | None]] = []
+
+    def fake_scan_repository(
+        path: Path, *, selected_paths: list[str] | None = None
+    ) -> RepositoryIR:
+        selected_scans.append((path, tuple(selected_paths or ()) if selected_paths else None))
+        return RepositoryIR(str(path))
+
+    monkeypatch.setattr(evaluate_truthset, "scan_repository", fake_scan_repository)
+    output = tmp_path / "selected-symbol-results.json"
+
+    assert (
+        evaluate_truthset.main(
+            [
+                "--labels",
+                str(labels),
+                "--output",
+                str(output),
+                "--check-id",
+                "IR-CROSS-FILE",
+                "--scan-label-paths",
+            ]
+        )
+        == 0
+    )
+
+    result = json.loads(output.read_text(encoding="utf-8"))
+    assert selected_scans == [(target, ("agent.ts", "components.py", "helpers.ts"))]
+    assert result["labels"] == 2
+    assert result["passed"] == 2
+    assert result["benchmark"]["scan_scope"] == "selected-label-paths"
+    Draft202012Validator(benchmark_results_schema()).validate(result)
+
+
 def test_evaluator_reports_source_anchor_failures_separately(tmp_path: Path) -> None:
     target = tmp_path / "repo"
     target.mkdir()
