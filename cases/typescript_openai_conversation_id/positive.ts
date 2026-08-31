@@ -136,3 +136,13 @@ await traceGroupedRunner.run(agent, 'runner trace grouped turn');
 
 const tracingDisabledRunner = new Runner({ tracingDisabled: true });
 await tracingDisabledRunner.run(agent, 'runner tracing disabled turn');
+
+async function continueThroughCurrentAgentHandoff() {
+  let routedAgent: Agent<any, any> = agent;
+  let routedItems = [{ role: 'user', content: 'start routed-agent history feedback' }];
+  while (shouldContinue) {
+    const routedResult = await run(routedAgent, routedItems);
+    routedItems = routedResult.history;
+    routedAgent = routedResult.currentAgent ?? routedAgent;
+  }
+}

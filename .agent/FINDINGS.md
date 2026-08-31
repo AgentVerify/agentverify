@@ -645,11 +645,13 @@
   `conversation-continuity` control and a `configured-by` edge from the consuming agent to that
   control. Direct same-file agent aliases are accepted only when they point to an exact local agent
   before reassignment. Loose arrays, unknown run functions, reassigned history inputs, rebound
-  aliases, and dynamic `result.currentAgent` handoffs remain unresolved. Real pinned
+  aliases, and same-result `result.currentAgent ?? agent` route updates are accepted only as
+  routed-agent metadata on the proven feedback edge. Dynamic `currentAgent` values from unproven
+  results remain unresolved. Real pinned
   `openai/openai-agents-js` examples
   `examples/tools/web-search.ts`, `examples/agent-patterns/llm-as-a-judge.ts`, and
-  `examples/docs/running-agents/chatLoop.ts`, plus routed alias evidence in
-  `examples/agent-patterns/routing.ts`, validate 4 controls and 4 composition edges.
+  `examples/docs/running-agents/chatLoop.ts`, plus routed alias/current-agent evidence in
+  `examples/agent-patterns/routing.ts`, validate 4 controls and 5 composition edges.
 - OpenAI Agents JS `result.state` proves run-state resume continuity only when the state comes from
   an exact prior SDK run result. AgentVerify now records inline `run(agent, result.state)` and named
   state handoffs such as `const state = stream.state; run(agent, state, ...)` as
@@ -1075,7 +1077,7 @@
 ## Warm public-regression scan cache is no longer the benchmark bottleneck
 
 - Finding: After the OpenAI tool-guardrail helper-chain refresh, a true warm-cache full IR
-  truth-set run passed 2,578/2,578 labels with `scan_cache: hit=157 miss=0` in about 3 seconds
+  truth-set run passed 2,583/2,583 labels with `scan_cache: hit=157 miss=0` in about 3 seconds
   wall time. The first reporting-rule pass after the scanner change passed 733/733 with
   `scan_cache: hit=106 miss=12` in about 47 seconds and filled the changed cache entries; the
   second true warm reporting pass passed 733/733 with `scan_cache: hit=118 miss=0` in about

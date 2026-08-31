@@ -139,3 +139,13 @@ await observableRunner.run(agent, 'runner tracing remains enabled');
 let mutableTracingRunner = new Runner({ tracingDisabled: true });
 mutableTracingRunner = unknownRunner;
 await mutableTracingRunner.run(agent, 'runner tracing disablement was rebound before use');
+
+async function mismatchedCurrentAgentResultDoesNotProveRoutedFeedback() {
+  let mismatchedAgent: Agent<any, any> = agent;
+  let mismatchedItems = [{ role: 'user', content: 'currentAgent comes from another result' }];
+  while (shouldContinue) {
+    const mismatchedResult = await unknownRun(mismatchedAgent, mismatchedItems);
+    mismatchedItems = mismatchedResult.history;
+    mismatchedAgent = mismatchedResult.currentAgent ?? mismatchedAgent;
+  }
+}

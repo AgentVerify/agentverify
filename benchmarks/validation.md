@@ -1753,9 +1753,10 @@ Twelve real OpenAI Agents JS built-in-tool labels pin approval-enabled `shellToo
 `applyPatchTool` components, their human-approval edges, reachable agent-tool edges from the local
 built-in tools documentation and workspace-editor examples, and the local filesystem write
 capability implied by literal `applyPatchTool({ editor, ... })` options.
-Twelve OpenAI Agents JS history-feedback labels pin local loop/concat feedback shapes, exact
-same-file agent aliases with reassignment negatives, the real `chatLoop.ts` caller-owned history
-helper, and the real routed `routing.ts` triage-agent alias.
+Seventeen OpenAI Agents JS history-feedback labels pin local loop/concat feedback shapes, exact
+same-file agent aliases with reassignment negatives, same-result `currentAgent ?? agent` route
+metadata with unknown-run negatives, the real `chatLoop.ts` caller-owned history helper, and the
+real routed `routing.ts` triage-agent/current-agent alias.
 Twelve OpenAI Agents JS trace labels pin local and real `withTrace(..., { groupId })` and
 `withTrace(..., { traceId })` correlation evidence, including the real `routing.ts` dynamic
 `conversationId` group binding, the real Codex tool example's generated trace ID with a logged
@@ -1767,7 +1768,7 @@ reexported/star-reexported bindings, an ambiguous two-source star-barrel negativ
 network/web-search toggles, stream callback bindings, run-context thread reuse,
 top-level/default-thread working-directory values, default thread options without explicit
 approval, and a mutated-binding negative.
-All 2,578 IR labels pass (1,986 positives and 592 negatives). The checked
+All 2,583 IR labels pass (1,989 positives and 594 negatives). The checked
 `benchmarks/ir-truthset-results.json` file contains the current per-check precision/recall
 breakdown, including the Vercel WorkflowAgent same-file/imported/reexported model-binding labels,
 direct/named-reexported/star-reexported execute-helper tool-graph labels, real Vercel

@@ -49,7 +49,8 @@
   `MemorySession`/server-managed conversation implementation semantics, or agent/session
   composition edges beyond the now-covered `client.create(...)`, `defaultManifest`, top-level
   `session`, exact `conversationId`, exact `previousResponseId`, same-block `result.history`,
-  same-call history feedback, direct same-file agent aliases, and same-file `result.state` resume
+  same-call history feedback, direct same-file agent aliases, same-result
+  `result.currentAgent ?? agent` feedback-route metadata, and same-file `result.state` resume
   bindings, plus separately modeled `withTrace(..., { groupId/traceId })` and stable
   `Runner({ groupId })` trace correlation plus stable `Runner({ tracingDisabled: true })` and
   delegated `asTool({ runConfig: { tracingDisabled: true } })` observability-disablement evidence,
@@ -121,15 +122,16 @@
   rather than simple source imports. Repository-wide release scans are still authoritative. Opt-in
   `--scan-cache-dir` now preserves repository-wide semantics across repeated local runs by
   revalidating source and AgentVerify package source digests before reusing cached IR. A warm-cache
-  post-helper-chain smoke now shows 157/157 IR target hits in about 3 seconds for 2,578 IR labels.
+  post-current-agent smoke now shows 157/157 IR target hits in about 3 seconds for 2,583 IR labels.
   The first reporting pass after scanner changes had 106/118 cache hits plus 12 misses and took
   about 47 seconds; the second true warm reporting pass had 118/118 cache hits and took about
   2 seconds. Next performance work should focus on cold-cache invalidation cost after scanner
   changes or selected-path dependency gaps rather than warm-cache hit overhead.
 - Explore exact interprocedural OpenAI Agents JS history-state continuation only if it can remain
   source-proven. The real `examples/docs/running-agents/chatLoop.ts` caller-owned concat feedback
-  and `examples/agent-patterns/routing.ts` direct triage-agent alias are now covered; dynamic
-  routed-agent updates such as `agent = result.currentAgent ?? agent` remain unresolved.
+  and `examples/agent-patterns/routing.ts` direct triage-agent alias plus same-result
+  `agent = result.currentAgent ?? agent` feedback-route metadata are now covered; future work should
+  focus on helper-crossing or richer route-update expressions only with same-result provenance.
 - Explore richer OpenAI Agents JS tracing only if it can stay source-proven: trace processors,
   durable trace/export sinks, exported Runner factories, delegated `runConfig.groupId`, additional
   trace metadata policy, direct `run(..., { workflowName })` calls, or governance edges that can

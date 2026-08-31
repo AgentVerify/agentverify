@@ -603,7 +603,10 @@
   variable returned by an exact imported `run(agent, ...)` call, and either a later same-file
   `run(agent, inputBinding)`/`runner.run(agent, inputBinding)` consumes that binding before
   reassignment or the same exact call visibly feeds a caller/loop-owned history binding that it then
-  refreshes from its own `result.history`.
+  refreshes from its own `result.history`. When that same feedback-loop call also later updates the
+  loop-local agent binding as `agent = result.currentAgent ?? agent`, record routed-agent metadata
+  on the configured-by edge, but do not treat arbitrary `currentAgent` values as standalone agent
+  aliases.
 - Evidence: Pinned OpenAI Agents JS examples include `examples/tools/web-search.ts`, where
   `messages = result.history` is extended and passed to a second `run`, and
   `examples/agent-patterns/llm-as-a-judge.ts`, where `inputItems = storyOutlineResult.history` is
@@ -612,15 +615,16 @@
   and `thread = result.history` refreshes the caller-owned history for subsequent helper calls. The
   pinned `examples/agent-patterns/routing.ts` example validates a direct same-file agent alias
   (`let agent: Agent<...> = triageAgent`) feeding `run(agent, inputs)` before `inputs =
-  result.history`.
+  result.history`, plus the exact follow-up route update `agent = result.currentAgent ?? agent` on
+  the same run result.
   Local positives cover direct imported `run`, `Runner.run`, loop feedback, concat feedback, and
-  direct agent aliases; local negatives pin loose arrays, unknown run functions, reassigned history
-  inputs, and rebound aliases.
+  direct/routed agent aliases; local negatives pin loose arrays, unknown run functions, reassigned
+  history inputs, rebound aliases, and `currentAgent` updates from unproven run results.
 - Alternative: Treat any array passed as the second `run` argument as conversation continuity.
   Rejected because OpenAI Agents run inputs can also be fresh user messages; continuity requires
   proof that the input was returned by SDK history.
-- Revisit when: dynamic routed-agent handoffs such as `agent = result.currentAgent ?? agent` can be
-  modeled without treating arbitrary mutable aliases as exact agent provenance.
+- Revisit when: routed-agent history feedback crosses helper boundaries or rewrites the agent
+  binding through richer expressions that can still be tied to the same exact SDK run result.
 
 ## OpenAI run-state resume requires prior SDK run-state proof
 

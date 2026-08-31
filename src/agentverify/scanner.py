@@ -30058,6 +30058,40 @@ def typescript_graph(
                 )
         return None
 
+    def routed_current_agent_feedback_attributes(
+        *,
+        agent_name: str,
+        result_name: str,
+        call_start: int,
+        call_end: int,
+    ) -> dict[str, object]:
+        """Return exact OpenAI Agents JS currentAgent handoff metadata for a feedback loop."""
+        route_pattern = re.compile(
+            rf"(?<![\w$.]){re.escape(agent_name)}\s*=\s*"
+            rf"{re.escape(result_name)}\s*\.\s*currentAgent\s*\?\?\s*"
+            rf"{re.escape(agent_name)}(?![\w$])"
+        )
+        for route_match in route_pattern.finditer(code, call_end):
+            if not call_span_is_inside_loop(call_start, route_match.start()):
+                continue
+            if re.search(
+                rf"(?<![\w$.]){re.escape(agent_name)}\s*=(?!=)",
+                code[call_end : route_match.start()],
+            ):
+                continue
+            if re.search(
+                rf"(?<![\w$.]){re.escape(result_name)}\s*=(?!=)",
+                code[call_end : route_match.start()],
+            ):
+                continue
+            return {
+                "routed_agent_binding": agent_name,
+                "routed_agent_result_binding": result_name,
+                "routed_agent_update": "result.currentAgent-fallback",
+                "routed_agent_update_line": line_at(text, route_match.start()),
+            }
+        return {}
+
     def conversation_continuity_from_input(
         argument: str,
         argument_offset: int,
@@ -30204,6 +30238,18 @@ def typescript_graph(
             current_call_start=match.start(),
         ):
             continuity_control, binding, analysis, input_configuration = conversation_continuity
+            extra_attributes: dict[str, object] | None = None
+            if binding == "history-feedback-input":
+                result_name = openai_agents_run_result_call_bindings.get(match.start())
+                if result_name is not None:
+                    routed_attributes = routed_current_agent_feedback_attributes(
+                        agent_name=agent_name,
+                        result_name=result_name,
+                        call_start=match.start(),
+                        call_end=end,
+                    )
+                    if routed_attributes:
+                        extra_attributes = routed_attributes
             add_conversation_session_relationship(
                 agent_target=agent_target,
                 run_line=run_line,
@@ -30211,6 +30257,7 @@ def typescript_graph(
                 configuration=f"run-{input_configuration}",
                 binding=binding,
                 analysis=analysis,
+                extra_attributes=extra_attributes,
             )
         if len(arguments) < 3:
             continue
