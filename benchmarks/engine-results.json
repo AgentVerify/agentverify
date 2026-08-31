@@ -1,6 +1,6 @@
 {
   "schema_version": 159,
-  "generated_at": "2026-08-31T14:25:05.666769+00:00",
+  "generated_at": "2026-08-31T15:07:50.931431+00:00",
   "defaults": {
     "include_tests": false
   },
@@ -1102,7 +1102,7 @@
         "with_capability": 2
       }
     },
-    "elapsed_seconds": 927.4887
+    "elapsed_seconds": 925.7547
   },
   "repositories": [
     {
@@ -1804,7 +1804,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.9105
+      "elapsed_seconds": 9.9659
     },
     {
       "repository": "OpenHands/software-agent-sdk",
@@ -2533,7 +2533,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.9074
+      "elapsed_seconds": 11.8162
     },
     {
       "repository": "langchain-ai/langchain",
@@ -3232,7 +3232,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.4926
+      "elapsed_seconds": 5.4476
     },
     {
       "repository": "langchain-ai/langgraph",
@@ -3943,7 +3943,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 16.1316
+      "elapsed_seconds": 16.008
     },
     {
       "repository": "langchain-ai/open_deep_research",
@@ -4655,7 +4655,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8713
+      "elapsed_seconds": 0.8571
     },
     {
       "repository": "langchain-ai/deepagents",
@@ -5385,7 +5385,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 18.7741
+      "elapsed_seconds": 18.6426
     },
     {
       "repository": "crewAIInc/crewAI",
@@ -6127,7 +6127,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 12.3541
+      "elapsed_seconds": 12.2379
     },
     {
       "repository": "crewAIInc/crewAI-examples",
@@ -6854,7 +6854,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.3287
+      "elapsed_seconds": 1.3101
     },
     {
       "repository": "microsoft/autogen",
@@ -7577,7 +7577,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.119
+      "elapsed_seconds": 3.0664
     },
     {
       "repository": "microsoft/agent-framework",
@@ -8267,7 +8267,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0728
+      "elapsed_seconds": 0.0723
     },
     {
       "repository": "microsoft/ai-agents-for-beginners",
@@ -8994,7 +8994,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.4608
+      "elapsed_seconds": 0.4566
     },
     {
       "repository": "openai/openai-agents-python",
@@ -9750,7 +9750,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 27.3301
+      "elapsed_seconds": 27.0168
     },
     {
       "repository": "openai/openai-agents-js",
@@ -10516,7 +10516,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.7567
+      "elapsed_seconds": 5.7718
     },
     {
       "repository": "pydantic/pydantic-ai",
@@ -11254,7 +11254,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 43.7043
+      "elapsed_seconds": 41.3221
     },
     {
       "repository": "google/adk-python",
@@ -11989,7 +11989,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 13.873
+      "elapsed_seconds": 13.7368
     },
     {
       "repository": "google/adk-js",
@@ -12708,7 +12708,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 14.0949
+      "elapsed_seconds": 14.154
     },
     {
       "repository": "huggingface/smolagents",
@@ -13434,7 +13434,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.7902
+      "elapsed_seconds": 9.7153
     },
     {
       "repository": "agno-agi/agno",
@@ -14173,7 +14173,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.0528
+      "elapsed_seconds": 2.0471
     },
     {
       "repository": "camel-ai/camel",
@@ -14913,7 +14913,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 12.1317
+      "elapsed_seconds": 12.0046
     },
     {
       "repository": "microsoft/semantic-kernel",
@@ -15628,7 +15628,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.8279
+      "elapsed_seconds": 0.8156
     },
     {
       "repository": "run-llama/llama_index",
@@ -16332,7 +16332,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.3203
+      "elapsed_seconds": 3.3269
     },
     {
       "repository": "QwenLM/Qwen-Agent",
@@ -17065,7 +17065,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.9583
+      "elapsed_seconds": 5.8877
     },
     {
       "repository": "InternLM/lagent",
@@ -17789,7 +17789,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.6007
+      "elapsed_seconds": 2.5629
     },
     {
       "repository": "FoundationAgents/MetaGPT",
@@ -18514,7 +18514,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.4449
+      "elapsed_seconds": 4.4787
     },
     {
       "repository": "OpenBMB/ChatDev",
@@ -19239,7 +19239,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.845
+      "elapsed_seconds": 6.8283
     },
     {
       "repository": "microsoft/TaskWeaver",
@@ -19956,7 +19956,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.8571
+      "elapsed_seconds": 3.9208
     },
     {
       "repository": "Significant-Gravitas/AutoGPT",
@@ -20670,7 +20670,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 15.417
+      "elapsed_seconds": 15.3454
     },
     {
       "repository": "TransformerOptimus/SuperAGI",
@@ -21379,7 +21379,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.079
+      "elapsed_seconds": 5.0515
     },
     {
       "repository": "reworkd/AgentGPT",
@@ -22080,7 +22080,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.7233
+      "elapsed_seconds": 3.7479
     },
     {
       "repository": "letta-ai/letta-code",
@@ -22793,7 +22793,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 17.3569
+      "elapsed_seconds": 17.4085
     },
     {
       "repository": "PrefectHQ/marvin",
@@ -23519,7 +23519,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.0763
+      "elapsed_seconds": 4.0498
     },
     {
       "repository": "agentscope-ai/agentscope",
@@ -24251,7 +24251,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.3584
+      "elapsed_seconds": 8.3825
     },
     {
       "repository": "mastra-ai/mastra",
@@ -24968,7 +24968,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.8136
+      "elapsed_seconds": 8.8704
     },
     {
       "repository": "vercel/ai",
@@ -25691,7 +25691,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 10.0021
+      "elapsed_seconds": 9.2116
     },
     {
       "repository": "cline/cline",
@@ -26419,7 +26419,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 32.2909
+      "elapsed_seconds": 32.2826
     },
     {
       "repository": "RooCodeInc/Roo-Code",
@@ -27140,7 +27140,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 91.3586
+      "elapsed_seconds": 91.2752
     },
     {
       "repository": "continuedev/continue",
@@ -27861,7 +27861,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 8.4787
+      "elapsed_seconds": 8.6472
     },
     {
       "repository": "Aider-AI/aider",
@@ -28577,7 +28577,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.9605
+      "elapsed_seconds": 8.0575
     },
     {
       "repository": "SWE-agent/SWE-agent",
@@ -29281,7 +29281,7 @@
       "parse_warning_details": [
         "tests/test_data/data_sources/ctf/pwn/warmup/warmup.py:8: Missing parentheses in call to 'print'. Did you mean print(...)?"
       ],
-      "elapsed_seconds": 3.06
+      "elapsed_seconds": 3.0211
     },
     {
       "repository": "plandex-ai/plandex",
@@ -29962,7 +29962,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0985
+      "elapsed_seconds": 0.0997
     },
     {
       "repository": "Pythagora-io/gpt-pilot",
@@ -30664,7 +30664,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.7027
+      "elapsed_seconds": 4.6301
     },
     {
       "repository": "stitionai/devika",
@@ -31376,7 +31376,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 1.2434
+      "elapsed_seconds": 1.235
     },
     {
       "repository": "block/goose",
@@ -32091,7 +32091,7 @@
         "crates/goose/tests/mcp_replays/uvrun--withfastmcp==2.14.4fastmcpruntests_fastmcp_test_server.py:8: invalid character '\u256d' (U+256D)",
         "crates/goose-mcp/src/autovisualiser/templates/assets/mermaid.min.js: skipped file larger than 2000000 bytes"
       ],
-      "elapsed_seconds": 10.0017
+      "elapsed_seconds": 9.9514
     },
     {
       "repository": "bytedance/trae-agent",
@@ -32832,7 +32832,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 2.3065
+      "elapsed_seconds": 2.3493
     },
     {
       "repository": "google-gemini/gemini-cli",
@@ -33541,7 +33541,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 23.3096
+      "elapsed_seconds": 23.3564
     },
     {
       "repository": "openai/codex",
@@ -34235,7 +34235,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.3275
+      "elapsed_seconds": 3.2799
     },
     {
       "repository": "browser-use/browser-use",
@@ -34968,7 +34968,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 12.6924
+      "elapsed_seconds": 12.6468
     },
     {
       "repository": "Skyvern-AI/skyvern",
@@ -35720,7 +35720,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 31.8499
+      "elapsed_seconds": 31.4671
     },
     {
       "repository": "lavague-ai/LaVague",
@@ -36438,7 +36438,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.0567
+      "elapsed_seconds": 3.0472
     },
     {
       "repository": "bytebot-ai/bytebot",
@@ -37140,7 +37140,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 3.9737
+      "elapsed_seconds": 4.0033
     },
     {
       "repository": "modelcontextprotocol/servers",
@@ -37851,7 +37851,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 4.9261
+      "elapsed_seconds": 4.9418
     },
     {
       "repository": "modelcontextprotocol/python-sdk",
@@ -38569,7 +38569,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.1939
+      "elapsed_seconds": 11.2279
     },
     {
       "repository": "modelcontextprotocol/typescript-sdk",
@@ -39295,7 +39295,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 15.2202
+      "elapsed_seconds": 15.3138
     },
     {
       "repository": "github/github-mcp-server",
@@ -39986,7 +39986,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0893
+      "elapsed_seconds": 0.0894
     },
     {
       "repository": "microsoft/playwright-mcp",
@@ -40678,7 +40678,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.3468
+      "elapsed_seconds": 0.354
     },
     {
       "repository": "awslabs/mcp",
@@ -41390,7 +41390,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.9732
+      "elapsed_seconds": 6.0105
     },
     {
       "repository": "docker/mcp-gateway",
@@ -42084,7 +42084,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0678
+      "elapsed_seconds": 0.0685
     },
     {
       "repository": "jlowin/fastmcp",
@@ -42806,7 +42806,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.777
+      "elapsed_seconds": 9.7904
     },
     {
       "repository": "mark3labs/mcp-go",
@@ -43487,7 +43487,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0567
+      "elapsed_seconds": 0.0615
     },
     {
       "repository": "langflow-ai/langflow",
@@ -44206,7 +44206,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.9345
+      "elapsed_seconds": 9.8794
     },
     {
       "repository": "FlowiseAI/Flowise",
@@ -44913,7 +44913,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 48.3323
+      "elapsed_seconds": 49.0005
     },
     {
       "repository": "langgenius/dify",
@@ -45614,7 +45614,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.365
+      "elapsed_seconds": 7.3563
     },
     {
       "repository": "n8n-io/n8n",
@@ -46329,7 +46329,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.0829
+      "elapsed_seconds": 9.0737
     },
     {
       "repository": "activepieces/activepieces",
@@ -47056,7 +47056,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 11.897
+      "elapsed_seconds": 11.9655
     },
     {
       "repository": "simstudioai/sim",
@@ -47746,7 +47746,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 200.5854
+      "elapsed_seconds": 202.8111
     },
     {
       "repository": "composiohq/composio",
@@ -48474,7 +48474,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 6.2372
+      "elapsed_seconds": 6.2434
     },
     {
       "repository": "ArcadeAI/arcade-ai",
@@ -49204,7 +49204,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 9.0808
+      "elapsed_seconds": 9.0336
     },
     {
       "repository": "e2b-dev/E2B",
@@ -49893,7 +49893,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 15.4035
+      "elapsed_seconds": 15.4124
     },
     {
       "repository": "daytonaio/daytona",
@@ -50574,7 +50574,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 0.0012
+      "elapsed_seconds": 0.0011
     },
     {
       "repository": "AgentOps-AI/agentops",
@@ -51292,7 +51292,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 5.1939
+      "elapsed_seconds": 5.1059
     },
     {
       "repository": "traceloop/openllmetry",
@@ -52023,7 +52023,7 @@
       "suppressed_findings": 0,
       "parse_warnings": 0,
       "parse_warning_details": [],
-      "elapsed_seconds": 7.1678
+      "elapsed_seconds": 7.1176
     }
   ]
 }

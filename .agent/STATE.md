@@ -13,9 +13,9 @@ catalog workflows.
   `telemetry: createTelemetryOptions(...)` and `onError: recordCallback(...)` call-site now add
   four public labels, so `IR-TS-WORKFLOW-AGENT-OBSERVABILITY` passes 10/10 and the public IR truth
   set passes 2,482/2,482 after the full refresh. The refreshed 71-repository schema-v159 benchmark
-  records 2,947 relationships / 10,819 symbolized components. While refreshing it, a broad
-  TypeScript imported-binding shadow check was bulked so import-heavy files do not rerun whole-file
-  regex scans per local import.
+  records 2,947 relationships / 10,819 symbolized components. While refreshing it, TypeScript
+  imported-binding shadow checks were bulked across local object/tool/model/function/provider
+  resolvers so import-heavy files do not rerun whole-file regex scans per local import.
 - Added exact Vercel `WorkflowAgent` observability IR for constructor-level `telemetry` options and
   lifecycle/tool callback properties on source-proven `@ai-sdk/workflow` agents. The new controls
   are linked back to the source agent and intentionally represent instrumentation-hook inventory,

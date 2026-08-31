@@ -14545,10 +14545,11 @@ def typescript_ai_sdk_provider_imports(
                         binding.provider,
                     )
                 )
+    shadowed_imports = typescript_import_bindings_shadowed(text, set(candidates))
     return {
         local: values[0]
         for local, values in candidates.items()
-        if len(values) == 1 and not typescript_import_binding_is_shadowed(text, local)
+        if len(values) == 1 and local not in shadowed_imports
     }
 
 
@@ -14629,6 +14630,7 @@ def typescript_provider_sdk_imports(
             if original in supported:
                 add(local, original, module)
                 commonjs_bindings.add(local)
+    shadowed_imports = typescript_import_bindings_shadowed(text, set(candidates))
     return {
         local: values[0]
         for local, values in candidates.items()
@@ -14636,7 +14638,7 @@ def typescript_provider_sdk_imports(
         and (
             typescript_commonjs_binding_is_stable(text, local)
             if local in commonjs_bindings
-            else not typescript_import_binding_is_shadowed(text, local)
+            else local not in shadowed_imports
         )
     }
 
@@ -17238,8 +17240,9 @@ def typescript_imported_function_body_bindings(
 
     resolved: dict[str, TypeScriptFunctionBodyBinding] = {}
     export_cache: dict[Path, dict[str, TypeScriptFunctionBodyBinding]] = {}
+    shadowed_imports = typescript_import_bindings_shadowed(text, set(import_counts))
     for specifier, original, local in imported_bindings:
-        if import_counts[local] != 1 or typescript_import_binding_is_shadowed(text, local):
+        if import_counts[local] != 1 or local in shadowed_imports:
             continue
         target = typescript_resolve_local_module(root, path, specifier)
         if target is None:

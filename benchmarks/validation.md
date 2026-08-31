@@ -169,7 +169,7 @@ tool. The same model command passes through `shell-quote` classification and rea
 
 The 2026-08-31 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,797 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 2,947 relationships with 10,819 symbolized components, and completed in 927.4887 seconds
+resolved 2,947 relationships with 10,819 symbolized components, and completed in 925.7547 seconds
 on the development machine. The summary now exposes the Vercel AI Code Mode approval/tool surface as
 a named `typescript_vercel_code_mode` slice: one repository, eight components, and seven
 approval/surface relationships. Three parse warnings were isolated and reported without aborting the
