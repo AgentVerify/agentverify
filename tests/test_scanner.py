@@ -7006,6 +7006,7 @@ def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:
         "ts:exported-tools.ts#control:exportedGuardrailTool.inputGuardrails@13",
         "ts:exported-tools.ts#control:exportedGuardrailTool.outputGuardrails@14",
         "ts:agent.ts#control:helperPredicateTool.inputGuardrails@154",
+        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@185",
     }
     assert controls["ts:agent.ts#control:classifyTool.inputGuardrails@44"].attributes == {
         "analysis": "typescript-openai-agents-tool-guardrails",
@@ -7102,6 +7103,20 @@ def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:
     assert controls[
         "ts:agent.ts#control:helperPredicateTool.inputGuardrails@154"
     ].attributes["guardrail_reject_condition_helpers"] == ["containsClassifiedTerm"]
+    assert controls[
+        "ts:agent.ts#control:helperPredicateTool.inputGuardrails@154"
+    ].attributes["guardrail_reject_condition_helper_sources"] == ["same-file-function"]
+    assert controls[
+        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@185"
+    ].attributes["guardrail_reject_condition_literals"] == ["export-controlled"]
+    assert controls[
+        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@185"
+    ].attributes["guardrail_reject_condition_helpers"] == [
+        "containsExportControlledTerm",
+    ]
+    assert controls[
+        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@185"
+    ].attributes["guardrail_reject_condition_helper_sources"] == ["imported-local-function"]
     assert "guardrail_names" not in controls[
         "ts:agent.ts#control:ambiguousImportedGuardrailTool.inputGuardrails@109"
     ].attributes
@@ -7206,6 +7221,18 @@ def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:
     assert agent_edges[
         "ts:agent.ts#control:helperPredicateTool.inputGuardrails@154"
     ].attributes["guardrail_reject_condition_helpers"] == ["containsClassifiedTerm"]
+    assert agent_edges[
+        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@185"
+    ].source_id == "ts:agent.ts#agent:importedHelperPredicateAgent"
+    assert agent_edges[
+        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@185"
+    ].attributes["via_tool_id"] == "ts:agent.ts#tool:importedHelperPredicateTool"
+    assert agent_edges[
+        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@185"
+    ].attributes["guardrail_reject_condition_literals"] == ["export-controlled"]
+    assert agent_edges[
+        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@185"
+    ].attributes["guardrail_reject_condition_helper_sources"] == ["imported-local-function"]
 
 
 def test_typescript_openai_agent_clone_is_exact() -> None:

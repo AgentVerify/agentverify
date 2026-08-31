@@ -1488,8 +1488,23 @@
 - Alternative: Inline arbitrary predicate helpers, boolean variables, imported helpers, or complex
   composed conditions. Rejected because those shapes need stronger data-flow/provenance before
   their literals can be attributed to a tool guardrail reject path.
-- Revisit when imported helpers or factory-created guardrails can be summarized with stable source
-  identity and mutation/shadowing bounds.
+- Later imported helper support is recorded in the exact exported-function decision below.
+
+## OpenAI Agents JS imported tool guardrail helpers reuse exact exported function bodies
+
+- Decision: Resolve imported tool-guardrail predicate helpers with the existing exact
+  `typescript_imported_function_body_bindings` resolver, then summarize the imported body only when
+  it has the same direct literal predicate shape accepted for same-file helpers.
+- Evidence: The local `typescript_openai_tool_guardrails` fixture imports
+  `containsExportControlledTerm(...)` from `tool-predicates.ts`, uses it as the guard for a
+  `rejectContent(...)` return, and passes focused public IR labels 50/50 with
+  `guardrail_reject_condition_helper_sources: ["imported-local-function"]` on the control and both
+  governance edges.
+- Alternative: Add a separate import resolver, follow arbitrary call graphs, or match helper names
+  across files. Rejected because the existing resolver already enforces unique local export
+  provenance and shadowing checks; broader call-graph matching would blur evidence identity.
+- Revisit when imported helper chains, arrow-expression helpers, or package-level helpers can be
+  bounded with comparable exactness.
 
 ## OpenAI Agents JS imported tool guardrail arrays require exact export provenance
 

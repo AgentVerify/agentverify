@@ -162,3 +162,34 @@ const helperPredicateAgent = new Agent({
 });
 
 void helperPredicateAgent;
+
+import { containsExportControlledTerm } from "./tool-predicates";
+
+const importedHelperPredicateGuardrail = defineToolInputGuardrail({
+  name: "imported_helper_predicate_guardrail",
+  run: async ({ toolCall }) => {
+    const args = JSON.parse(toolCall.arguments) as { text?: string };
+    if (containsExportControlledTerm(args.text)) {
+      return ToolGuardrailFunctionOutputFactory.rejectContent(
+        "Remove export-controlled terms before calling this tool.",
+      );
+    }
+    return ToolGuardrailFunctionOutputFactory.allow();
+  },
+});
+
+const importedHelperPredicateTool = tool({
+  name: "imported_helper_predicate_tool",
+  description: "Uses an imported helper predicate guardrail.",
+  parameters: z.object({ text: z.string() }),
+  inputGuardrails: [importedHelperPredicateGuardrail],
+  execute: ({ text }) => text,
+});
+
+const importedHelperPredicateAgent = new Agent({
+  name: "Imported helper predicate tool guardrail classifier",
+  instructions: "Classify with an imported helper predicate guardrail.",
+  tools: [importedHelperPredicateTool],
+});
+
+void importedHelperPredicateAgent;

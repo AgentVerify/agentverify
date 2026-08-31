@@ -2,6 +2,12 @@
 
 ## Durable facts
 
+- OpenAI Agents JS tool guardrails can safely inherit reject-condition literals from exact imported
+  helper predicates when exported function identity is unique. The existing
+  `typescript_imported_function_body_bindings` resolver handles relative named imports and exact
+  local reexports/star reexports; imported guardrail helper calls now preserve the local call name,
+  source shape such as `imported-local-function`, and literal evidence while ambiguous or shadowed
+  helpers remain unresolved.
 - OpenAI Agents JS tool guardrails can safely inherit reject-condition literals from exact same-file
   helper predicates. Unique helper functions with direct return expressions such as
   `String(value ?? "").includes("classified")` now summarize to
