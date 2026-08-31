@@ -1074,10 +1074,12 @@
 
 ## Warm public-regression scan cache is no longer the benchmark bottleneck
 
-- Finding: After the Python ComputerTool scanner change and full artifact refresh, a warm-cache full
-  IR truth-set run hit all then-current labels with `scan_cache: hit=157 miss=0` in about 2.8
-  seconds wall time, and a warm-cache full reporting-rule run passed 733/733 labels with
-  `scan_cache: hit=118 miss=0` in about 2.1 seconds wall time.
+- Finding: After the OpenAI tool-guardrail helper-chain refresh, a true warm-cache full IR
+  truth-set run passed 2,578/2,578 labels with `scan_cache: hit=157 miss=0` in about 3 seconds
+  wall time. The first reporting-rule pass after the scanner change passed 733/733 with
+  `scan_cache: hit=106 miss=12` in about 47 seconds and filled the changed cache entries; the
+  second true warm reporting pass passed 733/733 with `scan_cache: hit=118 miss=0` in about
+  2 seconds wall time.
 - Confidence: High for the current local corpus/cache layout.
 - Implication: More near-term benchmark performance work should focus on cold-cache invalidation
   cost after scanner changes or selected-path dependency gaps, not on warm-cache hit overhead.

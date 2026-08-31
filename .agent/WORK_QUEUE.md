@@ -121,9 +121,11 @@
   rather than simple source imports. Repository-wide release scans are still authoritative. Opt-in
   `--scan-cache-dir` now preserves repository-wide semantics across repeated local runs by
   revalidating source and AgentVerify package source digests before reusing cached IR. A warm-cache
-  post-refresh smoke now shows 157/157 IR target hits in about 2.8 seconds and 118/118 reporting
-  target hits in about 2.1 seconds, so next performance work should focus on cold-cache invalidation
-  cost after scanner changes or selected-path dependency gaps rather than warm-cache hit overhead.
+  post-helper-chain smoke now shows 157/157 IR target hits in about 3 seconds for 2,578 IR labels.
+  The first reporting pass after scanner changes had 106/118 cache hits plus 12 misses and took
+  about 47 seconds; the second true warm reporting pass had 118/118 cache hits and took about
+  2 seconds. Next performance work should focus on cold-cache invalidation cost after scanner
+  changes or selected-path dependency gaps rather than warm-cache hit overhead.
 - Explore exact interprocedural OpenAI Agents JS history-state continuation only if it can remain
   source-proven. The real `examples/docs/running-agents/chatLoop.ts` caller-owned concat feedback
   and `examples/agent-patterns/routing.ts` direct triage-agent alias are now covered; dynamic

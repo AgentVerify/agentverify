@@ -13,6 +13,10 @@ catalog workflows.
   Focused `IR-TS-OPENAI-TOOL-GUARDRAILS` labels pass 56/56, the full reporting truth set passes
   733/733, the full public IR truth set passes 2,578/2,578, and benchmark verification passes
   3,311/3,311 combined public-regression labels.
+- Refreshed warm-cache benchmark evidence after the helper-chain scanner change. A true warm-cache
+  public IR truth-set run passed 2,578/2,578 with 157/157 scan-cache hits in about 3 seconds. A
+  first reporting pass filled 12 changed cache entries in about 47 seconds, then a true warm
+  reporting pass hit 118/118 cache entries and passed 733/733 in about 2 seconds.
 - Extended TypeScript OpenAI Agents JS tool-guardrail helper predicates through stable helper-result
   bindings. Reject-content branches now inherit exact helper metadata when an `if` condition uses a
   local boolean binding assigned from a proven helper call, provided the binding is not reassigned
