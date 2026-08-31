@@ -439,7 +439,7 @@ handler state on the computer-control capability and `AV-APPROVAL011` reports on
 callbacks that return `true` or pass the complete `pendingSafetyChecks` list back through either SDK
 acknowledgement key.
 The pinned `computer-use-hitl.ts` per-request example is positive, while the singleton/no-handler
-path and callbacks that do not acknowledge the pending list remain negative.
+path and callbacks that return an empty acknowledgement array are explicit non-findings.
 
 Schema v125 extends the same safety-control vocabulary to OpenAI Agents Python
 `ComputerTool(on_safety_check=...)`. Inline `lambda ...: True` callbacks and scope-proven same-file
@@ -675,7 +675,7 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 730 pinned positive/negative locations, with 2,514 separately
+The curated regression set has reached 731 pinned positive/negative locations, with 2,560 separately
 scored IR component/relationship labels. Schema-v133 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule

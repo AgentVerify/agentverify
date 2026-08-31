@@ -52,8 +52,8 @@
   `tools` array. The scanner records Codex thread options such as `approvalPolicy: "never"`,
   sandbox mode, network/web-search toggles, stream callbacks, and run-context thread reuse; ambiguous
   two-source barrels and mutated bindings remain unresolved. The public Codex-tool slice now passes
-  38/38 labels, and the full public IR truth set passes 2,558/2,558. The engine benchmark exposes
-  the real same-file OpenAI examples as
+  38/38 labels, and the full public IR truth set passes 2,560/2,560 after the later safety-check
+  refresh. The engine benchmark exposes the real same-file OpenAI examples as
   `typescript_openai_codex_tool`: four Codex tools, four policy controls, three explicit
   `approvalPolicy: "never"` controls, one default thread-options control without explicit approval
   policy, four agent-tool edges, and four configured-by edges. This is inventory for a
@@ -163,9 +163,9 @@
 - Vercel AI WorkflowAgent tools can delegate their actual behavior into same-file step helpers.
   The pinned `agent-chat.ts` `calculate` object tool points `execute` at a helper with
   `new Function(...)`; AgentVerify previously detected the code-execution capability but left it
-  disconnected from the tool/agent path. Unique stable same-file execute-helper mapping now links
-  `calculate -> code-execution`, keeps shared helpers unresolved, keeps reporting labels at
-  730/730, and the public IR checks have since advanced to 2,446/2,446 labels.
+  disconnected from the tool/agent path. Unique stable same-file execute-helper mapping links
+  `calculate -> code-execution` and keeps shared helpers unresolved; it passed the then-current
+  reporting and public IR checks.
 - JSON reports, AI BOMs, policies, and rule-catalog JSON now have bundled schemas.
 - A freshly rebuilt wheel includes all fifteen runtime schemas; a verifier script now guards that
   package artifact expectation.
@@ -685,9 +685,10 @@
   computer-use tool has no safety-check handler. AgentVerify now inventories exact
   `onSafetyCheck` callbacks that return `true` or return the full `pendingSafetyChecks` list as
   `safety_check_policy: auto-acknowledge-all`, and reports reachable cases through
-  `AV-APPROVAL011`. The public IR truth set now covers 1,994 passing labels after adding the
-  SDK-supported `acknowledged_safety_checks` spelling and expression-bodied object return shape as
-  local regressions.
+  `AV-APPROVAL011`. Exact callbacks that return `[]` or
+  `pendingSafetyChecks.slice(0, 0)` through an acknowledgement field now record
+  `safety_check_policy: acknowledge-none` and remain non-findings, improving the boundary between
+  pass-through acknowledgement and explicit non-acknowledgement without claiming full human review.
 - OpenAI Agents Python `ComputerTool(on_safety_check=...)` now participates in the same
   `AV-APPROVAL011` safety-control vocabulary when exact auto-acknowledgement is proven. Inline
   `lambda ...: True` callbacks and same-file callbacks with a single final `return True` are

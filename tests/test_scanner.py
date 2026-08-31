@@ -8106,7 +8106,11 @@ def test_typescript_openai_computer_safety_check_auto_acknowledgement() -> None:
     assert tools["blindBrowser"].attributes["safety_check_policy"] == "auto-acknowledge-all"
     assert tools["blindBrowser"].attributes["safety_check_decision"] == "return-true"
     assert tools["reviewedBrowser"].attributes["safety_check_handler"] == "configured"
-    assert tools["reviewedBrowser"].attributes["safety_check_policy"] == "unresolved"
+    assert tools["reviewedBrowser"].attributes["safety_check_policy"] == "acknowledge-none"
+    assert (
+        tools["reviewedBrowser"].attributes["safety_check_decision"]
+        == "returns-empty-acknowledgement"
+    )
     assert tools["snakeCaseBrowser"].attributes["safety_check_policy"] == "auto-acknowledge-all"
     assert (
         tools["snakeCaseBrowser"].attributes["safety_check_acknowledgement_field"]
@@ -8128,6 +8132,11 @@ def test_typescript_openai_computer_safety_check_auto_acknowledgement() -> None:
     assert tools["leakyFactoryBrowser"].attributes["computer_lifecycle"] == "factory-without-dispose"
     assert tools["leakyFactoryBrowser"].attributes["computer_create_handler"] == "configured"
     assert tools["leakyFactoryBrowser"].attributes["computer_dispose_handler"] == "missing"
+    assert tools["emptyAckBrowser"].attributes["safety_check_policy"] == "acknowledge-none"
+    assert (
+        tools["emptyAckBrowser"].attributes["safety_check_decision"]
+        == "returns-empty-acknowledgement"
+    )
 
     computer_capabilities = [
         component
@@ -8144,6 +8153,10 @@ def test_typescript_openai_computer_safety_check_auto_acknowledgement() -> None:
         and capability.attributes.get("computer_dispose_handler") == "missing"
         for capability in computer_capabilities
     )
+    assert sum(
+        capability.attributes.get("safety_check_policy") == "acknowledge-none"
+        for capability in computer_capabilities
+    ) == 2
 
     findings = [finding for finding in ir.findings if finding.rule_id == "AV-APPROVAL011"]
     assert [(finding.evidence.line, finding.analysis["tool"]) for finding in findings] == [

@@ -746,10 +746,12 @@ The OpenAI Agents JS computer-use resolver keeps `needsApproval` and `onSafetyCh
 controls. Shallow literal `needsApproval` predicates are visible as callback metadata, while
 `onSafetyCheck` callbacks that return `true` or return the entire `pendingSafetyChecks` list through
 either SDK acknowledgement key become `safety_check_policy: auto-acknowledge-all` and trigger
-`AV-APPROVAL011` only when the computer tool is reachable from an agent. The same resolver records
-exact `computer` backend lifecycle metadata: shorthand or identifier bindings remain external,
-inline object configs are static, `create`/`dispose` callback pairs are per-run factories, and
-create-only factories are called out as missing disposal evidence.
+`AV-APPROVAL011` only when the computer tool is reachable from an agent. Exact empty
+acknowledgement callbacks are retained as `safety_check_policy: acknowledge-none`, proving the
+non-pass-through boundary without claiming human review. The same resolver records exact
+`computer` backend lifecycle metadata: shorthand or identifier bindings remain external, inline
+object configs are static, `create`/`dispose` callback pairs are per-run factories, and create-only
+factories are called out as missing disposal evidence.
 OpenAI Agents JS `Agent.clone({...})` calls are modeled as source-agent lineage only when the clone
 receiver is a stable same-file `Agent`, a direct relative imported exported `Agent`, or an exact
 named/star barrel reexport that resolves unambiguously to one exported OpenAI `Agent`. Clone IR
@@ -1200,7 +1202,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 730-label rule truth set and 2,514-label IR component/relationship set are curated regression
+The 731-label rule truth set and 2,560-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

@@ -5,8 +5,8 @@
       "evaluation_kind": "public-regression",
       "label_scope": "reporting-rules",
       "sealed": false,
-      "labels": 730,
-      "passed": 730,
+      "labels": 731,
+      "passed": 731,
       "failed": 0,
       "all_labels_passed": true,
       "failure_summary": {
@@ -23,8 +23,8 @@
       "evaluation_kind": "public-regression",
       "label_scope": "agent-ir",
       "sealed": false,
-      "labels": 2558,
-      "passed": 2558,
+      "labels": 2560,
+      "passed": 2560,
       "failed": 0,
       "all_labels_passed": true,
       "failure_summary": {

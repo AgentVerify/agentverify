@@ -821,7 +821,10 @@ The TypeScript OpenAI Agents `computerTool` path mirrors that distinction: `onSa
 recorded separately from `needsApproval`, and `AV-APPROVAL011` reports only exact callbacks that
 auto-acknowledge every pending safety check by returning `true` or by returning the full
 `pendingSafetyChecks` list through either SDK result key, `acknowledgedSafetyChecks` or
-`acknowledged_safety_checks`.
+`acknowledged_safety_checks`. Exact callbacks that return an empty acknowledgement array, including
+`[]` or `pendingSafetyChecks.slice(0, 0)`, are recorded as `safety_check_policy:
+acknowledge-none` and remain non-findings rather than being treated as auto-acknowledgement or full
+human-review proof.
 For restored/interrupted OpenAI Agents runs, state approval and rejection calls are
 approval-decision controls only when the receiver state is proven from an SDK run result or restored
 SDK state. TypeScript covers `RunState.fromString(...)` and Python covers

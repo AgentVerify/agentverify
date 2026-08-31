@@ -1075,7 +1075,7 @@ Two default-scope clients qualify: the Microsoft tutorial and FastMCP CLI both a
 do not show the target URL. The TypeScript SDK host is the negative control: it displays the full URL,
 rejects unsafe non-HTTPS/non-loopback destinations, and asks before proceeding. The rule matrix is 4
 TP, 3 TN, 0 FP, and 0 FN; seven additional positive IR labels pin full versus missing disclosure.
-All 730 cross-rule labels pass (337 positives and 393 negatives).
+All 731 cross-rule labels pass (337 positives and 394 negatives).
 
 During validation, import-aware shell resolution rejected Cline's `RegExp.exec()` calls as unrelated
 to `child_process.exec()`. Structure-aware Cline `createTool` parsing then exposed the distinct real
@@ -1574,14 +1574,14 @@ and surfacing failed writes through metrics or alerts.
 
 ## Seed truth-set metrics
 
-`benchmarks/truthset.json` contains 730 exact labels across all 25 enabled rules: 337 positives and 393
+`benchmarks/truthset.json` contains 731 exact labels across all 25 enabled rules: 337 positives and 394
 negatives. Labels mix local fixtures, immutable real positives, and unmatched real corpus observations,
 including a CAMEL allowlist, fixed-name MCP, ordinary non-tool filesystem writes, fixed argv and
 literal TypeScript shell calls, constant/test-only eval, literal browser evaluation, an ordinary
 non-browser `.evaluate(...)` method, non-approval skip flags, disabled
 auto-approval, conditional environment guards, late MCP guards, and safe
 Compose/Kubernetes/Docker SDK settings, host credential bind near misses, and exact/prompt-only MCP
-package launchers. All 730 currently pass;
+package launchers. All 731 currently pass;
 each rule's seed precision and recall are 1.0. Negative labels must retain either an observed Agent IR
 component anchor or verified source text at the exact pinned line, preventing a missing or drifting
 location from passing silently.
@@ -1767,7 +1767,7 @@ reexported/star-reexported bindings, an ambiguous two-source star-barrel negativ
 network/web-search toggles, stream callback bindings, run-context thread reuse,
 top-level/default-thread working-directory values, default thread options without explicit
 approval, and a mutated-binding negative.
-All 2,558 IR labels pass (1,966 positives and 592 negatives). The checked
+All 2,560 IR labels pass (1,968 positives and 592 negatives). The checked
 `benchmarks/ir-truthset-results.json` file contains the current per-check precision/recall
 breakdown, including the Vercel WorkflowAgent same-file/imported/reexported model-binding labels,
 direct/named-reexported/star-reexported execute-helper tool-graph labels, real Vercel

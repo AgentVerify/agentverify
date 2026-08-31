@@ -12,8 +12,16 @@ catalog workflows.
   and unambiguous star reexports. Imported Codex tools now preserve producer-file tool/control
   identity, consumer Agent-to-tool edges, thread-option governance metadata, and binding-source
   resolution, while ambiguous two-source star barrels remain unresolved. Focused Codex-tool labels
-  pass 38/38, the full public IR truth set now passes 2,558/2,558, and benchmark verification
-  passes 3,288/3,288 combined public-regression labels.
+  pass 38/38; the current aggregate public-regression counts are recorded in the safety-check entry
+  below.
+- Extended TypeScript OpenAI Agents JS `computerTool({ onSafetyCheck })` inventory with exact
+  empty-acknowledgement metadata. Callbacks that return `[]` or
+  `pendingSafetyChecks.slice(0, 0)` through an SDK acknowledgement field now record
+  `safety_check_policy: acknowledge-none` and stay outside `AV-APPROVAL011`, while auto-ack paths
+  remain reportable. Focused `AV-APPROVAL011` labels pass 11/11, focused
+  `IR-APPROVAL-CONTROL` labels pass 138/138, the full reporting truth set passes 731/731, the full
+  public IR truth set passes 2,560/2,560, and benchmark verification passes 3,291/3,291 combined
+  public-regression labels.
 - Extended exact TypeScript OpenAI RealtimeSession output-guardrail inventory through relative
   imported typed `RealtimeOutputGuardrail[]` arrays, including exact named local reexports used
   directly or through exact typed `RealtimeSessionOptions` spreads. Imported Realtime guardrails now
@@ -177,7 +185,7 @@ catalog workflows.
   `scripts/evaluate_truthset.py` and accepted by the bundled benchmark-result schema. The verifier
   recomputes the boolean when present, so stale all-pass claims fail release checks without making
   older external benchmark-result files invalid. Checked rule and IR result artifacts were
-  regenerated and still pass 730/730 and 2,470/2,470 labels respectively.
+  regenerated and passed the then-current public-regression labels.
 - Extended exact TypeScript OpenAI Agents SDK `Agent.clone(...)` source lineage through relative
   named and star reexports of exported OpenAI `Agent` bindings. Clone sources reached through
   barrels keep the original source-agent ID, ambiguous/conflicting reexports remain unresolved, and
@@ -284,8 +292,8 @@ catalog workflows.
   The helper span parser now skips TypeScript return type literals such as `Promise<{...}>` before
   choosing the real function body. The pinned Vercel AI `agent-chat.ts` `calculate` tool now links
   to its delegated `new Function(...)` code-execution capability, producing a reachable AV-EXEC002
-  finding through the WorkflowAgent. The reporting truth set covers 730/730 passing labels and the
-  public IR truth set covers 2,433/2,433 passing labels.
+  finding through the WorkflowAgent. The slice passed the then-current reporting and public IR
+  truth sets.
 - Added conservative TypeScript object-tool inventory for plain object properties with top-level
   `execute` plus `inputSchema`/`parameters`, including static `needsApproval: true as const`
   normalization. The pinned Vercel AI `examples/next-workflow/workflow/agent-chat.ts` `deleteFile`
@@ -838,9 +846,8 @@ catalog workflows.
   full `pendingSafetyChecks` list are recorded as `safety_check_policy: auto-acknowledge-all` and
   reported only when the computer-control capability is reachable. Local fixtures plus the real
   OpenAI Agents JS `examples/tools/computer-use-hitl.ts` per-request flow raised regenerated public
-  IR truth-set coverage to 1,994 labels and cross-rule coverage to 726 labels after adding the
-  SDK-supported `acknowledged_safety_checks` spelling and expression-bodied object return shape as
-  local regressions.
+  coverage at that checkpoint after adding the SDK-supported `acknowledged_safety_checks` spelling
+  and expression-bodied object return shape as local regressions.
 - Extended `AV-APPROVAL011` to exact OpenAI Agents Python `ComputerTool(on_safety_check=...)`
   auto-acknowledgement. Inline `lambda ...: True` callbacks and scope-proven same-file callbacks
   with a final `return True` are reported when reachable, while conditional callbacks stay

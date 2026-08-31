@@ -23620,6 +23620,19 @@ def typescript_openai_safety_check_attributes(body: str, constructor: str) -> di
                 "safety_check_decision": "returns-pendingSafetyChecks",
                 "safety_check_acknowledgement_field": acknowledgement_field,
             }
+        if acknowledged_code == "[]" or (
+            pending_binding is not None
+            and re.fullmatch(
+                rf"{re.escape(pending_binding)}\s*\.\s*slice\s*\(\s*0\s*,\s*0\s*\)",
+                acknowledged_code,
+            )
+        ):
+            return {
+                **attributes,
+                "safety_check_policy": "acknowledge-none",
+                "safety_check_decision": "returns-empty-acknowledgement",
+                "safety_check_acknowledgement_field": acknowledgement_field,
+            }
     return attributes
 
 

@@ -798,17 +798,21 @@
   computer-control capability auto-acknowledges all pending safety checks by returning `true` or by
   returning the full `pendingSafetyChecks` list through the SDK-supported
   `acknowledgedSafetyChecks` or `acknowledged_safety_checks` result key, including ordinary
-  block-body returns and parenthesized expression-bodied object returns.
+  block-body returns and parenthesized expression-bodied object returns. Exact callbacks that
+  return an empty acknowledgement array through those fields, either as `[]` or
+  `pendingSafetyChecks.slice(0, 0)`, are recorded as `safety_check_policy: acknowledge-none` and
+  remain non-findings.
 - Evidence: The pinned OpenAI Agents JS `examples/tools/computer-use-hitl.ts` file contains a
   singleton computer tool with `needsApproval` but no `onSafetyCheck`, and a per-request computer
   tool whose `onSafetyCheck` callback returns the full pending safety-check list as acknowledged.
-  Local focused rule and IR labels passed 14/14 before full benchmark regeneration, including the
-  SDK-supported snake_case acknowledgement key and expression-bodied object return shape.
+  Local focused rule and IR labels cover the SDK-supported snake_case acknowledgement key,
+  expression-bodied object return shape, and explicit empty-acknowledgement non-findings.
 - Alternative: Treat any configured safety-check callback as safe or unsafe. Rejected because
   callback existence alone does not prove review quality, while exact pass-through and return-true
   callbacks prove auto-acknowledgement without modeling arbitrary helper logic.
 - Revisit when: richer safety-check callback semantics, safety-check type matching, or explicit
-  policy/user-review handoff patterns can be source-proven and labeled.
+  policy/user-review handoff patterns can be source-proven and labeled without conflating them with
+  empty acknowledgement.
 
 ## OpenAI Agents Python computer safety auto-ack stays scope-proven
 

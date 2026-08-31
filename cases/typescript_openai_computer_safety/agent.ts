@@ -53,6 +53,13 @@ const leakyFactoryBrowser = computerTool({
   },
 });
 
+const emptyAckBrowser = computerTool({
+  computer: {},
+  onSafetyCheck: async () => {
+    return { acknowledgedSafetyChecks: [] };
+  },
+});
+
 const operator = new Agent({
   name: "operator",
   tools: [
@@ -63,6 +70,7 @@ const operator = new Agent({
     expressionBrowser,
     perRequestBrowser,
     leakyFactoryBrowser,
+    emptyAckBrowser,
   ],
 });
 

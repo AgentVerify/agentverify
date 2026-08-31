@@ -694,7 +694,7 @@ def test_cli_verifies_checked_in_benchmark_results(capsys) -> None:
     ] == [
         (
             "reporting-rules",
-            730,
+            731,
             0,
             {
                 "observation_mismatch": 0,
@@ -705,7 +705,7 @@ def test_cli_verifies_checked_in_benchmark_results(capsys) -> None:
         ),
             (
                 "agent-ir",
-                2558,
+                2560,
                 0,
                 {
                     "observation_mismatch": 0,
@@ -765,10 +765,10 @@ def test_cli_benchmark_verify_summary_format(capsys) -> None:
         "Passed: true\n"
         "All labels passed: true\n"
         "Results: 2\n"
-        "Labels: 3288/3288 passed (0 failed)\n"
+        "Labels: 3291/3291 passed (0 failed)\n"
         "Digests: 2/2 ok\n"
-        "- benchmarks/truthset-results.json: 730/730 passed, reporting-rules, public-regression\n"
-        "- benchmarks/ir-truthset-results.json: 2558/2558 passed, agent-ir, public-regression\n"
+        "- benchmarks/truthset-results.json: 731/731 passed, reporting-rules, public-regression\n"
+        "- benchmarks/ir-truthset-results.json: 2560/2560 passed, agent-ir, public-regression\n"
     )
 
 
@@ -795,7 +795,7 @@ def test_cli_benchmark_verify_writes_output_file(tmp_path: Path, capsys) -> None
     assert captured.out == ""
     assert captured.err == ""
     payload = __import__("json").loads(output.read_text(encoding="utf-8"))
-    assert payload["results"][0]["labels"] == 730
+    assert payload["results"][0]["labels"] == 731
     assert payload["results"][0]["digest_ok"] is True
     schema = __import__("json").loads(render_schema("benchmark-verification"))
     Draft202012Validator(schema).validate(payload)
