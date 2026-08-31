@@ -7,6 +7,10 @@ catalog workflows.
 
 ## Completed recently
 
+- Extended installed-wheel smoke verification to validate the checked
+  `benchmarks/engine-results.json` snapshot against the installed `engine-results` schema. The
+  smoke payload now reports `engine_results_snapshot_valid`, and a fresh wheel/sdist verification
+  passed with the value set to true.
 - Extended source-distribution verification from presence checks to content validation for
   `benchmarks/engine-results.json`: release archives must now include the source copy of the
   engine-results schema and the verifier validates the packaged snapshot against it. Distribution

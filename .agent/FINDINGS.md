@@ -2,6 +2,9 @@
 
 ## Durable facts
 
+- Installed-wheel smoke verification now validates the checked engine-results snapshot with the
+  schema exported by the installed `agentverify` executable, proving the packaged schema and source
+  evidence artifact agree in a built artifact workflow.
 - Source-distribution verification now validates packaged `benchmarks/engine-results.json` against
   `src/agentverify/schemas/agentverify-engine-results-v1.schema.json`; malformed release archives
   fail even when the expected filename is present.

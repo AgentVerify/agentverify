@@ -175,6 +175,17 @@ def sdist_file_text(path: Path, target_name: str) -> str:
     return ""
 
 
+def validate_engine_results_payload(schema: object, payload: object) -> list[str]:
+    try:
+        Draft202012Validator.check_schema(schema)
+        Draft202012Validator(schema).validate(payload)
+    except jsonschema_exceptions.SchemaError as error:
+        return [str(error)]
+    except jsonschema_exceptions.ValidationError as error:
+        return [error.message]
+    return []
+
+
 def validate_sdist_engine_results(path: Path, names: set[str]) -> dict[str, object]:
     required = {ENGINE_RESULTS_FILE, ENGINE_RESULTS_SCHEMA_FILE}
     missing = sorted(required - names)
@@ -189,9 +200,7 @@ def validate_sdist_engine_results(path: Path, names: set[str]) -> dict[str, obje
     try:
         schema = json.loads(sdist_file_text(path, ENGINE_RESULTS_SCHEMA_FILE))
         payload = json.loads(sdist_file_text(path, ENGINE_RESULTS_FILE))
-        Draft202012Validator.check_schema(schema)
-        Draft202012Validator(schema).validate(payload)
-    except (json.JSONDecodeError, jsonschema_exceptions.SchemaError) as error:
+    except json.JSONDecodeError as error:
         return {
             "checked": True,
             "passed": False,
@@ -199,13 +208,14 @@ def validate_sdist_engine_results(path: Path, names: set[str]) -> dict[str, obje
             "results_file": ENGINE_RESULTS_FILE,
             "errors": [str(error)],
         }
-    except jsonschema_exceptions.ValidationError as error:
+    errors = validate_engine_results_payload(schema, payload)
+    if errors:
         return {
             "checked": True,
             "passed": False,
             "schema_file": ENGINE_RESULTS_SCHEMA_FILE,
             "results_file": ENGINE_RESULTS_FILE,
-            "errors": [error.message],
+            "errors": errors,
         }
     return {
         "checked": True,
@@ -303,6 +313,10 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         )
         policy_trust_root_schema = json.loads(
             command([str(agentverify), "schema", "policy-trust-root"])
+        )
+        engine_results_errors = validate_engine_results_payload(
+            engine_results_schema,
+            json.loads((source_root / ENGINE_RESULTS_FILE).read_text(encoding="utf-8")),
         )
         benchmark_verification = json.loads(
             command(
@@ -445,6 +459,8 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
             "title"
         ),
         "engine_results_schema_title": engine_results_schema.get("title"),
+        "engine_results_snapshot_valid": not engine_results_errors,
+        "engine_results_snapshot_errors": engine_results_errors,
         "holdout_labels_schema_title": holdout_labels_schema.get("title"),
         "holdout_manifest_schema_title": holdout_manifest_schema.get("title"),
         "report_schema_title": report_schema.get("title"),
@@ -540,6 +556,8 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         failed.append("editor_contract_verification_schema_title")
     if checks["engine_results_schema_title"] != "AgentVerify Engine Results 1":
         failed.append("engine_results_schema_title")
+    if checks["engine_results_snapshot_valid"] is not True:
+        failed.append("engine_results_snapshot_valid")
     if checks["holdout_labels_schema_title"] != "AgentVerify Holdout Labels 1":
         failed.append("holdout_labels_schema_title")
     if checks["holdout_manifest_schema_title"] != "AgentVerify Holdout Manifest 1":

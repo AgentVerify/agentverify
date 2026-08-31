@@ -42,6 +42,7 @@ ENGINE_RESULTS_FILE = verify_distribution.ENGINE_RESULTS_FILE
 ENGINE_RESULTS_SCHEMA_FILE = verify_distribution.ENGINE_RESULTS_SCHEMA_FILE
 latest_sdist = verify_distribution.latest_sdist
 latest_wheel = verify_distribution.latest_wheel
+validate_engine_results_payload = verify_distribution.validate_engine_results_payload
 verify_sdist = verify_distribution.verify_sdist
 verify_wheel = verify_distribution.verify_wheel
 
@@ -343,6 +344,17 @@ def test_distribution_verifier_rejects_invalid_engine_results(
 
     with pytest.raises(RuntimeError, match="'repositories' is a required property"):
         verify_sdist(sdist)
+
+
+def test_engine_results_payload_validation_reports_errors() -> None:
+    schema = json.loads((ROOT / ENGINE_RESULTS_SCHEMA_FILE).read_text(encoding="utf-8"))
+    payload = json.loads((ROOT / ENGINE_RESULTS_FILE).read_text(encoding="utf-8"))
+
+    assert validate_engine_results_payload(schema, payload) == []
+    payload.pop("repositories")
+    assert validate_engine_results_payload(schema, payload) == [
+        "'repositories' is a required property"
+    ]
 
 
 def test_distribution_verifier_rejects_benchmark_workflow_without_verifier_upload(
