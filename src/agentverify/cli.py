@@ -11,8 +11,12 @@ from . import __version__
 from .benchmark import (
     BENCHMARK_VERIFICATION_ERRORS,
     DEFAULT_BENCHMARK_RESULTS,
+    DEFAULT_ENGINE_RESULTS,
+    ENGINE_RESULTS_VERIFICATION_ERRORS,
     render_benchmark_verification,
+    render_engine_results_verification,
     verify_benchmark_results,
+    verify_engine_results,
 )
 from .contracts import (
     CONTRACT_VERIFICATION_ERRORS,
@@ -264,6 +268,28 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="PATH",
         help="write verification JSON to PATH instead of standard output",
     )
+    benchmark_verify_engine = benchmark_subparsers.add_parser(
+        "verify-engine", help="validate engine-results JSON snapshots"
+    )
+    benchmark_verify_engine.add_argument(
+        "result",
+        nargs="?",
+        type=Path,
+        default=DEFAULT_ENGINE_RESULTS,
+        help="engine-results JSON file; defaults to the checked-in public engine snapshot",
+    )
+    benchmark_verify_engine.add_argument(
+        "--schema",
+        type=Path,
+        help="engine-results schema; defaults to the AgentVerify bundled schema",
+    )
+    benchmark_verify_engine.add_argument(
+        "-o",
+        "--output",
+        type=Path,
+        metavar="PATH",
+        help="write verification JSON to PATH instead of standard output",
+    )
     holdout = subparsers.add_parser("holdout", help="validate holdout setup artifacts")
     holdout_subparsers = holdout.add_subparsers(dest="holdout_command", required=True)
     holdout_validate = holdout_subparsers.add_parser(
@@ -394,6 +420,13 @@ def main(argv: list[str] | None = None) -> int:
             return 2
         return emit_output(render_editor_contract_manifest(manifest), args.output) or 0
     if args.command == "benchmark":
+        if args.benchmark_command == "verify-engine":
+            try:
+                payload = verify_engine_results(args.result, schema_path=args.schema)
+            except ENGINE_RESULTS_VERIFICATION_ERRORS as error:
+                print(f"agentverify: engine-results verification failed: {error}", file=sys.stderr)
+                return 2
+            return emit_output(render_engine_results_verification(payload), args.output) or 0
         try:
             payload = verify_benchmark_results(
                 args.results,

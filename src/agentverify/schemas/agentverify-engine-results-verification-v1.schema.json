@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentverify.dev/schemas/agentverify-engine-results-verification-v1.schema.json",
+  "title": "AgentVerify Engine Results Verification 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "engine_results_verification_format",
+    "schema_version",
+    "result",
+    "schema",
+    "passed",
+    "engine_schema_version",
+    "generated_at",
+    "repositories",
+    "successful",
+    "summary_repositories",
+    "summary_successful"
+  ],
+  "properties": {
+    "engine_results_verification_format": {
+      "const": "AgentVerify Engine Results Verification"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "result": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema": {
+      "type": "string",
+      "minLength": 1
+    },
+    "passed": {
+      "const": true
+    },
+    "engine_schema_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "repositories": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "successful": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "summary_repositories": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "summary_successful": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

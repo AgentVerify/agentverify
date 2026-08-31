@@ -7,6 +7,12 @@ catalog workflows.
 
 ## Completed recently
 
+- Added installed CLI verification for engine benchmark snapshots:
+  `agentverify benchmark verify-engine` validates `benchmarks/engine-results.json` against the
+  bundled schema and checks that summary repository/success counts match the packaged repository
+  entries. The verifier emits schema-backed JSON via `agentverify schema
+  engine-results-verification`, runs in default CI and the copyable benchmark-verification workflow,
+  and fresh wheel/sdist smoke verification passed with 17 bundled schemas.
 - Extended installed-wheel smoke verification to validate the checked
   `benchmarks/engine-results.json` snapshot against the installed `engine-results` schema. The
   smoke payload now reports `engine_results_snapshot_valid`, and a fresh wheel/sdist verification

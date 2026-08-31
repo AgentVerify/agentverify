@@ -101,7 +101,7 @@ def test_distribution_verifier_accepts_all_required_schemas(tmp_path: Path) -> N
     payload = verify_wheel(wheel)
 
     assert payload["passed"] is True
-    assert payload["required_schema_files"] == 16
+    assert payload["required_schema_files"] == len(REQUIRED_SCHEMA_FILES)
     assert payload["missing_schema_files"] == []
     assert payload["present_schema_files"] == sorted(REQUIRED_SCHEMA_FILES)
     assert payload["console_scripts"] == REQUIRED_ENTRY_POINTS
@@ -152,6 +152,7 @@ def test_ci_workflow_verifies_checked_in_benchmark_results() -> None:
         "agentverify benchmark verify --require-evaluation-kind public-regression "
         "--require-all-passed"
     ) in workflow
+    assert "agentverify benchmark verify-engine" in workflow
     assert (
         "agentverify holdout validate --manifest benchmarks/holdout-manifest.template.json "
         "--labels benchmarks/holdout-labels.template.json"
@@ -216,12 +217,16 @@ def test_github_benchmark_verify_example_is_read_only_and_exports_verifier_json(
     assert "--require-evaluation-kind public-regression" in workflow
     assert "--require-all-passed" in workflow
     assert "--output agentverify-benchmark-verification.json" in workflow
+    assert "agentverify benchmark verify-engine" in workflow
+    assert "--output agentverify-engine-results-verification.json" in workflow
     assert "agentverify holdout validate" in workflow
     assert "--manifest benchmarks/holdout-manifest.template.json" in workflow
     assert "--labels benchmarks/holdout-labels.template.json" in workflow
     assert "agentverify schema benchmark-verification" in workflow
+    assert "agentverify schema engine-results-verification" in workflow
     assert "Draft202012Validator(schema).validate(payload)" in workflow
     assert "actions/upload-artifact@v5" in workflow
+    assert "agentverify-engine-results-verification.json" in workflow
     assert "python -m pip install agentverify==0.1.0" in workflow
     assert "[`examples/github-benchmark-verify.yml`](../examples/github-benchmark-verify.yml)" in (
         release_checklist

@@ -22,10 +22,12 @@ uv run python scripts/verify_benchmark_results.py \
   --require-evaluation-kind public-regression \
   --require-all-passed
 agentverify benchmark verify --require-evaluation-kind public-regression --require-all-passed
+agentverify benchmark verify-engine
 agentverify holdout validate --manifest benchmarks/holdout-manifest.template.json --labels benchmarks/holdout-labels.template.json
 agentverify schema benchmark-result --output agentverify-benchmark-result.schema.json
 agentverify schema benchmark-verification --output agentverify-benchmark-verification.schema.json
 agentverify schema engine-results --output agentverify-engine-results.schema.json
+agentverify schema engine-results-verification --output agentverify-engine-results-verification.schema.json
 agentverify schema holdout-manifest --output agentverify-holdout-manifest.schema.json
 agentverify schema holdout-labels --output agentverify-holdout-labels.schema.json
 ```
@@ -53,15 +55,16 @@ Before publishing public regression numbers:
    to the same verifier.
 3. Confirm CI also ran the installed CLI benchmark gate on the checked-in result files for the
    release commit. Source-release verification also checks that the packaged
-   `examples/github-benchmark-verify.yml` generates, schema-validates, and uploads
-   `agentverify-benchmark-verification.json`.
+   `examples/github-benchmark-verify.yml` generates, schema-validates, and uploads both
+   `agentverify-benchmark-verification.json` and
+   `agentverify-engine-results-verification.json`.
 4. Validate the checked public holdout templates with `agentverify holdout validate --manifest
    benchmarks/holdout-manifest.template.json --labels benchmarks/holdout-labels.template.json`.
 5. Export `agentverify schema benchmark-result`, `agentverify schema benchmark-verification`,
-   `agentverify schema engine-results`, `agentverify schema holdout-manifest`, and
-   `agentverify schema holdout-labels` from the built or installed CLI when downstream release
-   tooling needs the exact result, verifier, engine-metric, and holdout setup contracts without a
-   source checkout.
+   `agentverify schema engine-results`, `agentverify schema engine-results-verification`,
+   `agentverify schema holdout-manifest`, and `agentverify schema holdout-labels` from the built or
+   installed CLI when downstream release tooling needs the exact result, verifier, engine-metric,
+   engine-verifier, and holdout setup contracts without a source checkout.
 6. State the claim boundary explicitly: curated public regression metrics, not an unbiased ecosystem
    accuracy estimate.
 7. If a result file changes, review `failed`, `failure_summary`, and the per-label outcomes rather
@@ -90,6 +93,7 @@ agentverify benchmark verify path/to/holdout-results.json \
 agentverify schema benchmark-result --output agentverify-benchmark-result.schema.json
 agentverify schema benchmark-verification --output agentverify-benchmark-verification.schema.json
 agentverify schema engine-results --output agentverify-engine-results.schema.json
+agentverify schema engine-results-verification --output agentverify-engine-results-verification.schema.json
 agentverify schema holdout-manifest --output agentverify-holdout-manifest.schema.json
 agentverify schema holdout-labels --output agentverify-holdout-labels.schema.json
 ```

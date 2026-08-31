@@ -27,6 +27,7 @@ agentverify schema benchmark-verification --output agentverify-benchmark-verific
 agentverify schema editor-contract-manifest --output agentverify-editor-contract-manifest.schema.json
 agentverify schema editor-contract-verification --output agentverify-editor-contract-verification.schema.json
 agentverify schema engine-results --output agentverify-engine-results.schema.json
+agentverify schema engine-results-verification --output agentverify-engine-results-verification.schema.json
 agentverify schema holdout-manifest --output agentverify-holdout-manifest.schema.json
 agentverify schema holdout-labels --output agentverify-holdout-labels.schema.json
 agentverify schema report --output agentverify-report.schema.json
@@ -47,6 +48,7 @@ agentverify policy repository-policy.json --export-signing-payload --output poli
 agentverify policy repository-policy.json --trust-root policy-trust-root.json --require-trusted
 agentverify policy examples/repository-policy.json --trust-root examples/policy-trust-root.json --require-trusted
 agentverify benchmark verify --require-evaluation-kind public-regression --require-all-passed
+agentverify benchmark verify-engine
 agentverify holdout validate --manifest benchmarks/holdout-manifest.template.json --labels benchmarks/holdout-labels.template.json
 agentverify contracts --output-dir agentverify-editor-contracts --sample-root examples/safe_agent
 agentverify contracts --verify-dir agentverify-editor-contracts
@@ -93,6 +95,8 @@ still preserve policy and `--fail-on` exit decisions.
 by `agentverify contracts --verify-dir`.
 `agentverify schema engine-results` validates full-corpus engine metric snapshots such as
 `benchmarks/engine-results.json`.
+`agentverify schema engine-results-verification` validates the JSON emitted by
+`agentverify benchmark verify-engine`, which checks the snapshot schema and summary counts.
 `agentverify schema holdout-manifest` and `agentverify schema holdout-labels` validate the public
 sealed-holdout sampling and adjudicated-label templates.
 `agentverify holdout validate --manifest PATH --labels PATH` validates those setup files directly
@@ -111,6 +115,8 @@ outcome-derived passed/failed/metrics totals, and reports failure classes separa
 anchor, and source-snippet mismatches. It can fail closed on release-claim requirements such as
 `--require-evaluation-kind sealed-holdout`, `--require-sealed`, `--require-manifest`, and
 `--require-all-passed`.
+`agentverify benchmark verify-engine` validates full-corpus engine metric snapshots against the
+bundled engine-results schema and checks that summary repository totals match the packaged entries.
 Use `--format summary` for compact CI logs: it reports scan totals, baseline/policy status, counts by
 severity/result kind/rule, and the top evidence locations without printing the full component graph.
 `agentverify rules` lists every enabled reporting rule with its result kind, default severity,
@@ -180,6 +186,8 @@ HIGH AV-EXEC001 [high; finding]
   `agentverify benchmark verify` JSON artifacts
 - `agentverify schema engine-results` — installed engine metric snapshot contract for
   `benchmarks/engine-results.json`
+- `agentverify schema engine-results-verification` — installed verifier-output contract for
+  `agentverify benchmark verify-engine`
 
 SARIF output includes stable fingerprints, source locations, severity, remediation, Agent IR paths,
 and resolved/unresolved control context for code-scanning integrations.
@@ -212,10 +220,12 @@ PYTHONPATH=src python3 scripts/evaluate_truthset.py --evaluation-kind sealed-hol
   --output path/to/holdout-results.json
 uv run python scripts/verify_benchmark_results.py --require-evaluation-kind public-regression --require-all-passed
 agentverify benchmark verify --require-evaluation-kind public-regression --require-all-passed
+agentverify benchmark verify-engine
 agentverify holdout validate --manifest benchmarks/holdout-manifest.template.json --labels benchmarks/holdout-labels.template.json
 agentverify schema benchmark-result --output agentverify-benchmark-result.schema.json
 agentverify schema benchmark-verification --output agentverify-benchmark-verification.schema.json
 agentverify schema engine-results --output agentverify-engine-results.schema.json
+agentverify schema engine-results-verification --output agentverify-engine-results-verification.schema.json
 agentverify schema holdout-manifest --output agentverify-holdout-manifest.schema.json
 agentverify schema holdout-labels --output agentverify-holdout-labels.schema.json
 ```
@@ -230,8 +240,9 @@ so benchmark-result drift fails during pull requests before release packaging. T
 also carries per-result `failed` counts and mismatch summaries so release tooling can distinguish
 scanner false positives/negatives from stale source anchors or expected snippets. Source-distribution
 verification keeps the copyable GitHub workflow examples tied to their contracts: benchmark
-verification emits, validates, and uploads `agentverify-benchmark-verification.json`; policy-gate
-and code-scanning examples keep their expected permissions and gate/upload commands.
+verification emits, validates, and uploads both `agentverify-benchmark-verification.json` and
+`agentverify-engine-results-verification.json`; policy-gate and code-scanning examples keep their
+expected permissions and gate/upload commands.
 For editor or custom CI integrations, `agentverify contracts --sample-root examples/safe_agent`
 exports the report schema, rules schema, current rules catalog, and optional sample report into a
 local artifact directory with a schema-backed digest manifest. `agentverify contracts --verify-dir`
@@ -256,4 +267,5 @@ uv build --wheel --sdist
 python3 scripts/verify_distribution.py --require-sdist
 python3 scripts/verify_distribution.py --require-sdist --smoke-install
 uv run python scripts/verify_benchmark_results.py --require-evaluation-kind public-regression --require-all-passed
+agentverify benchmark verify-engine
 ```

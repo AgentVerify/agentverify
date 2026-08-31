@@ -444,6 +444,7 @@ def test_cli_lists_bundled_schemas(capsys) -> None:
         "editor-contract-manifest",
         "editor-contract-verification",
         "engine-results",
+        "engine-results-verification",
         "holdout-labels",
         "holdout-manifest",
         "policy",
@@ -484,6 +485,14 @@ def test_cli_prints_bundled_engine_results_schema(capsys) -> None:
             (ROOT / "benchmarks/engine-results.json").read_text(encoding="utf-8")
         )
     )
+
+
+def test_cli_prints_bundled_engine_results_verification_schema(capsys) -> None:
+    assert cli.main(["schema", "engine-results-verification"]) == 0
+
+    schema = json.loads(capsys.readouterr().out)
+    Draft202012Validator.check_schema(schema)
+    assert schema["title"] == "AgentVerify Engine Results Verification 1"
 
 
 def test_cli_prints_bundled_holdout_template_schemas(capsys) -> None:
@@ -741,6 +750,68 @@ def test_cli_benchmark_verify_writes_output_file(tmp_path: Path, capsys) -> None
     assert payload["results"][0]["digest_ok"] is True
     schema = __import__("json").loads(render_schema("benchmark-verification"))
     Draft202012Validator(schema).validate(payload)
+
+
+def test_cli_verifies_checked_in_engine_results(capsys) -> None:
+    assert cli.main(["benchmark", "verify-engine"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload == {
+        "engine_results_verification_format": "AgentVerify Engine Results Verification",
+        "schema_version": 1,
+        "result": "benchmarks/engine-results.json",
+        "schema": "engine-results",
+        "passed": True,
+        "engine_schema_version": 159,
+        "generated_at": payload["generated_at"],
+        "repositories": 71,
+        "successful": 71,
+        "summary_repositories": 71,
+        "summary_successful": 71,
+    }
+    schema = json.loads(render_schema("engine-results-verification"))
+    Draft202012Validator(schema).validate(payload)
+
+
+def test_cli_benchmark_verify_engine_writes_output_file(tmp_path: Path, capsys) -> None:
+    output = tmp_path / "engine-results-verification.json"
+
+    assert (
+        cli.main(
+            [
+                "benchmark",
+                "verify-engine",
+                str(ROOT / "benchmarks/engine-results.json"),
+                "--output",
+                str(output),
+            ]
+        )
+        == 0
+    )
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err == ""
+    payload = json.loads(output.read_text(encoding="utf-8"))
+    assert payload["passed"] is True
+    assert payload["repositories"] == 71
+    assert payload["schema"] == "engine-results"
+    schema = json.loads(render_schema("engine-results-verification"))
+    Draft202012Validator(schema).validate(payload)
+
+
+def test_cli_benchmark_verify_engine_rejects_summary_drift(
+    tmp_path: Path, capsys
+) -> None:
+    payload = json.loads((ROOT / "benchmarks/engine-results.json").read_text(encoding="utf-8"))
+    payload["summary"]["repositories"] = payload["summary"]["repositories"] + 1
+    result = tmp_path / "engine-results.json"
+    result.write_text(json.dumps(payload), encoding="utf-8")
+
+    assert cli.main(["benchmark", "verify-engine", str(result)]) == 2
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "summary.repositories does not match repository entries" in captured.err
 
 
 def test_cli_benchmark_verify_rejects_public_results_as_sealed_claim(capsys) -> None:

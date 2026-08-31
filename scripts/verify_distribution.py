@@ -33,11 +33,16 @@ REQUIRED_BENCHMARK_WORKFLOW_FRAGMENTS = frozenset(
         "--require-evaluation-kind public-regression",
         "--require-all-passed",
         "--output agentverify-benchmark-verification.json",
+        "agentverify benchmark verify-engine",
+        "--output agentverify-engine-results-verification.json",
         "agentverify schema benchmark-verification",
+        "agentverify schema engine-results-verification",
         "Draft202012Validator(schema).validate(payload)",
         "actions/upload-artifact@v5",
         "name: agentverify-benchmark-verification",
-        "path: agentverify-benchmark-verification.json",
+        "path: |",
+        "agentverify-benchmark-verification.json",
+        "agentverify-engine-results-verification.json",
     }
 )
 FORBIDDEN_BENCHMARK_WORKFLOW_FRAGMENTS = frozenset({"security-events: write"})
@@ -111,6 +116,7 @@ REQUIRED_SCHEMA_FILES = frozenset(
         "agentverify/schemas/agentverify-editor-contract-manifest-v1.schema.json",
         "agentverify/schemas/agentverify-editor-contract-verification-v1.schema.json",
         "agentverify/schemas/agentverify-engine-results-v1.schema.json",
+        "agentverify/schemas/agentverify-engine-results-verification-v1.schema.json",
         "agentverify/schemas/agentverify-holdout-labels-v1.schema.json",
         "agentverify/schemas/agentverify-holdout-manifest-v1.schema.json",
         "agentverify/schemas/agentverify-policy-key-trust-root-v1.schema.json",
@@ -295,6 +301,9 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
             command([str(agentverify), "schema", "editor-contract-verification"])
         )
         engine_results_schema = json.loads(command([str(agentverify), "schema", "engine-results"]))
+        engine_results_verification_schema = json.loads(
+            command([str(agentverify), "schema", "engine-results-verification"])
+        )
         holdout_labels_schema = json.loads(command([str(agentverify), "schema", "holdout-labels"]))
         holdout_manifest_schema = json.loads(
             command([str(agentverify), "schema", "holdout-manifest"])
@@ -317,6 +326,16 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         engine_results_errors = validate_engine_results_payload(
             engine_results_schema,
             json.loads((source_root / ENGINE_RESULTS_FILE).read_text(encoding="utf-8")),
+        )
+        engine_results_verification = json.loads(
+            command(
+                [
+                    str(agentverify),
+                    "benchmark",
+                    "verify-engine",
+                    str(source_root / ENGINE_RESULTS_FILE),
+                ]
+            )
         )
         benchmark_verification = json.loads(
             command(
@@ -459,8 +478,16 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
             "title"
         ),
         "engine_results_schema_title": engine_results_schema.get("title"),
+        "engine_results_verification_schema_title": engine_results_verification_schema.get(
+            "title"
+        ),
         "engine_results_snapshot_valid": not engine_results_errors,
         "engine_results_snapshot_errors": engine_results_errors,
+        "engine_results_verification_passed": engine_results_verification.get("passed"),
+        "engine_results_verification_repositories": engine_results_verification.get(
+            "repositories"
+        ),
+        "engine_results_verification_successful": engine_results_verification.get("successful"),
         "holdout_labels_schema_title": holdout_labels_schema.get("title"),
         "holdout_manifest_schema_title": holdout_manifest_schema.get("title"),
         "report_schema_title": report_schema.get("title"),
@@ -527,6 +554,7 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         "editor-contract-manifest",
         "editor-contract-verification",
         "engine-results",
+        "engine-results-verification",
         "holdout-labels",
         "holdout-manifest",
         "policy",
@@ -556,8 +584,19 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         failed.append("editor_contract_verification_schema_title")
     if checks["engine_results_schema_title"] != "AgentVerify Engine Results 1":
         failed.append("engine_results_schema_title")
+    if (
+        checks["engine_results_verification_schema_title"]
+        != "AgentVerify Engine Results Verification 1"
+    ):
+        failed.append("engine_results_verification_schema_title")
     if checks["engine_results_snapshot_valid"] is not True:
         failed.append("engine_results_snapshot_valid")
+    if checks["engine_results_verification_passed"] is not True:
+        failed.append("engine_results_verification_passed")
+    if checks["engine_results_verification_repositories"] != 71:
+        failed.append("engine_results_verification_repositories")
+    if checks["engine_results_verification_successful"] != 71:
+        failed.append("engine_results_verification_successful")
     if checks["holdout_labels_schema_title"] != "AgentVerify Holdout Labels 1":
         failed.append("holdout_labels_schema_title")
     if checks["holdout_manifest_schema_title"] != "AgentVerify Holdout Manifest 1":

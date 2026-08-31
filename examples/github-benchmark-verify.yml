@@ -26,6 +26,10 @@ jobs:
           --require-evaluation-kind public-regression
           --require-all-passed
           --output agentverify-benchmark-verification.json
+      - name: Verify engine metric snapshot
+        run: >
+          agentverify benchmark verify-engine
+          --output agentverify-engine-results-verification.json
       - name: Validate holdout setup templates
         run: >
           agentverify holdout validate
@@ -34,6 +38,7 @@ jobs:
       - name: Validate verifier JSON
         run: |
           agentverify schema benchmark-verification --output agentverify-benchmark-verification.schema.json
+          agentverify schema engine-results-verification --output agentverify-engine-results-verification.schema.json
           python - <<'PY'
           import json
           from pathlib import Path
@@ -42,9 +47,18 @@ jobs:
           schema = json.loads(Path("agentverify-benchmark-verification.schema.json").read_text())
           payload = json.loads(Path("agentverify-benchmark-verification.json").read_text())
           Draft202012Validator(schema).validate(payload)
+          engine_schema = json.loads(
+              Path("agentverify-engine-results-verification.schema.json").read_text()
+          )
+          engine_payload = json.loads(
+              Path("agentverify-engine-results-verification.json").read_text()
+          )
+          Draft202012Validator(engine_schema).validate(engine_payload)
           PY
       - name: Upload verifier output
         uses: actions/upload-artifact@v5
         with:
           name: agentverify-benchmark-verification
-          path: agentverify-benchmark-verification.json
+          path: |
+            agentverify-benchmark-verification.json
+            agentverify-engine-results-verification.json

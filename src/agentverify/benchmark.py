@@ -16,6 +16,7 @@ DEFAULT_BENCHMARK_RESULTS = (
     Path("benchmarks/truthset-results.json"),
     Path("benchmarks/ir-truthset-results.json"),
 )
+DEFAULT_ENGINE_RESULTS = Path("benchmarks/engine-results.json")
 BENCHMARK_VERIFICATION_ERRORS = (
     OSError,
     RuntimeError,
@@ -23,6 +24,7 @@ BENCHMARK_VERIFICATION_ERRORS = (
     SchemaError,
     ValidationError,
 )
+ENGINE_RESULTS_VERIFICATION_ERRORS = BENCHMARK_VERIFICATION_ERRORS
 
 
 def file_sha256(path: Path) -> str:
@@ -39,6 +41,21 @@ def load_benchmark_result_schema(path: Path | None = None) -> dict:
         schema = json.loads(render_schema("benchmark-result"))
     else:
         schema = json.loads(path.read_text(encoding="utf-8"))
+    Draft202012Validator.check_schema(schema)
+    return schema
+
+
+def load_engine_results_schema(path: Path | None = None) -> dict:
+    if path is None:
+        schema = json.loads(render_schema("engine-results"))
+    else:
+        schema = json.loads(path.read_text(encoding="utf-8"))
+    Draft202012Validator.check_schema(schema)
+    return schema
+
+
+def load_engine_results_verification_schema() -> dict:
+    schema = json.loads(render_schema("engine-results-verification"))
     Draft202012Validator.check_schema(schema)
     return schema
 
@@ -307,5 +324,44 @@ def verify_benchmark_results(
     return payload
 
 
+def verify_engine_results(
+    path: Path = DEFAULT_ENGINE_RESULTS,
+    *,
+    schema_path: Path | None = None,
+) -> dict[str, object]:
+    schema = load_engine_results_schema(schema_path)
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    Draft202012Validator(schema).validate(payload)
+
+    repositories = payload["repositories"]
+    summary = payload["summary"]
+    repository_count = len(repositories)
+    successful = sum(1 for result in repositories if result.get("status") == "ok")
+    if summary["repositories"] != repository_count:
+        raise RuntimeError(f"{path}: summary.repositories does not match repository entries")
+    if summary["successful"] != successful:
+        raise RuntimeError(f"{path}: summary.successful does not match ok repository entries")
+
+    result = {
+        "engine_results_verification_format": "AgentVerify Engine Results Verification",
+        "schema_version": 1,
+        "result": str(path),
+        "schema": str(schema_path) if schema_path is not None else "engine-results",
+        "passed": True,
+        "engine_schema_version": payload["schema_version"],
+        "generated_at": payload["generated_at"],
+        "repositories": repository_count,
+        "successful": successful,
+        "summary_repositories": summary["repositories"],
+        "summary_successful": summary["successful"],
+    }
+    Draft202012Validator(load_engine_results_verification_schema()).validate(result)
+    return result
+
+
 def render_benchmark_verification(payload: dict[str, object]) -> str:
+    return json.dumps(payload, indent=2) + "\n"
+
+
+def render_engine_results_verification(payload: dict[str, object]) -> str:
     return json.dumps(payload, indent=2) + "\n"
