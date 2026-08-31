@@ -15051,7 +15051,7 @@ def typescript_tool_object_entries_from_expression(
     relative = path.relative_to(root).as_posix()
     identity_counts = typescript_object_tool_identity_counts(text)
     entries: list[tuple[str, str]] = []
-    for property_text, property_offset in typescript_object_items(expression, expression_offset):
+    for property_text, _property_offset in typescript_object_items(expression, expression_offset):
         named_property = typescript_named_object_property(property_text)
         if named_property is None:
             continue
@@ -15076,8 +15076,16 @@ def typescript_exported_tool_object_bindings(
     root: Path,
     path: Path,
     text: str,
+    seen: frozenset[Path] = frozenset(),
 ) -> dict[str, TypeScriptToolObjectBinding]:
-    """Return exported immutable tool-set objects with concrete object-tool entries."""
+    """Return exported immutable tool-set objects and exact named reexports."""
+    try:
+        canonical_path = path.resolve()
+    except OSError:
+        return {}
+    if canonical_path in seen:
+        return {}
+    seen = seen | {canonical_path}
     code = typescript_code_mask(text)
     exported = {
         match.group(1)
@@ -15086,7 +15094,7 @@ def typescript_exported_tool_object_bindings(
             code,
         )
     }
-    bindings: dict[str, TypeScriptToolObjectBinding] = {}
+    candidates: dict[str, list[TypeScriptToolObjectBinding]] = defaultdict(list)
     for name, binding in typescript_immutable_module_literal_object_bindings(text).items():
         if name not in exported:
             continue
@@ -15099,13 +15107,49 @@ def typescript_exported_tool_object_bindings(
         )
         if not entries:
             continue
-        bindings[name] = TypeScriptToolObjectBinding(
-            binding.expression_offset,
-            binding.declaration_end,
-            entries,
-            "exported-local-tools-object",
+        candidates[name].append(
+            TypeScriptToolObjectBinding(
+                binding.expression_offset,
+                binding.declaration_end,
+                entries,
+                "exported-local-tools-object",
+            )
         )
-    return bindings
+    for match in TS_NAMED_EXPORT_FROM.finditer(text):
+        target = typescript_resolve_local_module(root, path, match.group(2))
+        if target is None:
+            continue
+        try:
+            target_text = target.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        target_exports = typescript_exported_tool_object_bindings(
+            root,
+            target,
+            target_text,
+            seen,
+        )
+        for raw_specifier in match.group(1).split(","):
+            parts = typescript_named_specifier_parts(raw_specifier)
+            if parts is None:
+                continue
+            original, exported_name = parts
+            binding = target_exports.get(original)
+            if binding is None:
+                continue
+            candidates[exported_name].append(
+                TypeScriptToolObjectBinding(
+                    0,
+                    0,
+                    binding.entries,
+                    "reexported-local-tools-object",
+                )
+            )
+    return {
+        name: bindings[0]
+        for name, bindings in candidates.items()
+        if len(bindings) == 1
+    }
 
 
 def typescript_imported_tool_object_bindings(
@@ -15147,11 +15191,16 @@ def typescript_imported_tool_object_bindings(
         binding = export_cache[target].get(original)
         if binding is None:
             continue
+        resolution = (
+            "imported-local-reexported-tools-object"
+            if binding.resolution == "reexported-local-tools-object"
+            else "imported-local-tools-object"
+        )
         resolved[local] = TypeScriptToolObjectBinding(
             import_end,
             import_end,
             binding.entries,
-            "imported-local-tools-object",
+            resolution,
         )
     return resolved
 

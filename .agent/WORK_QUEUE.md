@@ -22,10 +22,10 @@
   same-file tool-set bindings; unique stable same-file `execute: helper` bodies now map delegated
   code-execution/filesystem/network capability evidence back to the owning tool; direct
   `WorkflowAgent.model` AI SDK provider calls now emit source-agent-linked model-setting controls;
-  direct relative named imports of immutable exported tool-set objects now link to sibling-module
-  object-tool IDs with mutation guards. Future work should focus on reexported tool-set modules,
-  imported helper/model modules, approval-resumption/event flows, or reportable Vercel approval
-  findings only with matching real evidence.
+  direct relative named imports and exact named reexports of immutable exported tool-set objects now
+  link to original sibling-module object-tool IDs with mutation guards. Future work should focus on
+  star-reexported tool-set modules, imported helper/model modules, approval-resumption/event flows,
+  or reportable Vercel approval findings only with matching real evidence.
 - Extend Vercel AI Code Mode only when runtime provenance stays exact: current IR covers the
   host-tool approval gate, interrupt payload kind, denial-before-execute behavior, and
   continuation approval-id validation, plus the public `codeModeTool()` /

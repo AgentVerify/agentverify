@@ -8,12 +8,13 @@ catalog workflows.
 ## Completed recently
 
 - Added conservative cross-file TypeScript Vercel `WorkflowAgent.tools` edges for direct relative
-  named imports of immutable exported tool-set objects. Imported tool-set entries now resolve to
-  their sibling-module object-tool component IDs when every entry is a concrete object tool, while
-  duplicate tool identities, shadowed imports, reassigned bindings, and property-mutated local tool
-  sets remain unresolved. Focused scanner tests cover imported `workflowTools` plus helper-mapped
-  code-execution evidence; the pinned corpus does not yet contain a real cross-file
-  `WorkflowAgent` fixture, so benchmark claims remain unchanged.
+  named imports and exact named reexports of immutable exported tool-set objects. Imported tool-set
+  entries now resolve to their original sibling-module object-tool component IDs when every entry is
+  a concrete object tool, while duplicate tool identities, shadowed imports, reassigned bindings,
+  and property-mutated local tool sets remain unresolved. Focused scanner tests cover imported and
+  barrel-reexported `workflowTools` plus helper-mapped code-execution evidence; the pinned corpus
+  does not yet contain a real cross-file `WorkflowAgent` fixture, so benchmark claims remain
+  unchanged.
 - Extended source-distribution engine-results validation to recompute the same stable integer
   aggregate totals as `agentverify benchmark verify-engine`, so a packaged
   `benchmarks/engine-results.json` fails release verification even when it is schema-valid but has

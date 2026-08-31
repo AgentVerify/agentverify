@@ -2732,12 +2732,14 @@ def test_typescript_workflow_agent_uses_imported_object_tool_binding(tmp_path: P
         textwrap.dedent(
             """
             import { WorkflowAgent } from "@ai-sdk/workflow";
+            import { workflowTools as barrelTools } from "./barrel";
             import { workflowTools as toolsFromModule } from "./tools";
 
             const agent = new WorkflowAgent({
               model: {},
               tools: toolsFromModule,
             });
+            const barrelAgent = new WorkflowAgent({ model: {}, tools: barrelTools });
 
             const localTools = {
               unsafe: {
@@ -2748,9 +2750,14 @@ def test_typescript_workflow_agent_uses_imported_object_tool_binding(tmp_path: P
             localTools.unsafe = {};
             const changedAgent = new WorkflowAgent({ model: {}, tools: localTools });
             void agent;
+            void barrelAgent;
             void changedAgent;
             """
         ),
+        encoding="utf-8",
+    )
+    (tmp_path / "barrel.ts").write_text(
+        'export { workflowTools } from "./tools";\n',
         encoding="utf-8",
     )
 
@@ -2786,6 +2793,22 @@ def test_typescript_workflow_agent_uses_imported_object_tool_binding(tmp_path: P
             "tools-object-binding",
             "toolsFromModule",
             "imported-local-tools-object",
+        ),
+        (
+            "barrelAgent",
+            "deleteFile",
+            "ts:tools.ts#tool:deleteFile",
+            "tools-object-binding",
+            "barrelTools",
+            "imported-local-reexported-tools-object",
+        ),
+        (
+            "barrelAgent",
+            "calculate",
+            "ts:tools.ts#tool:calculate",
+            "tools-object-binding",
+            "barrelTools",
+            "imported-local-reexported-tools-object",
         ),
     }
     assert (
