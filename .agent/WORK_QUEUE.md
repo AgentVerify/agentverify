@@ -73,7 +73,8 @@
   context resolved from direct `RealtimeSession` bindings, plus exact Codex extension
   `codexTool(...)` inventory for stable same-file bindings or inline literal tools with
   `defaultThreadOptions.approvalPolicy`, sandbox mode, network/web-search toggles, stream callback,
-  and run-context thread reuse metadata, without broadening into ambiguous
+  top-level or default-thread working-directory values, and run-context thread reuse metadata,
+  without broadening into ambiguous
   helper/config composition, arbitrary spread objects, or lookalike event emitters/connectors. Exact
   same-file, exact imported sibling, and exact named/star-reexported sibling `Agent.clone({...})`
   lineage/list-property sharing semantics are now covered; future clone work should focus on list

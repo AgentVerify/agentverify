@@ -45375,6 +45375,38 @@ def add_typescript_openai_agents_codex_tool_flow(
         attributes: dict[str, object] = {}
         evidence_offsets: list[int] = []
         approval_policy_offset = None
+
+        def record_working_directory(
+            expression: str,
+            expression_offset: int,
+            configuration: str,
+        ) -> int | None:
+            working_directory_location = typescript_object_property_expression_location(
+                expression,
+                "workingDirectory",
+                expression_offset,
+            )
+            if working_directory_location is None:
+                return None
+            working_directory_expression, working_directory_property_offset, _ = (
+                working_directory_location
+            )
+            working_directory = typescript_string_literal_value(working_directory_expression)
+            if working_directory is not None:
+                attributes["working_directory"] = working_directory
+                attributes["working_directory_resolution"] = "literal"
+            else:
+                working_directory_code = typescript_code_mask(
+                    working_directory_expression
+                ).strip()
+                if re.fullmatch(r"[A-Za-z_$][\w$]*", working_directory_code):
+                    attributes["working_directory_binding"] = working_directory_code
+                    attributes["working_directory_resolution"] = "binding"
+                else:
+                    attributes["working_directory_resolution"] = "dynamic-expression"
+            attributes["working_directory_configuration"] = configuration
+            return working_directory_property_offset
+
         sandbox_offset = string_attr(
             attributes,
             options_expression,
@@ -45414,6 +45446,13 @@ def add_typescript_openai_agents_codex_tool_flow(
             if re.fullmatch(r"[A-Za-z_$][\w$]*", on_stream_code):
                 attributes["stream_callback_binding"] = on_stream_code
             evidence_offsets.append(on_stream_property_offset)
+        working_directory_offset = record_working_directory(
+            options_expression,
+            options_offset,
+            "codexTool.workingDirectory",
+        )
+        if working_directory_offset is not None:
+            evidence_offsets.append(working_directory_offset)
 
         thread_options_location = typescript_object_property_expression_location(
             options_expression,
@@ -45457,29 +45496,13 @@ def add_typescript_openai_agents_codex_tool_flow(
                 )
                 if offset is not None:
                     evidence_offsets.append(offset)
-            working_directory_location = typescript_object_property_expression_location(
+            working_directory_offset = record_working_directory(
                 thread_options_expression,
-                "workingDirectory",
                 thread_options_expression_offset,
+                "codexTool.defaultThreadOptions.workingDirectory",
             )
-            if working_directory_location is not None:
-                working_directory_expression, working_directory_property_offset, _ = (
-                    working_directory_location
-                )
-                working_directory = typescript_string_literal_value(working_directory_expression)
-                if working_directory is not None:
-                    attributes["working_directory"] = working_directory
-                    attributes["working_directory_resolution"] = "literal"
-                else:
-                    working_directory_code = typescript_code_mask(
-                        working_directory_expression
-                    ).strip()
-                    if re.fullmatch(r"[A-Za-z_$][\w$]*", working_directory_code):
-                        attributes["working_directory_binding"] = working_directory_code
-                        attributes["working_directory_resolution"] = "binding"
-                    else:
-                        attributes["working_directory_resolution"] = "dynamic-expression"
-                evidence_offsets.append(working_directory_property_offset)
+            if working_directory_offset is not None:
+                evidence_offsets.append(working_directory_offset)
         return (
             attributes,
             min(evidence_offsets) if evidence_offsets else None,
@@ -45689,8 +45712,10 @@ def add_typescript_openai_agents_codex_tool_flow(
                         "network_access_enabled",
                         "web_search_enabled",
                         "use_run_context_thread_id",
+                        "working_directory",
                         "working_directory_resolution",
                         "working_directory_binding",
+                        "working_directory_configuration",
                         "stream_callback_present",
                         "stream_callback_binding",
                     }

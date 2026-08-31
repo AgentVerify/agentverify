@@ -11,10 +11,10 @@ catalog workflows.
   `@openai/agents` `Agent` includes either a stable same-file Codex tool binding or an inline
   `codexTool({...})` call in its literal `tools` array. The scanner records workspace-write
   sandbox mode, default Codex thread model/reasoning, `approvalPolicy: "never"`, network/web-search
-  toggles, stream callbacks, run-context thread reuse, and default thread options without explicit
-  approval policy without treating mutated tool bindings as executable agent tools. Twenty-five
-  labels under `IR-TS-OPENAI-CODEX-TOOL` pass in focused evaluation; the full public IR truth set
-  passes 2,514/2,514, and the refreshed 71-repository
+  toggles, stream callbacks, run-context thread reuse, top-level or default-thread working-directory
+  values, and default thread options without explicit approval policy. Mutated tool bindings are not
+  treated as executable agent tools. Twenty-five labels under `IR-TS-OPENAI-CODEX-TOOL` pass in
+  focused evaluation; the full public IR truth set passes 2,514/2,514, and the refreshed 71-repository
   engine benchmark records 2,958 relationships / 10,831 symbolized components.
 - Added exact Vercel `WorkflowAgent` framework-runtime approval IR for the pinned
   `packages/workflow/src/workflow-agent.ts` implementation: the scanner records the

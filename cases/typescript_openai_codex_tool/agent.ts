@@ -49,6 +49,7 @@ const threadOptionsAgent = new Agent({
   tools: [
     makeCodex({
       sandboxMode: "workspace-write",
+      workingDirectory: "/tmp/agentverify-codex-thread-options",
       defaultThreadOptions: {
         model: "gpt-5.4",
         networkAccessEnabled: true,

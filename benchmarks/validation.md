@@ -1725,8 +1725,8 @@ Twenty-five OpenAI Agents JS Codex-tool labels pin exact `codexTool(...)` values
 literal `tools` arrays, including same-file binding and inline forms, real
 `approvalPolicy: 'never'` default-thread options, workspace-write sandbox mode,
 network/web-search toggles, stream
-callback bindings, run-context thread reuse, default thread options without explicit approval, and
-a mutated-binding negative.
+callback bindings, run-context thread reuse, top-level/default-thread working-directory values,
+default thread options without explicit approval, and a mutated-binding negative.
 All 2,514 IR labels pass (1,929 positives and 585 negatives). The checked
 `benchmarks/ir-truthset-results.json` file contains the current per-check precision/recall
 breakdown, including the Vercel WorkflowAgent same-file/imported/reexported model-binding labels,

@@ -7634,6 +7634,9 @@ def test_typescript_openai_agents_codex_tool_flow_is_exact() -> None:
         "web_search_enabled": False,
         "working_directory_binding": "workspace",
         "working_directory_resolution": "binding",
+        "working_directory_configuration": (
+            "codexTool.defaultThreadOptions.workingDirectory"
+        ),
     }
     assert tools["ts:agent.ts#tool:inlineAgent.inlineCodexTool@29"].attributes[
         "tool_name"
@@ -7651,6 +7654,15 @@ def test_typescript_openai_agents_codex_tool_flow_is_exact() -> None:
     assert tools["ts:agent.ts#tool:threadOptionsAgent.inlineCodexTool@50"].attributes[
         "web_search_enabled"
     ] is False
+    assert tools["ts:agent.ts#tool:threadOptionsAgent.inlineCodexTool@50"].attributes[
+        "working_directory"
+    ] == "/tmp/agentverify-codex-thread-options"
+    assert tools["ts:agent.ts#tool:threadOptionsAgent.inlineCodexTool@50"].attributes[
+        "working_directory_resolution"
+    ] == "literal"
+    assert tools["ts:agent.ts#tool:threadOptionsAgent.inlineCodexTool@50"].attributes[
+        "working_directory_configuration"
+    ] == "codexTool.workingDirectory"
 
     controls = {
         component.symbol_id: component
@@ -7747,6 +7759,12 @@ def test_typescript_openai_agents_codex_tool_flow_is_exact() -> None:
         ].target_name
         == "codex-thread-options-policy"
     )
+    assert control_edges[
+        (
+            "ts:agent.ts#tool:threadOptionsAgent.inlineCodexTool@50",
+            "ts:agent.ts#control:threadOptionsAgent.inlineCodexTool@50.defaultThreadOptions",
+        )
+    ].attributes["working_directory"] == "/tmp/agentverify-codex-thread-options"
 
 
 def test_typescript_openai_realtime_session_auth_policy_is_exact() -> None:
