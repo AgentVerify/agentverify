@@ -338,6 +338,7 @@ def test_evaluator_scan_cache_reuses_source_validated_ir(
 
     first_streams = capsys.readouterr()
     assert "cache=miss" in first_streams.err
+    assert "scan_cache: hit=0 miss=1" in first_streams.out
     assert len(list(cache_dir.glob("*.json"))) == 1
 
     def fail_if_scanned(path: Path) -> RepositoryIR:
@@ -366,6 +367,7 @@ def test_evaluator_scan_cache_reuses_source_validated_ir(
     second_streams = capsys.readouterr()
     assert scans == [target]
     assert "cache=hit" in second_streams.err
+    assert "scan_cache: hit=1 miss=0" in second_streams.out
     assert json.loads(second_output.read_text(encoding="utf-8"))["passed"] == 1
 
 

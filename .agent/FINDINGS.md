@@ -571,7 +571,9 @@
   a slice needs full repository-wide semantics. Cache entries are source-digest-validated and
   scanner/rule/IR-implementation-digest-validated before `RepositoryIR` is rehydrated from JSON.
   A real two-pass `IR-TS-TOOL-GRAPH` run showed initial cache misses, then cache hits under roughly
-  0.05 seconds per target, with result JSON equal except for `generated_at`.
+  0.05 seconds per target, with result JSON equal except for `generated_at`. Summary-format
+  evaluator output reports aggregate cache hits and misses, which makes long cached development runs
+  reviewable without parsing per-target progress lines.
 - Python `SyntaxWarning`s from third-party source parsing are not useful AgentVerify diagnostics and
   can bury benchmark progress output. Wrapping repository scans in a `SyntaxWarning` filter keeps
   scanner stderr clean while preserving AgentVerify IR errors for parse failures and skipped files.

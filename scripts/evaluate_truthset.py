@@ -304,7 +304,11 @@ def summary_value(value: object) -> str:
     return str(value)
 
 
-def print_result_summary(payload: dict[str, object]) -> None:
+def print_result_summary(
+    payload: dict[str, object],
+    *,
+    scan_cache_statuses: Counter[str] | None = None,
+) -> None:
     benchmark = payload["benchmark"]
     assert isinstance(benchmark, dict)
     failure_summary = payload["failure_summary"]
@@ -331,6 +335,12 @@ def print_result_summary(payload: dict[str, object]) -> None:
         expansion = benchmark.get("scan_path_expansion")
         suffix = f" ({expansion})" if expansion else ""
         print(f"scan_scope: {scan_scope}{suffix}")
+    if scan_cache_statuses is not None:
+        print(
+            "scan_cache: "
+            f"hit={scan_cache_statuses['hit']} "
+            f"miss={scan_cache_statuses['miss']}"
+        )
     print(
         "failure_summary: "
         + " ".join(
@@ -595,6 +605,7 @@ def main(argv: list[str] | None = None) -> int:
         ):
             target_label_paths[key].add(path)
     scans = {}
+    scan_cache_statuses: Counter[str] = Counter()
     outcomes = []
     matrices: dict[str, Counter] = defaultdict(Counter)
     for label in labels:
@@ -617,6 +628,7 @@ def main(argv: list[str] | None = None) -> int:
                 selected_paths=selected_paths,
                 scan_cache_dir=args.scan_cache_dir,
             )
+            scan_cache_statuses[cache_status] += 1
             if args.progress:
                 elapsed = time.perf_counter() - started
                 cache_suffix = "" if cache_status == "disabled" else f" cache={cache_status}"
@@ -732,7 +744,10 @@ def main(argv: list[str] | None = None) -> int:
     }
     args.output.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     if args.format == "summary":
-        print_result_summary(payload)
+        print_result_summary(
+            payload,
+            scan_cache_statuses=scan_cache_statuses if args.scan_cache_dir else None,
+        )
     else:
         print_result_json(payload)
     return 0 if payload["passed"] == payload["labels"] else 1

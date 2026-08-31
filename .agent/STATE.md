@@ -14,6 +14,8 @@ catalog workflows.
   semantics instead of weakening evidence with selected-path scans. A real two-pass
   `IR-TS-TOOL-GRAPH` smoke showed the first full-scan cache fill as misses and the second pass as
   cache hits under ~0.05 seconds per target, with identical result JSON except `generated_at`.
+  Summary-format output now includes aggregate cache hit/miss counts; a focused Vercel/local
+  two-target smoke printed `hit=0 miss=2` on fill and `hit=2 miss=0` on reuse.
 - Added `scripts/evaluate_truthset.py --expand-local-imports` as an opt-in companion to
   `--scan-label-paths` for focused public-IR development scans. The evaluator now expands selected
   label files through local Python imports and TypeScript/JavaScript import, export, dynamic
