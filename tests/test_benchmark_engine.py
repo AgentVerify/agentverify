@@ -48,6 +48,19 @@ def test_validate_engine_results_accepts_checked_snapshot() -> None:
     benchmark_engine.validate_engine_results(payload)
 
 
+def test_checked_snapshot_tracks_openai_streaming_runs() -> None:
+    payload = json.loads((ROOT / "benchmarks/engine-results.json").read_text(encoding="utf-8"))
+
+    summary = payload["summary"]["typescript_openai_run_streaming"]
+    assert summary == {
+        "total": 17,
+        "direct_run": 11,
+        "runner_run": 6,
+        "configured_by_edges": 17,
+        "repositories": 1,
+    }
+
+
 def test_validate_engine_results_rejects_malformed_snapshot() -> None:
     payload = json.loads((ROOT / "benchmarks/engine-results.json").read_text(encoding="utf-8"))
     payload.pop("repositories")

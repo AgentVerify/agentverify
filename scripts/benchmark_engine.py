@@ -769,6 +769,17 @@ def main() -> int:
             and item.attributes.get("analysis")
             == "typescript-openai-agents-run-state-continuity"
         ]
+        typescript_openai_run_streaming_controls = [
+            item
+            for item in ir.components
+            if item.kind == "control"
+            and item.name == "streaming-run"
+            and item.attributes.get("analysis")
+            in {
+                "typescript-openai-agents-run-streaming",
+                "typescript-openai-agents-runner-run-streaming",
+            }
+        ]
         typescript_vercel_code_mode_analyses = {
             "typescript-vercel-code-mode-tool-surface",
             "typescript-vercel-code-mode-tool-approval-flow",
@@ -2370,6 +2381,31 @@ def main() -> int:
                 ),
                 "repositories": bool(typescript_openai_run_state_continuities),
             },
+            "typescript_openai_run_streaming": {
+                "total": len(typescript_openai_run_streaming_controls),
+                "direct_run": sum(
+                    item.attributes.get("analysis") == "typescript-openai-agents-run-streaming"
+                    for item in typescript_openai_run_streaming_controls
+                ),
+                "runner_run": sum(
+                    item.attributes.get("analysis")
+                    == "typescript-openai-agents-runner-run-streaming"
+                    for item in typescript_openai_run_streaming_controls
+                ),
+                "configured_by_edges": sum(
+                    edge.source_kind == "agent"
+                    and edge.relation == "configured-by"
+                    and edge.target_kind == "control"
+                    and edge.target_name == "streaming-run"
+                    and edge.attributes.get("analysis")
+                    in {
+                        "typescript-openai-agents-run-streaming",
+                        "typescript-openai-agents-runner-run-streaming",
+                    }
+                    for edge in ir.relationships
+                ),
+                "repositories": bool(typescript_openai_run_streaming_controls),
+            },
             "typescript_vercel_code_mode": {
                 "frameworks": sum(
                     item.kind == "framework" for item in typescript_vercel_code_mode_components
@@ -3905,6 +3941,18 @@ def main() -> int:
                     "helper_parameter_state_resumes",
                     "configured_by_edges",
                     "helper_parameter_state_resume_edges",
+                    "repositories",
+                )
+            },
+            "typescript_openai_run_streaming": {
+                name: sum(
+                    result["typescript_openai_run_streaming"][name] for result in successful
+                )
+                for name in (
+                    "total",
+                    "direct_run",
+                    "runner_run",
+                    "configured_by_edges",
                     "repositories",
                 )
             },

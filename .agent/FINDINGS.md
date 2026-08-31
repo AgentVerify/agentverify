@@ -23,7 +23,9 @@
   outputs. The refreshed full-corpus summary records 2,975 relationships and 10,848 symbolized
   components. It includes dedicated Vercel AI runtime evidence for Code Mode's public tool surface
   and host-tool approval runtime plus WorkflowAgent's framework-level approval pause,
-  request-chunk, and revalidation continuation path.
+  request-chunk, and revalidation continuation path. It now also includes a dedicated
+  `typescript_openai_run_streaming` metric with 17 source-proven OpenAI Agents JS streaming-run
+  controls from one repository.
 - The runtime catalog currently contains 25 enabled reporting rules.
 - OpenAI Agents JS `codexTool(...)` from
   `@openai/agents-extensions/experimental/codex` is now source-proven IR when the tool is passed
@@ -935,8 +937,11 @@
   source-proven agent. The local conversation fixture and pinned hosted MCP human-in-the-loop
   example prove both direct and Runner-run forms, raising the new
   `IR-TS-OPENAI-RUN-STREAMING` slice to 8/8 labels and the full public IR truth set to
-  2,522/2,522. This intentionally does not claim audit persistence, actor attribution, or human
-  review quality; those require separate stream-consumer evidence.
+  2,522/2,522. The refreshed engine benchmark exposes this as
+  `typescript_openai_run_streaming`: 17 controls, 11 direct `run(...)`, six stable
+  `Runner.run(...)`, and 17 configured-by edges in one repository. This intentionally does not
+  claim audit persistence, actor attribution, or human review quality; those require separate
+  stream-consumer evidence.
 
 ## Hypotheses
 

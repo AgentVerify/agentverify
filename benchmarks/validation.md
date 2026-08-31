@@ -169,14 +169,16 @@ tool. The same model command passes through `shell-quote` classification and rea
 
 The 2026-09-01 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,797 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 2,975 relationships with 10,848 symbolized components, and completed in 924.0185 seconds
+resolved 2,975 relationships with 10,848 symbolized components, and completed in 928.2787 seconds
 on the development machine. The summary now exposes Vercel AI runtime evidence for Code Mode's
 approval/tool surface and WorkflowAgent's framework-level approval pause, request chunk, and
 revalidation continuation path, plus OpenAI Agents JS streaming-run event-surface inventory for
-literal `stream: true` direct and stable Runner run calls. Three parse warnings were isolated and
-reported without aborting the run. Tests and fixtures are inventoried but excluded from findings by
-default; `--include-tests` enables them. The pinned corpus contains no AgentVerify inline
-directives, so the benchmark records zero suppressed findings.
+literal `stream: true` direct and stable Runner run calls. The first-class
+`typescript_openai_run_streaming` benchmark slice records 17 controls: 11 direct `run(...)`, six
+stable `Runner.run(...)`, and 17 configured-by edges in one repository. Three parse warnings were
+isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded
+from findings by default; `--include-tests` enables them. The pinned corpus contains no AgentVerify
+inline directives, so the benchmark records zero suppressed findings.
 For focused development, `scripts/benchmark_engine.py --repository <owner/name>` can refresh one or
 more named corpus repositories before paying the full-corpus cost; release evidence should still use
 the default unfiltered 71-repository run.

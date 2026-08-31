@@ -13,7 +13,9 @@ catalog workflows.
   streaming as durable audit proof. Eight labels under `IR-TS-OPENAI-RUN-STREAMING` pass from the
   local conversation fixture and the pinned hosted MCP human-in-the-loop example; the full public
   IR truth set now passes 2,522/2,522, and the refreshed 71-repository engine benchmark records
-  2,975 relationships / 10,848 symbolized components.
+  2,975 relationships / 10,848 symbolized components. The benchmark summary now includes a
+  first-class `typescript_openai_run_streaming` slice with 17 controls: 11 direct `run(...)`,
+  six stable `Runner.run(...)`, and 17 configured-by edges in one repository.
 - Added exact OpenAI Agents JS Codex extension tool IR for `codexTool(...)` when a source-proven
   `@openai/agents` `Agent` includes either a stable same-file Codex tool binding or an inline
   `codexTool({...})` call in its literal `tools` array. The scanner records workspace-write
