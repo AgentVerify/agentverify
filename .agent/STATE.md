@@ -9,8 +9,8 @@ catalog workflows.
 
 - Added opt-in source-validated scanner IR caching to `scripts/evaluate_truthset.py` via
   `--scan-cache-dir`. Cache entries are keyed by target, selected-path scope, scanned source-file
-  digest, and scanner/rule/IR implementation digest, then rehydrate `RepositoryIR` from JSON only
-  when those values still match. This supports repeated local truth-set runs with repository-wide
+  digest, and AgentVerify package source digest, then rehydrate `RepositoryIR` from JSON only when
+  those values still match. This supports repeated local truth-set runs with repository-wide
   semantics instead of weakening evidence with selected-path scans. A real two-pass
   `IR-TS-TOOL-GRAPH` smoke showed the first full-scan cache fill as misses and the second pass as
   cache hits under ~0.05 seconds per target, with identical result JSON except `generated_at`.

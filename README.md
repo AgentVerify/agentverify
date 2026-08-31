@@ -253,7 +253,7 @@ prints a compact pass/fail and failed-check breakdown while still writing the fu
 JSON file.
 For repeated local iterations that need repository-wide semantics, add
 `--scan-cache-dir .agentverify-cache/scans`; cached IR is reused only when the scanned source-file
-digest and scanner/rule implementation digest still match. The cache is for local speed, not a
+digest and AgentVerify package source digest still match. The cache is for local speed, not a
 checked release artifact.
 Full public-regression release results should still use repository-wide scans.
 

@@ -473,8 +473,8 @@
 
 - Decision: Add `scripts/evaluate_truthset.py --scan-cache-dir` as an explicit local development
   cache for scanner IR. Cache entries store `RepositoryIR.to_dict()` output and are reused only when
-  the target identity, selected-path scope, scanned source-file digest, and scanner/rule/IR
-  implementation digest still match. The benchmark-result JSON is unchanged by cache use.
+  the target identity, selected-path scope, scanned source-file digest, and AgentVerify package
+  source digest still match. The benchmark-result JSON is unchanged by cache use.
 - Evidence: Full expanded selected-path profiling still missed 172/2,522 public IR labels because
   several detectors require architecture-wide sidecars or scanner-wide context. A real two-pass
   `IR-TS-TOOL-GRAPH` smoke using full scans showed cache-fill misses followed by cache hits below

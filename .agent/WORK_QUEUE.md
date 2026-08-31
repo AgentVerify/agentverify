@@ -118,7 +118,7 @@
   cluster in detectors that rely on non-import-neighbor architecture sidecars or global summaries
   rather than simple source imports. Repository-wide release scans are still authoritative. Opt-in
   `--scan-cache-dir` now preserves repository-wide semantics across repeated local runs by
-  revalidating source and scanner/rule/IR implementation digests before reusing cached IR. Next
+  revalidating source and AgentVerify package source digests before reusing cached IR. Next
   performance work should benchmark cache-hit overhead across the full public IR set and then decide
   whether detector-side selected-path dependency hooks are still worth their complexity.
 - Explore exact interprocedural OpenAI Agents JS history-state continuation only if it can remain

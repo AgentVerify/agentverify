@@ -14,8 +14,6 @@ from collections.abc import Iterable
 from datetime import UTC, datetime
 from pathlib import Path
 
-from agentverify import ir as ir_module
-from agentverify import rules as rules_module
 from agentverify import scanner as scanner_module
 from agentverify.benchmark import apply_label_filter, failure_summary_from_outcomes
 from agentverify.ir import RepositoryIR
@@ -95,7 +93,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         type=Path,
         help=(
             "development shortcut: cache and reuse source-validated scanner IR JSON per target; "
-            "invalidates when scanned source files or scanner/rule implementation files change"
+            "invalidates when scanned source files or AgentVerify package source files change"
         ),
     )
     return parser.parse_args(argv)
@@ -430,17 +428,23 @@ def source_digest(root: Path, selected_paths: list[str] | None) -> dict[str, obj
     }
 
 
-def implementation_digest() -> str:
+def implementation_source_files(package_root: Path | None = None) -> list[Path]:
+    if package_root is None:
+        package_root = Path(scanner_module.__file__ or "").resolve().parent
+    return sorted(
+        path
+        for path in package_root.rglob("*.py")
+        if "__pycache__" not in path.parts and path.is_file()
+    )
+
+
+def implementation_digest(package_root: Path | None = None) -> str:
+    if package_root is None:
+        package_root = Path(scanner_module.__file__ or "").resolve().parent
     digest = hashlib.sha256()
-    for module in (ir_module, rules_module, scanner_module):
-        digest.update(module.__name__.encode("utf-8"))
-        digest.update(b"\0")
-        if module.__file__ is None:
-            digest.update(b"<unknown-module-path>")
-            digest.update(b"\0")
-            continue
-        module_path = Path(module.__file__)
-        digest.update(module_path.name.encode("utf-8"))
+    for module_path in implementation_source_files(package_root):
+        relative = module_path.relative_to(package_root)
+        digest.update(relative.as_posix().encode("utf-8"))
         digest.update(b"\0")
         digest.update(module_path.read_bytes())
         digest.update(b"\0")

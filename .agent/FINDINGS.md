@@ -569,7 +569,7 @@
   detailed outcome inspection.
 - `scripts/evaluate_truthset.py --scan-cache-dir` provides the safer benchmark-iteration path when
   a slice needs full repository-wide semantics. Cache entries are source-digest-validated and
-  scanner/rule/IR-implementation-digest-validated before `RepositoryIR` is rehydrated from JSON.
+  AgentVerify-package-source-digest-validated before `RepositoryIR` is rehydrated from JSON.
   A real two-pass `IR-TS-TOOL-GRAPH` run showed initial cache misses, then cache hits under roughly
   0.05 seconds per target, with result JSON equal except for `generated_at`. Summary-format
   evaluator output reports aggregate cache hits and misses, which makes long cached development runs

@@ -203,8 +203,8 @@ detector development; release evidence remains repository-wide.
 When a development loop needs repository-wide semantics, `scripts/evaluate_truthset.py
 --scan-cache-dir .agentverify-cache/scans` can reuse full scanner IR across runs. The cache key is
 tied to the target, selected-path scope, source-file digest, and scanner/rule/IR implementation
-digest, so ordinary source or detector edits rescan and refresh the cache. Cache files are local
-speed aids only and are not benchmark release artifacts.
+digest over AgentVerify package source files, so ordinary source or detector edits rescan and
+refresh the cache. Cache files are local speed aids only and are not benchmark release artifacts.
 
 The locked collector prioritizes manifests, production SSRF/URL-safety sources, and then general
 security/agent/tool/MCP sources within the 220-file cap. It adds at most 20 local source files:

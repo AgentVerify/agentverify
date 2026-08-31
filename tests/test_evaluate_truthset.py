@@ -440,6 +440,27 @@ def test_evaluator_scan_cache_invalidates_when_source_changes(
     assert "cache=miss" in capsys.readouterr().err
 
 
+def test_scan_cache_implementation_digest_includes_package_helpers(tmp_path: Path) -> None:
+    package = tmp_path / "agentverify"
+    package.mkdir()
+    (package / "__init__.py").write_text("__version__ = 'test'\n", encoding="utf-8")
+    (package / "scanner.py").write_text("SCANNER = 1\n", encoding="utf-8")
+    (package / "analysis.py").write_text("HELPER = 1\n", encoding="utf-8")
+    (package / "__pycache__").mkdir()
+    (package / "__pycache__" / "ignored.py").write_text("IGNORED = 1\n", encoding="utf-8")
+
+    before = evaluate_truthset.implementation_digest(package)
+    (package / "analysis.py").write_text("HELPER = 2\n", encoding="utf-8")
+    after = evaluate_truthset.implementation_digest(package)
+
+    assert before != after
+    assert [path.name for path in evaluate_truthset.implementation_source_files(package)] == [
+        "__init__.py",
+        "analysis.py",
+        "scanner.py",
+    ]
+
+
 def test_evaluator_can_scan_only_evaluated_label_paths_for_development(
     tmp_path: Path, monkeypatch
 ) -> None:
