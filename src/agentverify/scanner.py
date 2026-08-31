@@ -13674,6 +13674,15 @@ class TypeScriptToolObjectBinding:
 
 
 @dataclass(frozen=True)
+class TypeScriptFunctionBodyBinding:
+    path: str
+    text: str
+    body_start: int
+    body_end: int
+    resolution: str = "same-file-function"
+
+
+@dataclass(frozen=True)
 class TypeScriptOpenAIRunStateHelperDecision:
     helper_name: str
     result_binding: str
@@ -17014,6 +17023,101 @@ def typescript_function_body_spans(text: str) -> list[tuple[str, int, int]]:
             continue
         spans.append((match.group(1), body_opening + 1, body_end - 1))
     return spans
+
+
+def typescript_exported_function_body_bindings(
+    root: Path,
+    path: Path,
+    text: str,
+) -> dict[str, TypeScriptFunctionBodyBinding]:
+    """Return stable directly exported function bodies from one TypeScript module."""
+    code = typescript_code_mask(text)
+    exported_names = {
+        match.group(1)
+        for match in re.finditer(
+            r"\bexport\s+(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(",
+            code,
+        )
+    }
+    exported_names.update(
+        match.group(1)
+        for match in re.finditer(
+            r"\bexport\s+const\s+([A-Za-z_$][\w$]*)\s*"
+            r"(?::\s*(?:[^=;\n]|=(?!>))+)?=",
+            code,
+        )
+    )
+    if not exported_names:
+        return {}
+    spans_by_name: dict[str, list[tuple[int, int]]] = defaultdict(list)
+    for function_name, function_start, function_end in typescript_function_body_spans(text):
+        spans_by_name[function_name].append((function_start, function_end))
+    relative = path.relative_to(root).as_posix()
+    resolved: dict[str, TypeScriptFunctionBodyBinding] = {}
+    for name in exported_names:
+        spans = spans_by_name.get(name, [])
+        if len(spans) != 1:
+            continue
+        if not typescript_function_identifier_is_stable(text, name):
+            continue
+        function_start, function_end = spans[0]
+        resolved[name] = TypeScriptFunctionBodyBinding(
+            relative,
+            text,
+            function_start,
+            function_end,
+            "exported-local-function",
+        )
+    return resolved
+
+
+def typescript_imported_function_body_bindings(
+    root: Path,
+    path: Path,
+    text: str,
+) -> dict[str, TypeScriptFunctionBodyBinding]:
+    """Resolve exact relative named imports of stable exported function bodies."""
+    import_counts: Counter[str] = Counter()
+    imported_bindings: list[tuple[str, str, str]] = []
+    for match in TS_NAMED_IMPORT.finditer(text):
+        specifier = match.group(2)
+        for raw_specifier in match.group(1).split(","):
+            parts = typescript_named_specifier_parts(raw_specifier)
+            if parts is None:
+                continue
+            original, local = parts
+            import_counts[local] += 1
+            imported_bindings.append((specifier, original, local))
+
+    resolved: dict[str, TypeScriptFunctionBodyBinding] = {}
+    export_cache: dict[Path, dict[str, TypeScriptFunctionBodyBinding]] = {}
+    for specifier, original, local in imported_bindings:
+        if import_counts[local] != 1 or typescript_import_binding_is_shadowed(text, local):
+            continue
+        target = typescript_resolve_local_module(root, path, specifier)
+        if target is None:
+            continue
+        try:
+            target_text = target.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        if target not in export_cache:
+            export_cache[target] = typescript_exported_function_body_bindings(
+                root,
+                target,
+                target_text,
+            )
+        binding = export_cache[target].get(original)
+        if binding is None:
+            continue
+        resolved[local] = TypeScriptFunctionBodyBinding(
+            binding.path,
+            binding.text,
+            binding.body_start,
+            binding.body_end,
+            "imported-local-function",
+        )
+    return resolved
 
 
 def typescript_curly_depth_between(code: str, start: int, end: int) -> int:
@@ -22769,6 +22873,115 @@ def typescript_openai_web_search_attributes(body: str, constructor: str) -> dict
     return attributes
 
 
+def add_typescript_imported_execute_helper_capabilities(
+    ir: RepositoryIR,
+    *,
+    binding: TypeScriptFunctionBodyBinding,
+    tool_name: str,
+    tool_id: str,
+) -> None:
+    """Attach concrete helper-body capabilities to a tool using an imported execute helper."""
+    lines = binding.text.splitlines()
+    if not lines:
+        return
+    helper_tool_by_line = {
+        line_number: (tool_name, tool_id)
+        for line_number in range(
+            line_at(binding.text, binding.body_start),
+            line_at(binding.text, binding.body_end) + 1,
+        )
+    }
+    literal_bindings = typescript_literal_string_bindings(binding.text)
+    shell_bindings = child_process_bindings(binding.text)
+    axios_bindings = typescript_axios_default_bindings(binding.text)
+    axios_instances = typescript_axios_instances(binding.text, axios_bindings)
+    network_calls = typescript_network_calls(binding.text, axios_bindings, axios_instances)
+    for line_number in sorted(helper_tool_by_line):
+        if line_number < 1 or line_number > len(lines):
+            continue
+        line = lines[line_number - 1]
+        code_line = typescript_code_mask(line)
+        ev = Evidence(binding.path, line_number, excerpt(lines, line_number))
+        if (match := TS_SHELL.search(code_line)) and match.group(1) in shell_bindings:
+            argument_text = line[match.start(2) : match.end(2)]
+            add_typescript_capability(
+                ir,
+                binding.path,
+                line_number,
+                ev,
+                helper_tool_by_line,
+                "shell-execution",
+                {
+                    "api": match.group(1),
+                    "shell": match.group(1) in {"exec", "execSync"},
+                    "dynamic_command": not typescript_first_argument_is_literal(argument_text),
+                    "summary": "imported-execute-helper",
+                    "helper_resolution": binding.resolution,
+                },
+            )
+        if TS_DYNAMIC_EVAL.search(code_line):
+            add_typescript_capability(
+                ir,
+                binding.path,
+                line_number,
+                ev,
+                helper_tool_by_line,
+                "code-execution",
+                {
+                    "api": "eval",
+                    "dynamic_input": True,
+                    "summary": "imported-execute-helper",
+                    "helper_resolution": binding.resolution,
+                },
+            )
+        if match := TS_FILESYSTEM_WRITE.search(code_line):
+            path_argument = line[match.start(1) : match.end(1)].strip()
+            add_typescript_capability(
+                ir,
+                binding.path,
+                line_number,
+                ev,
+                helper_tool_by_line,
+                "filesystem",
+                {
+                    "write_access": True,
+                    "dynamic_path": not path_argument.startswith(("'", '"', "`")),
+                    "path_boundary_guard": False,
+                    "path_boundary_scope": "unresolved",
+                    "summary": "imported-execute-helper",
+                    "helper_resolution": binding.resolution,
+                },
+            )
+        for network_call in network_calls.get(line_number, []):
+            add_typescript_capability(
+                ir,
+                binding.path,
+                line_number,
+                ev,
+                helper_tool_by_line,
+                "network",
+                {
+                    "api": network_call.api,
+                    "dynamic_origin": typescript_http_origin_is_dynamic(
+                        network_call.url_expression,
+                        set(),
+                        literal_bindings,
+                    ),
+                    "summary": "imported-execute-helper",
+                    "helper_resolution": binding.resolution,
+                    **(
+                        {
+                            "receiver": network_call.receiver,
+                            "base_url_scope": network_call.base_url_scope,
+                            "absolute_url_override": network_call.absolute_url_override,
+                        }
+                        if network_call.summary is not None
+                        else {}
+                    ),
+                },
+            )
+
+
 def typescript_graph(
     ir: RepositoryIR,
     root: Path,
@@ -23450,19 +23663,36 @@ def typescript_graph(
     function_spans_by_name: dict[str, list[tuple[int, int]]] = defaultdict(list)
     for function_name, function_start, function_end in function_spans:
         function_spans_by_name[function_name].append((function_start, function_end))
+    imported_function_bindings = (
+        typescript_imported_function_body_bindings(root, path, text)
+        if tool_execute_bindings
+        else {}
+    )
     for execute_identifier, tool_bindings in tool_execute_bindings.items():
-        function_bindings = function_spans_by_name.get(execute_identifier, [])
-        if len(tool_bindings) != 1 or len(function_bindings) != 1:
-            continue
-        if not typescript_function_identifier_is_stable(text, execute_identifier):
+        if len(tool_bindings) != 1:
             continue
         tool_name, tool_id = tool_bindings[0]
-        function_start, function_end = function_bindings[0]
-        for line_number in range(
-            line_at(text, function_start),
-            line_at(text, function_end) + 1,
+        function_bindings = function_spans_by_name.get(execute_identifier, [])
+        if len(function_bindings) == 1 and typescript_function_identifier_is_stable(
+            text,
+            execute_identifier,
         ):
-            tool_by_line.setdefault(line_number, (tool_name, tool_id))
+            function_start, function_end = function_bindings[0]
+            for line_number in range(
+                line_at(text, function_start),
+                line_at(text, function_end) + 1,
+            ):
+                tool_by_line.setdefault(line_number, (tool_name, tool_id))
+            continue
+        imported_function_binding = imported_function_bindings.get(execute_identifier)
+        if imported_function_binding is None:
+            continue
+        add_typescript_imported_execute_helper_capabilities(
+            ir,
+            binding=imported_function_binding,
+            tool_name=tool_name,
+            tool_id=tool_id,
+        )
 
     tool_object_bindings: dict[str, TypeScriptToolObjectBinding] = {}
     for variable_name, initializer, initializer_offset in typescript_variable_initializers(text):

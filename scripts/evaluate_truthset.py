@@ -130,6 +130,17 @@ def target_path(target: dict, cache_dir: Path) -> Path:
     return cache_dir / target["repository"].replace("/", "--")
 
 
+def path_from_symbol_id(symbol_id: str | None) -> str | None:
+    """Extract the source-relative file path from AgentVerify source symbol ids."""
+    if symbol_id is None or ":" not in symbol_id or "#" not in symbol_id:
+        return None
+    frontend, rest = symbol_id.split(":", 1)
+    if frontend not in {"py", "ts"}:
+        return None
+    path = rest.split("#", 1)[0]
+    return path or None
+
+
 def verify_commit(path: Path, target: dict) -> None:
     if target["kind"] != "repository":
         return
@@ -151,7 +162,16 @@ def main(argv: list[str] | None = None) -> int:
     target_label_counts = Counter(json.dumps(label["target"], sort_keys=True) for label in labels)
     target_label_paths: dict[str, set[str]] = defaultdict(set)
     for label in labels:
-        target_label_paths[json.dumps(label["target"], sort_keys=True)].add(label["path"])
+        key = json.dumps(label["target"], sort_keys=True)
+        target_label_paths[key].add(label["path"])
+        if relationship := label.get("relationship"):
+            for symbol_key in ("source_id", "target_id"):
+                if path := path_from_symbol_id(relationship.get(symbol_key)):
+                    target_label_paths[key].add(path)
+        if (component := label.get("component")) and (
+            path := path_from_symbol_id(component.get("symbol_id"))
+        ):
+            target_label_paths[key].add(path)
     scans = {}
     outcomes = []
     matrices: dict[str, Counter] = defaultdict(Counter)

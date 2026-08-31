@@ -2920,6 +2920,84 @@ def test_typescript_object_tool_execute_helper_maps_capabilities(tmp_path: Path)
     } == {"calculate", "inline"}
 
 
+def test_typescript_object_tool_imported_execute_helper_maps_capabilities(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "helpers.ts").write_text(
+        textwrap.dedent(
+            """
+            export async function importedCalculate(input: {
+              expression: string;
+            }): Promise<{ result: number }> {
+              return new Function(`return (${input.expression})`)();
+            }
+
+            export async function shared(input: { value: string }) {
+              return eval(input.value);
+            }
+            """
+        ),
+        encoding="utf-8",
+    )
+    (tmp_path / "agent.ts").write_text(
+        textwrap.dedent(
+            """
+            import { WorkflowAgent } from "@ai-sdk/workflow";
+            import { z } from "zod";
+            import { importedCalculate, shared as importedShared } from "./helpers";
+
+            const tools = {
+              importedCalculate: {
+                inputSchema: z.object({ expression: z.string() }),
+                execute: importedCalculate,
+              },
+              firstShared: {
+                inputSchema: z.object({ value: z.string() }),
+                execute: importedShared,
+              },
+              secondShared: {
+                inputSchema: z.object({ value: z.string() }),
+                execute: importedShared,
+              },
+            };
+
+            const agent = new WorkflowAgent({ model: {}, tools });
+            void agent;
+            """
+        ),
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+
+    helper_capability_edges = {
+        (
+            relationship.source_name,
+            relationship.target_name,
+            relationship.evidence.path,
+            relationship.evidence.line,
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "tool"
+        and relationship.relation == "uses"
+        and relationship.target_kind == "capability"
+    }
+    assert (
+        "importedCalculate",
+        "code-execution",
+        "helpers.ts",
+        5,
+    ) in helper_capability_edges
+    assert not {
+        relationship.source_name
+        for relationship in ir.relationships
+        if relationship.source_kind == "tool"
+        and relationship.relation == "uses"
+        and relationship.target_kind == "capability"
+        and relationship.target_name == "code-execution"
+    } & {"firstShared", "secondShared"}
+
+
 def test_typescript_workflow_agent_model_control_is_exact(tmp_path: Path) -> None:
     (tmp_path / "agent.ts").write_text(
         textwrap.dedent(

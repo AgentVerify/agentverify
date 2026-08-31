@@ -791,6 +791,10 @@ named imports, exact named reexports, or unambiguous star reexports of immutable
 tool-set objects to already-inventoried object-tool components. Imported tool-set edges preserve the
 original sibling module's tool IDs and record `tool_set_resolution` as `imported-local-tools-object`,
 `imported-local-reexported-tools-object`, or `imported-local-star-reexported-tools-object`.
+Direct relative named imports of stable exported `execute` helper functions also map concrete
+code-execution, shell, filesystem-write, and network evidence back to the owning object tool when
+exactly one tool uses that helper. Shared imported helpers and reexported helper modules remain
+unresolved until the caller-tool provenance is unambiguous.
 Reassigned bindings, property-mutated local tool sets, duplicate tool identities, conflicting
 barrels, partial config objects, and broader module composition remain unresolved until their object
 identity can be proven.
@@ -1170,7 +1174,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 730-label rule truth set and 2,464-label IR component/relationship set are curated regression
+The 730-label rule truth set and 2,466-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed
