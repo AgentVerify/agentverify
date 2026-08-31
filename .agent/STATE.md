@@ -7,6 +7,9 @@ catalog workflows.
 
 ## Completed recently
 
+- Added per-result `all_labels_passed` to benchmark verifier output entries, regenerated the checked
+  `examples/benchmark-verification.json` artifact, and updated release/docs guidance so multi-result
+  release tooling can inspect each result file without re-deriving the all-pass state from counts.
 - Added a copyable `examples/github-editor-contracts.yml` workflow for editor/review-bot
   integrations. It exports editor contracts from the installed CLI, validates the manifest and
   verification JSON against bundled schemas, verifies the copied bundle before upload, and ships as a

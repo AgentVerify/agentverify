@@ -240,8 +240,9 @@ Full public-regression release results should still use repository-wide scans.
 The default CI workflow runs the installed CLI benchmark gate against the checked-in public
 regression results and validates the verifier JSON against the bundled benchmark-verification schema,
 so benchmark-result drift fails during pull requests before release packaging. The verifier artifact
-also carries per-result `failed` counts and mismatch summaries so release tooling can distinguish
-scanner false positives/negatives from stale source anchors or expected snippets. Source-distribution
+also carries per-result `all_labels_passed`, `failed` counts, and mismatch summaries so release
+tooling can distinguish scanner false positives/negatives from stale source anchors or expected
+snippets. Source-distribution
 verification keeps the copyable GitHub workflow examples tied to their contracts: benchmark
 verification emits, validates, and uploads both `agentverify-benchmark-verification.json` and
 `agentverify-engine-results-verification.json`; policy-gate and code-scanning examples keep their

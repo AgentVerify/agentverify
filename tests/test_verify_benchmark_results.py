@@ -203,6 +203,7 @@ def test_benchmark_result_verifier_reports_but_allows_failing_labels_by_default(
     assert payload["all_labels_passed"] is False
     assert payload["results"][0]["passed"] == 0
     assert payload["results"][0]["failed"] == 1
+    assert payload["results"][0]["all_labels_passed"] is False
     assert payload["results"][0]["failure_summary"] == {
         "observation_mismatch": 1,
         "anchor_mismatch": 0,
@@ -234,6 +235,26 @@ def test_benchmark_result_verifier_can_require_all_labels_passed(
     )
     captured = capsys.readouterr()
     assert "expected all benchmark labels to pass" in captured.err
+
+
+def test_benchmark_result_verifier_reports_per_result_all_labels_passed(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    labels = tmp_path / "labels.json"
+    result = tmp_path / "results.json"
+    write_labels(labels)
+    write_result(result, labels)
+    schema = ROOT / "benchmarks/benchmark-results-v1.schema.json"
+
+    assert (
+        verify_benchmark_results.main(
+            [str(result), "--schema", str(schema), "--root", str(tmp_path)]
+        )
+        == 0
+    )
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["all_labels_passed"] is True
+    assert payload["results"][0]["all_labels_passed"] is True
 
 
 def test_benchmark_result_verifier_rejects_outcome_count_drift(

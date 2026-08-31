@@ -144,6 +144,9 @@
   read-only repository permissions, exports contracts with the installed CLI, validates both manifest
   and verifier JSON against bundled schemas, verifies the artifact bundle before upload, and is
   enforced by source-distribution workflow-fragment checks.
+- Benchmark verifier JSON now mirrors the aggregate all-pass claim at per-result granularity. Each
+  result entry emitted by `agentverify benchmark verify` includes a derived `all_labels_passed`
+  boolean, while the schema allows the field and the checked example fixture covers the shape.
 - Benchmark verification now treats benchmark result aggregates as derived evidence: it rejects
   mismatches between `labels` and outcome count, `passed` and per-outcome pass status, or `metrics`
   and the expected/observed outcome matrix.

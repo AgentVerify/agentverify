@@ -54,6 +54,9 @@
             "type": "integer",
             "minimum": 0
           },
+          "all_labels_passed": {
+            "type": "boolean"
+          },
           "failure_summary": {
             "type": "object",
             "required": ["observation_mismatch", "anchor_mismatch", "source_mismatch"],

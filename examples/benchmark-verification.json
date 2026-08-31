@@ -8,6 +8,7 @@
       "labels": 730,
       "passed": 730,
       "failed": 0,
+      "all_labels_passed": true,
       "failure_summary": {
         "observation_mismatch": 0,
         "anchor_mismatch": 0,
@@ -25,6 +26,7 @@
       "labels": 2451,
       "passed": 2451,
       "failed": 0,
+      "all_labels_passed": true,
       "failure_summary": {
         "observation_mismatch": 0,
         "anchor_mismatch": 0,

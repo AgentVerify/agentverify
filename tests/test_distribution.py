@@ -277,9 +277,11 @@ def test_github_benchmark_verify_example_is_read_only_and_exports_verifier_json(
     )
     assert checked_example["all_labels_passed"] is True
     assert [
-        (item["failed"], item["failure_summary"]) for item in checked_example["results"]
+        (item["all_labels_passed"], item["failed"], item["failure_summary"])
+        for item in checked_example["results"]
     ] == [
         (
+            True,
             0,
             {
                 "observation_mismatch": 0,
@@ -288,6 +290,7 @@ def test_github_benchmark_verify_example_is_read_only_and_exports_verifier_json(
             },
         ),
         (
+            True,
             0,
             {
                 "observation_mismatch": 0,

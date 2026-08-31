@@ -241,6 +241,7 @@ def verify_result(path: Path, *, schema: dict, root: Path) -> dict[str, object]:
         "labels": payload["labels"],
         "passed": payload["passed"],
         "failed": payload["failed"],
+        "all_labels_passed": payload["passed"] == payload["labels"],
         "failure_summary": payload["failure_summary"],
         "labels_source": str(labels_path),
         "claim_scope": benchmark["claim_scope"],
@@ -336,7 +337,7 @@ def verify_benchmark_results(
     payload: dict[str, object] = {
         "results": verified,
         "passed": True,
-        "all_labels_passed": all(item["passed"] == item["labels"] for item in verified),
+        "all_labels_passed": all(item["all_labels_passed"] is True for item in verified),
     }
     Draft202012Validator(verification_schema).validate(payload)
     return payload
