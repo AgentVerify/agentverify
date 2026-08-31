@@ -37,9 +37,12 @@
   resuming. The full public IR truth set passed 2,440/2,440 labels for that slice.
 - Exact Vercel AI WorkflowAgent model configuration is now visible for direct AI SDK provider calls:
   `WorkflowAgent({ model: anthropic("claude-sonnet-4-20250514") })` emits a
-  `model-settings-policy` control linked back to the source agent. Bound model variables and cast or
-  otherwise wrapped provider expressions remain unresolved by design, and the full public IR truth
-  set passed 2,435/2,435 labels for that slice.
+  `model-settings-policy` control linked back to the source agent. Imported sibling model bindings
+  now also resolve through direct named imports, exact named reexports, and unambiguous star
+  reexports when the exported const initializer is exactly one immutable AI SDK provider model call.
+  Same-file bound model variables, cast or otherwise wrapped provider expressions, mutated exports,
+  and ambiguous star reexports remain unresolved by design. The full public IR truth set now passes
+  2,460/2,460 labels.
 - OpenAI Agents SDK MCP approval metadata now covers TypeScript hosted `hostedMcpTool`
   `requireApproval` policies, Python hosted `HostedMCPTool` tool configs, and Python non-hosted
   MCP server `require_approval` call sites. The TypeScript hosted check now has 16 public IR labels
@@ -855,7 +858,7 @@
   Dynamic clone configs, rebound clone sources, ambiguous/conflicting reexports, and lookalike
   imported `.clone(...)` methods remain unresolved. The clone truth-set slice now covers 17/17
   labels from local fixtures plus pinned OpenAI docs and financial-research examples, bringing the
-  public IR truth set to 2,451 passing labels.
+  public IR truth set to 2,451 passing labels before later WorkflowAgent model-label additions.
 - OpenAI Agents JS `hostedMcpTool({...})` approval settings are now visible as hosted-MCP-specific
   IR metadata instead of being flattened into generic tool approval. Omitted `requireApproval`
   records a disabled default, literal `"never"` records explicit disablement, inline object

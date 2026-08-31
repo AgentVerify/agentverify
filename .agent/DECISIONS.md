@@ -62,18 +62,22 @@
 - Decision: Emit a `model-settings-policy` control for `WorkflowAgent.model` only when a
   source-proven `@ai-sdk/workflow` `WorkflowAgent` constructor has a top-level `model` property whose
   expression is exactly one direct AI SDK provider model call, such as
-  `anthropic("claude-sonnet-4-20250514")`. Link the control back to the WorkflowAgent with an
-  `agent configured-by control` edge.
+  `anthropic("claude-sonnet-4-20250514")`, or a relative named import that resolves through direct
+  export, exact named reexport, or unambiguous star reexport to an exported const initialized by
+  exactly one immutable AI SDK provider model call. Link the control back to the WorkflowAgent with
+  an `agent configured-by control` edge and preserve the imported model binding/resolution mode.
 - Evidence: Vercel AI's pinned `examples/next-workflow/workflow/agent-chat.ts` constructs a
   WorkflowAgent with a direct Anthropic model call. AgentVerify now records the provider, provider
   module, imported provider symbol, call, model string, model method, and source-agent identity in
-  the control, and the public IR truth set pins both the control and relationship labels.
-- Alternative: Resolve bound model variables, casts, or arbitrary wrapper expressions around provider
-  calls. Rejected for this slice because those forms need separate mutation and alias provenance;
+  the control, and the public IR truth set pins both the control and relationship labels. A local
+  imported-model fixture now covers direct import, named reexport, star reexport, casted model,
+  mutated export, and ambiguous star-barrel cases.
+- Alternative: Resolve same-file bound model variables, casts, or arbitrary wrapper expressions
+  around provider calls. Rejected because those forms need separate mutation and alias provenance;
   otherwise a model value can be reassigned or transformed before the agent receives it.
-- Revisit when: Same-file/imported stable provider-model constants, framework-specific model wrapper
-  helpers, or safe TypeScript cast stripping can be proven without broadening into arbitrary
-  expression resolution.
+- Revisit when: Same-file stable provider-model constants, framework-specific model wrapper helpers,
+  or safe TypeScript cast stripping can be proven without broadening into arbitrary expression
+  resolution.
 
 ## TypeScript object-tool execute helper bodies map only under unique stable same-file proof
 

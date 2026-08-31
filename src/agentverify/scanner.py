@@ -15230,6 +15230,174 @@ def typescript_imported_tool_object_bindings(
     return resolved
 
 
+def typescript_provider_call_is_exact_initializer(
+    text: str,
+    *,
+    expression_offset: int,
+    provider_call: TypeScriptProviderCall,
+) -> bool:
+    """Return true when a const initializer is exactly one provider model call."""
+    code = typescript_code_mask(text)
+    if provider_call.offset != expression_offset:
+        return False
+    opening = code.find("(", provider_call.offset)
+    if opening < 0:
+        return False
+    end = typescript_balanced_end(code, opening, "(", ")")
+    if end is None:
+        return False
+    statement_end_candidates = [
+        index for index in (code.find(";", end), code.find("\n", end)) if index >= 0
+    ]
+    statement_end = min(statement_end_candidates) if statement_end_candidates else len(code)
+    return not code[end:statement_end].strip()
+
+
+def typescript_exported_ai_sdk_provider_model_bindings(
+    root: Path,
+    path: Path,
+    text: str,
+    seen: frozenset[Path] = frozenset(),
+) -> dict[str, tuple[TypeScriptProviderCall, str]]:
+    """Return exported exact AI SDK provider model calls and exact local reexports."""
+    try:
+        canonical_path = path.resolve()
+    except OSError:
+        return {}
+    if canonical_path in seen:
+        return {}
+    seen = seen | {canonical_path}
+    code = typescript_code_mask(text)
+    provider_model_calls = {
+        provider_call.offset: provider_call
+        for provider_call in typescript_ai_sdk_provider_calls(root, path, text)
+        if provider_call.call_kind == "ai-sdk-provider-model" and provider_call.model is not None
+    }
+    candidates: dict[str, list[tuple[TypeScriptProviderCall, str]]] = defaultdict(list)
+    exported_const_pattern = re.compile(
+        r"\bexport\s+const\s+([A-Za-z_$][\w$]*)"
+        r"\s*(?::\s*(?:[^=;\n]|=(?!>))+)?="
+    )
+    for match in exported_const_pattern.finditer(code):
+        exported_name = match.group(1)
+        initializer = code[match.end() :]
+        expression_offset = match.end() + len(initializer) - len(initializer.lstrip())
+        provider_call = provider_model_calls.get(expression_offset)
+        if provider_call is None:
+            continue
+        if not typescript_provider_call_is_exact_initializer(
+            text,
+            expression_offset=expression_offset,
+            provider_call=provider_call,
+        ):
+            continue
+        if not typescript_const_provider_binding_is_stable(
+            text,
+            exported_name,
+            expression_offset,
+        ):
+            continue
+        candidates[exported_name].append((provider_call, "exported-local-provider-model"))
+    for match in TS_NAMED_EXPORT_FROM.finditer(text):
+        target = typescript_resolve_local_module(root, path, match.group(2))
+        if target is None:
+            continue
+        try:
+            target_text = target.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        target_exports = typescript_exported_ai_sdk_provider_model_bindings(
+            root,
+            target,
+            target_text,
+            seen,
+        )
+        for raw_specifier in match.group(1).split(","):
+            parts = typescript_named_specifier_parts(raw_specifier)
+            if parts is None:
+                continue
+            original, exported_name = parts
+            binding = target_exports.get(original)
+            if binding is None:
+                continue
+            candidates[exported_name].append(
+                (binding[0], "reexported-local-provider-model")
+            )
+    for match in TS_STAR_EXPORT_FROM.finditer(text):
+        target = typescript_resolve_local_module(root, path, match.group(1))
+        if target is None:
+            continue
+        try:
+            target_text = target.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        target_exports = typescript_exported_ai_sdk_provider_model_bindings(
+            root,
+            target,
+            target_text,
+            seen,
+        )
+        for exported_name, binding in target_exports.items():
+            candidates[exported_name].append(
+                (binding[0], "star-reexported-local-provider-model")
+            )
+    return {
+        name: bindings[0]
+        for name, bindings in candidates.items()
+        if len(bindings) == 1
+    }
+
+
+def typescript_imported_ai_sdk_provider_model_bindings(
+    root: Path,
+    path: Path,
+    text: str,
+) -> dict[str, tuple[TypeScriptProviderCall, str]]:
+    """Resolve exact relative imports of exported immutable AI SDK provider model calls."""
+    import_counts: Counter[str] = Counter()
+    imported_bindings: list[tuple[int, str, str, str]] = []
+    for match in TS_NAMED_IMPORT.finditer(text):
+        specifier = match.group(2)
+        for raw_specifier in match.group(1).split(","):
+            parts = typescript_named_specifier_parts(raw_specifier)
+            if parts is None:
+                continue
+            original, local = parts
+            import_counts[local] += 1
+            imported_bindings.append((match.end(), specifier, original, local))
+
+    resolved: dict[str, tuple[TypeScriptProviderCall, str]] = {}
+    export_cache: dict[Path, dict[str, tuple[TypeScriptProviderCall, str]]] = {}
+    for import_end, specifier, original, local in imported_bindings:
+        if import_counts[local] != 1 or typescript_import_binding_is_shadowed(text, local):
+            continue
+        target = typescript_resolve_local_module(root, path, specifier)
+        if target is None:
+            continue
+        try:
+            target_text = target.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        if target not in export_cache:
+            export_cache[target] = typescript_exported_ai_sdk_provider_model_bindings(
+                root,
+                target,
+                target_text,
+            )
+        binding = export_cache[target].get(original)
+        if binding is None:
+            continue
+        resolution = (
+            "imported-local-reexported-provider-model"
+            if binding[1] == "reexported-local-provider-model"
+            else "imported-local-star-reexported-provider-model"
+            if binding[1] == "star-reexported-local-provider-model"
+            else "imported-local-provider-model"
+        )
+        resolved[local] = (binding[0], resolution)
+    return resolved
+
+
 def typescript_exported_openai_agent_bindings(
     root: Path,
     path: Path,
@@ -19066,6 +19234,8 @@ def add_typescript_vercel_workflow_agent_model_control(
     source_agent: tuple[str, str],
     model_call: TypeScriptProviderCall,
     symbol_identity: str,
+    model_binding: str | None = None,
+    model_binding_resolution: str | None = None,
 ) -> tuple[str, str]:
     """Add exact Vercel WorkflowAgent model configuration evidence."""
     source_agent_name, source_agent_id = source_agent
@@ -19089,6 +19259,10 @@ def add_typescript_vercel_workflow_agent_model_control(
         attributes["model_method"] = model_call.model_method
     if model_call.model_resolution_basis is not None:
         attributes["model_resolution"] = model_call.model_resolution_basis
+    if model_binding is not None:
+        attributes["model_binding"] = model_binding
+    if model_binding_resolution is not None:
+        attributes["model_binding_resolution"] = model_binding_resolution
     control_id = source_symbol("ts", relative, "control", symbol_identity)
     ir.add_component(
         Component(
@@ -24658,6 +24832,11 @@ def typescript_graph(
         if workflow_imports
         else {}
     )
+    workflow_model_bindings = (
+        typescript_imported_ai_sdk_provider_model_bindings(root, path, text)
+        if workflow_imports
+        else {}
+    )
     local_agents: dict[str, tuple[str, str]] = {}
     local_agent_declaration_ends: dict[str, int] = {}
     openai_agent_bindings: set[str] = set()
@@ -24773,6 +24952,57 @@ def typescript_graph(
                             target_id=model_control_id,
                         )
                     )
+                else:
+                    model_binding = expression_code.strip()
+                    imported_model = (
+                        workflow_model_bindings.get(model_binding)
+                        if re.fullmatch(r"[A-Za-z_$][\w$]*", model_binding)
+                        else None
+                    )
+                    if imported_model is not None:
+                        model_call, model_binding_resolution = imported_model
+                        model_line = line_at(text, model_property_offset)
+                        model_control_name, model_control_id = (
+                            add_typescript_vercel_workflow_agent_model_control(
+                                ir,
+                                relative=relative,
+                                lines=lines,
+                                line=model_line,
+                                source_agent=(agent_name, agent_id),
+                                model_call=model_call,
+                                symbol_identity=f"{agent_identity}.model@{model_line}",
+                                model_binding=model_binding,
+                                model_binding_resolution=model_binding_resolution,
+                            )
+                        )
+                        model_attributes: dict[str, object] = {
+                            "analysis": "typescript-vercel-workflow-agent-model",
+                            "configuration": "WorkflowAgent-model",
+                            "binding": "model",
+                            "provider": model_call.provider,
+                            "model": model_call.model,
+                            "model_binding": model_binding,
+                            "model_binding_resolution": model_binding_resolution,
+                        }
+                        if model_call.model_method is not None:
+                            model_attributes["model_method"] = model_call.model_method
+                        if model_call.model_resolution_basis is not None:
+                            model_attributes["model_resolution"] = (
+                                model_call.model_resolution_basis
+                            )
+                        ir.add_relationship(
+                            Relationship(
+                                "agent",
+                                agent_name,
+                                "configured-by",
+                                "control",
+                                model_control_name,
+                                Evidence(relative, model_line, excerpt(lines, model_line)),
+                                model_attributes,
+                                source_id=agent_id,
+                                target_id=model_control_id,
+                            )
+                        )
         if constructor == "Agent" and exact_openai_agent_import:
             model_settings_location = typescript_object_property_expression_location(
                 body,

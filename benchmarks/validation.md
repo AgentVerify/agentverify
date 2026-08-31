@@ -1721,10 +1721,11 @@ Twelve OpenAI Agents JS trace labels pin local and real `withTrace(..., { groupI
 `withTrace(..., { traceId })` correlation evidence, including the real `routing.ts` dynamic
 `conversationId` group binding, the real Codex tool example's generated trace ID with a logged
 OpenAI platform trace URL, and local missing-option negatives.
-All 2,451 IR labels pass (1,873 positives and 578 negatives). The checked
+All 2,460 IR labels pass (1,879 positives and 581 negatives). The checked
 `benchmarks/ir-truthset-results.json` file contains the current per-check precision/recall
-breakdown, including the OpenAI Agents JS and Python safety-check labels added for
-`computerTool({ onSafetyCheck })` and `ComputerTool(on_safety_check=...)`, plus OpenAI Agents JS
-run-state approval-decision labels for JS and Python state approve/reject handling, persistence,
-custom rejection messages, JS env-backed approve branches, TypeScript local/helper reject-message
-metadata, helper-derived state resumes, and clean reject/reassigned near misses.
+breakdown, including the Vercel WorkflowAgent imported/reexported model-binding labels, OpenAI
+Agents JS and Python safety-check labels added for `computerTool({ onSafetyCheck })` and
+`ComputerTool(on_safety_check=...)`, plus OpenAI Agents JS run-state approval-decision labels for JS
+and Python state approve/reject handling, persistence, custom rejection messages, JS env-backed
+approve branches, TypeScript local/helper reject-message metadata, helper-derived state resumes, and
+clean reject/reassigned near misses.

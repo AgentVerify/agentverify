@@ -2996,6 +2996,72 @@ def test_typescript_workflow_agent_model_control_is_exact(tmp_path: Path) -> Non
     }
 
 
+def test_typescript_workflow_agent_model_control_follows_imported_model_bindings() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_vercel_workflow_imported_model")
+
+    controls = {
+        component.attributes["source_agent"]: component
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "model-settings-policy"
+        and component.attributes.get("analysis") == "typescript-vercel-workflow-agent-model"
+    }
+    assert {
+        name: (
+            control.attributes.get("model"),
+            control.attributes.get("model_binding"),
+            control.attributes.get("model_binding_resolution"),
+        )
+        for name, control in controls.items()
+    } == {
+        "directImportedAgent": (
+            "claude-imported",
+            "workflowModel",
+            "imported-local-provider-model",
+        ),
+        "namedReexportAgent": (
+            "claude-imported",
+            "namedReexportModel",
+            "imported-local-reexported-provider-model",
+        ),
+        "starReexportAgent": (
+            "claude-imported",
+            "starReexportModel",
+            "imported-local-star-reexported-provider-model",
+        ),
+    }
+    assert {"castAgent", "mutableAgent", "ambiguousAgent"}.isdisjoint(controls)
+
+    model_edges = {
+        (
+            relationship.source_name,
+            relationship.attributes.get("model_binding"),
+            relationship.attributes.get("model_binding_resolution"),
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.target_kind == "control"
+        and relationship.attributes.get("analysis") == "typescript-vercel-workflow-agent-model"
+    }
+    assert model_edges == {
+        (
+            "directImportedAgent",
+            "workflowModel",
+            "imported-local-provider-model",
+        ),
+        (
+            "namedReexportAgent",
+            "namedReexportModel",
+            "imported-local-reexported-provider-model",
+        ),
+        (
+            "starReexportAgent",
+            "starReexportModel",
+            "imported-local-star-reexported-provider-model",
+        ),
+    }
+
+
 def test_typescript_vercel_code_mode_approval_flow_is_exact(tmp_path: Path) -> None:
     positive = tmp_path / "positive"
     src = positive / "packages" / "code-mode" / "src"

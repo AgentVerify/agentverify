@@ -780,9 +780,11 @@ literal prompt presence and length plus literal keyword arrays/counts. Dynamic r
 model/config values remain unresolved.
 Vercel AI `WorkflowAgent` constructors from exact `@ai-sdk/workflow` imports now also emit
 source-agent-linked `model-settings-policy` controls for direct AI SDK provider calls in the
-top-level `model` property, such as `anthropic("claude-sonnet-4-20250514")`. Bound model variables,
-casts, wrappers, and imported model constants remain unresolved until their provenance can be proven
-without general expression guessing.
+top-level `model` property, such as `anthropic("claude-sonnet-4-20250514")`. Imported sibling
+model bindings also resolve through exact named imports, named reexports, or unambiguous star
+reexports when the exported const initializer is exactly one immutable AI SDK provider model call.
+Same-file bound model variables, casts, wrappers, mutated exports, and ambiguous star reexports
+remain unresolved until their provenance can be proven without general expression guessing.
 For `WorkflowAgent.tools`, AgentVerify links stable same-file tool-set bindings plus direct relative
 named imports, exact named reexports, or unambiguous star reexports of immutable exported const
 tool-set objects to already-inventoried object-tool components. Imported tool-set edges preserve the
@@ -1167,7 +1169,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 730-label rule truth set and 2,451-label IR component/relationship set are curated regression
+The 730-label rule truth set and 2,460-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

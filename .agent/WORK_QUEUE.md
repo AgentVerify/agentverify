@@ -24,7 +24,9 @@
   `WorkflowAgent.model` AI SDK provider calls now emit source-agent-linked model-setting controls;
   direct relative named imports, exact named reexports, and unambiguous star reexports of immutable
   exported tool-set objects now link to original sibling-module object-tool IDs with mutation
-  guards. Future work should focus on imported helper/model modules, approval-resumption/event
+  guards. Direct relative named imports, exact named reexports, and unambiguous star reexports of
+  immutable exported provider-model consts now feed `WorkflowAgent.model`; future work should focus
+  on imported execute helper modules, richer model wrapper/cast shapes, approval-resumption/event
   flows, or reportable Vercel approval findings only with matching real evidence.
 - Extend Vercel AI Code Mode only when runtime provenance stays exact: current IR covers the
   host-tool approval gate, interrupt payload kind, denial-before-execute behavior, and
