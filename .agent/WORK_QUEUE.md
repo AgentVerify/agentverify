@@ -25,12 +25,13 @@
   now emit source-agent-linked model-setting controls;
   direct relative named imports, exact named reexports, and unambiguous star reexports of immutable
   exported tool-set objects now link to original sibling-module object-tool IDs with mutation
-  guards. Direct relative named imports of stable exported `execute` helper functions now map
-  concrete helper-body capabilities back to a unique importing object tool. Direct relative named
-  imports, exact named reexports, and unambiguous star reexports of immutable exported
-  provider-model consts now feed `WorkflowAgent.model`; future work should focus on reexported
-  execute helper modules, richer model wrapper/cast shapes, approval-resumption/event flows, or
-  reportable Vercel approval findings only with matching real evidence.
+  guards. Direct relative named imports, exact named reexports, and unambiguous star reexports of
+  stable exported `execute` helper functions now map concrete helper-body capabilities back to a
+  unique importing object tool. Direct relative named imports, exact named reexports, and
+  unambiguous star reexports of immutable exported provider-model consts now feed
+  `WorkflowAgent.model`; future work should focus on richer model wrapper/cast shapes,
+  approval-resumption/event flows, reportable Vercel approval findings only with matching real
+  evidence, or additional execute-helper alias chains only when comparable ambiguity guards exist.
 - Extend Vercel AI Code Mode only when runtime provenance stays exact: current IR covers the
   host-tool approval gate, interrupt payload kind, denial-before-execute behavior, and
   continuation approval-id validation, plus the public `codeModeTool()` /

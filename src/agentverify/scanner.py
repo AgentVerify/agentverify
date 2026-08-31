@@ -17029,8 +17029,16 @@ def typescript_exported_function_body_bindings(
     root: Path,
     path: Path,
     text: str,
+    seen: frozenset[Path] = frozenset(),
 ) -> dict[str, TypeScriptFunctionBodyBinding]:
-    """Return stable directly exported function bodies from one TypeScript module."""
+    """Return stable exported function bodies and exact local reexports."""
+    try:
+        canonical_path = path.resolve()
+    except OSError:
+        return {}
+    if canonical_path in seen:
+        return {}
+    seen = seen | {canonical_path}
     code = typescript_code_mask(text)
     exported_names = {
         match.group(1)
@@ -17047,13 +17055,11 @@ def typescript_exported_function_body_bindings(
             code,
         )
     )
-    if not exported_names:
-        return {}
     spans_by_name: dict[str, list[tuple[int, int]]] = defaultdict(list)
     for function_name, function_start, function_end in typescript_function_body_spans(text):
         spans_by_name[function_name].append((function_start, function_end))
     relative = path.relative_to(root).as_posix()
-    resolved: dict[str, TypeScriptFunctionBodyBinding] = {}
+    candidates: dict[str, list[TypeScriptFunctionBodyBinding]] = defaultdict(list)
     for name in exported_names:
         spans = spans_by_name.get(name, [])
         if len(spans) != 1:
@@ -17061,14 +17067,75 @@ def typescript_exported_function_body_bindings(
         if not typescript_function_identifier_is_stable(text, name):
             continue
         function_start, function_end = spans[0]
-        resolved[name] = TypeScriptFunctionBodyBinding(
-            relative,
-            text,
-            function_start,
-            function_end,
-            "exported-local-function",
+        candidates[name].append(
+            TypeScriptFunctionBodyBinding(
+                relative,
+                text,
+                function_start,
+                function_end,
+                "exported-local-function",
+            )
         )
-    return resolved
+    for match in TS_NAMED_EXPORT_FROM.finditer(text):
+        target = typescript_resolve_local_module(root, path, match.group(2))
+        if target is None:
+            continue
+        try:
+            target_text = target.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        target_exports = typescript_exported_function_body_bindings(
+            root,
+            target,
+            target_text,
+            seen,
+        )
+        for raw_specifier in match.group(1).split(","):
+            parts = typescript_named_specifier_parts(raw_specifier)
+            if parts is None:
+                continue
+            original, exported_name = parts
+            binding = target_exports.get(original)
+            if binding is None:
+                continue
+            candidates[exported_name].append(
+                TypeScriptFunctionBodyBinding(
+                    binding.path,
+                    binding.text,
+                    binding.body_start,
+                    binding.body_end,
+                    "reexported-local-function",
+                )
+            )
+    for match in TS_STAR_EXPORT_FROM.finditer(text):
+        target = typescript_resolve_local_module(root, path, match.group(1))
+        if target is None:
+            continue
+        try:
+            target_text = target.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        target_exports = typescript_exported_function_body_bindings(
+            root,
+            target,
+            target_text,
+            seen,
+        )
+        for exported_name, binding in target_exports.items():
+            candidates[exported_name].append(
+                TypeScriptFunctionBodyBinding(
+                    binding.path,
+                    binding.text,
+                    binding.body_start,
+                    binding.body_end,
+                    "star-reexported-local-function",
+                )
+            )
+    return {
+        name: bindings[0]
+        for name, bindings in candidates.items()
+        if len(bindings) == 1
+    }
 
 
 def typescript_imported_function_body_bindings(
@@ -17110,12 +17177,19 @@ def typescript_imported_function_body_bindings(
         binding = export_cache[target].get(original)
         if binding is None:
             continue
+        resolution = (
+            "imported-local-reexported-function"
+            if binding.resolution == "reexported-local-function"
+            else "imported-local-star-reexported-function"
+            if binding.resolution == "star-reexported-local-function"
+            else "imported-local-function"
+        )
         resolved[local] = TypeScriptFunctionBodyBinding(
             binding.path,
             binding.text,
             binding.body_start,
             binding.body_end,
-            "imported-local-function",
+            resolution,
         )
     return resolved
 

@@ -42,13 +42,15 @@
   immutable AI SDK provider model call, including direct named imports, exact named reexports, and
   unambiguous star reexports for sibling modules. Cast or otherwise wrapped provider expressions,
   mutated bindings/exports, and ambiguous star reexports remain unresolved by design. The full
-  public IR truth set now passes 2,466/2,466 labels.
+  public IR truth set now passes 2,470/2,470 labels.
 - Direct imported Vercel AI WorkflowAgent execute helpers now carry concrete capability evidence
   back to their object tools when provenance is exact. A local fixture with
   `execute: importedCalculate` imports a stable exported helper containing `new Function(...)`, and
   AgentVerify emits a `tool importedCalculate uses capability code-execution` edge at the helper
   body line. A second fixture branch uses the same imported helper in two object tools; those shared
-  helper uses remain unlinked so one helper body is not over-attributed to multiple tools.
+  helper uses remain unlinked so one helper body is not over-attributed to multiple tools. Exact
+  named reexports and unambiguous star reexports of the same stable helper body now preserve that
+  tool-to-capability link, while ambiguous two-source helper barrels remain unresolved.
 - OpenAI Agents SDK MCP approval metadata now covers TypeScript hosted `hostedMcpTool`
   `requireApproval` policies, Python hosted `HostedMCPTool` tool configs, and Python non-hosted
   MCP server `require_approval` call sites. The TypeScript hosted check now has 16 public IR labels

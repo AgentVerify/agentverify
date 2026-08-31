@@ -2939,17 +2939,55 @@ def test_typescript_object_tool_imported_execute_helper_maps_capabilities(
         ),
         encoding="utf-8",
     )
+    (tmp_path / "other-helpers.ts").write_text(
+        textwrap.dedent(
+            """
+            export async function ambiguousHelper(input: { value: string }) {
+              return eval(input.value);
+            }
+            """
+        ),
+        encoding="utf-8",
+    )
+    (tmp_path / "barrel.ts").write_text(
+        'export { importedCalculate as namedReexportCalculate } from "./helpers";\n',
+        encoding="utf-8",
+    )
+    (tmp_path / "star.ts").write_text(
+        'export * from "./helpers";\n',
+        encoding="utf-8",
+    )
+    (tmp_path / "ambiguous.ts").write_text(
+        textwrap.dedent(
+            """
+            export { shared as ambiguousHelper } from "./helpers";
+            export * from "./other-helpers";
+            """
+        ),
+        encoding="utf-8",
+    )
     (tmp_path / "agent.ts").write_text(
         textwrap.dedent(
             """
             import { WorkflowAgent } from "@ai-sdk/workflow";
             import { z } from "zod";
             import { importedCalculate, shared as importedShared } from "./helpers";
+            import { namedReexportCalculate } from "./barrel";
+            import { importedCalculate as starCalculate } from "./star";
+            import { ambiguousHelper } from "./ambiguous";
 
             const tools = {
               importedCalculate: {
                 inputSchema: z.object({ expression: z.string() }),
                 execute: importedCalculate,
+              },
+              namedReexportCalculate: {
+                inputSchema: z.object({ expression: z.string() }),
+                execute: namedReexportCalculate,
+              },
+              starCalculate: {
+                inputSchema: z.object({ expression: z.string() }),
+                execute: starCalculate,
               },
               firstShared: {
                 inputSchema: z.object({ value: z.string() }),
@@ -2958,6 +2996,10 @@ def test_typescript_object_tool_imported_execute_helper_maps_capabilities(
               secondShared: {
                 inputSchema: z.object({ value: z.string() }),
                 execute: importedShared,
+              },
+              ambiguous: {
+                inputSchema: z.object({ value: z.string() }),
+                execute: ambiguousHelper,
               },
             };
 
@@ -2982,12 +3024,26 @@ def test_typescript_object_tool_imported_execute_helper_maps_capabilities(
         and relationship.relation == "uses"
         and relationship.target_kind == "capability"
     }
-    assert (
-        "importedCalculate",
-        "code-execution",
-        "helpers.ts",
-        5,
-    ) in helper_capability_edges
+    assert {
+        (
+            "importedCalculate",
+            "code-execution",
+            "helpers.ts",
+            5,
+        ),
+        (
+            "namedReexportCalculate",
+            "code-execution",
+            "helpers.ts",
+            5,
+        ),
+        (
+            "starCalculate",
+            "code-execution",
+            "helpers.ts",
+            5,
+        ),
+    }.issubset(helper_capability_edges)
     assert not {
         relationship.source_name
         for relationship in ir.relationships
@@ -2995,7 +3051,7 @@ def test_typescript_object_tool_imported_execute_helper_maps_capabilities(
         and relationship.relation == "uses"
         and relationship.target_kind == "capability"
         and relationship.target_name == "code-execution"
-    } & {"firstShared", "secondShared"}
+    } & {"firstShared", "secondShared", "ambiguous"}
 
 
 def test_typescript_workflow_agent_model_control_is_exact(tmp_path: Path) -> None:
