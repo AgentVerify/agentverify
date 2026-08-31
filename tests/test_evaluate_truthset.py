@@ -397,6 +397,109 @@ def test_evaluator_selected_label_paths_include_symbol_id_files(
     Draft202012Validator(benchmark_results_schema()).validate(result)
 
 
+def test_evaluator_selected_label_paths_can_expand_local_import_closure(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    target = tmp_path / "repo"
+    target.mkdir()
+    (target / "agent.ts").write_text(
+        'import { tools } from "./tools";\nvoid tools;\n',
+        encoding="utf-8",
+    )
+    (target / "tools.ts").write_text(
+        'export { runShell } from "./helpers";\n',
+        encoding="utf-8",
+    )
+    (target / "helpers.ts").write_text("export const runShell = () => undefined;\n")
+    (target / "app.py").write_text("from . import local_helper\n")
+    (target / "local_helper.py").write_text("VALUE = 1\n")
+    (target / "unrelated.ts").write_text("export const skipped = true;\n")
+    labels = tmp_path / "labels.json"
+    labels.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "labels": [
+                    {
+                        "id": "ts-agent",
+                        "target": {"kind": "local", "path": str(target)},
+                        "check_id": "IR-IMPORT-CLOSURE",
+                        "path": "agent.ts",
+                        "line": 2,
+                        "expected": False,
+                        "component": {"kind": "agent", "name": "missing"},
+                    },
+                    {
+                        "id": "py-agent",
+                        "target": {"kind": "local", "path": str(target)},
+                        "check_id": "IR-IMPORT-CLOSURE",
+                        "path": "app.py",
+                        "line": 1,
+                        "expected": False,
+                        "component": {"kind": "agent", "name": "missing"},
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    selected_scans: list[tuple[Path, tuple[str, ...] | None]] = []
+
+    def fake_scan_repository(
+        path: Path, *, selected_paths: list[str] | None = None
+    ) -> RepositoryIR:
+        selected_scans.append((path, tuple(selected_paths or ()) if selected_paths else None))
+        return RepositoryIR(str(path))
+
+    monkeypatch.setattr(evaluate_truthset, "scan_repository", fake_scan_repository)
+    output = tmp_path / "selected-expanded-results.json"
+
+    assert (
+        evaluate_truthset.main(
+            [
+                "--labels",
+                str(labels),
+                "--output",
+                str(output),
+                "--scan-label-paths",
+                "--expand-local-imports",
+            ]
+        )
+        == 0
+    )
+
+    result = json.loads(output.read_text(encoding="utf-8"))
+    assert selected_scans == [
+        (target, ("agent.ts", "app.py", "helpers.ts", "local_helper.py", "tools.ts"))
+    ]
+    assert result["benchmark"]["scan_scope"] == "selected-label-paths"
+    assert result["benchmark"]["scan_path_expansion"] == "local-import-closure"
+    assert result["labels"] == 2
+    Draft202012Validator(benchmark_results_schema()).validate(result)
+    verified = verify_result(output, schema=load_benchmark_result_schema(), root=Path("."))
+    assert verified["scan_scope"] == "selected-label-paths"
+    assert verified["scan_path_expansion"] == "local-import-closure"
+
+
+def test_evaluator_local_import_expansion_requires_selected_label_paths(
+    tmp_path: Path, capsys
+) -> None:
+    labels = tmp_path / "labels.json"
+    labels.write_text('{"schema_version":1,"labels":[]}', encoding="utf-8")
+
+    assert (
+        evaluate_truthset.main(
+            ["--labels", str(labels), "--output", str(tmp_path / "results.json"), "--expand-local-imports"]
+        )
+        == 2
+    )
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err == "agentverify: --expand-local-imports requires --scan-label-paths\n"
+
+
 def test_evaluator_reports_source_anchor_failures_separately(tmp_path: Path) -> None:
     target = tmp_path / "repo"
     target.mkdir()

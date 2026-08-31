@@ -7,6 +7,14 @@ catalog workflows.
 
 ## Completed recently
 
+- Added `scripts/evaluate_truthset.py --expand-local-imports` as an opt-in companion to
+  `--scan-label-paths` for focused public-IR development scans. The evaluator now expands selected
+  label files through local Python imports and TypeScript/JavaScript import, export, dynamic
+  import, and `require(...)` edges, records `benchmark.scan_path_expansion:
+  local-import-closure`, and `agentverify benchmark verify` surfaces that metadata in verifier
+  output. A real focused `IR-TS-TOOL-GRAPH` run passed 16/16 labels in about 0.4 seconds of timed
+  scan work, covering cross-file helper/reexport dependencies that plain selected-path scans missed.
+  Full release claims still require repository-wide benchmark commands.
 - Added `agentverify schema editor-diagnostics`, a bundled JSON schema for LSP-style editor
   diagnostic adapter payloads derived from AgentVerify JSON reports. `agentverify contracts` now
   exports `agentverify-editor-diagnostics-v1.schema.json` as a required contract artifact and

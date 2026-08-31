@@ -39,6 +39,9 @@
           "scan_scope": {
             "enum": ["selected-label-paths"]
           },
+          "scan_path_expansion": {
+            "enum": ["local-import-closure"]
+          },
           "sealed": {
             "type": "boolean"
           },

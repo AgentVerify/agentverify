@@ -111,11 +111,12 @@
   add SARIF/editor examples, policy-aware diagnostic grouping, or sample extension fixtures when
   they can be validated locally.
 - Profile and reduce the remaining full public IR truth-set runtime. Focused label filters,
-  optional `--progress` timing, and explicit `--scan-label-paths` development scans now make
-  detector-specific iteration measurable and fast for self-contained labels, but complete corpus
-  regeneration still spends minutes in broad repository scans. A full selected-path experiment
-  failed cross-file-dependent labels, so the next credible acceleration needs dependency-aware path
-  expansion or scan-result reuse rather than label files only.
+  optional `--progress` timing, `--scan-label-paths`, and opt-in
+  `--expand-local-imports` local import/export closure now make detector-specific iteration
+  measurable and fast for many cross-file-focused labels, including `IR-TS-TOOL-GRAPH`.
+  Repository-wide release scans are still the authoritative evidence path, and the next credible
+  speedup should measure the expanded selected-path mode across broader public IR slices before
+  considering scan-result reuse or deeper framework-specific dependency expansion.
 - Explore exact interprocedural OpenAI Agents JS history-state continuation only if it can remain
   source-proven. The real `examples/docs/running-agents/chatLoop.ts` caller-owned concat feedback
   and `examples/agent-patterns/routing.ts` direct triage-agent alias are now covered; dynamic

@@ -5,10 +5,12 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import subprocess
 import sys
 import time
 from collections import Counter, defaultdict
+from collections.abc import Iterable
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -70,6 +72,14 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
             "records selected-label-paths scan scope in result metadata"
         ),
     )
+    parser.add_argument(
+        "--expand-local-imports",
+        action="store_true",
+        help=(
+            "with --scan-label-paths, also include a recursive local import/export closure "
+            "from the selected label files"
+        ),
+    )
     return parser.parse_args(argv)
 
 
@@ -118,10 +128,136 @@ def benchmark_metadata(
         metadata["label_filter"] = label_filter
     if args.scan_label_paths:
         metadata["scan_scope"] = "selected-label-paths"
+        if args.expand_local_imports:
+            metadata["scan_path_expansion"] = "local-import-closure"
     if args.manifest is not None:
         metadata["manifest_source"] = str(args.manifest)
         metadata["manifest_sha256"] = file_sha256(args.manifest)
     return metadata
+
+
+PYTHON_SUFFIXES = (".py",)
+TYPESCRIPT_SUFFIXES = (".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs")
+SOURCE_SUFFIXES = set(PYTHON_SUFFIXES + TYPESCRIPT_SUFFIXES)
+
+
+def local_module_candidates(base: Path, *, suffixes: Iterable[str]) -> Iterable[Path]:
+    """Yield existing local source module files for an import target base path."""
+    suffix_list = tuple(suffixes)
+    if base.suffix in suffix_list and base.is_file():
+        yield base
+    for suffix in suffix_list:
+        candidate = base.with_suffix(suffix)
+        if candidate.is_file():
+            yield candidate
+    for suffix in suffix_list:
+        candidate = base / f"__init__{suffix}" if suffix == ".py" else base / f"index{suffix}"
+        if candidate.is_file():
+            yield candidate
+
+
+def _relative_source_path(root: Path, candidate: Path) -> str | None:
+    try:
+        relative = candidate.resolve().relative_to(root.resolve())
+    except ValueError:
+        return None
+    if not candidate.is_file() or candidate.suffix not in SOURCE_SUFFIXES:
+        return None
+    return relative.as_posix()
+
+
+def typescript_local_imports(root: Path, relative_path: str, text: str) -> set[str]:
+    imports: set[str] = set()
+    parent = (root / relative_path).parent
+    patterns = (
+        r"\b(?:import|export)\b[^;\n]*?\bfrom\s*[\"']([^\"']+)[\"']",
+        r"\bimport\s*[\"']([^\"']+)[\"']",
+        r"\bimport\s*\(\s*[\"']([^\"']+)[\"']\s*\)",
+        r"\brequire\s*\(\s*[\"']([^\"']+)[\"']\s*\)",
+    )
+    for pattern in patterns:
+        for specifier in re.findall(pattern, text):
+            if not specifier.startswith("."):
+                continue
+            base = (parent / specifier).resolve()
+            for candidate in local_module_candidates(base, suffixes=TYPESCRIPT_SUFFIXES):
+                if relative := _relative_source_path(root, candidate):
+                    imports.add(relative)
+    return imports
+
+
+def python_relative_base(path: Path, dots: int) -> Path | None:
+    base = path.parent
+    for _ in range(max(dots - 1, 0)):
+        parent = base.parent
+        if parent == base:
+            return None
+        base = parent
+    return base
+
+
+def python_local_imports(root: Path, relative_path: str, text: str) -> set[str]:
+    imports: set[str] = set()
+    path = root / relative_path
+    for match in re.finditer(r"(?m)^\s*from\s+([.\w]+)\s+import\s+([^\n#]+)", text):
+        module, imported_names = match.groups()
+        imported = [
+            name.strip().split(" as ", 1)[0]
+            for name in imported_names.strip("() ").split(",")
+            if name.strip() and name.strip() != "*"
+        ]
+        if module.startswith("."):
+            dots = len(module) - len(module.lstrip("."))
+            base = python_relative_base(path, dots)
+            if base is None:
+                continue
+            module_tail = module[dots:].replace(".", "/")
+            module_base = base / module_tail if module_tail else base
+        else:
+            module_base = root / module.replace(".", "/")
+        for candidate in local_module_candidates(module_base, suffixes=PYTHON_SUFFIXES):
+            if relative := _relative_source_path(root, candidate):
+                imports.add(relative)
+        for name in imported:
+            if not name.isidentifier():
+                continue
+            for candidate in local_module_candidates(module_base / name, suffixes=PYTHON_SUFFIXES):
+                if relative := _relative_source_path(root, candidate):
+                    imports.add(relative)
+
+    for match in re.finditer(r"(?m)^\s*import\s+([^\n#]+)", text):
+        for module in match.group(1).split(","):
+            name = module.strip().split(" as ", 1)[0]
+            if not name or name.startswith("."):
+                continue
+            for candidate in local_module_candidates(
+                root / name.replace(".", "/"), suffixes=PYTHON_SUFFIXES
+            ):
+                if relative := _relative_source_path(root, candidate):
+                    imports.add(relative)
+    return imports
+
+
+def expand_selected_paths_with_local_imports(root: Path, selected_paths: set[str]) -> set[str]:
+    """Return selected label paths plus recursive local Python/TS import/export dependencies."""
+    expanded = set(selected_paths)
+    queue = sorted(selected_paths)
+    while queue:
+        relative_path = queue.pop(0)
+        path = root / relative_path
+        if not path.is_file() or path.suffix not in SOURCE_SUFFIXES:
+            continue
+        text = path.read_text(encoding="utf-8-sig", errors="ignore")
+        if path.suffix == ".py":
+            discovered = python_local_imports(root, relative_path, text)
+        elif path.suffix in TYPESCRIPT_SUFFIXES:
+            discovered = typescript_local_imports(root, relative_path, text)
+        else:
+            discovered = set()
+        for relative in sorted(discovered - expanded):
+            expanded.add(relative)
+            queue.append(relative)
+    return expanded
 
 
 def target_path(target: dict, cache_dir: Path) -> Path:
@@ -156,6 +292,9 @@ def verify_commit(path: Path, target: dict) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    if args.expand_local_imports and not args.scan_label_paths:
+        print("agentverify: --expand-local-imports requires --scan-label-paths", file=sys.stderr)
+        return 2
     label_filter = label_filter_from_args(args)
     all_labels = json.loads(args.labels.read_text(encoding="utf-8"))["labels"]
     labels = apply_label_filter(all_labels, label_filter)
@@ -185,6 +324,10 @@ def main(argv: list[str] | None = None) -> int:
             selected_paths = (
                 sorted(target_label_paths[key]) if args.scan_label_paths else None
             )
+            if selected_paths is not None and args.expand_local_imports:
+                selected_paths = sorted(
+                    expand_selected_paths_with_local_imports(path, set(selected_paths))
+                )
             if selected_paths is None:
                 scans[key] = scan_repository(path)
             else:

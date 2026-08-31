@@ -449,17 +449,21 @@
 
 - Decision: Allow `scripts/evaluate_truthset.py --scan-label-paths` to scan only files referenced by
   the evaluated labels, but record `benchmark.scan_scope: selected-label-paths` and surface that
-  scope from benchmark verification.
+  scope from benchmark verification. When explicitly paired with `--expand-local-imports`, expand
+  those selected files through local Python and TypeScript/JavaScript import/export closures and
+  record `benchmark.scan_path_expansion: local-import-closure`; keep repository-wide scans as the
+  only release-comparable benchmark path.
 - Evidence: Full public IR profiling showed roughly 482.5 seconds of timed scan work, mostly from
   large cached repositories with few labels. The selected-label-path experiment reduced timed scan
   work to roughly 57.5 seconds, and focused OpenAI sandbox labels still passed 235/235, but the full
   all-IR run failed 285 labels that require cross-file helper, import, reexport, or composition
-  summaries.
+  summaries. The opt-in local-import closure restored the cross-file `IR-TS-TOOL-GRAPH` development
+  slice to 16/16 passing while keeping the scan scope and expansion explicit in result metadata.
 - Alternative: Treat selected label paths as a drop-in benchmark acceleration. Rejected because that
   would silently weaken cross-file evidence and could make release claims incomparable with
   repository-wide scans.
-- Revisit when: the evaluator can expand selected paths with dependency-aware helper/reexport files,
-  or scanner result caching preserves repository-wide evidence while avoiding repeated parse work.
+- Revisit when: broader public IR slices show whether local import/export closure is sufficient, or
+  scanner result caching can preserve repository-wide evidence while avoiding repeated parse work.
 
 ## Signed policy CI fixtures must use ephemeral keys
 

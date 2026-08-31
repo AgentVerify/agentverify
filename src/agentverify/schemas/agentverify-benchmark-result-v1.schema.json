@@ -51,6 +51,7 @@
         "labels_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
         "label_filter": {"$ref": "#/$defs/label_filter"},
         "scan_scope": {"enum": ["selected-label-paths"]},
+        "scan_path_expansion": {"enum": ["local-import-closure"]},
         "sealed": {"type": "boolean"},
         "claim_scope": {"type": "string", "minLength": 1},
         "manifest_source": {"type": "string", "minLength": 1},
@@ -58,7 +59,8 @@
       },
       "dependentRequired": {
         "manifest_source": ["manifest_sha256"],
-        "manifest_sha256": ["manifest_source"]
+        "manifest_sha256": ["manifest_source"],
+        "scan_path_expansion": ["scan_scope"]
       },
       "allOf": [
         {

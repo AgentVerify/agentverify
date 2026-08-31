@@ -35,7 +35,9 @@ agentverify schema holdout-labels --output agentverify-holdout-labels.schema.jso
 During scanner development, use focused evaluator runs such as `--check-id
 IR-TS-OPENAI-SANDBOX --scan-label-paths --progress` to scan only label-referenced files and print
 per-target timings to stderr. The result records `benchmark.scan_scope: selected-label-paths`;
-release evidence should still come from the repository-wide commands above.
+add `--expand-local-imports` when a focused label depends on sibling local imports or reexports.
+That records `benchmark.scan_path_expansion: local-import-closure`. Release evidence should still
+come from the repository-wide commands above.
 
 For GitHub Actions, start from the copyable
 [`examples/github-benchmark-verify.yml`](../examples/github-benchmark-verify.yml) workflow. It runs

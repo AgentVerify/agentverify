@@ -550,6 +550,12 @@
   intentionally require cross-file summaries. The OpenAI sandbox slice is self-contained enough to
   pass 235/235 with selected label paths, reducing the cached `openai/openai-agents-js` target from
   roughly 3.5 seconds to 0.9 seconds.
+- `--expand-local-imports` is now a safer focused-development companion to `--scan-label-paths`:
+  selected label files are expanded through local Python imports and TypeScript/JavaScript
+  import/export, dynamic-import, and `require(...)` dependencies before scanning. The evaluator and
+  verifier mark these artifacts with `scan_path_expansion: local-import-closure`; a real
+  `IR-TS-TOOL-GRAPH` run passed 16/16 labels after including imported helper and barrel files, but
+  release evidence remains repository-wide.
 - Python `SyntaxWarning`s from third-party source parsing are not useful AgentVerify diagnostics and
   can bury benchmark progress output. Wrapping repository scans in a `SyntaxWarning` filter keeps
   scanner stderr clean while preserving AgentVerify IR errors for parse failures and skipped files.

@@ -300,6 +300,8 @@ def verify_result(path: Path, *, schema: dict, root: Path) -> dict[str, object]:
     }
     if scan_scope := benchmark.get("scan_scope"):
         result["scan_scope"] = scan_scope
+    if scan_path_expansion := benchmark.get("scan_path_expansion"):
+        result["scan_path_expansion"] = scan_path_expansion
     return result
 
 
