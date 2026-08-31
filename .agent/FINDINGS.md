@@ -20,11 +20,17 @@
   require both the wheel schema file and the source-distribution `benchmarks/engine-results.json`
   evidence artifact.
 - The repository contains a 71-repository pinned research corpus and schema-v159 engine benchmark
-  outputs. The refreshed full-corpus summary records 2,947 relationships and 10,819 symbolized
-  components. It includes a dedicated `typescript_vercel_code_mode` section for Vercel AI Code
-  Mode's exact public tool surface and host-tool approval runtime: one repository, eight components,
-  and seven approval/surface relationships.
+  outputs. The refreshed full-corpus summary records 2,950 relationships and 10,823 symbolized
+  components. It includes dedicated Vercel AI runtime evidence for Code Mode's public tool surface
+  and host-tool approval runtime plus WorkflowAgent's framework-level approval pause,
+  request-chunk, and revalidation continuation path.
 - The runtime catalog currently contains 25 enabled reporting rules.
+- Vercel `WorkflowAgent` has a source-proven framework approval runtime in
+  `packages/workflow/src/workflow-agent.ts`: the run loop checks `tool.needsApproval` before
+  executable tool calls, pauses approval-needed calls, writes `tool-approval-request` chunks for
+  `useChat`, and routes approval responses through `validateApprovedToolApprovals(...)` before
+  either executing approved tools or producing `execution-denied` tool results. AgentVerify now
+  inventories this as approval-flow IR; app-level approval UI quality remains separate evidence.
 - Vercel AI Code Mode's public `codeModeTool()` surface is now inventoried as a model-visible
   `experimental_toolCaller` that routes the model-provided `js` field into
   `runCodeMode({ js: input.js, tools })`. The IR records a sandboxed TypeScript code-execution

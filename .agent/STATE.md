@@ -7,15 +7,22 @@ catalog workflows.
 
 ## Completed recently
 
+- Added exact Vercel `WorkflowAgent` framework-runtime approval IR for the pinned
+  `packages/workflow/src/workflow-agent.ts` implementation: the scanner records the
+  `tool.needsApproval` run-loop policy, writable-stream `tool-approval-request` chunk format, and
+  approval-response continuation path that revalidates through `validateApprovedToolApprovals(...)`
+  before approved execution or `execution-denied` results. Seven real labels under
+  `IR-APPROVAL-CONTROL` pass; the full public IR truth set passes 2,489/2,489 after refresh, and
+  the refreshed 71-repository engine benchmark records 2,950 relationships / 10,823 symbolized
+  components.
 - Extended exact Vercel `WorkflowAgent` observability IR from constructor options to same-file
   `agent.stream({ ... })` telemetry and callback options when the agent binding is source-proven
   and unreassigned before the stream call. The pinned Vercel AI `telemetry-agent.ts` stream
   `telemetry: createTelemetryOptions(...)` and `onError: recordCallback(...)` call-site now add
   four public labels, so `IR-TS-WORKFLOW-AGENT-OBSERVABILITY` passes 10/10 and the public IR truth
-  set passes 2,482/2,482 after the full refresh. The refreshed 71-repository schema-v159 benchmark
-  records 2,947 relationships / 10,819 symbolized components. While refreshing it, TypeScript
-  imported-binding shadow checks were bulked across local object/tool/model/function/provider
-  resolvers so import-heavy files do not rerun whole-file regex scans per local import.
+  set stayed green after refresh. During the schema-v159 engine refresh, TypeScript imported-binding
+  shadow checks were bulked across local object/tool/model/function/provider resolvers so
+  import-heavy files do not rerun whole-file regex scans per local import.
 - Added exact Vercel `WorkflowAgent` observability IR for constructor-level `telemetry` options and
   lifecycle/tool callback properties on source-proven `@ai-sdk/workflow` agents. The new controls
   are linked back to the source agent and intentionally represent instrumentation-hook inventory,

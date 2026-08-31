@@ -128,6 +128,27 @@
   schemas, actor identifiers, or approval/resume events that can support stronger audit controls or
   reporting rules.
 
+## Vercel WorkflowAgent framework approval runtime is IR evidence, not an app approval finding
+
+- Decision: Emit `typescript-vercel-workflow-agent-approval-flow` components only when one
+  source file uniquely proves the `WorkflowAgent` run loop checks `tool.needsApproval`, pauses
+  approval-needed calls before execution, emits writable-stream `tool-approval-request` chunks,
+  and revalidates approval responses through `validateApprovedToolApprovals(...)` before approved
+  execution or `execution-denied` results. Link the framework runtime to the policy, request chunk,
+  and continuation controls.
+- Evidence: Vercel AI's pinned `packages/workflow/src/workflow-agent.ts` has the full approval
+  path: `approvalNeeded` is computed from boolean or callback `tool.needsApproval`, paused calls
+  are selected from that result, `writeApprovalRequests(...)` emits approval IDs derived from tool
+  call IDs, and the continuation path validates approved responses before executing tools or
+  emitting denied results. Seven real public IR labels pin these facts.
+- Alternative: Report a Vercel approval finding for every WorkflowAgent tool with
+  `needsApproval`. Rejected because the framework runtime proves pause/resume semantics, not that a
+  consuming app presents trustworthy human review, preserves actor identity, or records durable
+  approval decisions.
+- Revisit when: App-level Vercel examples or projects expose source-proven approval UI handlers,
+  persistent approval records, authenticated actors, or unsafe bypasses that justify reportable
+  findings.
+
 ## Vercel WorkflowAgent tool edges require exact constructor and stable tool-set binding
 
 - Decision: Treat `new WorkflowAgent(...)` as an agent only when `WorkflowAgent` is an unshadowed

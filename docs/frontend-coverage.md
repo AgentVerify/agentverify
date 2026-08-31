@@ -800,6 +800,12 @@ caller-tool provenance is unambiguous.
 Reassigned bindings, property-mutated local tool sets, duplicate tool identities, conflicting
 barrels, partial config objects, and broader module composition remain unresolved until their object
 identity can be proven.
+The Vercel `packages/workflow/src/workflow-agent.ts` runtime now contributes approval-flow IR when
+one source file uniquely proves that `tool.needsApproval` is evaluated before executable tool calls,
+approval-needed calls are paused, `tool-approval-request` chunks are emitted to the writable stream,
+and approval responses are revalidated through `validateApprovedToolApprovals(...)` before approved
+execution or `execution-denied` tool results. This is framework-runtime governance evidence, not a
+claim that a consuming app exposes a safe approval UI.
 Constructor-level `WorkflowAgent.telemetry` and lifecycle/tool callback properties now emit
 source-agent-linked observability controls when they appear on an exact `WorkflowAgent` constructor.
 This is intentionally inventory evidence, not a durable-audit finding: callback configuration and
@@ -1181,7 +1187,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 730-label rule truth set and 2,482-label IR component/relationship set are curated regression
+The 730-label rule truth set and 2,489-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

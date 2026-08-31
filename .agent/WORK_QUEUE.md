@@ -15,7 +15,7 @@
   non-provider wildcard/reexport forms beyond the current exact framework-constructor,
   provider-factory, and literal-callable cases.
 - Extend Vercel AI WorkflowAgent modeling only when framework provenance is exact: connect
-  object-tool dictionaries to WorkflowAgent instances and approval-resumption flows without treating
+  object-tool dictionaries to WorkflowAgent instances and app-level approval/resumption flows without treating
   arbitrary `tools` containers or partial config objects as executable tools. Plain object tool
   inventory now covers top-level `execute` plus schema evidence and static `needsApproval: true as
   const`; exact local `@ai-sdk/workflow` `WorkflowAgent({ tools })` edges are covered for stable
@@ -32,10 +32,11 @@
   `WorkflowAgent.model`; trailing static TypeScript `as`/`satisfies` assertions are accepted for
   direct and bound provider-model calls, so future work should focus on richer runtime model wrapper
   shapes or additional type syntax only with comparable proof,
-  approval-resumption/event flows, richer telemetry sink/retention proof beyond the now-covered
-  constructor and same-file stream telemetry/callback-hook inventory, reportable Vercel approval findings only with
-  matching real evidence, or additional execute-helper alias chains only when comparable ambiguity
-  guards exist.
+  app-level approval event/UI flows beyond the now-covered framework runtime approval pause,
+  request-chunk, and revalidation continuation path, richer telemetry sink/retention proof beyond
+  the now-covered constructor and same-file stream telemetry/callback-hook inventory, reportable
+  Vercel approval findings only with matching real evidence, or additional execute-helper alias
+  chains only when comparable ambiguity guards exist.
 - Extend Vercel AI Code Mode only when runtime provenance stays exact: current IR covers the
   host-tool approval gate, interrupt payload kind, denial-before-execute behavior, and
   continuation approval-id validation, plus the public `codeModeTool()` /

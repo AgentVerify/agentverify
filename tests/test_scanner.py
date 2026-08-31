@@ -3727,6 +3727,211 @@ def test_typescript_vercel_code_mode_approval_flow_is_exact(tmp_path: Path) -> N
     }
 
 
+def test_typescript_vercel_workflow_agent_approval_flow_is_exact(tmp_path: Path) -> None:
+    positive = tmp_path / "positive"
+    src = positive / "packages" / "workflow" / "src"
+    src.mkdir(parents=True)
+    workflow_source = textwrap.dedent(
+        """
+        export class WorkflowAgent {
+          async runLoop(options, nonProviderToolCalls, effectiveTools, iterMessages) {
+            const approvalNeeded = await Promise.all(
+              nonProviderToolCalls.map(async tc => {
+                const tool = (effectiveTools as ToolSet)[tc.toolName];
+                if (!tool) return false;
+                if (tool.needsApproval == null) return false;
+                if (typeof tool.needsApproval === 'boolean')
+                  return tool.needsApproval;
+                return tool.needsApproval(tc.input, {
+                  toolCallId: tc.toolCallId,
+                  messages: iterMessages as unknown as ModelMessage[],
+                  context: resolvedContext,
+                });
+              }),
+            );
+            const executableToolCalls = nonProviderToolCalls.filter((tc, i) => {
+              const tool = (effectiveTools as ToolSet)[tc.toolName];
+              return (
+                (!tool || typeof tool.execute === 'function') &&
+                !approvalNeeded[i]
+              );
+            });
+            const pausedToolCalls = nonProviderToolCalls.filter((tc, i) => {
+              const tool = (effectiveTools as ToolSet)[tc.toolName];
+              return (
+                (tool && typeof tool.execute !== 'function') || approvalNeeded[i]
+              );
+            });
+            if (pausedToolCalls.length > 0) {
+              const executableResults = await Promise.all(
+                executableToolCalls.map(toolCall =>
+                  executeToolWithCallbacks(toolCall, effectiveTools),
+                ),
+              );
+              if (options.writable) {
+                const approvalToolCalls = pausedToolCalls.filter((_, i) => {
+                  const tcIndex = nonProviderToolCalls.indexOf(pausedToolCalls[i]);
+                  return approvalNeeded[tcIndex];
+                });
+                if (approvalToolCalls.length > 0) {
+                  await writeApprovalRequests(
+                    options.writable,
+                    approvalToolCalls.map(tc => ({
+                      toolCallId: tc.toolCallId,
+                      toolName: tc.toolName,
+                    })),
+                  );
+                }
+              }
+            }
+          }
+
+          async continue(prompt, approval, effectiveToolsContext, effectiveRuntimeContext) {
+            const { deniedToolApprovals: policyDenied } =
+              await validateApprovedToolApprovals({
+                approvedToolApprovals: [approval.collected],
+                tools: this.tools as ToolSet,
+                toolApproval: undefined,
+                messages: prompt.messages,
+                toolsContext: effectiveToolsContext,
+                runtimeContext: effectiveRuntimeContext,
+              });
+            if (policyDenied.length > 0) {
+              toolResultContent.push({
+                type: 'tool-result' as const,
+                toolCallId: denial.toolCallId,
+                toolName: denial.toolName,
+                output: {
+                  type: 'execution-denied' as const,
+                  reason: denial.reason,
+                },
+              });
+            }
+            await writeApprovalToolResults(
+              options.writable,
+              approvedRawResults,
+              deniedResults,
+            );
+          }
+        }
+
+        async function writeApprovalRequests(
+          writable: WritableStream<any>,
+          toolCalls: Array<{ toolCallId: string; toolName: string }>,
+        ) {
+          'use step';
+          const writer = writable.getWriter();
+          try {
+            for (const tc of toolCalls) {
+              await writer.write({
+                type: 'tool-approval-request',
+                approvalId: `approval-${tc.toolCallId}`,
+                toolCallId: tc.toolCallId,
+              });
+            }
+          } finally {
+            writer.releaseLock();
+          }
+        }
+        """
+    )
+    (src / "workflow-agent.ts").write_text(workflow_source, encoding="utf-8")
+    negative = tmp_path / "negative"
+    negative_src = negative / "packages" / "workflow" / "src"
+    negative_src.mkdir(parents=True)
+    (negative_src / "workflow-agent.ts").write_text(
+        workflow_source.replace("type: 'tool-approval-request'", "type: 'tool-request'"),
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(positive)
+    controls = [
+        component
+        for component in ir.components
+        if component.kind == "control"
+        and component.attributes.get("analysis")
+        == "typescript-vercel-workflow-agent-approval-flow"
+    ]
+
+    assert {
+        (component.name, component.evidence.path, component.attributes.get("runtime_function"))
+        for component in controls
+    } == {
+        (
+            "tool-approval-policy",
+            "packages/workflow/src/workflow-agent.ts",
+            "WorkflowAgent.run-loop",
+        ),
+        (
+            "approval-continuation",
+            "packages/workflow/src/workflow-agent.ts",
+            "WorkflowAgent.approval-response-continuation",
+        ),
+    }
+    policy = next(component for component in controls if component.name == "tool-approval-policy")
+    assert policy.attributes == {
+        "analysis": "typescript-vercel-workflow-agent-approval-flow",
+        "framework": "Vercel AI WorkflowAgent",
+        "module": "@ai-sdk/workflow",
+        "scope": "production",
+        "runtime_function": "WorkflowAgent.run-loop",
+        "approval_trigger": "tool.needsApproval",
+        "approval_modes": ["boolean", "callback"],
+        "approval_context_fields": ["toolCallId", "messages", "context"],
+        "default_without_needs_approval": False,
+        "pause_condition": "missing-execute-or-approval-needed",
+        "interrupt_mode": "pause-before-execute",
+        "client_signal": "tool-approval-request",
+        "execution_order": "approval-before-execute",
+    }
+    assert {
+        (
+            relationship.source_kind,
+            relationship.source_name,
+            relationship.relation,
+            relationship.target_kind,
+            relationship.target_name,
+            relationship.attributes.get("analysis"),
+        )
+        for relationship in ir.relationships
+        if relationship.attributes.get("analysis")
+        == "typescript-vercel-workflow-agent-approval-flow"
+    } == {
+        (
+            "framework",
+            "Vercel AI WorkflowAgent",
+            "governed-by",
+            "control",
+            "tool-approval-policy",
+            "typescript-vercel-workflow-agent-approval-flow",
+        ),
+        (
+            "control",
+            "tool-approval-policy",
+            "emits",
+            "control-setting",
+            "workflow-agent-approval-request-chunk",
+            "typescript-vercel-workflow-agent-approval-flow",
+        ),
+        (
+            "control",
+            "tool-approval-policy",
+            "continues-through",
+            "control",
+            "approval-continuation",
+            "typescript-vercel-workflow-agent-approval-flow",
+        ),
+    }
+
+    negative_ir = scan_repository(negative)
+    assert not [
+        component
+        for component in negative_ir.components
+        if component.attributes.get("analysis")
+        == "typescript-vercel-workflow-agent-approval-flow"
+    ]
+
+
 def test_typescript_vercel_code_mode_tool_surface_is_exact(tmp_path: Path) -> None:
     positive = tmp_path / "positive"
     src = positive / "packages" / "code-mode" / "src"

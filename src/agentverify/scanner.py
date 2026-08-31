@@ -43372,6 +43372,212 @@ def add_typescript_vercel_code_mode_approval_flow(
     )
 
 
+def add_typescript_vercel_workflow_agent_approval_flow(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve Vercel WorkflowAgent tool-approval pause/resume runtime semantics."""
+    sources: dict[str, str] = {}
+    for path in paths:
+        if path.suffix.lower() not in {".ts", ".tsx", ".js", ".jsx"} or not path.is_file():
+            continue
+        relative = path.relative_to(root).as_posix()
+        try:
+            if path.stat().st_size > MAX_SOURCE_BYTES:
+                continue
+            sources[relative] = path.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+
+    matches = [
+        (relative, text)
+        for relative, text in sources.items()
+        if all(
+            marker in text
+            for marker in (
+                "export class WorkflowAgent",
+                "const approvalNeeded = await Promise.all(",
+                "if (tool.needsApproval == null) return false;",
+                "typeof tool.needsApproval === 'boolean'",
+                "return tool.needsApproval(tc.input, {",
+                "const executableToolCalls = nonProviderToolCalls.filter",
+                "!approvalNeeded[i]",
+                "const pausedToolCalls = nonProviderToolCalls.filter",
+                "approvalNeeded[i]",
+                "writeApprovalRequests(",
+                "type: 'tool-approval-request'",
+                "approvalId: `approval-${tc.toolCallId}`",
+                "validateApprovedToolApprovals({",
+                "approvedToolApprovals: [approval.collected]",
+                "type: 'execution-denied' as const",
+                "writeApprovalToolResults(",
+            )
+        )
+    ]
+    if len(matches) != 1:
+        return
+    relative, text = matches[0]
+    approval_offset = text.find("const approvalNeeded = await Promise.all(")
+    execute_offset = text.find("executeToolWithCallbacks(", approval_offset)
+    request_offset = text.find("writeApprovalRequests(", approval_offset)
+    chunk_offset = text.find("type: 'tool-approval-request'")
+    continuation_offset = text.find("validateApprovedToolApprovals({")
+    denied_offset = text.find("type: 'execution-denied' as const", continuation_offset)
+    result_offset = text.find("writeApprovalToolResults(", continuation_offset)
+    if min(
+        approval_offset,
+        execute_offset,
+        request_offset,
+        chunk_offset,
+        continuation_offset,
+        denied_offset,
+        result_offset,
+    ) < 0:
+        return
+    if not approval_offset < execute_offset:
+        return
+    if not approval_offset < request_offset:
+        return
+    if not continuation_offset < denied_offset < result_offset:
+        return
+
+    def evidence(offset: int) -> Evidence:
+        line = line_at(text, offset)
+        return Evidence(relative, line, excerpt(text.splitlines(), line))
+
+    analysis = "typescript-vercel-workflow-agent-approval-flow"
+    shared = {
+        "analysis": analysis,
+        "framework": "Vercel AI WorkflowAgent",
+        "module": "@ai-sdk/workflow",
+        "scope": source_scope(relative),
+    }
+    framework_id = source_symbol("ts", relative, "framework", "VercelWorkflowAgent")
+    policy_id = source_symbol(
+        "ts", relative, "control", "workflow-agent-tool-approval-runtime"
+    )
+    chunk_id = source_symbol(
+        "ts", relative, "control-setting", "workflow-agent-approval-request-chunk"
+    )
+    continuation_id = source_symbol(
+        "ts", relative, "control", "workflow-agent-approval-continuation"
+    )
+    policy_evidence = evidence(approval_offset)
+    chunk_evidence = evidence(chunk_offset)
+    continuation_evidence = evidence(continuation_offset)
+    denied_evidence = evidence(denied_offset)
+    ir.add_component(
+        Component(
+            "framework",
+            "Vercel AI WorkflowAgent",
+            policy_evidence,
+            {**shared, "runtime": "WorkflowAgent"},
+            framework_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "control",
+            "tool-approval-policy",
+            policy_evidence,
+            {
+                **shared,
+                "runtime_function": "WorkflowAgent.run-loop",
+                "approval_trigger": "tool.needsApproval",
+                "approval_modes": ["boolean", "callback"],
+                "approval_context_fields": ["toolCallId", "messages", "context"],
+                "default_without_needs_approval": False,
+                "pause_condition": "missing-execute-or-approval-needed",
+                "interrupt_mode": "pause-before-execute",
+                "client_signal": "tool-approval-request",
+                "execution_order": "approval-before-execute",
+            },
+            policy_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "control-setting",
+            "workflow-agent-approval-request-chunk",
+            chunk_evidence,
+            {
+                **shared,
+                "approval_part_type": "tool-approval-request",
+                "approval_id_template": "approval-${toolCallId}",
+                "output_channel": "writable-stream",
+                "consumer": "useChat",
+            },
+            chunk_id,
+        )
+    )
+    ir.add_component(
+        Component(
+            "control",
+            "approval-continuation",
+            continuation_evidence,
+            {
+                **shared,
+                "runtime_function": "WorkflowAgent.approval-response-continuation",
+                "revalidation": "validateApprovedToolApprovals",
+                "revalidation_checks": [
+                    "input-schema",
+                    "configured-signature",
+                    "approval-policy",
+                ],
+                "approved_execution": "execute-approved-tool-after-revalidation",
+                "denial_behavior": "execution-denied-tool-result",
+                "message_rewrite": "strip-local-approval-parts-and-inject-tool-results",
+                "stream_result_writer": "writeApprovalToolResults",
+            },
+            continuation_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "framework",
+            "Vercel AI WorkflowAgent",
+            "governed-by",
+            "control",
+            "tool-approval-policy",
+            policy_evidence,
+            {"analysis": analysis, "policy_effect": "approval-before-execute"},
+            source_id=framework_id,
+            target_id=policy_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "control",
+            "tool-approval-policy",
+            "emits",
+            "control-setting",
+            "workflow-agent-approval-request-chunk",
+            chunk_evidence,
+            {"analysis": analysis, "approval_signal": "tool-approval-request"},
+            source_id=policy_id,
+            target_id=chunk_id,
+        )
+    )
+    ir.add_relationship(
+        Relationship(
+            "control",
+            "tool-approval-policy",
+            "continues-through",
+            "control",
+            "approval-continuation",
+            denied_evidence,
+            {
+                "analysis": analysis,
+                "revalidation": "validateApprovedToolApprovals",
+                "denial_result": "execution-denied",
+            },
+            source_id=policy_id,
+            target_id=continuation_id,
+        )
+    )
+
+
 def add_typescript_cline_cli_subagent_approval_flow(
     ir: RepositoryIR,
     root: Path,
@@ -45297,6 +45503,7 @@ def _scan_repository(
     add_typescript_continue_plan_mode_mcp_flow(ir, root, registry_paths)
     add_typescript_vercel_code_mode_tool_surface(ir, root, registry_paths)
     add_typescript_vercel_code_mode_approval_flow(ir, root, registry_paths)
+    add_typescript_vercel_workflow_agent_approval_flow(ir, root, registry_paths)
     add_typescript_cline_subagent_approval_flow(ir, root, registry_paths)
     add_typescript_cline_cli_subagent_approval_flow(ir, root, registry_paths)
     add_typescript_letta_default_tool_flow(ir, root, registry_paths)
