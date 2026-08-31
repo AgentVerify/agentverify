@@ -101,27 +101,26 @@
   named import from `@ai-sdk/workflow`. Resolve `WorkflowAgent({ tools })` or `tools: <identifier>`
   into `agent uses tool` edges only when the referenced tool-set object is declared before the agent,
   contains already-inventoried tool entries, and is not reassigned or property-mutated before
-  construction. A direct relative named import, or a named reexport reached through a relative
-  barrel, may also resolve when it points to one immutable exported const tool-set object whose
-  entries are concrete object tools; the edge target remains the original sibling module's tool
-  component ID and records `tool_set_resolution` as either `imported-local-tools-object` or
-  `imported-local-reexported-tools-object`. Inline tools objects may link only to
-  already-inventoried direct entries.
+  construction. A direct relative named import, named reexport, or unambiguous star reexport reached
+  through a relative barrel may also resolve when it points to one immutable exported const tool-set
+  object whose entries are concrete object tools; the edge target remains the original sibling
+  module's tool component ID and records `tool_set_resolution` as `imported-local-tools-object`,
+  `imported-local-reexported-tools-object`, or `imported-local-star-reexported-tools-object`. Inline
+  tools objects may link only to already-inventoried direct entries.
 - Evidence: Vercel AI's pinned `examples/next-workflow/workflow/agent-chat.ts` imports
   `WorkflowAgent` from `@ai-sdk/workflow`, declares a stable `tools` object containing `getWeather`,
   `calculate`, and approval-protected `deleteFile`, then constructs `const agent = new
   WorkflowAgent({ ..., tools, ... })`. AgentVerify now emits the WorkflowAgent component and
   `WorkflowAgent.tools` edges to the stable object-tool entries, including the approval-protected
-  `deleteFile` edge. A local cross-file regression covers both `import { workflowTools as
-  toolsFromModule } from "./tools"` and a named barrel reexport resolving to `ts:tools.ts#tool:*`,
-  including a delegated helper-mapped code-execution tool, but the pinned public corpus does not yet
-  contain this cross-file Vercel shape.
+  `deleteFile` edge. A local cross-file regression covers `import { workflowTools as
+  toolsFromModule } from "./tools"`, a named barrel reexport, and `export *` star barrel resolving
+  to `ts:tools.ts#tool:*`, including a delegated helper-mapped code-execution tool, but the pinned
+  public corpus does not yet contain this cross-file Vercel shape.
 - Alternative: Recognize any same-named `WorkflowAgent` constructor or any `tools` object
   structurally. Rejected because the Vercel API semantics should come from import provenance and a
   stable binding, not from ordinary object names.
-- Revisit when: Star-reexported tool-set modules, imported/reexported WorkflowAgent constructors,
-  model helper modules, or approval-resumption flows can be resolved with comparable provenance and
-  mutation guards.
+- Revisit when: Imported/reexported WorkflowAgent constructors, model helper modules, or
+  approval-resumption flows can be resolved with comparable provenance and mutation guards.
 
 ## TypeScript plain object tools require execute plus schema evidence
 

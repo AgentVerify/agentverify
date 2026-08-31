@@ -2733,6 +2733,7 @@ def test_typescript_workflow_agent_uses_imported_object_tool_binding(tmp_path: P
             """
             import { WorkflowAgent } from "@ai-sdk/workflow";
             import { workflowTools as barrelTools } from "./barrel";
+            import { workflowTools as starTools } from "./star";
             import { workflowTools as toolsFromModule } from "./tools";
 
             const agent = new WorkflowAgent({
@@ -2740,6 +2741,7 @@ def test_typescript_workflow_agent_uses_imported_object_tool_binding(tmp_path: P
               tools: toolsFromModule,
             });
             const barrelAgent = new WorkflowAgent({ model: {}, tools: barrelTools });
+            const starAgent = new WorkflowAgent({ model: {}, tools: starTools });
 
             const localTools = {
               unsafe: {
@@ -2751,6 +2753,7 @@ def test_typescript_workflow_agent_uses_imported_object_tool_binding(tmp_path: P
             const changedAgent = new WorkflowAgent({ model: {}, tools: localTools });
             void agent;
             void barrelAgent;
+            void starAgent;
             void changedAgent;
             """
         ),
@@ -2760,6 +2763,7 @@ def test_typescript_workflow_agent_uses_imported_object_tool_binding(tmp_path: P
         'export { workflowTools } from "./tools";\n',
         encoding="utf-8",
     )
+    (tmp_path / "star.ts").write_text('export * from "./tools";\n', encoding="utf-8")
 
     ir = scan_repository(tmp_path)
 
@@ -2809,6 +2813,22 @@ def test_typescript_workflow_agent_uses_imported_object_tool_binding(tmp_path: P
             "tools-object-binding",
             "barrelTools",
             "imported-local-reexported-tools-object",
+        ),
+        (
+            "starAgent",
+            "deleteFile",
+            "ts:tools.ts#tool:deleteFile",
+            "tools-object-binding",
+            "starTools",
+            "imported-local-star-reexported-tools-object",
+        ),
+        (
+            "starAgent",
+            "calculate",
+            "ts:tools.ts#tool:calculate",
+            "tools-object-binding",
+            "starTools",
+            "imported-local-star-reexported-tools-object",
         ),
     }
     assert (

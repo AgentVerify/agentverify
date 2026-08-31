@@ -15145,6 +15145,29 @@ def typescript_exported_tool_object_bindings(
                     "reexported-local-tools-object",
                 )
             )
+    for match in TS_STAR_EXPORT_FROM.finditer(text):
+        target = typescript_resolve_local_module(root, path, match.group(1))
+        if target is None:
+            continue
+        try:
+            target_text = target.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        target_exports = typescript_exported_tool_object_bindings(
+            root,
+            target,
+            target_text,
+            seen,
+        )
+        for exported_name, binding in target_exports.items():
+            candidates[exported_name].append(
+                TypeScriptToolObjectBinding(
+                    0,
+                    0,
+                    binding.entries,
+                    "star-reexported-local-tools-object",
+                )
+            )
     return {
         name: bindings[0]
         for name, bindings in candidates.items()
@@ -15194,6 +15217,8 @@ def typescript_imported_tool_object_bindings(
         resolution = (
             "imported-local-reexported-tools-object"
             if binding.resolution == "reexported-local-tools-object"
+            else "imported-local-star-reexported-tools-object"
+            if binding.resolution == "star-reexported-local-tools-object"
             else "imported-local-tools-object"
         )
         resolved[local] = TypeScriptToolObjectBinding(

@@ -777,12 +777,13 @@ top-level `model` property, such as `anthropic("claude-sonnet-4-20250514")`. Bou
 casts, wrappers, and imported model constants remain unresolved until their provenance can be proven
 without general expression guessing.
 For `WorkflowAgent.tools`, AgentVerify links stable same-file tool-set bindings plus direct relative
-named imports or exact named reexports of immutable exported const tool-set objects to
-already-inventoried object-tool components. Imported tool-set edges preserve the original sibling
-module's tool IDs and record `tool_set_resolution` as `imported-local-tools-object` or
-`imported-local-reexported-tools-object`. Reassigned bindings, property-mutated local tool sets,
-duplicate tool identities, partial config objects, star barrels, and broader module composition
-remain unresolved until their object identity can be proven.
+named imports, exact named reexports, or unambiguous star reexports of immutable exported const
+tool-set objects to already-inventoried object-tool components. Imported tool-set edges preserve the
+original sibling module's tool IDs and record `tool_set_resolution` as `imported-local-tools-object`,
+`imported-local-reexported-tools-object`, or `imported-local-star-reexported-tools-object`.
+Reassigned bindings, property-mutated local tool sets, duplicate tool identities, conflicting
+barrels, partial config objects, and broader module composition remain unresolved until their object
+identity can be proven.
 Vercel AI Code Mode's host-tool runtime now contributes approval-flow IR when the source uniquely
 proves that `hostTool.needsApproval` is checked before `executeHostTool(...)`, interrupt mode emits
 the `ai-sdk-code-mode/tool-approval` payload, callback denial throws before execution, and

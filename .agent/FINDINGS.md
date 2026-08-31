@@ -89,11 +89,11 @@
   object-tool entry, and the public IR truth set passes 2,432/2,432 labels.
 - Imported Vercel WorkflowAgent tool sets can be resolved without widening constructor matching:
   `tools: toolsFromModule` now links to object-tool component IDs in the original sibling module
-  when `toolsFromModule` is a unique, unshadowed relative named import, or exact named barrel
-  reexport, of an immutable exported const object whose entries are concrete object tools. Local
-  tool-set property mutation now invalidates same-file edges before construction, preventing stale
-  `WorkflowAgent.tools` relationships. This is covered by local scanner regression tests; the
-  pinned Vercel corpus still only proves the same-file tool-set shape.
+  when `toolsFromModule` is a unique, unshadowed relative named import, exact named barrel reexport,
+  or unambiguous star-barrel reexport of an immutable exported const object whose entries are
+  concrete object tools. Local tool-set property mutation now invalidates same-file edges before
+  construction, preventing stale `WorkflowAgent.tools` relationships. This is covered by local
+  scanner regression tests; the pinned Vercel corpus still only proves the same-file tool-set shape.
 - Vercel AI WorkflowAgent tools can delegate their actual behavior into same-file step helpers.
   The pinned `agent-chat.ts` `calculate` object tool points `execute` at a helper with
   `new Function(...)`; AgentVerify previously detected the code-execution capability but left it
