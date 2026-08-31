@@ -2703,6 +2703,109 @@ def test_typescript_workflow_agent_uses_object_tool_binding(tmp_path: Path) -> N
     }
 
 
+def test_typescript_workflow_agent_uses_imported_object_tool_binding(tmp_path: Path) -> None:
+    (tmp_path / "tools.ts").write_text(
+        textwrap.dedent(
+            """
+            import { z } from "zod";
+
+            async function calculate(input: { expression: string }) {
+              return new Function(`return (${input.expression})`)();
+            }
+
+            export const workflowTools = {
+              deleteFile: {
+                inputSchema: z.object({ path: z.string() }),
+                execute: async () => "deleted",
+                needsApproval: true as const,
+              },
+              calculate: {
+                inputSchema: z.object({ expression: z.string() }),
+                execute: calculate,
+              },
+            };
+            """
+        ),
+        encoding="utf-8",
+    )
+    (tmp_path / "agent.ts").write_text(
+        textwrap.dedent(
+            """
+            import { WorkflowAgent } from "@ai-sdk/workflow";
+            import { workflowTools as toolsFromModule } from "./tools";
+
+            const agent = new WorkflowAgent({
+              model: {},
+              tools: toolsFromModule,
+            });
+
+            const localTools = {
+              unsafe: {
+                inputSchema: {},
+                execute: async () => "changed",
+              },
+            };
+            localTools.unsafe = {};
+            const changedAgent = new WorkflowAgent({ model: {}, tools: localTools });
+            void agent;
+            void changedAgent;
+            """
+        ),
+        encoding="utf-8",
+    )
+
+    ir = scan_repository(tmp_path)
+
+    workflow_tool_edges = {
+        (
+            relationship.source_name,
+            relationship.target_name,
+            relationship.target_id,
+            relationship.attributes.get("binding"),
+            relationship.attributes.get("tool_set_binding"),
+            relationship.attributes.get("tool_set_resolution"),
+        )
+        for relationship in ir.relationships
+        if relationship.source_kind == "agent"
+        and relationship.target_kind == "tool"
+        and relationship.attributes.get("analysis") == "typescript-vercel-workflow-agent-tools"
+    }
+    assert workflow_tool_edges == {
+        (
+            "agent",
+            "deleteFile",
+            "ts:tools.ts#tool:deleteFile",
+            "tools-object-binding",
+            "toolsFromModule",
+            "imported-local-tools-object",
+        ),
+        (
+            "agent",
+            "calculate",
+            "ts:tools.ts#tool:calculate",
+            "tools-object-binding",
+            "toolsFromModule",
+            "imported-local-tools-object",
+        ),
+    }
+    assert (
+        "tool",
+        "calculate",
+        "uses",
+        "capability",
+        "code-execution",
+    ) in {
+        (
+            relationship.source_kind,
+            relationship.source_name,
+            relationship.relation,
+            relationship.target_kind,
+            relationship.target_name,
+        )
+        for relationship in ir.relationships
+    }
+
+
 def test_typescript_object_tool_execute_helper_maps_capabilities(tmp_path: Path) -> None:
     (tmp_path / "agent.ts").write_text(
         textwrap.dedent(

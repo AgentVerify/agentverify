@@ -776,6 +776,12 @@ source-agent-linked `model-settings-policy` controls for direct AI SDK provider 
 top-level `model` property, such as `anthropic("claude-sonnet-4-20250514")`. Bound model variables,
 casts, wrappers, and imported model constants remain unresolved until their provenance can be proven
 without general expression guessing.
+For `WorkflowAgent.tools`, AgentVerify links stable same-file tool-set bindings and direct relative
+named imports of immutable exported const tool-set objects to already-inventoried object-tool
+components. Imported tool-set edges preserve the sibling module's tool IDs and record
+`tool_set_resolution: imported-local-tools-object`. Reassigned bindings, property-mutated local
+tool sets, duplicate tool identities, partial config objects, and broader reexport/module
+composition remain unresolved until their object identity can be proven.
 Vercel AI Code Mode's host-tool runtime now contributes approval-flow IR when the source uniquely
 proves that `hostTool.needsApproval` is checked before `executeHostTool(...)`, interrupt mode emits
 the `ai-sdk-code-mode/tool-approval` payload, callback denial throws before execution, and

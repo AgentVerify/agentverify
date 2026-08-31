@@ -13666,6 +13666,14 @@ class TypeScriptLiteralObjectBinding:
 
 
 @dataclass(frozen=True)
+class TypeScriptToolObjectBinding:
+    declaration_start: int
+    declaration_end: int
+    entries: tuple[tuple[str, str], ...]
+    resolution: str = "same-file-tools-object"
+
+
+@dataclass(frozen=True)
 class TypeScriptOpenAIRunStateHelperDecision:
     helper_name: str
     result_binding: str
@@ -15004,6 +15012,146 @@ def typescript_imported_literal_object_bindings(
             0,
             len(code) + 1,
             resolution,
+        )
+    return resolved
+
+
+def typescript_object_tool_identity_counts(text: str) -> Counter[str]:
+    """Count concrete object-tool property names in one TypeScript module."""
+    code = typescript_code_mask(text)
+    counts: Counter[str] = Counter()
+    for match in re.finditer(r"\b([A-Za-z_$][\w$]*)\s*:\s*\{", code):
+        opening = code.find("{", match.start(), match.end())
+        end = typescript_balanced_end(code, opening, "{", "}")
+        if end is None:
+            continue
+        body = text[opening:end]
+        if typescript_object_property_expression(body, "execute") is None:
+            continue
+        if (
+            typescript_object_property_expression(body, "inputSchema") is None
+            and typescript_object_property_expression(body, "parameters") is None
+        ):
+            continue
+        counts[match.group(1)] += 1
+    return counts
+
+
+def typescript_tool_object_entries_from_expression(
+    root: Path,
+    path: Path,
+    text: str,
+    expression: str,
+    expression_offset: int,
+) -> tuple[tuple[str, str], ...]:
+    """Return exact object-tool entries from a literal exported tool-set object."""
+    code = typescript_code_mask(expression)
+    if not code.lstrip().startswith("{"):
+        return ()
+    relative = path.relative_to(root).as_posix()
+    identity_counts = typescript_object_tool_identity_counts(text)
+    entries: list[tuple[str, str]] = []
+    for property_text, property_offset in typescript_object_items(expression, expression_offset):
+        named_property = typescript_named_object_property(property_text)
+        if named_property is None:
+            continue
+        tool_name, tool_expression = named_property
+        if identity_counts[tool_name] != 1:
+            continue
+        tool_code = typescript_code_mask(tool_expression)
+        if not tool_code.lstrip().startswith("{"):
+            continue
+        if typescript_object_property_expression(tool_expression, "execute") is None:
+            continue
+        if (
+            typescript_object_property_expression(tool_expression, "inputSchema") is None
+            and typescript_object_property_expression(tool_expression, "parameters") is None
+        ):
+            continue
+        entries.append((tool_name, source_symbol("ts", relative, "tool", tool_name)))
+    return tuple(entries)
+
+
+def typescript_exported_tool_object_bindings(
+    root: Path,
+    path: Path,
+    text: str,
+) -> dict[str, TypeScriptToolObjectBinding]:
+    """Return exported immutable tool-set objects with concrete object-tool entries."""
+    code = typescript_code_mask(text)
+    exported = {
+        match.group(1)
+        for match in re.finditer(
+            r"\bexport\s+const\s+([A-Za-z_$][\w$]*)\s*(?:\:\s*[^=;\n]+)?=",
+            code,
+        )
+    }
+    bindings: dict[str, TypeScriptToolObjectBinding] = {}
+    for name, binding in typescript_immutable_module_literal_object_bindings(text).items():
+        if name not in exported:
+            continue
+        entries = typescript_tool_object_entries_from_expression(
+            root,
+            path,
+            text,
+            binding.expression,
+            binding.expression_offset,
+        )
+        if not entries:
+            continue
+        bindings[name] = TypeScriptToolObjectBinding(
+            binding.expression_offset,
+            binding.declaration_end,
+            entries,
+            "exported-local-tools-object",
+        )
+    return bindings
+
+
+def typescript_imported_tool_object_bindings(
+    root: Path,
+    path: Path,
+    text: str,
+) -> dict[str, TypeScriptToolObjectBinding]:
+    """Resolve exact relative imports of exported immutable WorkflowAgent tool sets."""
+    import_counts: Counter[str] = Counter()
+    imported_bindings: list[tuple[int, str, str, str]] = []
+    for match in TS_NAMED_IMPORT.finditer(text):
+        specifier = match.group(2)
+        for raw_specifier in match.group(1).split(","):
+            parts = typescript_named_specifier_parts(raw_specifier)
+            if parts is None:
+                continue
+            original, local = parts
+            import_counts[local] += 1
+            imported_bindings.append((match.end(), specifier, original, local))
+
+    resolved: dict[str, TypeScriptToolObjectBinding] = {}
+    export_cache: dict[Path, dict[str, TypeScriptToolObjectBinding]] = {}
+    for import_end, specifier, original, local in imported_bindings:
+        if import_counts[local] != 1 or typescript_import_binding_is_shadowed(text, local):
+            continue
+        target = typescript_resolve_local_module(root, path, specifier)
+        if target is None:
+            continue
+        try:
+            target_text = target.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        if target not in export_cache:
+            export_cache[target] = typescript_exported_tool_object_bindings(
+                root,
+                target,
+                target_text,
+            )
+        binding = export_cache[target].get(original)
+        if binding is None:
+            continue
+        resolved[local] = TypeScriptToolObjectBinding(
+            import_end,
+            import_end,
+            binding.entries,
+            "imported-local-tools-object",
         )
     return resolved
 
@@ -22937,7 +23085,7 @@ def typescript_graph(
         ):
             tool_by_line.setdefault(line_number, (tool_name, tool_id))
 
-    tool_object_bindings: dict[str, tuple[int, int, tuple[tuple[str, str], ...]]] = {}
+    tool_object_bindings: dict[str, TypeScriptToolObjectBinding] = {}
     for variable_name, initializer, initializer_offset in typescript_variable_initializers(text):
         if not typescript_code_mask(initializer).lstrip().startswith("{"):
             continue
@@ -22954,11 +23102,12 @@ def typescript_graph(
             if tool_id is not None:
                 entries.append((tool_name, tool_id))
         if entries:
-            tool_object_bindings[variable_name] = (
+            tool_object_bindings[variable_name] = TypeScriptToolObjectBinding(
                 initializer_offset,
                 initializer_offset + len(initializer),
                 tuple(entries),
             )
+    tool_object_bindings.update(typescript_imported_tool_object_bindings(root, path, text))
 
     sandbox_imports = typescript_named_import_bindings(text, "@openai/agents/sandbox")
     sandbox_local_imports = typescript_named_import_bindings(text, "@openai/agents/sandbox/local")
@@ -25870,6 +26019,7 @@ def typescript_graph(
             workflow_tool_entries: tuple[tuple[str, str], ...] = ()
             workflow_tool_binding = None
             workflow_tool_binding_kind = None
+            workflow_tool_resolution = "same-file-tools-object"
             tools_property_offset = body_offset
             tools_location = typescript_object_property_expression_location(
                 body,
@@ -25907,12 +26057,21 @@ def typescript_graph(
             if workflow_tool_binding is not None:
                 binding = tool_object_bindings.get(workflow_tool_binding)
                 if binding is not None:
-                    _binding_start, binding_end, binding_entries = binding
-                    if binding_end <= match.start() and not re.search(
+                    intervening_code = code[binding.declaration_end : match.start()]
+                    if binding.declaration_end <= match.start() and not re.search(
                         rf"(?<![\w$.]){re.escape(workflow_tool_binding)}\s*=(?!=)",
-                        code[binding_end : match.start()],
+                        intervening_code,
+                    ) and not re.search(
+                        rf"(?<![\w$]){re.escape(workflow_tool_binding)}"
+                        r"\s*\.\s*[A-Za-z_$][\w$]*\s*=(?!=)",
+                        intervening_code,
+                    ) and not re.search(
+                        rf"(?<![\w$]){re.escape(workflow_tool_binding)}"
+                        r"\s*\[[^\]]+\]\s*=(?!=)",
+                        intervening_code,
                     ):
-                        workflow_tool_entries = binding_entries
+                        workflow_tool_entries = binding.entries
+                        workflow_tool_resolution = binding.resolution
             if workflow_tool_entries:
                 tool_evidence = Evidence(
                     relative,
@@ -25935,6 +26094,11 @@ def typescript_graph(
                                 **(
                                     {"tool_set_binding": workflow_tool_binding}
                                     if workflow_tool_binding is not None
+                                    else {}
+                                ),
+                                **(
+                                    {"tool_set_resolution": workflow_tool_resolution}
+                                    if workflow_tool_resolution != "same-file-tools-object"
                                     else {}
                                 ),
                             },
