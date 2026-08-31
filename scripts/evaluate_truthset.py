@@ -65,6 +65,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="print per-target scan timings to stderr without changing result JSON",
     )
     parser.add_argument(
+        "--format",
+        choices=("json", "summary"),
+        default="json",
+        help="stdout format; result files are always written as benchmark-result JSON",
+    )
+    parser.add_argument(
         "--scan-label-paths",
         action="store_true",
         help=(
@@ -260,6 +266,87 @@ def expand_selected_paths_with_local_imports(root: Path, selected_paths: set[str
     return expanded
 
 
+def print_result_json(payload: dict[str, object]) -> None:
+    print(
+        json.dumps(
+            {
+                key: payload[key]
+                for key in (
+                    "benchmark",
+                    "labels",
+                    "passed",
+                    "failed",
+                    "all_labels_passed",
+                    "failure_summary",
+                    "metrics",
+                )
+            },
+            indent=2,
+        )
+    )
+
+
+def summary_value(value: object) -> str:
+    if value is None:
+        return "n/a"
+    return str(value)
+
+
+def print_result_summary(payload: dict[str, object]) -> None:
+    benchmark = payload["benchmark"]
+    assert isinstance(benchmark, dict)
+    failure_summary = payload["failure_summary"]
+    assert isinstance(failure_summary, dict)
+    metrics = payload["metrics"]
+    assert isinstance(metrics, dict)
+    outcomes = payload["outcomes"]
+    assert isinstance(outcomes, list)
+
+    print(
+        "agentverify benchmark result: "
+        f"{payload['passed']}/{payload['labels']} labels passed "
+        f"({payload['failed']} failed)"
+    )
+    print(f"all_labels_passed: {str(payload['all_labels_passed']).lower()}")
+    print(
+        "benchmark: "
+        f"{benchmark['evaluation_kind']} {benchmark['label_scope']} "
+        f"sealed={str(benchmark['sealed']).lower()}"
+    )
+    if label_filter := benchmark.get("label_filter"):
+        print(f"label_filter: {json.dumps(label_filter, sort_keys=True)}")
+    if scan_scope := benchmark.get("scan_scope"):
+        expansion = benchmark.get("scan_path_expansion")
+        suffix = f" ({expansion})" if expansion else ""
+        print(f"scan_scope: {scan_scope}{suffix}")
+    print(
+        "failure_summary: "
+        + " ".join(
+            f"{key}={failure_summary[key]}"
+            for key in ("observation_mismatch", "anchor_mismatch", "source_mismatch")
+        )
+    )
+
+    failed_by_metric = Counter(
+        outcome.get("rule_id") or outcome["check_id"]
+        for outcome in outcomes
+        if not outcome["passed"]
+    )
+    if not failed_by_metric:
+        return
+    print("failed_checks:")
+    for metric_id, failed in failed_by_metric.most_common():
+        metric = metrics[metric_id]
+        assert isinstance(metric, dict)
+        print(
+            "  "
+            f"{metric_id}: failed={failed} "
+            f"tp={metric['tp']} fp={metric['fp']} tn={metric['tn']} fn={metric['fn']} "
+            f"precision={summary_value(metric['precision'])} "
+            f"recall={summary_value(metric['recall'])}"
+        )
+
+
 def target_path(target: dict, cache_dir: Path) -> Path:
     if target["kind"] == "local":
         return Path(target["path"])
@@ -444,23 +531,10 @@ def main(argv: list[str] | None = None) -> int:
         "outcomes": outcomes,
     }
     args.output.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    print(
-        json.dumps(
-            {
-                key: payload[key]
-                for key in (
-                    "benchmark",
-                    "labels",
-                    "passed",
-                    "failed",
-                    "all_labels_passed",
-                    "failure_summary",
-                    "metrics",
-                )
-            },
-            indent=2,
-        )
-    )
+    if args.format == "summary":
+        print_result_summary(payload)
+    else:
+        print_result_json(payload)
     return 0 if payload["passed"] == payload["labels"] else 1
 
 

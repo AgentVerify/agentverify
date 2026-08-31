@@ -194,6 +194,12 @@ machine-readable release artifact. The public benchmark-result verifier also sup
 `agentverify benchmark verify --format summary`, which reports total label pass/fail counts, digest
 status, and per-result label-scope/evaluation-kind rows.
 
+For local scanner iteration, `scripts/evaluate_truthset.py --format summary` prints a compact
+single-result pass/fail view and failed-check breakdown while still writing the full
+benchmark-result JSON artifact selected by `--output`. This is useful with focused
+`--scan-label-paths --expand-local-imports --progress` runs that are expected to fail during
+detector development; release evidence remains repository-wide.
+
 The locked collector prioritizes manifests, production SSRF/URL-safety sources, and then general
 security/agent/tool/MCP sources within the 220-file cap. It adds at most 20 local source files:
 versioned audited evidence hints plus Python imports reached from MCP forwarding or source-proven

@@ -230,6 +230,57 @@ def test_evaluator_progress_is_opt_in_and_reports_target_timings(
     assert f"agentverify: scanned {second} labels=1 seconds=" in progress_streams.err
 
 
+def test_evaluator_summary_format_prints_compact_failure_breakdown(
+    tmp_path: Path, monkeypatch, capsys
+) -> None:
+    target = tmp_path / "repo"
+    target.mkdir()
+    (target / "agent.py").write_text("# no agent here\n", encoding="utf-8")
+    labels = tmp_path / "labels.json"
+    labels.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "labels": [
+                    {
+                        "id": "missing-agent",
+                        "target": {"kind": "local", "path": str(target)},
+                        "check_id": "IR-MISSING",
+                        "path": "agent.py",
+                        "line": 1,
+                        "expected": True,
+                        "component": {"kind": "agent", "name": "missing"},
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    def fake_scan_repository(path: Path) -> RepositoryIR:
+        return RepositoryIR(str(path))
+
+    monkeypatch.setattr(evaluate_truthset, "scan_repository", fake_scan_repository)
+    output = tmp_path / "summary-results.json"
+
+    assert (
+        evaluate_truthset.main(
+            ["--labels", str(labels), "--output", str(output), "--format", "summary"]
+        )
+        == 1
+    )
+
+    result = json.loads(output.read_text(encoding="utf-8"))
+    captured = capsys.readouterr()
+    assert result["failed"] == 1
+    assert captured.err == ""
+    assert "agentverify benchmark result: 0/1 labels passed (1 failed)" in captured.out
+    assert "all_labels_passed: false" in captured.out
+    assert "failure_summary: observation_mismatch=1 anchor_mismatch=0 source_mismatch=0" in captured.out
+    assert "failed_checks:" in captured.out
+    assert "IR-MISSING: failed=1 tp=0 fp=0 tn=0 fn=1 precision=n/a recall=0.0" in captured.out
+
+
 def test_evaluator_can_scan_only_evaluated_label_paths_for_development(
     tmp_path: Path, monkeypatch
 ) -> None:

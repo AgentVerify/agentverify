@@ -226,7 +226,7 @@ PYTHONPATH=src python3 scripts/evaluate_truthset.py --labels benchmarks/ir-truth
   --output benchmarks/ir-truthset-results.json
 PYTHONPATH=src python3 scripts/evaluate_truthset.py --labels benchmarks/ir-truthset.json \
   --output /tmp/agentverify-sandbox-results.json --check-id IR-TS-OPENAI-SANDBOX \
-  --scan-label-paths --progress
+  --scan-label-paths --progress --format summary
 PYTHONPATH=src python3 scripts/evaluate_truthset.py --evaluation-kind sealed-holdout \
   --manifest path/to/holdout-manifest.json --labels path/to/sealed-labels.json \
   --output path/to/holdout-results.json
@@ -244,6 +244,10 @@ agentverify schema holdout-labels --output agentverify-holdout-labels.schema.jso
 
 Use `--scan-label-paths` only for focused development runs: it scans files referenced by the
 evaluated labels and records `benchmark.scan_scope: selected-label-paths` in the result metadata.
+Add `--expand-local-imports` for focused slices whose labels depend on sibling local imports or
+reexports; this records `benchmark.scan_path_expansion: local-import-closure`. `--format summary`
+prints a compact pass/fail and failed-check breakdown while still writing the full benchmark-result
+JSON file.
 Full public-regression release results should still use repository-wide scans.
 
 The default CI workflow runs the installed CLI benchmark gate against the checked-in public

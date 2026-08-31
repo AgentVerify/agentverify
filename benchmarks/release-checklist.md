@@ -36,8 +36,10 @@ During scanner development, use focused evaluator runs such as `--check-id
 IR-TS-OPENAI-SANDBOX --scan-label-paths --progress` to scan only label-referenced files and print
 per-target timings to stderr. The result records `benchmark.scan_scope: selected-label-paths`;
 add `--expand-local-imports` when a focused label depends on sibling local imports or reexports.
-That records `benchmark.scan_path_expansion: local-import-closure`. Release evidence should still
-come from the repository-wide commands above.
+That records `benchmark.scan_path_expansion: local-import-closure`. Add `--format summary` when a
+development run may fail and you want a compact failed-check breakdown in stdout while preserving
+the full JSON result file. Release evidence should still come from the repository-wide commands
+above.
 
 For GitHub Actions, start from the copyable
 [`examples/github-benchmark-verify.yml`](../examples/github-benchmark-verify.yml) workflow. It runs

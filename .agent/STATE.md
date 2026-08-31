@@ -15,6 +15,13 @@ catalog workflows.
   output. A real focused `IR-TS-TOOL-GRAPH` run passed 16/16 labels in about 0.4 seconds of timed
   scan work, covering cross-file helper/reexport dependencies that plain selected-path scans missed.
   Full release claims still require repository-wide benchmark commands.
+- Added `scripts/evaluate_truthset.py --format summary` for compact evaluator stdout while still
+  writing the full benchmark-result JSON artifact selected by `--output`. The real expanded
+  selected-path `IR-TS-TOOL-GRAPH` smoke prints a short 16/16 pass summary; a full public IR
+  expanded selected-path profiling run passed 2,350/2,522 labels and narrowed the remaining misses
+  to architecture slices whose evidence spans non-import-neighbor sidecar files or scanner-wide
+  summaries, especially Cline subagent approval, Letta default tools, Continue plan approval, Roo
+  command approval, and several Python MCP/helper callback families.
 - Added `agentverify schema editor-diagnostics`, a bundled JSON schema for LSP-style editor
   diagnostic adapter payloads derived from AgentVerify JSON reports. `agentverify contracts` now
   exports `agentverify-editor-diagnostics-v1.schema.json` as a required contract artifact and

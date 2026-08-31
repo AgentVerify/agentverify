@@ -452,13 +452,17 @@
   scope from benchmark verification. When explicitly paired with `--expand-local-imports`, expand
   those selected files through local Python and TypeScript/JavaScript import/export closures and
   record `benchmark.scan_path_expansion: local-import-closure`; keep repository-wide scans as the
-  only release-comparable benchmark path.
+  only release-comparable benchmark path. `scripts/evaluate_truthset.py --format summary` is a
+  stdout presentation option only; it does not change the benchmark-result JSON file written to
+  `--output`.
 - Evidence: Full public IR profiling showed roughly 482.5 seconds of timed scan work, mostly from
   large cached repositories with few labels. The selected-label-path experiment reduced timed scan
   work to roughly 57.5 seconds, and focused OpenAI sandbox labels still passed 235/235, but the full
   all-IR run failed 285 labels that require cross-file helper, import, reexport, or composition
   summaries. The opt-in local-import closure restored the cross-file `IR-TS-TOOL-GRAPH` development
-  slice to 16/16 passing while keeping the scan scope and expansion explicit in result metadata.
+  slice to 16/16 passing while keeping the scan scope and expansion explicit in result metadata. A
+  full expanded selected-path run passed 2,350/2,522 labels and showed the remaining misses are
+  concentrated in detectors needing non-import-neighbor sidecars or scanner-wide summaries.
 - Alternative: Treat selected label paths as a drop-in benchmark acceleration. Rejected because that
   would silently weaken cross-file evidence and could make release claims incomparable with
   repository-wide scans.

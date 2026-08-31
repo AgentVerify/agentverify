@@ -556,6 +556,17 @@
   verifier mark these artifacts with `scan_path_expansion: local-import-closure`; a real
   `IR-TS-TOOL-GRAPH` run passed 16/16 labels after including imported helper and barrel files, but
   release evidence remains repository-wide.
+- Full public IR selected-path expansion is better but still intentionally incomplete: an expanded
+  run passed 2,350/2,522 labels. Remaining false negatives concentrate in Cline subagent approval
+  (48), Letta default tools (30), Continue plan approval (20), Roo command approval (18), Agno MCP
+  confirmation (9), Semantic Kernel MCP sampling (9), and OpenAI MCP approval-default (8 across
+  Python/TypeScript). These detectors need non-import-neighbor architecture files, sidecar policy
+  files, runtime summaries, or scanner-wide context, so generic import closure alone should not be
+  treated as the final benchmark acceleration strategy.
+- `scripts/evaluate_truthset.py --format summary` now keeps long development runs readable by
+  printing pass/fail counts, benchmark scope/filter metadata, mismatch summary, and failed-check
+  metrics to stdout while preserving the full benchmark-result JSON file for schema verification and
+  detailed outcome inspection.
 - Python `SyntaxWarning`s from third-party source parsing are not useful AgentVerify diagnostics and
   can bury benchmark progress output. Wrapping repository scans in a `SyntaxWarning` filter keeps
   scanner stderr clean while preserving AgentVerify IR errors for parse failures and skipped files.
