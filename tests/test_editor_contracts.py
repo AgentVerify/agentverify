@@ -123,6 +123,7 @@ def test_editor_contract_export_writes_valid_rules_and_sample_report(tmp_path: P
 
     names = {item["path"] for item in manifest["artifacts"]}
     assert names == {
+        "agentverify-editor-diagnostics-v1.schema.json",
         "agentverify-report-v1.schema.json",
         "agentverify-rules-v1.schema.json",
         "agentverify-rules.json",
@@ -134,6 +135,11 @@ def test_editor_contract_export_writes_valid_rules_and_sample_report(tmp_path: P
         item["path"]: (item["kind"], item["contract"], item["required"])
         for item in manifest["artifacts"]
     } == {
+        "agentverify-editor-diagnostics-v1.schema.json": (
+            "schema",
+            "editor-diagnostics",
+            True,
+        ),
         "agentverify-report-v1.schema.json": ("schema", "report", True),
         "agentverify-rules-v1.schema.json": ("schema", "rules", True),
         "agentverify-rules.json": ("catalog", "rules", True),
@@ -141,12 +147,16 @@ def test_editor_contract_export_writes_valid_rules_and_sample_report(tmp_path: P
     }
 
     rules_schema = json.loads((tmp_path / "agentverify-rules-v1.schema.json").read_text())
+    editor_diagnostics_schema = json.loads(
+        (tmp_path / "agentverify-editor-diagnostics-v1.schema.json").read_text()
+    )
     report_schema = json.loads((tmp_path / "agentverify-report-v1.schema.json").read_text())
     manifest_schema = json.loads(
         (ROOT / "src/agentverify/schemas/agentverify-editor-contract-manifest-v1.schema.json")
         .read_text(encoding="utf-8")
     )
     Draft202012Validator.check_schema(rules_schema)
+    Draft202012Validator.check_schema(editor_diagnostics_schema)
     Draft202012Validator.check_schema(report_schema)
     Draft202012Validator.check_schema(manifest_schema)
     Draft202012Validator(manifest_schema).validate(manifest)
@@ -184,6 +194,7 @@ def test_cli_exports_editor_contracts(tmp_path: Path, capsys) -> None:
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     assert manifest == json.loads((output_dir / "manifest.json").read_text(encoding="utf-8"))
     assert {item["path"] for item in manifest["artifacts"]} == {
+        "agentverify-editor-diagnostics-v1.schema.json",
         "agentverify-report-v1.schema.json",
         "agentverify-rules-v1.schema.json",
         "agentverify-rules.json",
@@ -209,6 +220,7 @@ def test_editor_contract_verifier_accepts_exported_bundle(tmp_path: Path) -> Non
         item["path"]: (item["present"], item["digest_ok"], item["bytes_ok"], item["content_valid"])
         for item in verification["artifacts"]
     } == {
+        "agentverify-editor-diagnostics-v1.schema.json": (True, True, True, True),
         "agentverify-report-v1.schema.json": (True, True, True, True),
         "agentverify-rules-v1.schema.json": (True, True, True, True),
         "agentverify-rules.json": (True, True, True, True),
@@ -229,11 +241,11 @@ def test_editor_contract_verification_summary_accepts_exported_bundle(tmp_path: 
         "Passed: true\n"
         "Manifest schema valid: true\n"
         "Required artifacts present: true\n"
-        "Artifacts: 4 total (3 required)\n"
-        "Artifact files: 4/4 present\n"
-        "Digests: 4/4 ok\n"
-        "Byte counts: 4/4 ok\n"
-        "Content validation: 4/4 ok\n"
+        "Artifacts: 5 total (4 required)\n"
+        "Artifact files: 5/5 present\n"
+        "Digests: 5/5 ok\n"
+        "Byte counts: 5/5 ok\n"
+        "Content validation: 5/5 ok\n"
     )
 
 
@@ -336,11 +348,11 @@ def test_cli_contract_verifier_prints_summary(tmp_path: Path, capsys) -> None:
         "Passed: true\n"
         "Manifest schema valid: true\n"
         "Required artifacts present: true\n"
-        "Artifacts: 4 total (3 required)\n"
-        "Artifact files: 4/4 present\n"
-        "Digests: 4/4 ok\n"
-        "Byte counts: 4/4 ok\n"
-        "Content validation: 4/4 ok\n"
+        "Artifacts: 5 total (4 required)\n"
+        "Artifact files: 5/5 present\n"
+        "Digests: 5/5 ok\n"
+        "Byte counts: 5/5 ok\n"
+        "Content validation: 5/5 ok\n"
     )
 
 
@@ -392,7 +404,9 @@ def test_editor_integration_docs_reference_exported_artifacts() -> None:
     assert "python scripts/export_editor_contracts.py" in docs
     assert "agentverify-rules.json" in docs
     assert "agentverify-report-v1.schema.json" in docs
+    assert "agentverify-editor-diagnostics-v1.schema.json" in docs
     assert "agentverify rules --format json --output agentverify-rules.json" in docs
+    assert "agentverify schema editor-diagnostics" in docs
     assert "agentverify schema editor-contract-manifest" in docs
     assert "agentverify schema editor-contract-verification" in docs
     assert "agentverify contracts --verify-dir agentverify-editor-contracts" in docs
@@ -407,6 +421,7 @@ def test_editor_integration_docs_reference_exported_artifacts() -> None:
     assert "[`docs/editor-integration.md`](docs/editor-integration.md)" in readme
     assert "agentverify schema editor-contract-manifest" in readme
     assert "agentverify schema editor-contract-verification" in readme
+    assert "agentverify schema editor-diagnostics" in readme
 
 
 def test_editor_diagnostics_example_matches_real_report() -> None:
@@ -424,6 +439,9 @@ def test_editor_diagnostics_example_matches_real_report() -> None:
     }
 
     actual = json.loads((ROOT / "examples/editor-diagnostics.json").read_text(encoding="utf-8"))
+    schema = json.loads(render_schema("editor-diagnostics"))
+    Draft202012Validator.check_schema(schema)
+    Draft202012Validator(schema).validate(actual)
     assert actual == expected
 
 
@@ -437,6 +455,9 @@ def test_policy_aware_editor_diagnostics_example_matches_real_report() -> None:
     actual = json.loads(
         (ROOT / "examples/editor-policy-diagnostics.json").read_text(encoding="utf-8")
     )
+    schema = json.loads(render_schema("editor-diagnostics"))
+    Draft202012Validator.check_schema(schema)
+    Draft202012Validator(schema).validate(actual)
     assert actual == expected
     assert actual["policy"] == {
         "evaluated_after_baseline": True,

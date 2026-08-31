@@ -159,6 +159,7 @@ REQUIRED_SCHEMA_FILES = frozenset(
         "agentverify/schemas/agentverify-ai-bom-v1.schema.json",
         "agentverify/schemas/agentverify-editor-contract-manifest-v1.schema.json",
         "agentverify/schemas/agentverify-editor-contract-verification-v1.schema.json",
+        "agentverify/schemas/agentverify-editor-diagnostics-v1.schema.json",
         "agentverify/schemas/agentverify-engine-results-v1.schema.json",
         "agentverify/schemas/agentverify-engine-results-verification-v1.schema.json",
         "agentverify/schemas/agentverify-holdout-labels-v1.schema.json",
@@ -356,6 +357,9 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         editor_contract_verification_schema = json.loads(
             command([str(agentverify), "schema", "editor-contract-verification"])
         )
+        editor_diagnostics_schema = json.loads(
+            command([str(agentverify), "schema", "editor-diagnostics"])
+        )
         engine_results_schema = json.loads(command([str(agentverify), "schema", "engine-results"]))
         engine_results_verification_schema = json.loads(
             command([str(agentverify), "schema", "engine-results-verification"])
@@ -533,6 +537,7 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         "editor_contract_verification_schema_title": editor_contract_verification_schema.get(
             "title"
         ),
+        "editor_diagnostics_schema_title": editor_diagnostics_schema.get("title"),
         "engine_results_schema_title": engine_results_schema.get("title"),
         "engine_results_verification_schema_title": engine_results_verification_schema.get(
             "title"
@@ -609,6 +614,7 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         "bom",
         "editor-contract-manifest",
         "editor-contract-verification",
+        "editor-diagnostics",
         "engine-results",
         "engine-results-verification",
         "holdout-labels",
@@ -638,6 +644,8 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         != "AgentVerify Editor Contract Verification 1"
     ):
         failed.append("editor_contract_verification_schema_title")
+    if checks["editor_diagnostics_schema_title"] != "AgentVerify Editor Diagnostics 1":
+        failed.append("editor_diagnostics_schema_title")
     if checks["engine_results_schema_title"] != "AgentVerify Engine Results 1":
         failed.append("engine_results_schema_title")
     if (
@@ -707,6 +715,7 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         failed.append("holdout_validation_files")
     expected_editor_contract_files = [
         "agentverify-report-v1.schema.json",
+        "agentverify-editor-diagnostics-v1.schema.json",
         "agentverify-rules-v1.schema.json",
         "agentverify-rules.json",
         "agentverify-sample-report.json",
@@ -717,6 +726,11 @@ def smoke_install(path: Path, source_root: Path) -> dict[str, object]:
         "agentverify-report-v1.schema.json": {
             "kind": "schema",
             "contract": "report",
+            "required": True,
+        },
+        "agentverify-editor-diagnostics-v1.schema.json": {
+            "kind": "schema",
+            "contract": "editor-diagnostics",
             "required": True,
         },
         "agentverify-rules-v1.schema.json": {

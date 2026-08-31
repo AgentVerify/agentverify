@@ -14,6 +14,7 @@ agentverify contracts \
 The exporter writes:
 
 - `agentverify-report-v1.schema.json` — validates `agentverify scan --format json`.
+- `agentverify-editor-diagnostics-v1.schema.json` — validates editor diagnostic adapter payloads.
 - `agentverify-rules-v1.schema.json` — validates `agentverify rules --format json`.
 - `agentverify-rules.json` — the current enabled reporting-rule catalog.
 - `agentverify-sample-report.json` — optional sample report when `--sample-root` is provided.
@@ -28,15 +29,17 @@ For installed-package workflows, the equivalent direct commands are:
 
 ```console
 agentverify schema report --output agentverify-report-v1.schema.json
+agentverify schema editor-diagnostics --output agentverify-editor-diagnostics-v1.schema.json
 agentverify schema rules --output agentverify-rules-v1.schema.json
 agentverify rules --format json --output agentverify-rules.json
 agentverify scan examples/safe_agent --format json --output agentverify-sample-report.json
 ```
 
-The manifest schema is bundled with installed wheels:
+The manifest and editor-diagnostics schemas are bundled with installed wheels:
 
 ```console
 agentverify schema editor-contract-manifest
+agentverify schema editor-diagnostics
 ```
 
 To validate a copied or cached bundle before an editor extension or CI job consumes it, run:
@@ -113,4 +116,5 @@ agentverify scan cases/approval_callback_bypass --policy examples/repository-pol
 
 The example keeps ordinary LSP-style diagnostics in `diagnostics[]`, adds `policy_gate_ids` and
 `policy_status` to each diagnostic's `data`, and exposes `policy_groups[]` with the policy source,
-gate threshold, matched summary, and the diagnostic fingerprints matched by that gate.
+gate threshold, matched summary, and the diagnostic fingerprints matched by that gate. Both checked
+examples validate against `agentverify schema editor-diagnostics`.

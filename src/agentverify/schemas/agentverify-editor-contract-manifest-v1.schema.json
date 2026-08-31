@@ -28,7 +28,7 @@
     },
     "artifacts": {
       "type": "array",
-      "minItems": 3,
+      "minItems": 4,
       "items": {
         "type": "object",
         "required": ["path", "sha256", "bytes", "kind", "contract", "required"],
@@ -51,7 +51,7 @@
             "enum": ["schema", "catalog", "sample-report"]
           },
           "contract": {
-            "enum": ["report", "rules"]
+            "enum": ["editor-diagnostics", "report", "rules"]
           },
           "required": {
             "type": "boolean"

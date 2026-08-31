@@ -1,5 +1,25 @@
 # AgentVerify decisions
 
+## Editor diagnostics are an adapter schema, not a new scan format
+
+- Decision: Expose `agentverify schema editor-diagnostics` and include
+  `agentverify-editor-diagnostics-v1.schema.json` in `agentverify contracts` as the schema for
+  LSP-style editor/review-bot adapter payloads derived from native AgentVerify JSON reports. Keep
+  `agentverify scan --format json` as the authoritative analyzer output; editor diagnostics are a
+  projection that preserves finding fingerprints, result kind, confidence, IR path, and optional
+  policy gate joins.
+- Evidence: The checked `examples/editor-diagnostics.json` and
+  `examples/editor-policy-diagnostics.json` fixtures are regenerated in tests from real scan output,
+  and now validate against the installed schema. The contract exporter validates and ships the
+  adapter schema alongside the report and rules schemas so editor integrations can validate their
+  projection without a source checkout.
+- Alternative: Add an `agentverify scan --format editor-diagnostics` output now. Rejected because
+  the native JSON report remains the richer, stable source of truth, while editor adapters may need
+  host-specific URI/range conventions. A schema-backed adapter contract gives integration authors a
+  precise target without prematurely freezing a CLI output mode.
+- Revisit when: Multiple editor integrations converge on the same adapter payload and users need a
+  built-in CLI renderer for it.
+
 ## Editor contract verification keeps JSON default with opt-in summary logs
 
 - Decision: Keep `agentverify contracts --verify-dir` JSON as the default output and add

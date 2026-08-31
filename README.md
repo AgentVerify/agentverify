@@ -26,6 +26,7 @@ agentverify schema benchmark-result --output agentverify-benchmark-result.schema
 agentverify schema benchmark-verification --output agentverify-benchmark-verification.schema.json
 agentverify schema editor-contract-manifest --output agentverify-editor-contract-manifest.schema.json
 agentverify schema editor-contract-verification --output agentverify-editor-contract-verification.schema.json
+agentverify schema editor-diagnostics --output agentverify-editor-diagnostics.schema.json
 agentverify schema engine-results --output agentverify-engine-results.schema.json
 agentverify schema engine-results-verification --output agentverify-engine-results-verification.schema.json
 agentverify schema holdout-manifest --output agentverify-holdout-manifest.schema.json
@@ -93,7 +94,8 @@ still preserve policy and `--fail-on` exit decisions.
 `agentverify benchmark verify`.
 `agentverify schema editor-contract-manifest` validates the manifest emitted by
 `agentverify contracts`; `agentverify schema editor-contract-verification` validates the JSON emitted
-by `agentverify contracts --verify-dir`.
+by `agentverify contracts --verify-dir`; `agentverify schema editor-diagnostics` validates
+LSP-style editor diagnostic adapter payloads derived from AgentVerify JSON reports.
 `agentverify schema engine-results` validates full-corpus engine metric snapshots such as
 `benchmarks/engine-results.json`.
 `agentverify schema engine-results-verification` validates the JSON emitted by
@@ -267,7 +269,9 @@ bootstrap jobs. The editor guide also includes a checked
 [`examples/editor-diagnostics.json`](examples/editor-diagnostics.json) mapping from AgentVerify
 findings to Language Server Protocol-style diagnostics and
 [`examples/editor-policy-diagnostics.json`](examples/editor-policy-diagnostics.json) for grouping
-diagnostics by policy gate through matched finding fingerprints.
+diagnostics by policy gate through matched finding fingerprints. Both examples validate against the
+bundled `agentverify schema editor-diagnostics` contract, which is also exported by
+`agentverify contracts`.
 
 The collector reuses commits from `research/repository-data.json` by default and samples up to 220
 source/manifest roots plus at most 20 bounded local source dependencies reached from MCP

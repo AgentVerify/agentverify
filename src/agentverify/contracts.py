@@ -26,6 +26,11 @@ CONTRACT_FILES = {
         "contract": "report",
         "required": True,
     },
+    "agentverify-editor-diagnostics-v1.schema.json": {
+        "kind": "schema",
+        "contract": "editor-diagnostics",
+        "required": True,
+    },
     "agentverify-rules-v1.schema.json": {
         "kind": "schema",
         "contract": "rules",
@@ -58,9 +63,11 @@ def export_editor_contracts(
     output_dir.mkdir(parents=True, exist_ok=True)
     rules_schema = json.loads(render_schema("rules"))
     report_schema = json.loads(render_schema("report"))
+    editor_diagnostics_schema = json.loads(render_schema("editor-diagnostics"))
     manifest_schema = json.loads(render_schema("editor-contract-manifest"))
     Draft202012Validator.check_schema(rules_schema)
     Draft202012Validator.check_schema(report_schema)
+    Draft202012Validator.check_schema(editor_diagnostics_schema)
     Draft202012Validator.check_schema(manifest_schema)
 
     artifacts = []
@@ -209,6 +216,9 @@ def verify_editor_contracts(bundle_dir: Path) -> dict[str, object]:
             elif relative_path == "agentverify-report-v1.schema.json":
                 report_schema = json.loads(raw.decode("utf-8"))
                 Draft202012Validator.check_schema(report_schema)
+            elif relative_path == "agentverify-editor-diagnostics-v1.schema.json":
+                editor_diagnostics_schema = json.loads(raw.decode("utf-8"))
+                Draft202012Validator.check_schema(editor_diagnostics_schema)
         except (json.JSONDecodeError, UnicodeDecodeError, SchemaError) as error:
             content_valid = False
             errors.append(f"artifact content validation failed for {relative_path}: {error}")

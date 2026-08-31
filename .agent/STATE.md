@@ -7,6 +7,12 @@ catalog workflows.
 
 ## Completed recently
 
+- Added `agentverify schema editor-diagnostics`, a bundled JSON schema for LSP-style editor
+  diagnostic adapter payloads derived from AgentVerify JSON reports. `agentverify contracts` now
+  exports `agentverify-editor-diagnostics-v1.schema.json` as a required contract artifact and
+  verifies its schema validity before consumers load copied bundles. The existing plain and
+  policy-aware editor diagnostic examples now validate against this schema, and wheel/source
+  distribution verification requires the new schema.
 - Added a checked policy-aware editor diagnostics example derived from
   `agentverify scan cases/approval_callback_bypass --policy examples/repository-policy.json --format json`.
   The fixture shows how editor/review-bot integrations can join ordinary LSP-style diagnostics to

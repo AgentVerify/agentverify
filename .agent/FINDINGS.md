@@ -2,6 +2,12 @@
 
 ## Durable facts
 
+- Editor diagnostic projections are now schema-backed installed contracts:
+  `agentverify schema editor-diagnostics` validates both plain LSP-style diagnostics and
+  policy-aware diagnostic groups, while `agentverify contracts` exports the schema as a required
+  artifact in copied editor/CI bundles. This keeps editor examples and third-party adapter payloads
+  tied to the native JSON report's stable fingerprints and policy summaries without introducing a
+  second analyzer report format.
 - Editor/review-bot integrations now have a checked policy-aware diagnostic grouping example:
   `examples/editor-policy-diagnostics.json` is regenerated in tests from the real
   `approval_callback_bypass` scan plus composed example policy. It demonstrates joining
