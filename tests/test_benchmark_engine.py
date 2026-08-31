@@ -61,6 +61,30 @@ def test_checked_snapshot_tracks_openai_streaming_runs() -> None:
     }
 
 
+def test_checked_snapshot_tracks_openai_codex_tools() -> None:
+    payload = json.loads((ROOT / "benchmarks/engine-results.json").read_text(encoding="utf-8"))
+
+    summary = payload["summary"]["typescript_openai_codex_tool"]
+    assert summary == {
+        "components": 8,
+        "tools": 4,
+        "controls": 4,
+        "approval_policy_controls": 3,
+        "thread_option_controls": 1,
+        "approval_policy_never": 6,
+        "workspace_write_sandbox": 8,
+        "network_access_enabled": 6,
+        "web_search_disabled": 6,
+        "stream_callbacks": 4,
+        "run_context_thread_reuse": 4,
+        "working_directory_literal": 4,
+        "working_directory_binding": 4,
+        "agent_tool_edges": 4,
+        "configured_by_edges": 4,
+        "repositories": 1,
+    }
+
+
 def test_validate_engine_results_rejects_malformed_snapshot() -> None:
     payload = json.loads((ROOT / "benchmarks/engine-results.json").read_text(encoding="utf-8"))
     payload.pop("repositories")

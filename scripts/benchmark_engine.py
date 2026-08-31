@@ -780,6 +780,11 @@ def main() -> int:
                 "typescript-openai-agents-runner-run-streaming",
             }
         ]
+        typescript_openai_codex_tool_components = [
+            item
+            for item in ir.components
+            if item.attributes.get("analysis") == "typescript-openai-agents-codex-tool"
+        ]
         typescript_vercel_code_mode_analyses = {
             "typescript-vercel-code-mode-tool-surface",
             "typescript-vercel-code-mode-tool-approval-flow",
@@ -2406,6 +2411,73 @@ def main() -> int:
                 ),
                 "repositories": bool(typescript_openai_run_streaming_controls),
             },
+            "typescript_openai_codex_tool": {
+                "components": len(typescript_openai_codex_tool_components),
+                "tools": sum(
+                    item.kind == "tool" for item in typescript_openai_codex_tool_components
+                ),
+                "controls": sum(
+                    item.kind == "control" for item in typescript_openai_codex_tool_components
+                ),
+                "approval_policy_controls": sum(
+                    item.kind == "control"
+                    and item.name == "tool-approval-policy"
+                    for item in typescript_openai_codex_tool_components
+                ),
+                "thread_option_controls": sum(
+                    item.kind == "control"
+                    and item.name == "codex-thread-options-policy"
+                    for item in typescript_openai_codex_tool_components
+                ),
+                "approval_policy_never": sum(
+                    item.attributes.get("approval_policy") == "never"
+                    for item in typescript_openai_codex_tool_components
+                ),
+                "workspace_write_sandbox": sum(
+                    item.attributes.get("sandbox_mode") == "workspace-write"
+                    for item in typescript_openai_codex_tool_components
+                ),
+                "network_access_enabled": sum(
+                    item.attributes.get("network_access_enabled") is True
+                    for item in typescript_openai_codex_tool_components
+                ),
+                "web_search_disabled": sum(
+                    item.attributes.get("web_search_enabled") is False
+                    for item in typescript_openai_codex_tool_components
+                ),
+                "stream_callbacks": sum(
+                    item.attributes.get("stream_callback_present") is True
+                    for item in typescript_openai_codex_tool_components
+                ),
+                "run_context_thread_reuse": sum(
+                    item.attributes.get("use_run_context_thread_id") is True
+                    for item in typescript_openai_codex_tool_components
+                ),
+                "working_directory_literal": sum(
+                    item.attributes.get("working_directory_resolution") == "literal"
+                    for item in typescript_openai_codex_tool_components
+                ),
+                "working_directory_binding": sum(
+                    item.attributes.get("working_directory_resolution") == "binding"
+                    for item in typescript_openai_codex_tool_components
+                ),
+                "agent_tool_edges": sum(
+                    edge.source_kind == "agent"
+                    and edge.relation == "uses"
+                    and edge.target_kind == "tool"
+                    and edge.target_name == "Codex tool"
+                    and edge.attributes.get("analysis") == "typescript-openai-agents-codex-tool"
+                    for edge in ir.relationships
+                ),
+                "configured_by_edges": sum(
+                    edge.source_kind == "tool"
+                    and edge.relation == "configured-by"
+                    and edge.target_kind == "control"
+                    and edge.attributes.get("analysis") == "typescript-openai-agents-codex-tool"
+                    for edge in ir.relationships
+                ),
+                "repositories": bool(typescript_openai_codex_tool_components),
+            },
             "typescript_vercel_code_mode": {
                 "frameworks": sum(
                     item.kind == "framework" for item in typescript_vercel_code_mode_components
@@ -3952,6 +4024,27 @@ def main() -> int:
                     "total",
                     "direct_run",
                     "runner_run",
+                    "configured_by_edges",
+                    "repositories",
+                )
+            },
+            "typescript_openai_codex_tool": {
+                name: sum(result["typescript_openai_codex_tool"][name] for result in successful)
+                for name in (
+                    "components",
+                    "tools",
+                    "controls",
+                    "approval_policy_controls",
+                    "thread_option_controls",
+                    "approval_policy_never",
+                    "workspace_write_sandbox",
+                    "network_access_enabled",
+                    "web_search_disabled",
+                    "stream_callbacks",
+                    "run_context_thread_reuse",
+                    "working_directory_literal",
+                    "working_directory_binding",
+                    "agent_tool_edges",
                     "configured_by_edges",
                     "repositories",
                 )

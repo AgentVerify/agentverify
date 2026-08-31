@@ -25,15 +25,20 @@
   and host-tool approval runtime plus WorkflowAgent's framework-level approval pause,
   request-chunk, and revalidation continuation path. It now also includes a dedicated
   `typescript_openai_run_streaming` metric with 17 source-proven OpenAI Agents JS streaming-run
-  controls from one repository.
+  controls from one repository and a dedicated `typescript_openai_codex_tool` metric with eight
+  source-proven Codex extension tool/policy components from one repository.
 - The runtime catalog currently contains 25 enabled reporting rules.
 - OpenAI Agents JS `codexTool(...)` from
   `@openai/agents-extensions/experimental/codex` is now source-proven IR when the tool is passed
   directly or through an immutable same-file binding into an exact `@openai/agents` `Agent`
   literal `tools` array. The scanner records Codex thread options such as
   `approvalPolicy: "never"`, sandbox mode, network/web-search toggles, stream callbacks, and
-  run-context thread reuse. This is inventory for a model-visible delegated Codex runtime, not a
-  reporting finding or a claim that all Codex executions are unsafe.
+  run-context thread reuse. The engine benchmark now exposes this as
+  `typescript_openai_codex_tool`: four Codex tools, four policy controls, three explicit
+  `approvalPolicy: "never"` controls, one default thread-options control without explicit approval
+  policy, four agent-tool edges, and four configured-by edges. This is inventory for a
+  model-visible delegated Codex runtime, not a reporting finding or a claim that all Codex
+  executions are unsafe.
 - Vercel `WorkflowAgent` has a source-proven framework approval runtime in
   `packages/workflow/src/workflow-agent.ts`: the run loop checks `tool.needsApproval` before
   executable tool calls, pauses approval-needed calls, writes `tool-approval-request` chunks for

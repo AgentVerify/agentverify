@@ -169,16 +169,20 @@ tool. The same model command passes through `shell-quote` classification and rea
 
 The 2026-09-01 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,797 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 2,975 relationships with 10,848 symbolized components, and completed in 928.2787 seconds
+resolved 2,975 relationships with 10,848 symbolized components, and completed in 925.0134 seconds
 on the development machine. The summary now exposes Vercel AI runtime evidence for Code Mode's
 approval/tool surface and WorkflowAgent's framework-level approval pause, request chunk, and
 revalidation continuation path, plus OpenAI Agents JS streaming-run event-surface inventory for
 literal `stream: true` direct and stable Runner run calls. The first-class
 `typescript_openai_run_streaming` benchmark slice records 17 controls: 11 direct `run(...)`, six
-stable `Runner.run(...)`, and 17 configured-by edges in one repository. Three parse warnings were
-isolated and reported without aborting the run. Tests and fixtures are inventoried but excluded
-from findings by default; `--include-tests` enables them. The pinned corpus contains no AgentVerify
-inline directives, so the benchmark records zero suppressed findings.
+stable `Runner.run(...)`, and 17 configured-by edges in one repository. The first-class
+`typescript_openai_codex_tool` slice records eight Codex extension tool/policy components in one
+repository: four tools, four controls, three explicit `approvalPolicy: "never"` controls, one
+default thread-options control without explicit approval policy, four agent-tool edges, and four
+configured-by edges. Three parse warnings were isolated and reported without aborting the run.
+Tests and fixtures are inventoried but excluded from findings by default; `--include-tests` enables
+them. The pinned corpus contains no AgentVerify inline directives, so the benchmark records zero
+suppressed findings.
 For focused development, `scripts/benchmark_engine.py --repository <owner/name>` can refresh one or
 more named corpus repositories before paying the full-corpus cost; release evidence should still use
 the default unfiltered 71-repository run.
@@ -1730,7 +1734,7 @@ literal `tools` arrays, including same-file binding and inline forms, real
 network/web-search toggles, stream
 callback bindings, run-context thread reuse, top-level/default-thread working-directory values,
 default thread options without explicit approval, and a mutated-binding negative.
-All 2,514 IR labels pass (1,929 positives and 585 negatives). The checked
+All 2,522 IR labels pass (1,937 positives and 585 negatives). The checked
 `benchmarks/ir-truthset-results.json` file contains the current per-check precision/recall
 breakdown, including the Vercel WorkflowAgent same-file/imported/reexported model-binding labels,
 direct/named-reexported/star-reexported execute-helper tool-graph labels, real Vercel
