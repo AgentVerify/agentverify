@@ -7,6 +7,12 @@ catalog workflows.
 
 ## Completed recently
 
+- Extended exact TypeScript OpenAI Agents SDK `Agent.clone(...)` source lineage through relative
+  named and star reexports of exported OpenAI `Agent` bindings. Clone sources reached through
+  barrels keep the original source-agent ID, ambiguous/conflicting reexports remain unresolved, and
+  RealtimeAgent imports are no longer marked as OpenAI clone sources. The local imported-clone case
+  now covers direct import, named reexport, star reexport, ambiguous reexport, and lookalike clone
+  negatives; the refreshed public IR truth set passes 2,451/2,451 labels.
 - Added conservative cross-file TypeScript Vercel `WorkflowAgent.tools` edges for direct relative
   named imports, exact named reexports, and unambiguous star reexports of immutable exported
   tool-set objects. Imported tool-set entries now resolve to their original sibling-module

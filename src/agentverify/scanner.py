@@ -15230,6 +15230,103 @@ def typescript_imported_tool_object_bindings(
     return resolved
 
 
+def typescript_exported_openai_agent_bindings(
+    root: Path,
+    path: Path,
+    text: str,
+    seen: frozenset[Path] = frozenset(),
+) -> dict[str, tuple[str, str, str]]:
+    """Return exported exact OpenAI Agents JS Agent bindings and exact local reexports."""
+    try:
+        canonical_path = path.resolve()
+    except OSError:
+        return {}
+    if canonical_path in seen:
+        return {}
+    seen = seen | {canonical_path}
+    relative = path.relative_to(root).as_posix()
+    code = typescript_code_mask(text)
+    agent_imports = {
+        local
+        for local, imported in typescript_named_import_bindings(text, "@openai/agents").items()
+        if imported == "Agent" and not typescript_import_binding_is_shadowed(text, local)
+    }
+    candidates: dict[str, list[tuple[str, str, str]]] = defaultdict(list)
+    for constructor in agent_imports:
+        exported_agent_pattern = re.compile(
+            r"\bexport\s+const\s+([A-Za-z_$][\w$]*)"
+            r"\s*(?::\s*(?:[^=;\n]|=(?!>))+)?"
+            rf"=\s*new\s+{re.escape(constructor)}\s*\("
+        )
+        for exported_agent_match in exported_agent_pattern.finditer(code):
+            exported_name = exported_agent_match.group(1)
+            opening = code.find(
+                "(",
+                exported_agent_match.start(),
+                exported_agent_match.end(),
+            )
+            end = typescript_balanced_end(code, opening, "(", ")")
+            if end is None:
+                continue
+            body = text[opening + 1 : end - 1]
+            agent_name = typescript_object_string_property(body, "name") or exported_name
+            candidates[exported_name].append(
+                (
+                    agent_name,
+                    source_symbol("ts", relative, "agent", exported_name),
+                    "exported-local-agent",
+                )
+            )
+    for match in TS_NAMED_EXPORT_FROM.finditer(text):
+        target = typescript_resolve_local_module(root, path, match.group(2))
+        if target is None:
+            continue
+        try:
+            target_text = target.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        target_exports = typescript_exported_openai_agent_bindings(
+            root,
+            target,
+            target_text,
+            seen,
+        )
+        for raw_specifier in match.group(1).split(","):
+            parts = typescript_named_specifier_parts(raw_specifier)
+            if parts is None:
+                continue
+            original, exported_name = parts
+            binding = target_exports.get(original)
+            if binding is None:
+                continue
+            candidates[exported_name].append(
+                (binding[0], binding[1], "reexported-local-agent")
+            )
+    for match in TS_STAR_EXPORT_FROM.finditer(text):
+        target = typescript_resolve_local_module(root, path, match.group(1))
+        if target is None:
+            continue
+        try:
+            target_text = target.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        target_exports = typescript_exported_openai_agent_bindings(
+            root,
+            target,
+            target_text,
+            seen,
+        )
+        for exported_name, binding in target_exports.items():
+            candidates[exported_name].append(
+                (binding[0], binding[1], "star-reexported-local-agent")
+            )
+    return {
+        name: bindings[0]
+        for name, bindings in candidates.items()
+        if len(bindings) == 1
+    }
+
+
 def typescript_literal_string_binding_for_expression(
     expression: str,
     literal_bindings: dict[str, TypeScriptLiteralStringBinding],
@@ -25021,15 +25118,6 @@ def typescript_graph(
         except OSError:
             continue
         target_code = typescript_code_mask(target_text)
-        target_openai_agent_imports = {
-            local
-            for local, imported in typescript_named_import_bindings(
-                target_text,
-                "@openai/agents",
-            ).items()
-            if imported == "Agent"
-            and not typescript_import_binding_is_shadowed(target_text, local)
-        }
         target_realtime_imports = {
             **typescript_named_import_bindings(target_text, "@openai/agents/realtime"),
             **typescript_named_import_bindings(target_text, "@openai/agents-realtime"),
@@ -25080,26 +25168,14 @@ def typescript_graph(
                 )
                 agent_id = source_symbol("ts", target, "agent", target_agent_variable)
                 target_local_realtime_agents[target_agent_variable] = (agent_name, agent_id)
-        imported_agent_matches: list[tuple[str, str]] = []
-        for target_constructor in target_openai_agent_imports:
-            exported_agent_pattern = re.compile(
-                rf"\bexport\s+const\s+{re.escape(original)}"
-                r"\s*(?::\s*(?:[^=;\n]|=(?!>))+)?"
-                rf"=\s*new\s+{re.escape(target_constructor)}\s*\("
-            )
-            for exported_agent_match in exported_agent_pattern.finditer(target_code):
-                opening = target_code.find(
-                    "(",
-                    exported_agent_match.start(),
-                    exported_agent_match.end(),
-                )
-                end = typescript_balanced_end(target_code, opening, "(", ")")
-                if end is None:
-                    continue
-                body = target_text[opening + 1 : end - 1]
-                agent_name = typescript_object_string_property(body, "name") or original
-                agent_id = source_symbol("ts", target, "agent", original)
-                imported_agent_matches.append((agent_name, agent_id))
+        imported_agent_matches: list[tuple[str, str, bool]] = []
+        target_openai_agent_exports = typescript_exported_openai_agent_bindings(
+            root,
+            target_path,
+            target_text,
+        )
+        if openai_agent := target_openai_agent_exports.get(original):
+            imported_agent_matches.append((openai_agent[0], openai_agent[1], True))
         for target_constructor in target_realtime_agent_imports:
             exported_agent_pattern = re.compile(
                 rf"\bexport\s+const\s+{re.escape(original)}"
@@ -25118,11 +25194,13 @@ def typescript_graph(
                 body = target_text[opening + 1 : end - 1]
                 agent_name = typescript_object_string_property(body, "name") or original
                 agent_id = source_symbol("ts", target, "agent", original)
-                imported_agent_matches.append((agent_name, agent_id))
+                imported_agent_matches.append((agent_name, agent_id, False))
         if len(imported_agent_matches) == 1:
-            local_agents[local_name] = imported_agent_matches[0]
+            agent_name, agent_id, is_openai_agent = imported_agent_matches[0]
+            local_agents[local_name] = (agent_name, agent_id)
             local_agent_declaration_ends[local_name] = 0
-            openai_agent_bindings.add(local_name)
+            if is_openai_agent:
+                openai_agent_bindings.add(local_name)
         imported_session_matches: list[tuple[tuple[str, str], str]] = []
         for target_constructor in target_realtime_session_imports:
             exported_session_pattern = re.compile(

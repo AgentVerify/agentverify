@@ -6437,7 +6437,44 @@ def test_typescript_openai_imported_agent_clone_is_exact() -> None:
         ],
         "clone_omitted_list_policy": "shared-from-source-agent",
     }
+    assert agents["ts:manager.ts#agent:namedReexportClone"].attributes == {
+        "constructor": "Agent.clone",
+        "module": "@openai/agents",
+        "imported_symbol": "Agent",
+        "configuration": "Agent.clone",
+        "clone_source_binding": "namedWriterAgent",
+        "clone_source_agent": "Imported writer",
+        "clone_source_agent_id": "ts:agents.ts#agent:writerAgent",
+        "scope": "production",
+        "clone_omitted_list_properties": [
+            "tools",
+            "handoffs",
+            "mcpServers",
+            "inputGuardrails",
+            "outputGuardrails",
+        ],
+        "clone_omitted_list_policy": "shared-from-source-agent",
+    }
+    assert agents["ts:manager.ts#agent:starReexportClone"].attributes == {
+        "constructor": "Agent.clone",
+        "module": "@openai/agents",
+        "imported_symbol": "Agent",
+        "configuration": "Agent.clone",
+        "clone_source_binding": "starWriterAgent",
+        "clone_source_agent": "Imported writer",
+        "clone_source_agent_id": "ts:agents.ts#agent:writerAgent",
+        "scope": "production",
+        "clone_omitted_list_properties": [
+            "tools",
+            "handoffs",
+            "mcpServers",
+            "inputGuardrails",
+            "outputGuardrails",
+        ],
+        "clone_omitted_list_policy": "shared-from-source-agent",
+    }
     assert "ts:manager.ts#agent:fakeClone" not in agents
+    assert "ts:manager.ts#agent:ambiguousClone" not in agents
 
     clone_edges = [
         relationship
@@ -6446,15 +6483,55 @@ def test_typescript_openai_imported_agent_clone_is_exact() -> None:
         and relationship.source_kind == "agent"
         and relationship.target_kind == "agent"
     ]
-    assert len(clone_edges) == 1
-    assert clone_edges[0].source_id == "ts:manager.ts#agent:importedClone"
-    assert clone_edges[0].target_id == "ts:agents.ts#agent:writerAgent"
-    assert clone_edges[0].attributes == {
+    clone_edges_by_source = {relationship.source_id: relationship for relationship in clone_edges}
+    assert set(clone_edges_by_source) == {
+        "ts:manager.ts#agent:importedClone",
+        "ts:manager.ts#agent:namedReexportClone",
+        "ts:manager.ts#agent:starReexportClone",
+    }
+    assert clone_edges_by_source["ts:manager.ts#agent:importedClone"].target_id == (
+        "ts:agents.ts#agent:writerAgent"
+    )
+    assert clone_edges_by_source["ts:manager.ts#agent:importedClone"].attributes == {
         "analysis": "typescript-openai-agents-agent-clone",
         "configuration": "Agent.clone",
         "clone_source_binding": "writerAgent",
         "clone_list_overrides": ["tools"],
         "clone_omitted_list_properties": [
+            "handoffs",
+            "mcpServers",
+            "inputGuardrails",
+            "outputGuardrails",
+        ],
+        "clone_omitted_list_policy": "shared-from-source-agent",
+    }
+    assert clone_edges_by_source["ts:manager.ts#agent:namedReexportClone"].target_id == (
+        "ts:agents.ts#agent:writerAgent"
+    )
+    assert clone_edges_by_source[
+        "ts:manager.ts#agent:namedReexportClone"
+    ].attributes == {
+        "analysis": "typescript-openai-agents-agent-clone",
+        "configuration": "Agent.clone",
+        "clone_source_binding": "namedWriterAgent",
+        "clone_omitted_list_properties": [
+            "tools",
+            "handoffs",
+            "mcpServers",
+            "inputGuardrails",
+            "outputGuardrails",
+        ],
+        "clone_omitted_list_policy": "shared-from-source-agent",
+    }
+    assert clone_edges_by_source["ts:manager.ts#agent:starReexportClone"].target_id == (
+        "ts:agents.ts#agent:writerAgent"
+    )
+    assert clone_edges_by_source["ts:manager.ts#agent:starReexportClone"].attributes == {
+        "analysis": "typescript-openai-agents-agent-clone",
+        "configuration": "Agent.clone",
+        "clone_source_binding": "starWriterAgent",
+        "clone_omitted_list_properties": [
+            "tools",
             "handoffs",
             "mcpServers",
             "inputGuardrails",

@@ -61,9 +61,9 @@
   `RealtimeSession` bindings, plus exact `session.connect({ apiKey })` auth-source and transport
   context resolved from direct `RealtimeSession` bindings, without broadening into ambiguous
   helper/config composition, arbitrary spread objects, or lookalike event emitters/connectors. Exact
-  same-file and exact imported sibling `Agent.clone({...})` lineage/list-property sharing semantics
-  are now covered; future clone work should focus on reexported source Agents or list mutation only
-  if source identity remains exact.
+  same-file, exact imported sibling, and exact named/star-reexported sibling `Agent.clone({...})`
+  lineage/list-property sharing semantics are now covered; future clone work should focus on list
+  mutation only if source identity and mutation timing remain exact.
 - Continue OpenAI Agents JS HITL and safety-governance extraction where evidence remains exact:
   richer `needsApproval` predicate quality, automatic approval bypasses, and `computerTool`
   `onSafetyCheck` callbacks that distinguish explicit user/policy review from pass-through

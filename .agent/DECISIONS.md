@@ -1270,22 +1270,26 @@
 ## OpenAI Agents JS Agent.clone is exact lineage with explicit list semantics
 
 - Decision: Represent exact TypeScript OpenAI Agents SDK `Agent.clone({...})` calls as Agent
-  components only when the clone source is a stable same-file Agent binding or an exact imported
-  sibling export that resolves to one OpenAI `Agent`, and the clone config is a direct object
-  literal. Add a `derived-from` edge back to the source Agent, record list properties explicitly
-  supplied in the clone config, and mark omitted SDK list properties as `shared-from-source-agent`.
+  components only when the clone source is a stable same-file Agent binding, an exact imported
+  sibling export, or an exact named/star reexport that resolves to one OpenAI `Agent`, and the clone
+  config is a direct object literal. Add a `derived-from` edge back to the original source Agent,
+  record list properties explicitly supplied in the clone config, and mark omitted SDK list
+  properties as `shared-from-source-agent`. Conflicting reexports remain unresolved.
 - Evidence: The pinned OpenAI Agents JS `packages/agents-core/src/agent.ts` docs state that
   omitted list properties such as `tools`, `handoffs`, `mcpServers`, `inputGuardrails`, and
   `outputGuardrails` share the original Agent's arrays. The pinned docs example
   `examples/docs/agents/agentCloning.ts` clones `pirateAgent` into `robotAgent` with those lists
   omitted, and `examples/financial-research-agent/manager.ts` clones imported `writerAgent` into
-  `reportWriterAgent` while overriding `tools`.
+  `reportWriterAgent` while overriding `tools`. Local regression labels now cover direct imports,
+  named reexports, star reexports, an ambiguous/conflicting reexport negative, and a lookalike
+  `.clone(...)` negative while preserving the original `ts:agents.ts#agent:writerAgent` source ID
+  through barrels.
 - Alternative: Treat any `.clone(...)` on an identifier as an Agent, or resolve arbitrary imported
   clone sources. Rejected because lookalike objects, dynamic config helpers, rebound source
   bindings, and broad cross-file source identity need stronger provenance before AgentVerify should
   claim lineage.
-- Revisit when reexported imported Agent bindings or list mutation can be resolved with stable
-  source IDs and list semantics without broad property-flow interpretation.
+- Revisit when list mutation can be resolved with stable source IDs, mutation timing, and list
+  semantics without broad property-flow interpretation.
 
 ## OpenAI Agents JS hostedMcpTool approval is hosted-MCP-specific inventory
 
