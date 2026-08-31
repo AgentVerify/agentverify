@@ -458,6 +458,30 @@ def render_benchmark_verification(payload: dict[str, object]) -> str:
     return json.dumps(payload, indent=2) + "\n"
 
 
+def render_benchmark_verification_summary(payload: dict[str, object]) -> str:
+    results = payload["results"]
+    if not isinstance(results, list):
+        raise TypeError("results must be an array")
+    labels = sum(result["labels"] for result in results)
+    passed = sum(result["passed"] for result in results)
+    failed = sum(result["failed"] for result in results)
+    digest_ok = sum(1 for result in results if result.get("digest_ok") is True)
+    lines = [
+        "AgentVerify Benchmark Verification",
+        f"Passed: {str(payload['passed']).lower()}",
+        f"All labels passed: {str(payload['all_labels_passed']).lower()}",
+        f"Results: {len(results)}",
+        f"Labels: {passed}/{labels} passed ({failed} failed)",
+        f"Digests: {digest_ok}/{len(results)} ok",
+    ]
+    for result in results:
+        lines.append(
+            f"- {result['result']}: {result['passed']}/{result['labels']} passed, "
+            f"{result['label_scope']}, {result['evaluation_kind']}"
+        )
+    return "\n".join(lines) + "\n"
+
+
 def render_engine_results_verification(payload: dict[str, object]) -> str:
     return json.dumps(payload, indent=2) + "\n"
 

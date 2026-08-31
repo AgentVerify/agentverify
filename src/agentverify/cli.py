@@ -14,6 +14,7 @@ from .benchmark import (
     DEFAULT_ENGINE_RESULTS,
     ENGINE_RESULTS_VERIFICATION_ERRORS,
     render_benchmark_verification,
+    render_benchmark_verification_summary,
     render_engine_results_verification,
     render_engine_results_verification_summary,
     verify_benchmark_results,
@@ -263,11 +264,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="fail unless every result has passed equal to labels",
     )
     benchmark_verify.add_argument(
+        "--format",
+        choices=("json", "summary"),
+        default="json",
+        help="verification output format; defaults to json",
+    )
+    benchmark_verify.add_argument(
         "-o",
         "--output",
         type=Path,
         metavar="PATH",
-        help="write verification JSON to PATH instead of standard output",
+        help="write verification output to PATH instead of standard output",
     )
     benchmark_verify_engine = benchmark_subparsers.add_parser(
         "verify-engine", help="validate engine-results JSON snapshots"
@@ -453,7 +460,12 @@ def main(argv: list[str] | None = None) -> int:
         except BENCHMARK_VERIFICATION_ERRORS as error:
             print(f"agentverify: benchmark verification failed: {error}", file=sys.stderr)
             return 2
-        return emit_output(render_benchmark_verification(payload), args.output) or 0
+        rendered = (
+            render_benchmark_verification_summary(payload)
+            if args.format == "summary"
+            else render_benchmark_verification(payload)
+        )
+        return emit_output(rendered, args.output) or 0
     if args.command == "holdout":
         if args.manifest is None and args.labels is None:
             print(

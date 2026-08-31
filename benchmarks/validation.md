@@ -190,7 +190,9 @@ aggregate fields: the 12 core aggregate fields plus every flat summary metric fi
 successful repository entries, so release checks fail if detector summaries drift from the packaged
 snapshot. `agentverify benchmark verify-engine --format summary` provides a compact human-facing
 view of the same pass/fail state and checked-field count while the default JSON output remains the
-machine-readable release artifact.
+machine-readable release artifact. The public benchmark-result verifier also supports
+`agentverify benchmark verify --format summary`, which reports total label pass/fail counts, digest
+status, and per-result label-scope/evaluation-kind rows.
 
 The locked collector prioritizes manifests, production SSRF/URL-safety sources, and then general
 security/agent/tool/MCP sources within the 220-file cap. It adds at most 20 local source files:

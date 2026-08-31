@@ -732,6 +732,36 @@ def test_checked_benchmark_verification_example_matches_cli_output(capsys) -> No
     Draft202012Validator(schema).validate(checked)
 
 
+def test_cli_benchmark_verify_summary_format(capsys) -> None:
+    assert (
+        cli.main(
+            [
+                "benchmark",
+                "verify",
+                "--require-evaluation-kind",
+                "public-regression",
+                "--require-all-passed",
+                "--format",
+                "summary",
+            ]
+        )
+        == 0
+    )
+
+    captured = capsys.readouterr()
+    assert captured.err == ""
+    assert captured.out == (
+        "AgentVerify Benchmark Verification\n"
+        "Passed: true\n"
+        "All labels passed: true\n"
+        "Results: 2\n"
+        "Labels: 3252/3252 passed (0 failed)\n"
+        "Digests: 2/2 ok\n"
+        "- benchmarks/truthset-results.json: 730/730 passed, reporting-rules, public-regression\n"
+        "- benchmarks/ir-truthset-results.json: 2522/2522 passed, agent-ir, public-regression\n"
+    )
+
+
 def test_cli_benchmark_verify_writes_output_file(tmp_path: Path, capsys) -> None:
     output = tmp_path / "benchmark-verification.json"
 

@@ -115,7 +115,8 @@ label and manifest digests, binds outcomes back to exact label ids/rules/expecta
 outcome-derived passed/failed/metrics totals, and reports failure classes separately for observation,
 anchor, and source-snippet mismatches. It can fail closed on release-claim requirements such as
 `--require-evaluation-kind sealed-holdout`, `--require-sealed`, `--require-manifest`, and
-`--require-all-passed`.
+`--require-all-passed`. Use `agentverify benchmark verify --format summary` for compact CI logs
+while keeping JSON as the default machine-readable artifact format.
 `agentverify benchmark verify-engine` validates full-corpus engine metric snapshots against the
 bundled engine-results schema and checks that core summary totals plus flat per-repository detector
 metric totals match the packaged repository entries. Use
