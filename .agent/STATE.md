@@ -12,7 +12,8 @@ catalog workflows.
   `streaming-run` control records streaming runtime mode and event-surface scope without treating
   streaming as durable audit proof. Eight labels under `IR-TS-OPENAI-RUN-STREAMING` pass from the
   local conversation fixture and the pinned hosted MCP human-in-the-loop example; the full public
-  IR truth set now passes 2,522/2,522.
+  IR truth set now passes 2,522/2,522, and the refreshed 71-repository engine benchmark records
+  2,975 relationships / 10,848 symbolized components.
 - Added exact OpenAI Agents JS Codex extension tool IR for `codexTool(...)` when a source-proven
   `@openai/agents` `Agent` includes either a stable same-file Codex tool binding or an inline
   `codexTool({...})` call in its literal `tools` array. The scanner records workspace-write
@@ -21,15 +22,15 @@ catalog workflows.
   values including shorthand bindings, and default thread options without explicit approval policy.
   Mutated tool bindings are not treated as executable agent tools. Twenty-five labels under
   `IR-TS-OPENAI-CODEX-TOOL` pass in
-  focused evaluation; the full public IR truth set passes 2,514/2,514, and the refreshed 71-repository
-  engine benchmark records 2,958 relationships / 10,831 symbolized components.
+  focused evaluation; the full public IR truth set passes 2,514/2,514, and the then-current
+  71-repository engine benchmark recorded 2,958 relationships / 10,831 symbolized components.
 - Added exact Vercel `WorkflowAgent` framework-runtime approval IR for the pinned
   `packages/workflow/src/workflow-agent.ts` implementation: the scanner records the
   `tool.needsApproval` run-loop policy, writable-stream `tool-approval-request` chunk format, and
   approval-response continuation path that revalidates through `validateApprovedToolApprovals(...)`
   before approved execution or `execution-denied` results. Seven real labels under
   `IR-APPROVAL-CONTROL` pass; the full public IR truth set passes 2,514/2,514 after refresh, and
-  the refreshed 71-repository engine benchmark records 2,958 relationships / 10,831 symbolized
+  the then-current 71-repository engine benchmark recorded 2,958 relationships / 10,831 symbolized
   components.
 - Extended exact Vercel `WorkflowAgent` observability IR from constructor options to same-file
   `agent.stream({ ... })` telemetry and callback options when the agent binding is source-proven
@@ -134,7 +135,7 @@ catalog workflows.
   package-artifact expectations.
 - Refreshed the full 71-repository schema-v159 engine benchmark after the Vercel Code Mode IR
   additions. The benchmark passes 71/71 repositories, scans 10,797 selected source files plus 155
-  config files, and now records 2,942 relationships / 10,814 symbolized components. The benchmark
+  config files, and then recorded 2,942 relationships / 10,814 symbolized components. The benchmark
   summary now exposes a first-class `typescript_vercel_code_mode` slice with one repository, eight
   components, and seven approval/tool-surface relationships.
 - Added a repeatable, unit-tested `scripts/benchmark_engine.py --repository <owner/name>` filter for
@@ -221,7 +222,7 @@ catalog workflows.
 - Added exact TypeScript OpenAI Agents SDK Agent guardrail tripwire metadata for direct returned
   `tripwireTriggered` objects in inline guardrails and stable typed `InputGuardrail`/
   `OutputGuardrail` bindings. Regenerated public IR truth-set results then covered 2,387/2,387
-  passing labels; a later full engine refresh now reports 2,942 relationships / 10,814 symbolized
+  passing labels; a later full engine refresh now reports 2,975 relationships / 10,848 symbolized
   components.
 - Added exact TypeScript OpenAI Agents SDK Agent guardrail direct-throw metadata for stable guardrail
   bindings whose `execute` body directly throws, including official `GuardrailExecutionError`

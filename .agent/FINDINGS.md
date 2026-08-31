@@ -20,7 +20,7 @@
   require both the wheel schema file and the source-distribution `benchmarks/engine-results.json`
   evidence artifact.
 - The repository contains a 71-repository pinned research corpus and schema-v159 engine benchmark
-  outputs. The refreshed full-corpus summary records 2,958 relationships and 10,831 symbolized
+  outputs. The refreshed full-corpus summary records 2,975 relationships and 10,848 symbolized
   components. It includes dedicated Vercel AI runtime evidence for Code Mode's public tool surface
   and host-tool approval runtime plus WorkflowAgent's framework-level approval pause,
   request-chunk, and revalidation continuation path.
@@ -860,15 +860,15 @@
   Agent bindings are unresolved, and lookalike objects are ignored. The local fixture plus pinned
   OpenAI Agents JS `examples/docs/running-agents/exceptions1.ts` fallback assignments bring the
   public IR truth set to 2,321 passing labels; a later full engine refresh now records
-  2,942 relationships / 10,814 symbolized components.
+  2,975 relationships / 10,848 symbolized components.
 - OpenAI Agents JS Agent guardrails now expose conservative tripwire metadata when the guardrail
   `execute` body directly returns an object containing `tripwireTriggered`. Literal `true`/`false`
   values are counted separately from computed expressions, and the metadata propagates to the
   agent-to-control governance edge. Mutated guardrail bindings and dynamic guardrail arrays do not
   expose stale tripwire metadata. The local fixture plus pinned OpenAI Agents JS
   `input-guardrails.ts`, `output-guardrails.ts`, and `exceptions1.ts` examples bring the public IR
-  truth set to 2,362 passing labels; a later full engine refresh now records 2,942 relationships /
-  10,814 symbolized components.
+  truth set to 2,362 passing labels; a later full engine refresh now records 2,975 relationships /
+  10,848 symbolized components.
 - OpenAI Agents JS Agent guardrails now expose conservative direct-throw execution metadata when a
   stable inline or typed guardrail binding has an `execute` body whose first direct statement is
   `throw`. The local fixture and pinned OpenAI Agents JS `examples/docs/running-agents/exceptions1.ts`
