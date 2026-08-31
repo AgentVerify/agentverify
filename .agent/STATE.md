@@ -7,6 +7,12 @@ catalog workflows.
 
 ## Completed recently
 
+- Accepted narrow trailing TypeScript `as` / `satisfies` assertions after exact AI SDK provider
+  model calls for Vercel `WorkflowAgent.model` detection. Direct model properties, same-file const
+  bindings, imported bindings, and exact reexports now preserve exact model attribution through
+  static-only type assertion suffixes, while mutated and ambiguous bindings remain unresolved.
+  Focused `IR-TS-WORKFLOW-AGENT-MODEL` labels pass 17/17, and the public IR truth set now passes
+  2,472/2,472 labels.
 - Extended imported Vercel `WorkflowAgent.tools` execute-helper capability propagation through
   exact named reexports and unambiguous star reexports of stable helper functions. Ambiguous
   reexport barrels stay unresolved. Focused `IR-TS-TOOL-GRAPH` labels pass 16/16, and the public IR

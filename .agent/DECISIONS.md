@@ -57,28 +57,30 @@
   approval responses, or user-facing approval UX back into this runtime path without losing
   tool-call identity.
 
-## Vercel WorkflowAgent model controls require direct provider-call proof
+## Vercel WorkflowAgent model controls require provider-call proof plus static TS assertions only
 
 - Decision: Emit a `model-settings-policy` control for `WorkflowAgent.model` only when a
   source-proven `@ai-sdk/workflow` `WorkflowAgent` constructor has a top-level `model` property whose
   expression is exactly one direct AI SDK provider model call, such as
-  `anthropic("claude-sonnet-4-20250514")`, a stable same-file const binding initialized by exactly
-  one immutable AI SDK provider model call, or a relative named import that resolves through direct
-  export, exact named reexport, or unambiguous star reexport to an exported const initialized by
-  exactly one immutable AI SDK provider model call. Link the control back to the WorkflowAgent with
-  an `agent configured-by control` edge and preserve the model binding/resolution mode.
+  `anthropic("claude-sonnet-4-20250514")`, optionally followed only by a narrow trailing TypeScript
+  `as ...` or `satisfies ...` type assertion. Stable same-file const bindings and relative named
+  imports may resolve through direct export, exact named reexport, or unambiguous star reexport when
+  the underlying initializer is exactly one immutable AI SDK provider model call plus the same
+  static-only assertion suffix. Link the control back to the WorkflowAgent with an
+  `agent configured-by control` edge and preserve the model binding/resolution mode.
 - Evidence: Vercel AI's pinned `examples/next-workflow/workflow/agent-chat.ts` constructs a
   WorkflowAgent with a direct Anthropic model call. AgentVerify now records the provider, provider
   module, imported provider symbol, call, model string, model method, and source-agent identity in
   the control, and the public IR truth set pins both the control and relationship labels. A local
   imported-model fixture now covers stable same-file const bindings, direct import, named reexport,
-  star reexport, casted model, mutated binding/export, and ambiguous star-barrel cases.
-- Alternative: Resolve casted or arbitrary wrapper expressions around provider calls. Rejected
-  because those forms need separate type/alias provenance; otherwise a model value can be
-  transformed before the agent receives it.
-- Revisit when: Framework-specific model wrapper helpers,
-  or safe TypeScript cast stripping can be proven without broadening into arbitrary expression
-  resolution.
+  star reexport, simple trailing casted model, mutated binding/export, and ambiguous star-barrel
+  cases. Focused regression also covers direct `as any` and `satisfies LanguageModel` suffixes.
+- Alternative: Resolve arbitrary wrapper expressions or runtime continuations around provider
+  calls. Rejected because those forms can transform the model value before the agent receives it.
+  Runtime expressions such as fallback operators or helper wrappers still require separate
+  source-proven semantics.
+- Revisit when: Real repositories show recurring safe model wrapper helpers or richer type
+  assertion syntax that can be proven without broadening into arbitrary expression resolution.
 
 ## TypeScript object-tool execute helper bodies map only under unique stable proof
 

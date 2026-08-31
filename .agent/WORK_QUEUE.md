@@ -29,7 +29,9 @@
   stable exported `execute` helper functions now map concrete helper-body capabilities back to a
   unique importing object tool. Direct relative named imports, exact named reexports, and
   unambiguous star reexports of immutable exported provider-model consts now feed
-  `WorkflowAgent.model`; future work should focus on richer model wrapper/cast shapes,
+  `WorkflowAgent.model`; trailing static TypeScript `as`/`satisfies` assertions are accepted for
+  direct and bound provider-model calls, so future work should focus on richer runtime model wrapper
+  shapes or additional type syntax only with comparable proof,
   approval-resumption/event flows, reportable Vercel approval findings only with matching real
   evidence, or additional execute-helper alias chains only when comparable ambiguity guards exist.
 - Extend Vercel AI Code Mode only when runtime provenance stays exact: current IR covers the

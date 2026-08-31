@@ -15239,13 +15239,35 @@ def typescript_imported_tool_object_bindings(
     return resolved
 
 
+_TYPESCRIPT_STATIC_TYPE_NAME = (
+    r"(?:[A-Za-z_$][\w$]*)(?:\s*\.\s*[A-Za-z_$][\w$]*)*"
+)
+_TYPESCRIPT_STATIC_TYPE_EXPR = (
+    rf"(?:any|unknown|never|void|boolean|string|number|object|bigint|symbol|const|"
+    rf"{_TYPESCRIPT_STATIC_TYPE_NAME})"
+    rf"(?:\s*<\s*{_TYPESCRIPT_STATIC_TYPE_NAME}(?:\s*\[\])?\s*>)?"
+    r"(?:\s*\[\])*"
+)
+_TYPESCRIPT_TRAILING_STATIC_ASSERTIONS = re.compile(
+    rf"(?:(?:as|satisfies)\s+{_TYPESCRIPT_STATIC_TYPE_EXPR}\s*)+"
+)
+
+
+def typescript_trailing_expression_is_static_type_assertion(text: str) -> bool:
+    """Return true when an expression suffix contains only TypeScript type assertions."""
+    trailing = typescript_code_mask(text).strip()
+    if not trailing:
+        return True
+    return _TYPESCRIPT_TRAILING_STATIC_ASSERTIONS.fullmatch(trailing) is not None
+
+
 def typescript_provider_call_is_exact_initializer(
     text: str,
     *,
     expression_offset: int,
     provider_call: TypeScriptProviderCall,
 ) -> bool:
-    """Return true when a const initializer is exactly one provider model call."""
+    """Return true when a const initializer is one provider model call plus static TS types."""
     code = typescript_code_mask(text)
     if provider_call.offset != expression_offset:
         return False
@@ -15259,7 +15281,9 @@ def typescript_provider_call_is_exact_initializer(
         index for index in (code.find(";", end), code.find("\n", end)) if index >= 0
     ]
     statement_end = min(statement_end_candidates) if statement_end_candidates else len(code)
-    return not code[end:statement_end].strip()
+    return typescript_trailing_expression_is_static_type_assertion(
+        code[end:statement_end]
+    )
 
 
 def typescript_same_file_ai_sdk_provider_model_bindings(
@@ -25255,7 +25279,9 @@ def typescript_graph(
                 if (
                     model_call is not None
                     and expression_end is not None
-                    and not expression_code[expression_end:].strip()
+                    and typescript_trailing_expression_is_static_type_assertion(
+                        expression_code[expression_end:]
+                    )
                 ):
                     model_line = line_at(text, model_property_offset)
                     model_control_name, model_control_id = (

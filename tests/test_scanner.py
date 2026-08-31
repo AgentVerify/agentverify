@@ -3073,10 +3073,14 @@ def test_typescript_workflow_agent_model_control_is_exact(tmp_path: Path) -> Non
             const castAgent = new WorkflowAgent({
               model: anthropic("claude-cast") as any,
             });
+            const satisfiesAgent = new WorkflowAgent({
+              model: anthropic("claude-satisfies") satisfies LanguageModel,
+            });
             void agent;
             void boundAgent;
             void mutableAgent;
             void castAgent;
+            void satisfiesAgent;
             """
         ),
         encoding="utf-8",
@@ -3131,8 +3135,42 @@ def test_typescript_workflow_agent_model_control_is_exact(tmp_path: Path) -> Non
             "model_binding_resolution": "same-file-provider-model",
             "scope": "production",
         },
+        "castAgent": {
+            "analysis": "typescript-vercel-workflow-agent-model",
+            "module": "@ai-sdk/workflow",
+            "constructor": "WorkflowAgent",
+            "imported_symbol": "WorkflowAgent",
+            "configuration": "WorkflowAgent.model",
+            "settings_scope": "workflow-agent-model",
+            "source_agent": "castAgent",
+            "source_agent_id": "ts:agent.ts#agent:castAgent",
+            "provider": "Anthropic",
+            "provider_module": "@ai-sdk/anthropic",
+            "provider_imported_symbol": "anthropic",
+            "provider_call": "anthropic",
+            "model": "claude-cast",
+            "model_method": "language",
+            "scope": "production",
+        },
+        "satisfiesAgent": {
+            "analysis": "typescript-vercel-workflow-agent-model",
+            "module": "@ai-sdk/workflow",
+            "constructor": "WorkflowAgent",
+            "imported_symbol": "WorkflowAgent",
+            "configuration": "WorkflowAgent.model",
+            "settings_scope": "workflow-agent-model",
+            "source_agent": "satisfiesAgent",
+            "source_agent_id": "ts:agent.ts#agent:satisfiesAgent",
+            "provider": "Anthropic",
+            "provider_module": "@ai-sdk/anthropic",
+            "provider_imported_symbol": "anthropic",
+            "provider_call": "anthropic",
+            "model": "claude-satisfies",
+            "model_method": "language",
+            "scope": "production",
+        },
     }
-    assert {"mutableAgent", "castAgent"}.isdisjoint(controls_by_agent)
+    assert {"mutableAgent"}.isdisjoint(controls_by_agent)
     assert {
         (
             relationship.source_name,
@@ -3168,6 +3206,26 @@ def test_typescript_workflow_agent_model_control_is_exact(tmp_path: Path) -> Non
             "claude-bound",
             "boundModel",
             "same-file-provider-model",
+        ),
+        (
+            "castAgent",
+            "configured-by",
+            "model-settings-policy",
+            "typescript-vercel-workflow-agent-model",
+            "Anthropic",
+            "claude-cast",
+            None,
+            None,
+        ),
+        (
+            "satisfiesAgent",
+            "configured-by",
+            "model-settings-policy",
+            "typescript-vercel-workflow-agent-model",
+            "Anthropic",
+            "claude-satisfies",
+            None,
+            None,
         )
     }
 
@@ -3195,6 +3253,11 @@ def test_typescript_workflow_agent_model_control_follows_imported_model_bindings
             "localWorkflowModel",
             "same-file-provider-model",
         ),
+        "localCastAgent": (
+            "claude-local-cast",
+            "localCastModel",
+            "same-file-provider-model",
+        ),
         "directImportedAgent": (
             "claude-imported",
             "workflowModel",
@@ -3210,8 +3273,13 @@ def test_typescript_workflow_agent_model_control_follows_imported_model_bindings
             "starReexportModel",
             "imported-local-star-reexported-provider-model",
         ),
+        "castAgent": (
+            "claude-cast",
+            "castModel",
+            "imported-local-provider-model",
+        ),
     }
-    assert {"castAgent", "mutableAgent", "ambiguousAgent"}.isdisjoint(controls)
+    assert {"mutableAgent", "ambiguousAgent"}.isdisjoint(controls)
 
     model_edges = {
         (
@@ -3231,6 +3299,11 @@ def test_typescript_workflow_agent_model_control_follows_imported_model_bindings
             "same-file-provider-model",
         ),
         (
+            "localCastAgent",
+            "localCastModel",
+            "same-file-provider-model",
+        ),
+        (
             "directImportedAgent",
             "workflowModel",
             "imported-local-provider-model",
@@ -3244,6 +3317,11 @@ def test_typescript_workflow_agent_model_control_follows_imported_model_bindings
             "starReexportAgent",
             "starReexportModel",
             "imported-local-star-reexported-provider-model",
+        ),
+        (
+            "castAgent",
+            "castModel",
+            "imported-local-provider-model",
         ),
     }
 

@@ -30,6 +30,12 @@
   capability, late-bound `tools.*` host-tool access, the generated tool-description prompt that
   declares `tools.name(input)` and unavailable `fetch`, and the edge to the existing Code Mode
   approval runtime. The full public IR truth set now passes 2,446/2,446 labels.
+- Vercel `WorkflowAgent.model` provider-call detection can safely pass through narrow trailing
+  TypeScript-only `as ...` and `satisfies ...` assertions for direct model properties, same-file
+  const bindings, imported bindings, and exact reexports. Runtime wrappers, fallback expressions,
+  mutated bindings/exports, and ambiguous star reexports remain unresolved. The focused
+  WorkflowAgent-model truth set passes 17/17 labels, and the full public IR truth set passes
+  2,472/2,472 labels.
 - Vercel AI Code Mode's host-tool approval runtime is now inventoried as a framework approval flow:
   `invokeHostTool(...)` checks `hostTool.needsApproval` before `executeHostTool(...)`, interrupt
   mode returns the `ai-sdk-code-mode/tool-approval` payload, callback denial throws before execution,

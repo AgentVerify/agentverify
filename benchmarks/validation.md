@@ -1721,7 +1721,7 @@ Twelve OpenAI Agents JS trace labels pin local and real `withTrace(..., { groupI
 `withTrace(..., { traceId })` correlation evidence, including the real `routing.ts` dynamic
 `conversationId` group binding, the real Codex tool example's generated trace ID with a logged
 OpenAI platform trace URL, and local missing-option negatives.
-All 2,470 IR labels pass (1,884 positives and 586 negatives). The checked
+All 2,472 IR labels pass (1,888 positives and 584 negatives). The checked
 `benchmarks/ir-truthset-results.json` file contains the current per-check precision/recall
 breakdown, including the Vercel WorkflowAgent same-file/imported/reexported model-binding labels,
 direct/named-reexported/star-reexported execute-helper tool-graph labels, OpenAI
