@@ -40,6 +40,7 @@ REQUIRED_ENTRY_POINTS = verify_distribution.REQUIRED_ENTRY_POINTS
 REQUIRED_RUNTIME_DEPENDENCIES = verify_distribution.REQUIRED_RUNTIME_DEPENDENCIES
 ENGINE_RESULTS_FILE = verify_distribution.ENGINE_RESULTS_FILE
 ENGINE_RESULTS_SCHEMA_FILE = verify_distribution.ENGINE_RESULTS_SCHEMA_FILE
+ENGINE_AGGREGATE_TOTAL_FIELDS = verify_distribution.ENGINE_AGGREGATE_TOTAL_FIELDS
 latest_sdist = verify_distribution.latest_sdist
 latest_wheel = verify_distribution.latest_wheel
 validate_engine_results_payload = verify_distribution.validate_engine_results_payload
@@ -359,6 +360,22 @@ def test_distribution_verifier_rejects_invalid_engine_results(
         verify_sdist(sdist)
 
 
+def test_distribution_verifier_rejects_engine_result_aggregate_drift(
+    tmp_path: Path,
+) -> None:
+    sdist = tmp_path / "agentverify-0.1.0.tar.gz"
+    payload = json.loads((ROOT / ENGINE_RESULTS_FILE).read_text(encoding="utf-8"))
+    payload["summary"]["files_scanned"] = payload["summary"]["files_scanned"] + 1
+    write_sdist(
+        sdist,
+        set(REQUIRED_SOURCE_FILES) | set(REQUIRED_BENCHMARK_RESULT_FILES),
+        file_contents={ENGINE_RESULTS_FILE: json.dumps(payload)},
+    )
+
+    with pytest.raises(RuntimeError, match="summary.files_scanned"):
+        verify_sdist(sdist)
+
+
 def test_engine_results_payload_validation_reports_errors() -> None:
     schema = json.loads((ROOT / ENGINE_RESULTS_SCHEMA_FILE).read_text(encoding="utf-8"))
     payload = json.loads((ROOT / ENGINE_RESULTS_FILE).read_text(encoding="utf-8"))
@@ -368,6 +385,25 @@ def test_engine_results_payload_validation_reports_errors() -> None:
     assert validate_engine_results_payload(schema, payload) == [
         "'repositories' is a required property"
     ]
+    payload = json.loads((ROOT / ENGINE_RESULTS_FILE).read_text(encoding="utf-8"))
+    payload["summary"]["files_scanned"] = payload["summary"]["files_scanned"] + 1
+    assert validate_engine_results_payload(schema, payload) == [
+        "summary.files_scanned does not match repository total"
+    ]
+    assert ENGINE_AGGREGATE_TOTAL_FIELDS == (
+        "files_scanned",
+        "dependency_files_materialized",
+        "config_files_scanned",
+        "relationships",
+        "symbolized_components",
+        "identified_symbol_endpoints",
+        "resolved_symbol_endpoints",
+        "unmatched_identified_symbol_endpoints",
+        "ambiguous_repeated_binding_targets",
+        "resolved_import_edges",
+        "parse_warnings",
+        "suppressed_findings",
+    )
 
 
 def test_distribution_verifier_rejects_benchmark_workflow_without_verifier_upload(

@@ -7,6 +7,10 @@ catalog workflows.
 
 ## Completed recently
 
+- Extended source-distribution engine-results validation to recompute the same stable integer
+  aggregate totals as `agentverify benchmark verify-engine`, so a packaged
+  `benchmarks/engine-results.json` fails release verification even when it is schema-valid but has
+  stale summary counts.
 - Strengthened `agentverify benchmark verify-engine` from repository-count checks to recomputing
   stable integer summary totals from repository entries, including scanned files, dependency/config
   files, relationships, symbol endpoints, resolved import edges, parse warnings, and suppressed

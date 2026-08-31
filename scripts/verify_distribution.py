@@ -17,6 +17,20 @@ from jsonschema import exceptions as jsonschema_exceptions
 
 ENGINE_RESULTS_FILE = "benchmarks/engine-results.json"
 ENGINE_RESULTS_SCHEMA_FILE = "src/agentverify/schemas/agentverify-engine-results-v1.schema.json"
+ENGINE_AGGREGATE_TOTAL_FIELDS = (
+    "files_scanned",
+    "dependency_files_materialized",
+    "config_files_scanned",
+    "relationships",
+    "symbolized_components",
+    "identified_symbol_endpoints",
+    "resolved_symbol_endpoints",
+    "unmatched_identified_symbol_endpoints",
+    "ambiguous_repeated_binding_targets",
+    "resolved_import_edges",
+    "parse_warnings",
+    "suppressed_findings",
+)
 REQUIRED_ENTRY_POINTS = {"agentverify": "agentverify.cli:main"}
 REQUIRED_RUNTIME_DEPENDENCIES = {"cryptography>=46.0", "jsonschema>=4.23"}
 REQUIRED_BENCHMARK_RESULT_FILES = frozenset(
@@ -190,7 +204,19 @@ def validate_engine_results_payload(schema: object, payload: object) -> list[str
         return [str(error)]
     except jsonschema_exceptions.ValidationError as error:
         return [error.message]
-    return []
+    summary = payload["summary"]  # type: ignore[index]
+    repositories = payload["repositories"]  # type: ignore[index]
+    errors = []
+    if summary["repositories"] != len(repositories):
+        errors.append("summary.repositories does not match repository entries")
+    successful = sum(1 for result in repositories if result.get("status") == "ok")
+    if summary["successful"] != successful:
+        errors.append("summary.successful does not match ok repository entries")
+    for field in ENGINE_AGGREGATE_TOTAL_FIELDS:
+        total = sum(result[field] for result in repositories)
+        if summary[field] != total:
+            errors.append(f"summary.{field} does not match repository total")
+    return errors
 
 
 def validate_sdist_engine_results(path: Path, names: set[str]) -> dict[str, object]:
