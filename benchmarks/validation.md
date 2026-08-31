@@ -185,9 +185,9 @@ them. The pinned corpus contains no AgentVerify inline directives, so the benchm
 suppressed findings.
 For focused development, `scripts/benchmark_engine.py --repository <owner/name>` can refresh one or
 more named corpus repositories before paying the full-corpus cost; release evidence should still use
-the default unfiltered 71-repository run. `agentverify benchmark verify-engine` now recomputes the
-12 core aggregate fields plus selected first-class OpenAI streaming-run and Codex-tool metric fields
-from repository entries, so release checks fail if those detector summaries drift from the packaged
+the default unfiltered 71-repository run. `agentverify benchmark verify-engine` now recomputes 606
+aggregate fields: the 12 core aggregate fields plus every flat summary metric field represented by
+successful repository entries, so release checks fail if detector summaries drift from the packaged
 snapshot.
 
 The locked collector prioritizes manifests, production SSRF/URL-safety sources, and then general

@@ -31,32 +31,10 @@ CORE_ENGINE_TOTAL_FIELDS = (
     "parse_warnings",
     "suppressed_findings",
 )
-ENGINE_METRIC_SUMMARY_FIELDS = (
-    ("typescript_openai_run_streaming", "total"),
-    ("typescript_openai_run_streaming", "direct_run"),
-    ("typescript_openai_run_streaming", "runner_run"),
-    ("typescript_openai_run_streaming", "configured_by_edges"),
-    ("typescript_openai_run_streaming", "repositories"),
-    ("typescript_openai_codex_tool", "components"),
-    ("typescript_openai_codex_tool", "tools"),
-    ("typescript_openai_codex_tool", "controls"),
-    ("typescript_openai_codex_tool", "approval_policy_controls"),
-    ("typescript_openai_codex_tool", "thread_option_controls"),
-    ("typescript_openai_codex_tool", "approval_policy_never"),
-    ("typescript_openai_codex_tool", "workspace_write_sandbox"),
-    ("typescript_openai_codex_tool", "network_access_enabled"),
-    ("typescript_openai_codex_tool", "web_search_disabled"),
-    ("typescript_openai_codex_tool", "stream_callbacks"),
-    ("typescript_openai_codex_tool", "run_context_thread_reuse"),
-    ("typescript_openai_codex_tool", "working_directory_literal"),
-    ("typescript_openai_codex_tool", "working_directory_binding"),
-    ("typescript_openai_codex_tool", "agent_tool_edges"),
-    ("typescript_openai_codex_tool", "configured_by_edges"),
-    ("typescript_openai_codex_tool", "repositories"),
-)
 BENCHMARK_VERIFICATION_ERRORS = (
     OSError,
     RuntimeError,
+    TypeError,
     json.JSONDecodeError,
     SchemaError,
     ValidationError,
@@ -103,6 +81,48 @@ def integer_metric_value(value: object, path: Path, field: str) -> int:
     if isinstance(value, int):
         return value
     raise RuntimeError(f"{path}: {field} must be an integer or boolean")
+
+
+def engine_metric_summary_fields(payload: dict[str, object], path: Path) -> list[tuple[str, str]]:
+    """Return flat, per-repository metric fields that can be recomputed from entries."""
+    summary = payload["summary"]
+    repositories = payload["repositories"]
+    if not isinstance(summary, dict):
+        raise TypeError(f"{path}: summary must be an object")
+    if not isinstance(repositories, list):
+        raise TypeError(f"{path}: repositories must be an array")
+    ok_repositories = [
+        result
+        for result in repositories
+        if isinstance(result, dict) and result.get("status") == "ok"
+    ]
+    fields: list[tuple[str, str]] = []
+    for metric, summary_value in summary.items():
+        if not isinstance(summary_value, dict) or not summary_value:
+            continue
+        if not all(
+            isinstance(value, int) and not isinstance(value, bool)
+            for value in summary_value.values()
+        ):
+            continue
+        for field in summary_value:
+            field_seen = False
+            for result in ok_repositories:
+                repository_metric = result.get(metric)
+                if repository_metric is None:
+                    continue
+                if not isinstance(repository_metric, dict):
+                    raise TypeError(f"{path}: repository metric {metric} must be an object")
+                if field in repository_metric:
+                    integer_metric_value(
+                        repository_metric[field],
+                        path,
+                        f"repository.{metric}.{field}",
+                    )
+                    field_seen = True
+            if field_seen:
+                fields.append((metric, field))
+    return fields
 
 
 def outcome_metric_id(outcome: dict) -> str:
@@ -397,21 +417,18 @@ def verify_engine_results(
             raise RuntimeError(f"{path}: summary.{field} does not match repository total")
     checked_fields = list(CORE_ENGINE_TOTAL_FIELDS)
     ok_repositories = [result for result in repositories if result.get("status") == "ok"]
-    for metric, field in ENGINE_METRIC_SUMMARY_FIELDS:
+    for metric, field in engine_metric_summary_fields(payload, path):
         metric_field = f"{metric}.{field}"
-        try:
-            summary_value = integer_metric_value(summary[metric][field], path, f"summary.{metric_field}")
-        except KeyError as exc:
-            raise RuntimeError(f"{path}: summary.{metric_field} is missing") from exc
+        summary_value = integer_metric_value(summary[metric][field], path, f"summary.{metric_field}")
         total = 0
         for result in ok_repositories:
-            try:
-                value = result[metric][field]
-            except KeyError as exc:
+            repository_metric = result.get(metric, {})
+            if not isinstance(repository_metric, dict):
                 repository = result.get("repository", "<unknown>")
-                raise RuntimeError(
-                    f"{path}: repository {repository} missing {metric_field}"
-                ) from exc
+                raise TypeError(
+                    f"{path}: repository {repository} has invalid {metric} metric"
+                )
+            value = repository_metric.get(field, 0)
             total += integer_metric_value(value, path, f"repository.{metric_field}")
         if summary_value != total:
             raise RuntimeError(

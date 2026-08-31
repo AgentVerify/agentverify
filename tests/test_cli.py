@@ -10,20 +10,22 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from jsonschema import Draft202012Validator
 
 from agentverify import cli
-from agentverify.benchmark import (
-    CORE_ENGINE_TOTAL_FIELDS,
-    ENGINE_METRIC_SUMMARY_FIELDS,
-    file_sha256,
-)
+from agentverify.benchmark import CORE_ENGINE_TOTAL_FIELDS, file_sha256
 from agentverify.policy import load_policy, render_policy_signing_payload
 from agentverify.report import render_bom, render_json, render_sarif, render_schema
 from agentverify.rules import RULE_CATALOG
 from agentverify.scanner import scan_repository
 
 ROOT = Path(__file__).resolve().parents[1]
-ENGINE_VERIFICATION_FIELDS = list(CORE_ENGINE_TOTAL_FIELDS) + [
-    f"{metric}.{field}" for metric, field in ENGINE_METRIC_SUMMARY_FIELDS
-]
+
+
+def assert_engine_verification_fields(fields: list[str]) -> None:
+    assert fields[: len(CORE_ENGINE_TOTAL_FIELDS)] == list(CORE_ENGINE_TOTAL_FIELDS)
+    assert len(fields) > 500
+    assert "python_provider_call_attribution.calls" in fields
+    assert "typescript_openai_run_streaming.total" in fields
+    assert "typescript_openai_codex_tool.components" in fields
+    assert "findings.AV-EXEC001" in fields
 
 
 def write_signed_policy_artifacts(
@@ -763,6 +765,7 @@ def test_cli_verifies_checked_in_engine_results(capsys) -> None:
     assert cli.main(["benchmark", "verify-engine"]) == 0
 
     payload = json.loads(capsys.readouterr().out)
+    checked_fields = payload["aggregate_total_fields_checked"]
     assert payload == {
         "engine_results_verification_format": "AgentVerify Engine Results Verification",
         "schema_version": 1,
@@ -775,8 +778,9 @@ def test_cli_verifies_checked_in_engine_results(capsys) -> None:
         "successful": 71,
         "summary_repositories": 71,
         "summary_successful": 71,
-        "aggregate_total_fields_checked": ENGINE_VERIFICATION_FIELDS,
+        "aggregate_total_fields_checked": checked_fields,
     }
+    assert_engine_verification_fields(checked_fields)
     schema = json.loads(render_schema("engine-results-verification"))
     Draft202012Validator(schema).validate(payload)
 
@@ -803,7 +807,7 @@ def test_cli_benchmark_verify_engine_writes_output_file(tmp_path: Path, capsys) 
     assert payload["passed"] is True
     assert payload["repositories"] == 71
     assert payload["schema"] == "engine-results"
-    assert payload["aggregate_total_fields_checked"] == ENGINE_VERIFICATION_FIELDS
+    assert_engine_verification_fields(payload["aggregate_total_fields_checked"])
     schema = json.loads(render_schema("engine-results-verification"))
     Draft202012Validator(schema).validate(payload)
 

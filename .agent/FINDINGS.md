@@ -4,8 +4,8 @@
 
 - `agentverify benchmark verify-engine` is now the installed validation path for full-corpus engine
   snapshots. It validates the engine-results schema, checks core summary aggregate consistency,
-  recomputes selected first-class detector metric totals from successful repository entries, and
-  emits JSON governed by `agentverify schema engine-results-verification`.
+  recomputes every flat summary metric total represented by successful repository entries, and emits
+  JSON governed by `agentverify schema engine-results-verification`.
 - Installed-wheel smoke verification now validates the checked engine-results snapshot with the
   schema exported by the installed `agentverify` executable, proving the packaged schema and source
   evidence artifact agree in a built artifact workflow.
