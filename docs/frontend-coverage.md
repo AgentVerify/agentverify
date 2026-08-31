@@ -752,6 +752,9 @@ non-pass-through boundary without claiming human review. The same resolver recor
 `computer` backend lifecycle metadata: shorthand or identifier bindings remain external, inline
 object configs are static, `create`/`dispose` callback pairs are per-run factories, and create-only
 factories are called out as missing disposal evidence.
+The Python `ComputerTool(on_safety_check=...)` resolver mirrors the policy distinction for boolean
+callbacks: exact `return True` callbacks are auto-acknowledgement evidence, exact `return False`
+callbacks are `acknowledge-none` non-findings, and conditional callbacks stay unresolved.
 OpenAI Agents JS `Agent.clone({...})` calls are modeled as source-agent lineage only when the clone
 receiver is a stable same-file `Agent`, a direct relative imported exported `Agent`, or an exact
 named/star barrel reexport that resolves unambiguously to one exported OpenAI `Agent`. Clone IR
@@ -1202,7 +1205,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 731-label rule truth set and 2,560-label IR component/relationship set are curated regression
+The 733-label rule truth set and 2,562-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

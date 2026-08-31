@@ -94,8 +94,10 @@
   quality or new exact helper/prompt shapes that preserve call-site and source-agent identity.
 - Continue OpenAI Agents Python safety-governance extraction where evidence remains exact: hosted
   MCP callback review quality beyond the now-covered same-file direct approval-dict return
-  predicates and same-function result-binding approval dictionaries, unresolved later external star
-  imports or package-level hosted/non-hosted MCP approval policy or `tool_config` exports, any
+  predicates and same-function result-binding approval dictionaries, `ComputerTool.on_safety_check`
+  quality beyond the now-covered exact `return True` auto-acknowledgement and exact `return False`
+  non-acknowledgement boolean callbacks, unresolved later external star imports or package-level
+  hosted/non-hosted MCP approval policy or `tool_config` exports, any
   reporting-grade remote MCP auth/URL exposure quality only when deployment context is source-proven,
   and production sticky-approval defaults that can be separated from prompt-selected
   `always_approve`/`always_reject` persistence, without resolving arbitrary boolean expressions or
@@ -118,9 +120,10 @@
   cluster in detectors that rely on non-import-neighbor architecture sidecars or global summaries
   rather than simple source imports. Repository-wide release scans are still authoritative. Opt-in
   `--scan-cache-dir` now preserves repository-wide semantics across repeated local runs by
-  revalidating source and AgentVerify package source digests before reusing cached IR. Next
-  performance work should benchmark cache-hit overhead across the full public IR set and then decide
-  whether detector-side selected-path dependency hooks are still worth their complexity.
+  revalidating source and AgentVerify package source digests before reusing cached IR. A warm-cache
+  post-refresh smoke now shows 157/157 IR target hits in about 2.8 seconds and 118/118 reporting
+  target hits in about 2.1 seconds, so next performance work should focus on cold-cache invalidation
+  cost after scanner changes or selected-path dependency gaps rather than warm-cache hit overhead.
 - Explore exact interprocedural OpenAI Agents JS history-state continuation only if it can remain
   source-proven. The real `examples/docs/running-agents/chatLoop.ts` caller-owned concat feedback
   and `examples/agent-patterns/routing.ts` direct triage-agent alias are now covered; dynamic

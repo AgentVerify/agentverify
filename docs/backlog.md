@@ -444,8 +444,10 @@ path and callbacks that return an empty acknowledgement array are explicit non-f
 Schema v125 extends the same safety-control vocabulary to OpenAI Agents Python
 `ComputerTool(on_safety_check=...)`. Inline `lambda ...: True` callbacks and scope-proven same-file
 callbacks with one final `return True` are auto-acknowledgement evidence. Conditional callbacks stay
-unresolved, and the pinned OpenAI Agents Python SDK tests validate duplicate same-name nested
-callbacks in separate lexical scopes.
+unresolved, while exact inline or same-file callbacks that return `False` are recorded as
+`safety_check_policy: acknowledge-none` non-findings rather than being treated as
+auto-acknowledgement or human-review proof. The pinned OpenAI Agents Python SDK tests validate
+duplicate same-name nested callbacks in separate lexical scopes.
 
 Schema v126 records environment-backed approval-bypass provenance on exact OpenAI Agents JS
 `RunState.approve(...)` controls. A braced approval branch guarded by a same-file confirmation
@@ -675,7 +677,7 @@ exporters, actor identity, retention, and loss guarantees before generalizing th
 
 ## P1 — benchmark truth set
 
-The curated regression set has reached 731 pinned positive/negative locations, with 2,560 separately
+The curated regression set has reached 733 pinned positive/negative locations, with 2,562 separately
 scored IR component/relationship labels. Schema-v133 engine results and
 `docs/frontend-coverage.md` publish category-stratified observations and unsupported syntax. Next
 create a separately sampled, externally reviewed holdout set and keep its labels sealed until rule

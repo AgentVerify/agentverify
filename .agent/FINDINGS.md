@@ -1027,3 +1027,24 @@
 - Avoid external trust/authenticity claims until there is an explicit trust-root design.
 - Keep reexport support narrow and symbol-proven; do not fall back to generic `Client`, `Agent`, or
   same-named wrapper classes without package provenance.
+
+## OpenAI Agents Python ComputerTool safety callback boundary
+
+- Finding: In the Python SDK, `ComputerTool.on_safety_check` returns a boolean acknowledgement
+  decision for an individual pending safety check, unlike the TypeScript SDK path where callbacks
+  can return explicit acknowledgement arrays. Exact Python `return False` callbacks are therefore
+  non-acknowledgement evidence, not empty-list evidence.
+- Confidence: High for the pinned SDK revision and local fixture shapes.
+- Implication: `AV-APPROVAL011` should continue to report only exact auto-acknowledgement
+  (`return True`) while the IR preserves exact `return False` metadata as
+  `safety_check_policy: acknowledge-none` for downstream reviewers and frontends.
+
+## Warm public-regression scan cache is no longer the benchmark bottleneck
+
+- Finding: After the Python ComputerTool scanner change and full artifact refresh, a warm-cache full
+  IR truth-set run passed 2,562/2,562 labels with `scan_cache: hit=157 miss=0` in about 2.8 seconds
+  wall time, and a warm-cache full reporting-rule run passed 733/733 labels with
+  `scan_cache: hit=118 miss=0` in about 2.1 seconds wall time.
+- Confidence: High for the current local corpus/cache layout.
+- Implication: More near-term benchmark performance work should focus on cold-cache invalidation
+  cost after scanner changes or selected-path dependency gaps, not on warm-cache hit overhead.

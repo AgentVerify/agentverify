@@ -1566,3 +1566,19 @@
 - Revisit when imported literal guardrail arrays, helper-created tool guardrails, richer tripwire
   metadata, or guarded-tool-to-agent composition edges can remain source-proven without broad
   object/property matching.
+
+## OpenAI Agents Python ComputerTool false safety callbacks are non-ack inventory
+
+- Decision: Record exact Python `ComputerTool(on_safety_check=...)` callbacks that always return
+  `False` as `safety_check_policy: acknowledge-none` with `safety_check_decision: return-false`.
+  Keep these as IR inventory and explicit `AV-APPROVAL011` non-findings rather than treating them as
+  human review proof.
+- Evidence: The pinned OpenAI Agents Python SDK declares `on_safety_check` as a callback returning a
+  boolean acknowledgement decision for one pending safety check. Local fixtures now cover inline
+  `lambda ...: False` and scope-proven same-file `return False` callbacks, and focused/public
+  regression labels pass for both the IR-positive and reporting-negative contracts.
+- Alternative: Leave `return False` unresolved, or report it as safe/human-approved. Rejected
+  because `False` is exact evidence of non-acknowledgement, but it does not prove who reviewed the
+  check or why.
+- Revisit when the Python SDK adds richer acknowledgement payloads, review metadata, or multi-check
+  callback shapes that can be separated from simple boolean acknowledgement.

@@ -4513,6 +4513,18 @@
       "component":{"kind":"tool","name":"ComputerTool@29","symbol_id":"py:agent.py#tool:tool@29","attributes":{"constructor":"ComputerTool","safety_check_policy":"auto-acknowledge-all"}}
     },
     {
+      "id":"python-openai-computer-safety-lambda-reject-local",
+      "target":{"kind":"local","path":"cases/python_computer_tool"},
+      "check_id":"IR-APPROVAL-CONTROL","path":"agent.py","line":37,"expected":true,
+      "component":{"kind":"tool","name":"ComputerTool@37","symbol_id":"py:agent.py#tool:tool@37","attributes":{"constructor":"ComputerTool","safety_check_handler":"configured","safety_check_policy":"acknowledge-none","safety_check_decision":"return-false","safety_check_resolution":"inline-lambda"}}
+    },
+    {
+      "id":"python-openai-computer-safety-callback-reject-local",
+      "target":{"kind":"local","path":"cases/python_computer_tool"},
+      "check_id":"IR-APPROVAL-CONTROL","path":"agent.py","line":47,"expected":true,
+      "component":{"kind":"tool","name":"ComputerTool@47","symbol_id":"py:agent.py#tool:tool@47","attributes":{"constructor":"ComputerTool","safety_check_handler":"configured","safety_check_policy":"acknowledge-none","safety_check_decision":"return-false","safety_check_resolution":"same-file-callback"}}
+    },
+    {
       "id":"python-openai-computer-safety-callback-real",
       "target":{"kind":"repository","repository":"openai/openai-agents-python","commit":"17ba331bb0ad1622a4ff4ecdc914c77118075dad"},
       "check_id":"IR-APPROVAL-CONTROL","path":"tests/test_tool_approval_call_id_reuse.py","line":1500,"expected":true,

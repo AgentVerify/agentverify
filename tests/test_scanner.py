@@ -4898,13 +4898,15 @@ def test_python_computer_tool_has_exact_agent_and_capability_identity() -> None:
         for component in ir.components
         if component.kind == "tool" and component.name.startswith("ComputerTool@")
     ]
-    assert {tool.evidence.line for tool in tools} == {14, 19, 24, 29, 33}
+    assert {tool.evidence.line for tool in tools} == {14, 19, 24, 29, 33, 37, 47}
     assert {tool.symbol_id for tool in tools} == {
         "py:agent.py#tool:tool@14",
         "py:agent.py#tool:tool@19",
         "py:agent.py#tool:tool@24",
         "py:agent.py#tool:tool@29",
         "py:agent.py#tool:ComputerTool@33",
+        "py:agent.py#tool:tool@37",
+        "py:agent.py#tool:tool@47",
     }
     tool_by_line = {tool.evidence.line: tool for tool in tools}
     assert tool_by_line[14].attributes["approval_policy"] == "not-applicable"
@@ -4918,6 +4920,12 @@ def test_python_computer_tool_has_exact_agent_and_capability_identity() -> None:
     assert tool_by_line[24].attributes["safety_check_resolution"] == "same-file-callback"
     assert tool_by_line[29].attributes["safety_check_handler"] == "configured"
     assert tool_by_line[29].attributes["safety_check_policy"] == "unresolved"
+    assert tool_by_line[37].attributes["safety_check_policy"] == "acknowledge-none"
+    assert tool_by_line[37].attributes["safety_check_decision"] == "return-false"
+    assert tool_by_line[37].attributes["safety_check_resolution"] == "inline-lambda"
+    assert tool_by_line[47].attributes["safety_check_policy"] == "acknowledge-none"
+    assert tool_by_line[47].attributes["safety_check_decision"] == "return-false"
+    assert tool_by_line[47].attributes["safety_check_resolution"] == "same-file-callback"
 
     agent_edges = {
         edge.source_name: edge
@@ -4934,6 +4942,10 @@ def test_python_computer_tool_has_exact_agent_and_capability_identity() -> None:
     assert agent_edges["fourth"].attributes == {"target_identity": "lexical-single-definition"}
     assert agent_edges["inline"].target_id == "py:agent.py#tool:ComputerTool@33"
     assert agent_edges["inline"].attributes == {}
+    assert agent_edges["fifth"].target_id == "py:agent.py#tool:tool@37"
+    assert agent_edges["fifth"].attributes == {"target_identity": "lexical-single-definition"}
+    assert agent_edges["sixth"].target_id == "py:agent.py#tool:tool@47"
+    assert agent_edges["sixth"].attributes == {"target_identity": "lexical-single-definition"}
 
     capability_edges = [
         edge
@@ -4948,7 +4960,7 @@ def test_python_computer_tool_has_exact_agent_and_capability_identity() -> None:
         for component in ir.components
         if component.kind == "capability" and component.name == "computer-control"
     ]
-    assert len(capabilities) == 5
+    assert len(capabilities) == 7
     assert all(
         component.attributes["execution_environment"] == "local" for component in capabilities
     )

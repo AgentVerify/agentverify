@@ -2391,7 +2391,7 @@ def python_approval_bypass_function_summaries(
 def python_computer_safety_check_function_summaries(
     tree: ast.Module, node_scopes: dict[int, tuple[str, ...]]
 ) -> dict[tuple[tuple[str, ...], str], str]:
-    """Resolve same-file ComputerTool safety callbacks that always return True."""
+    """Resolve same-file ComputerTool safety callbacks that always return a bool literal."""
 
     functions = [
         node for node in ast.walk(tree) if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
@@ -2429,7 +2429,7 @@ def python_computer_safety_check_function_summaries(
         if not (
             isinstance(final, ast.Return)
             and isinstance(final.value, ast.Constant)
-            and final.value.value is True
+            and isinstance(final.value.value, bool)
         ):
             continue
         visitor = ControlFlowVisitor()
@@ -2437,7 +2437,7 @@ def python_computer_safety_check_function_summaries(
             visitor.visit(statement)
         if visitor.has_early_exit:
             continue
-        summaries[key] = "return-true"
+        summaries[key] = "return-true" if final.value.value is True else "return-false"
     return summaries
 
 
@@ -9169,12 +9169,21 @@ class PythonVisitor(ast.NodeVisitor):
                     if (
                         isinstance(keyword.value, ast.Lambda)
                         and isinstance(keyword.value.body, ast.Constant)
-                        and keyword.value.body.value is True
+                        and isinstance(keyword.value.body.value, bool)
                     ):
+                        safety_check_policy = (
+                            "auto-acknowledge-all"
+                            if keyword.value.body.value is True
+                            else "acknowledge-none"
+                        )
                         safety_check_attributes.update(
                             {
-                                "safety_check_policy": "auto-acknowledge-all",
-                                "safety_check_decision": "return-true",
+                                "safety_check_policy": safety_check_policy,
+                                "safety_check_decision": (
+                                    "return-true"
+                                    if keyword.value.body.value is True
+                                    else "return-false"
+                                ),
                                 "safety_check_resolution": "inline-lambda",
                             }
                         )
@@ -9192,9 +9201,14 @@ class PythonVisitor(ast.NodeVisitor):
                                 ((), keyword.value.id)
                             )
                         if safety_decision is not None:
+                            safety_check_policy = (
+                                "auto-acknowledge-all"
+                                if safety_decision == "return-true"
+                                else "acknowledge-none"
+                            )
                             safety_check_attributes.update(
                                 {
-                                    "safety_check_policy": "auto-acknowledge-all",
+                                    "safety_check_policy": safety_check_policy,
                                     "safety_check_decision": safety_decision,
                                     "safety_check_resolution": "same-file-callback",
                                 }

@@ -7,6 +7,14 @@ catalog workflows.
 
 ## Completed recently
 
+- Extended OpenAI Agents Python `ComputerTool(on_safety_check=...)` inventory with exact
+  non-acknowledgement metadata for boolean callbacks. Inline `lambda ...: False` and scope-proven
+  same-file callbacks ending in a single `return False` now record
+  `safety_check_policy: acknowledge-none` / `safety_check_decision: return-false` and remain
+  `AV-APPROVAL011` non-findings, while exact `return True` auto-acknowledgement paths still report.
+  Focused `AV-APPROVAL011` labels pass 13/13, focused `IR-APPROVAL-CONTROL` labels pass 140/140,
+  the full reporting truth set passes 733/733, the full public IR truth set passes 2,562/2,562,
+  and benchmark verification passes 3,295/3,295 combined public-regression labels.
 - Extended exact TypeScript OpenAI Agents JS Codex extension tool inventory through relative
   imported `codexTool({...})` bindings from sibling modules, including exact named local reexports
   and unambiguous star reexports. Imported Codex tools now preserve producer-file tool/control

@@ -31,3 +31,18 @@ def fourth_agent():
 
 
 inline = Agent(name="inline", tools=[ComputerTool(computer=object())])
+
+
+def fifth_agent():
+    tool = ComputerTool(computer=object(), on_safety_check=lambda _check: False)
+    return Agent(name="fifth", tools=[tool])
+
+
+def reject(data):
+    _audit_log = data.safety_check.id
+    return False
+
+
+def sixth_agent():
+    tool = ComputerTool(computer=object(), on_safety_check=reject)
+    return Agent(name="sixth", tools=[tool])
