@@ -1554,8 +1554,9 @@ coverage; its labels must not drive rule implementation before evaluation.
 reporting process for that future benchmark. Evaluator outputs now include benchmark metadata that
 distinguishes public regression runs from sealed-holdout runs and records label/manifest hashes; the
 shape is validated by [`benchmark-results-v1.schema.json`](benchmark-results-v1.schema.json). Result
-files include both `passed` and `failed` totals plus a failure summary that separates observation,
-anchor, and source-snippet mismatches, so stale labels do not hide inside precision/recall metrics.
+files include `passed` and `failed` totals, an `all_labels_passed` boolean, and a failure summary
+that separates observation, anchor, and source-snippet mismatches, so stale labels do not hide
+inside precision/recall metrics.
 Run `agentverify benchmark verify --require-evaluation-kind public-regression --require-all-passed`
 to validate the checked-in result files, recompute their embedded label or manifest digests, and
 cross-check those derived totals. The source-checkout `uv run python scripts/verify_benchmark_results.py`

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-31T09:50:46.590065+00:00",
+  "generated_at": "2026-08-31T10:21:48.097755+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
@@ -12,6 +12,7 @@
   "labels": 2451,
   "passed": 2451,
   "failed": 0,
+  "all_labels_passed": true,
   "failure_summary": {
     "observation_mismatch": 0,
     "anchor_mismatch": 0,

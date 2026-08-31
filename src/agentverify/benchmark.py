@@ -197,6 +197,10 @@ def verify_result_invariants(path: Path, payload: dict, labels: list[dict]) -> N
     passed = sum(1 for outcome in outcomes if outcome["passed"])
     if passed != payload["passed"]:
         raise RuntimeError(f"{path}: passed count does not match outcomes")
+    if "all_labels_passed" in payload and payload["all_labels_passed"] != (
+        passed == payload["labels"]
+    ):
+        raise RuntimeError(f"{path}: all_labels_passed does not match outcomes")
 
     failed = len(outcomes) - passed
     if failed != payload["failed"]:

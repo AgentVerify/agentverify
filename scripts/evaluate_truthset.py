@@ -275,6 +275,7 @@ def main(argv: list[str] | None = None) -> int:
         "labels": len(labels),
         "passed": sum(item["passed"] for item in outcomes),
         "failed": sum(not item["passed"] for item in outcomes),
+        "all_labels_passed": all(item["passed"] for item in outcomes),
         "failure_summary": failure_summary_from_outcomes(outcomes),
         "metrics": metrics,
         "outcomes": outcomes,
@@ -289,6 +290,7 @@ def main(argv: list[str] | None = None) -> int:
                     "labels",
                     "passed",
                     "failed",
+                    "all_labels_passed",
                     "failure_summary",
                     "metrics",
                 )

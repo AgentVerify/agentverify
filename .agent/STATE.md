@@ -7,6 +7,11 @@ catalog workflows.
 
 ## Completed recently
 
+- Added optional top-level `all_labels_passed` to benchmark-result artifacts emitted by
+  `scripts/evaluate_truthset.py` and accepted by the bundled benchmark-result schema. The verifier
+  recomputes the boolean when present, so stale all-pass claims fail release checks without making
+  older external benchmark-result files invalid. Checked rule and IR result artifacts were
+  regenerated and still pass 730/730 and 2,451/2,451 labels respectively.
 - Extended exact TypeScript OpenAI Agents SDK `Agent.clone(...)` source lineage through relative
   named and star reexports of exported OpenAI `Agent` bindings. Clone sources reached through
   barrels keep the original source-agent ID, ambiguous/conflicting reexports remain unresolved, and

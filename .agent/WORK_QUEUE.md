@@ -87,10 +87,6 @@
 
 ## P2
 
-- Consider adding a top-level `all_labels_passed` boolean to benchmark-result artifacts emitted by
-  `scripts/evaluate_truthset.py` so filtered evaluator output mirrors verifier output. Treat this as
-  a separate schema/artifact migration: update `benchmark-results-v1.schema.json`, regenerate both
-  checked result files, refresh verifier examples, and keep backward compatibility explicit.
 - Keep example policy trust roots synchronized with composed example policy source digests whenever
   example policies change; prefer regenerating them with `agentverify policy --export-trust-root`.
 - Explore CycloneDX/SPDX adapters only when a mapping preserves links back to the native AgentVerify

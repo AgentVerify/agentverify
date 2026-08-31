@@ -67,6 +67,7 @@ def test_evaluator_marks_public_regression_metrics(tmp_path: Path, capsys) -> No
     assert "not an unbiased ecosystem accuracy estimate" in result["benchmark"]["claim_scope"]
     assert result["passed"] == 1
     assert result["failed"] == 0
+    assert result["all_labels_passed"] is True
     assert result["failure_summary"] == {
         "observation_mismatch": 0,
         "anchor_mismatch": 0,
@@ -347,6 +348,7 @@ def test_evaluator_reports_source_anchor_failures_separately(tmp_path: Path) -> 
     result = json.loads(output.read_text(encoding="utf-8"))
     assert result["passed"] == 0
     assert result["failed"] == 1
+    assert result["all_labels_passed"] is False
     assert result["failure_summary"] == {
         "observation_mismatch": 0,
         "anchor_mismatch": 0,
@@ -424,3 +426,4 @@ def test_checked_in_benchmark_results_match_schema() -> None:
         assert payload["benchmark"]["label_scope"] == expected_scope
         assert payload["benchmark"]["sealed"] is False
         assert payload["labels"] == payload["passed"]
+        assert payload["all_labels_passed"] is True

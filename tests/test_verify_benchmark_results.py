@@ -282,6 +282,28 @@ def test_benchmark_result_verifier_rejects_passed_count_drift(
     assert "passed count does not match outcomes" in captured.err
 
 
+def test_benchmark_result_verifier_rejects_all_labels_passed_drift(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    labels = tmp_path / "labels.json"
+    result = tmp_path / "results.json"
+    write_labels(labels)
+    write_result(result, labels)
+    schema = ROOT / "benchmarks/benchmark-results-v1.schema.json"
+    payload = json.loads(result.read_text(encoding="utf-8"))
+    payload["all_labels_passed"] = False
+    rewrite_result(result, payload)
+
+    assert (
+        verify_benchmark_results.main(
+            [str(result), "--schema", str(schema), "--root", str(tmp_path)]
+        )
+        == 1
+    )
+    captured = capsys.readouterr()
+    assert "all_labels_passed does not match outcomes" in captured.err
+
+
 def test_benchmark_result_verifier_rejects_failed_count_drift(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
