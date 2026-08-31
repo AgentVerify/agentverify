@@ -176,6 +176,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`benchmarks/release-checklist.md`](benchmarks/release-checklist.md) — claim boundaries and verifier gates for benchmark releases
 - [`examples/github-benchmark-verify.yml`](examples/github-benchmark-verify.yml) — copyable benchmark verifier workflow
 - [`examples/benchmark-verification.json`](examples/benchmark-verification.json) — checked verifier-output example for public-regression release gates
+- [`examples/engine-results-verification.json`](examples/engine-results-verification.json) — checked verifier-output example for engine metrics
 - [`benchmarks/holdout-manifest.template.json`](benchmarks/holdout-manifest.template.json) — public sample manifest shape
 - [`benchmarks/holdout-labels.template.json`](benchmarks/holdout-labels.template.json) — public sealed-label template shape
 - `agentverify schema holdout-manifest` and `agentverify schema holdout-labels` — installed

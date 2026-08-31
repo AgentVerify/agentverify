@@ -236,6 +236,14 @@ def test_github_benchmark_verify_example_is_read_only_and_exports_verifier_json(
         release_checklist
     )
     assert "[`examples/benchmark-verification.json`](examples/benchmark-verification.json)" in readme
+    assert (
+        "[`examples/engine-results-verification.json`](../examples/engine-results-verification.json)"
+        in release_checklist
+    )
+    assert (
+        "[`examples/engine-results-verification.json`](examples/engine-results-verification.json)"
+        in readme
+    )
     assert checked_example["all_labels_passed"] is True
     assert [
         (item["failed"], item["failure_summary"]) for item in checked_example["results"]

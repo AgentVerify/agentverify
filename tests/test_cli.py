@@ -799,6 +799,18 @@ def test_cli_benchmark_verify_engine_writes_output_file(tmp_path: Path, capsys) 
     Draft202012Validator(schema).validate(payload)
 
 
+def test_checked_engine_results_verification_example_matches_cli_output(capsys) -> None:
+    assert cli.main(["benchmark", "verify-engine"]) == 0
+
+    generated = json.loads(capsys.readouterr().out)
+    checked = json.loads(
+        (ROOT / "examples/engine-results-verification.json").read_text(encoding="utf-8")
+    )
+    assert checked == generated
+    schema = json.loads(render_schema("engine-results-verification"))
+    Draft202012Validator(schema).validate(checked)
+
+
 def test_cli_benchmark_verify_engine_rejects_summary_drift(
     tmp_path: Path, capsys
 ) -> None:
