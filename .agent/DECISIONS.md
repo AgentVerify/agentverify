@@ -107,17 +107,20 @@
 ## Vercel WorkflowAgent observability controls are instrumentation inventory, not audit proof
 
 - Decision: Emit `workflow-agent-telemetry` and `workflow-agent-callbacks` controls only for
-  source-proven `@ai-sdk/workflow` `WorkflowAgent` constructor properties. A top-level
-  `telemetry` property records inline, binding, factory-call, or configured-expression telemetry
-  options, while known lifecycle/tool callback properties record the configured callback names and
-  any direct handler call names that can be read without resolving arbitrary expressions. Link both
+  source-proven `@ai-sdk/workflow` `WorkflowAgent` constructor properties and same-file
+  `agent.stream({ ... })` options on unreassigned source-proven bindings. Top-level `telemetry`
+  properties record inline, binding, factory-call, or configured-expression telemetry options,
+  while known lifecycle/tool callback properties record the configured callback names and any
+  direct handler call names that can be read without resolving arbitrary expressions. Link both
   controls back to the source agent with `configured-by` edges.
 - Evidence: Vercel AI's pinned `examples/next-workflow/workflow/agent-chat.ts` configures an
   `onEnd` callback for model-facing tool output observability. Its
   `examples/next-workflow/workflow/telemetry-agent.ts` configures
   `telemetry: createTelemetryOptions(...)` plus `experimental_onStart`,
   `experimental_onStepStart`, `onToolExecutionStart`, `onToolExecutionEnd`, and `onEnd` callbacks
-  that record telemetry events. The public IR truth set pins six real observability labels.
+  that record telemetry events. The same file later calls `agent.stream({ ... })` with
+  `telemetry: createTelemetryOptions(...)` and an `onError` callback. The public IR truth set pins
+  ten real observability labels.
 - Alternative: Treat these hooks as durable audit coverage or infer sink quality from callback
   names. Rejected because callback presence proves instrumentation hooks, not retention,
   attribution, or delivery guarantees.

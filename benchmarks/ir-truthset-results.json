@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-31T12:48:06.125092+00:00",
+  "generated_at": "2026-08-31T14:37:43.716440+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "b6cfdb34e3f7ac08e13e9b767558257603515163a56fcde304801f989d30db6c",
+    "labels_sha256": "0a3ad22cda06dda1289f0f70a8240ce09bab40c3ac68236edff179d918e5af61",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 2478,
-  "passed": 2478,
+  "labels": 2482,
+  "passed": 2482,
   "failed": 0,
   "all_labels_passed": true,
   "failure_summary": {
@@ -828,7 +828,7 @@
       "recall": 1.0
     },
     "IR-TS-WORKFLOW-AGENT-OBSERVABILITY": {
-      "tp": 6,
+      "tp": 10,
       "fp": 0,
       "tn": 0,
       "fn": 0,
@@ -1676,6 +1676,42 @@
     },
     {
       "id": "typescript-vercel-workflow-agent-callbacks-edge-real",
+      "check_id": "IR-TS-WORKFLOW-AGENT-OBSERVABILITY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-vercel-workflow-agent-stream-telemetry-control-real",
+      "check_id": "IR-TS-WORKFLOW-AGENT-OBSERVABILITY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-vercel-workflow-agent-stream-telemetry-edge-real",
+      "check_id": "IR-TS-WORKFLOW-AGENT-OBSERVABILITY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-vercel-workflow-agent-stream-callbacks-real",
+      "check_id": "IR-TS-WORKFLOW-AGENT-OBSERVABILITY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-vercel-workflow-agent-stream-callbacks-edge-real",
       "check_id": "IR-TS-WORKFLOW-AGENT-OBSERVABILITY",
       "expected": true,
       "observed": true,

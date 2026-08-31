@@ -14289,6 +14289,60 @@ def typescript_import_binding_is_shadowed(text: str, name: str) -> bool:
     )
 
 
+def typescript_parameter_bindings_declared(text: str, names: set[str]) -> set[str]:
+    """Return exact names declared as function/arrow parameters."""
+    if not names:
+        return set()
+    code = typescript_code_mask(text)
+    patterns = (
+        re.compile(r"\bfunction\s+[A-Za-z_$][\w$]*\s*\("),
+        re.compile(r"\("),
+    )
+    declared: set[str] = set()
+    seen: set[int] = set()
+    for pattern_index, pattern in enumerate(patterns):
+        for match in pattern.finditer(code):
+            opening = code.find("(", match.start(), match.end())
+            if opening in seen:
+                continue
+            end = typescript_balanced_end(code, opening, "(", ")")
+            if end is None:
+                continue
+            if pattern_index == 1 and not re.match(r"\s*=>", code[end:]):
+                continue
+            seen.add(opening)
+            parameters = typescript_function_parameters(text[opening + 1 : end - 1])
+            for parameter in parameters:
+                if parameter.local_name in names:
+                    declared.add(parameter.local_name)
+    for match in re.finditer(r"(?<![\w$])([A-Za-z_$][\w$]*)\s*=>", code):
+        name = match.group(1)
+        if name in names:
+            declared.add(name)
+    return declared
+
+
+def typescript_import_bindings_shadowed(text: str, names: set[str]) -> set[str]:
+    """Bulk equivalent of ``typescript_import_binding_is_shadowed`` for import-heavy files."""
+    if not names:
+        return set()
+    code = typescript_code_mask(text)
+    shadowed: set[str] = set()
+    for match in re.finditer(
+        r"\b(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)\b",
+        code,
+    ):
+        name = match.group(1)
+        if name in names:
+            shadowed.add(name)
+    for match in re.finditer(r"(?<![\w$.])([A-Za-z_$][\w$]*)\s*=(?!=)", code):
+        name = match.group(1)
+        if name in names:
+            shadowed.add(name)
+    shadowed.update(typescript_parameter_bindings_declared(text, names))
+    return shadowed
+
+
 def typescript_named_specifier_parts(specifier: str) -> tuple[str, str] | None:
     """Return source and local/exported names from a named import/export specifier."""
     parts = specifier.strip().removeprefix("type ").split()
@@ -14975,7 +15029,6 @@ def typescript_imported_literal_object_bindings(
     text: str,
 ) -> dict[str, TypeScriptLiteralObjectBinding]:
     """Resolve exact relative named imports of immutable exported const object literals."""
-    code = typescript_code_mask(text)
     import_counts: Counter[str] = Counter()
     imported_bindings: list[tuple[str, str, str]] = []
     for match in TS_NAMED_IMPORT.finditer(text):
@@ -14990,8 +15043,9 @@ def typescript_imported_literal_object_bindings(
 
     resolved: dict[str, TypeScriptLiteralObjectBinding] = {}
     export_cache: dict[Path, dict[str, TypeScriptLiteralObjectBinding]] = {}
+    shadowed_imports = typescript_import_bindings_shadowed(text, set(import_counts))
     for specifier, original, local in imported_bindings:
-        if import_counts[local] != 1 or typescript_import_binding_is_shadowed(text, local):
+        if import_counts[local] != 1 or local in shadowed_imports:
             continue
         target = typescript_resolve_local_module(root, path, specifier)
         if target is None:
@@ -15019,7 +15073,7 @@ def typescript_imported_literal_object_bindings(
             binding.expression,
             binding.expression_offset,
             0,
-            len(code) + 1,
+            len(text) + 1,
             resolution,
         )
     return resolved
@@ -15204,8 +15258,9 @@ def typescript_imported_tool_object_bindings(
 
     resolved: dict[str, TypeScriptToolObjectBinding] = {}
     export_cache: dict[Path, dict[str, TypeScriptToolObjectBinding]] = {}
+    shadowed_imports = typescript_import_bindings_shadowed(text, set(import_counts))
     for import_end, specifier, original, local in imported_bindings:
-        if import_counts[local] != 1 or typescript_import_binding_is_shadowed(text, local):
+        if import_counts[local] != 1 or local in shadowed_imports:
             continue
         target = typescript_resolve_local_module(root, path, specifier)
         if target is None:
@@ -15435,8 +15490,9 @@ def typescript_imported_ai_sdk_provider_model_bindings(
 
     resolved: dict[str, tuple[TypeScriptProviderCall, str]] = {}
     export_cache: dict[Path, dict[str, tuple[TypeScriptProviderCall, str]]] = {}
+    shadowed_imports = typescript_import_bindings_shadowed(text, set(import_counts))
     for import_end, specifier, original, local in imported_bindings:
-        if import_counts[local] != 1 or typescript_import_binding_is_shadowed(text, local):
+        if import_counts[local] != 1 or local in shadowed_imports:
             continue
         target = typescript_resolve_local_module(root, path, specifier)
         if target is None:
@@ -19548,6 +19604,8 @@ def add_typescript_vercel_workflow_agent_telemetry_control(
     source_agent: tuple[str, str],
     telemetry_resolution: str,
     symbol_identity: str,
+    configuration: str = "WorkflowAgent.telemetry",
+    observability_scope: str = "workflow-agent-telemetry",
     telemetry_factory: str | None = None,
     telemetry_binding: str | None = None,
 ) -> tuple[str, str]:
@@ -19558,8 +19616,8 @@ def add_typescript_vercel_workflow_agent_telemetry_control(
         "module": "@ai-sdk/workflow",
         "constructor": "WorkflowAgent",
         "imported_symbol": "WorkflowAgent",
-        "configuration": "WorkflowAgent.telemetry",
-        "observability_scope": "workflow-agent-telemetry",
+        "configuration": configuration,
+        "observability_scope": observability_scope,
         "telemetry_resolution": telemetry_resolution,
         "source_agent": source_agent_name,
         "source_agent_id": source_agent_id,
@@ -19592,6 +19650,8 @@ def add_typescript_vercel_workflow_agent_callback_control(
     callbacks: list[str],
     callback_handlers: list[str],
     symbol_identity: str,
+    configuration: str = "WorkflowAgent.callbacks",
+    observability_scope: str = "workflow-agent-callbacks",
 ) -> tuple[str, str]:
     """Add Vercel WorkflowAgent lifecycle/tool callback configuration evidence."""
     source_agent_name, source_agent_id = source_agent
@@ -19600,8 +19660,8 @@ def add_typescript_vercel_workflow_agent_callback_control(
         "module": "@ai-sdk/workflow",
         "constructor": "WorkflowAgent",
         "imported_symbol": "WorkflowAgent",
-        "configuration": "WorkflowAgent.callbacks",
-        "observability_scope": "workflow-agent-callbacks",
+        "configuration": configuration,
+        "observability_scope": observability_scope,
         "callbacks": callbacks,
         "callback_count": len(callbacks),
         "callback_handler_resolution": "configured-expression",
@@ -25317,6 +25377,7 @@ def typescript_graph(
     local_agents: dict[str, tuple[str, str]] = {}
     local_agent_declaration_ends: dict[str, int] = {}
     openai_agent_bindings: set[str] = set()
+    workflow_agent_bindings: set[str] = set()
     helper_return_agents: dict[str, tuple[str, str, int]] = {}
     assigned_agents: dict[str, list[tuple[int, int, str, str]]] = defaultdict(list)
     agent_bodies: list[tuple[re.Match[str], int, str, str, str, str]] = []
@@ -25808,6 +25869,8 @@ def typescript_graph(
             local_agent_declaration_ends[variable_name] = end
             if constructor == "Agent" and exact_openai_agent_import:
                 openai_agent_bindings.add(variable_name)
+            if constructor == "WorkflowAgent":
+                workflow_agent_bindings.add(variable_name)
         elif binding_kind == "return-new":
             helper_return_agents[variable_name] = (agent_name, agent_id, match.start())
         agent_bodies.append((match, opening + 1, body, agent_name, agent_id, constructor))
@@ -26096,6 +26159,177 @@ def typescript_graph(
         assigned_agents[variable_name].append(
             (alias_match.start(), declaration_end, agent_name, agent_id)
         )
+
+    for agent_binding in sorted(workflow_agent_bindings):
+        source_agent = local_agents.get(agent_binding)
+        declaration_end = local_agent_declaration_ends.get(agent_binding)
+        if source_agent is None or declaration_end is None:
+            continue
+        stream_pattern = re.compile(
+            rf"(?<![\w$.]){re.escape(agent_binding)}\s*\.\s*stream\s*\("
+        )
+        for stream_match in stream_pattern.finditer(code):
+            if stream_match.start() <= declaration_end:
+                continue
+            if re.search(
+                rf"(?<![\w$.]){re.escape(agent_binding)}\s*=(?!=)",
+                code[declaration_end : stream_match.start()],
+            ):
+                continue
+            stream_opening = code.find("(", stream_match.start(), stream_match.end())
+            stream_end = typescript_balanced_end(code, stream_opening, "(", ")")
+            if stream_end is None:
+                continue
+            stream_arguments = typescript_call_arguments(
+                text[stream_opening + 1 : stream_end - 1],
+                stream_opening + 1,
+            )
+            if not stream_arguments:
+                continue
+            stream_options, stream_options_offset = stream_arguments[0]
+            if not typescript_code_mask(stream_options).lstrip().startswith("{"):
+                continue
+            stream_line = line_at(text, stream_match.start())
+            telemetry_location = typescript_object_property_expression_location(
+                stream_options,
+                "telemetry",
+                stream_options_offset,
+            )
+            if telemetry_location is not None:
+                telemetry_expression, telemetry_property_offset, _ = telemetry_location
+                telemetry_code = typescript_code_mask(telemetry_expression).strip()
+                if telemetry_code and telemetry_code not in {"undefined", "null", "false"}:
+                    telemetry_resolution = "configured-expression"
+                    telemetry_factory = None
+                    telemetry_binding = None
+                    if telemetry_code.startswith("{"):
+                        telemetry_resolution = "inline-options"
+                    elif identifier := re.fullmatch(r"[A-Za-z_$][\w$]*", telemetry_code):
+                        telemetry_resolution = "binding"
+                        telemetry_binding = identifier.group(0)
+                    else:
+                        telemetry_factory = (
+                            typescript_call_callee_with_static_type_suffix(
+                                telemetry_expression
+                            )
+                        )
+                        if telemetry_factory is not None:
+                            telemetry_resolution = "factory-call"
+                    telemetry_line = line_at(text, telemetry_property_offset)
+                    telemetry_name, telemetry_id = (
+                        add_typescript_vercel_workflow_agent_telemetry_control(
+                            ir,
+                            relative=relative,
+                            lines=lines,
+                            line=telemetry_line,
+                            source_agent=source_agent,
+                            telemetry_resolution=telemetry_resolution,
+                            telemetry_factory=telemetry_factory,
+                            telemetry_binding=telemetry_binding,
+                            configuration="WorkflowAgent.stream.telemetry",
+                            observability_scope="workflow-agent-run-telemetry",
+                            symbol_identity=(
+                                f"{agent_binding}.stream.telemetry@{telemetry_line}:"
+                                f"call{stream_line}"
+                            ),
+                        )
+                    )
+                    telemetry_attributes: dict[str, object] = {
+                        "analysis": "typescript-vercel-workflow-agent-observability",
+                        "configuration": "WorkflowAgent-stream-telemetry",
+                        "binding": "telemetry",
+                        "telemetry_resolution": telemetry_resolution,
+                    }
+                    if telemetry_factory is not None:
+                        telemetry_attributes["telemetry_factory"] = telemetry_factory
+                    if telemetry_binding is not None:
+                        telemetry_attributes["telemetry_binding"] = telemetry_binding
+                    ir.add_relationship(
+                        Relationship(
+                            "agent",
+                            source_agent[0],
+                            "configured-by",
+                            "control",
+                            telemetry_name,
+                            Evidence(
+                                relative,
+                                telemetry_line,
+                                excerpt(lines, telemetry_line),
+                            ),
+                            telemetry_attributes,
+                            source_id=source_agent[1],
+                            target_id=telemetry_id,
+                        )
+                    )
+            callback_entries: list[tuple[int, str, str | None]] = []
+            for callback_name in TYPESCRIPT_VERCEL_WORKFLOW_AGENT_CALLBACK_PROPERTIES:
+                callback_location = typescript_object_property_expression_location(
+                    stream_options,
+                    callback_name,
+                    stream_options_offset,
+                )
+                if callback_location is None:
+                    continue
+                callback_expression, callback_property_offset, _ = callback_location
+                callback_code = typescript_code_mask(callback_expression).strip()
+                if not callback_code or callback_code in {"undefined", "null", "false"}:
+                    continue
+                callback_entries.append(
+                    (
+                        callback_property_offset,
+                        callback_name,
+                        typescript_call_callee_with_static_type_suffix(
+                            callback_expression
+                        ),
+                    )
+                )
+            if callback_entries:
+                callback_entries.sort()
+                callback_names = [entry[1] for entry in callback_entries]
+                callback_handlers = sorted(
+                    {
+                        handler
+                        for _offset, _callback_name, handler in callback_entries
+                        if handler is not None
+                    }
+                )
+                callback_line = line_at(text, callback_entries[0][0])
+                callback_control_name, callback_control_id = (
+                    add_typescript_vercel_workflow_agent_callback_control(
+                        ir,
+                        relative=relative,
+                        lines=lines,
+                        line=callback_line,
+                        source_agent=source_agent,
+                        callbacks=callback_names,
+                        callback_handlers=callback_handlers,
+                        configuration="WorkflowAgent.stream.callbacks",
+                        observability_scope="workflow-agent-run-callbacks",
+                        symbol_identity=(
+                            f"{agent_binding}.stream.callbacks@{callback_line}:"
+                            f"call{stream_line}"
+                        ),
+                    )
+                )
+                ir.add_relationship(
+                    Relationship(
+                        "agent",
+                        source_agent[0],
+                        "configured-by",
+                        "control",
+                        callback_control_name,
+                        Evidence(relative, callback_line, excerpt(lines, callback_line)),
+                        {
+                            "analysis": "typescript-vercel-workflow-agent-observability",
+                            "configuration": "WorkflowAgent-stream-callbacks",
+                            "binding": "callback-properties",
+                            "callbacks": callback_names,
+                            "callback_count": len(callback_names),
+                        },
+                        source_id=source_agent[1],
+                        target_id=callback_control_id,
+                    )
+                )
 
     def enclosing_function_span(offset: int) -> tuple[str, int, int] | None:
         helpers = [

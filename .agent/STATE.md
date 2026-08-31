@@ -7,13 +7,21 @@ catalog workflows.
 
 ## Completed recently
 
+- Extended exact Vercel `WorkflowAgent` observability IR from constructor options to same-file
+  `agent.stream({ ... })` telemetry and callback options when the agent binding is source-proven
+  and unreassigned before the stream call. The pinned Vercel AI `telemetry-agent.ts` stream
+  `telemetry: createTelemetryOptions(...)` and `onError: recordCallback(...)` call-site now add
+  four public labels, so `IR-TS-WORKFLOW-AGENT-OBSERVABILITY` passes 10/10 and the public IR truth
+  set passes 2,482/2,482 after the full refresh. The refreshed 71-repository schema-v159 benchmark
+  records 2,947 relationships / 10,819 symbolized components. While refreshing it, a broad
+  TypeScript imported-binding shadow check was bulked so import-heavy files do not rerun whole-file
+  regex scans per local import.
 - Added exact Vercel `WorkflowAgent` observability IR for constructor-level `telemetry` options and
   lifecycle/tool callback properties on source-proven `@ai-sdk/workflow` agents. The new controls
   are linked back to the source agent and intentionally represent instrumentation-hook inventory,
   not durable audit completeness. Six real Vercel labels under
-  `IR-TS-WORKFLOW-AGENT-OBSERVABILITY` pass, and the public IR truth set now passes
-  2,478/2,478 labels. The full 71-repository schema-v159 engine benchmark was refreshed and now
-  records 2,945 relationships / 10,817 symbolized components.
+  `IR-TS-WORKFLOW-AGENT-OBSERVABILITY` passed before the stream-call extension. The full
+  71-repository schema-v159 engine benchmark was refreshed.
 - Accepted narrow trailing TypeScript `as` / `satisfies` assertions after exact AI SDK provider
   model calls for Vercel `WorkflowAgent.model` detection. Direct model properties, same-file const
   bindings, imported bindings, and exact reexports now preserve exact model attribution through

@@ -169,7 +169,7 @@ tool. The same model command passes through `shell-quote` classification and rea
 
 The 2026-08-31 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,797 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 2,945 relationships with 10,817 symbolized components, and completed in 1728.5876 seconds
+resolved 2,947 relationships with 10,819 symbolized components, and completed in 927.4887 seconds
 on the development machine. The summary now exposes the Vercel AI Code Mode approval/tool surface as
 a named `typescript_vercel_code_mode` slice: one repository, eight components, and seven
 approval/surface relationships. Three parse warnings were isolated and reported without aborting the
@@ -1721,11 +1721,11 @@ Twelve OpenAI Agents JS trace labels pin local and real `withTrace(..., { groupI
 `withTrace(..., { traceId })` correlation evidence, including the real `routing.ts` dynamic
 `conversationId` group binding, the real Codex tool example's generated trace ID with a logged
 OpenAI platform trace URL, and local missing-option negatives.
-All 2,478 IR labels pass (1,894 positives and 584 negatives). The checked
+All 2,482 IR labels pass (1,898 positives and 584 negatives). The checked
 `benchmarks/ir-truthset-results.json` file contains the current per-check precision/recall
 breakdown, including the Vercel WorkflowAgent same-file/imported/reexported model-binding labels,
 direct/named-reexported/star-reexported execute-helper tool-graph labels, real Vercel
-WorkflowAgent telemetry/callback observability labels, OpenAI
+WorkflowAgent constructor and stream-call telemetry/callback observability labels, OpenAI
 Agents JS and Python safety-check labels added for `computerTool({ onSafetyCheck })` and
 `ComputerTool(on_safety_check=...)`, plus OpenAI Agents JS run-state approval-decision labels for JS
 and Python state approve/reject handling, persistence, custom rejection messages, JS env-backed

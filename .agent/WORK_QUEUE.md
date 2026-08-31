@@ -33,7 +33,7 @@
   direct and bound provider-model calls, so future work should focus on richer runtime model wrapper
   shapes or additional type syntax only with comparable proof,
   approval-resumption/event flows, richer telemetry sink/retention proof beyond the now-covered
-  constructor telemetry and callback-hook inventory, reportable Vercel approval findings only with
+  constructor and same-file stream telemetry/callback-hook inventory, reportable Vercel approval findings only with
   matching real evidence, or additional execute-helper alias chains only when comparable ambiguity
   guards exist.
 - Extend Vercel AI Code Mode only when runtime provenance stays exact: current IR covers the

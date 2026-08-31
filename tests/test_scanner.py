@@ -12,9 +12,38 @@ from agentverify.analysis import component_context
 from agentverify.cli import main
 from agentverify.policy import evaluate_policy, normalize_policy
 from agentverify.report import render_bom, render_json, render_sarif, render_text
-from agentverify.scanner import build_python_module_index, scan_repository
+from agentverify.scanner import (
+    build_python_module_index,
+    scan_repository,
+    typescript_import_binding_is_shadowed,
+    typescript_import_bindings_shadowed,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_typescript_bulk_import_shadow_detection_matches_single_name_helper() -> None:
+    text = textwrap.dedent(
+        """
+        import { importedTool, safeTool, assignedTool, callbackTool, arrowTool } from "./tools";
+
+        const importedTool = {};
+        assignedTool = otherTool;
+        function invoke(callbackTool) {
+          return callbackTool;
+        }
+        const wrapper = (arrowTool) => arrowTool;
+        void safeTool;
+        """
+    )
+    names = {"importedTool", "safeTool", "assignedTool", "callbackTool", "arrowTool"}
+
+    shadowed = typescript_import_bindings_shadowed(text, names)
+
+    assert shadowed == {"importedTool", "assignedTool", "callbackTool", "arrowTool"}
+    assert {
+        name for name in names if typescript_import_binding_is_shadowed(text, name)
+    } == shadowed
 
 
 def test_python_module_index_includes_every_nested_source_root(tmp_path: Path) -> None:
@@ -2729,8 +2758,31 @@ def test_typescript_workflow_agent_observability_controls_are_exact(
               telemetry: undefined,
               onEnd: false,
             });
+            const streamTelemetry = {};
+            await agent.stream({
+              messages: [],
+              telemetry: streamTelemetry,
+              onError: recordCallback({
+                name: "onError",
+              }) satisfies WorkflowAgentOnErrorCallback,
+            });
+            await disabled.stream({
+              messages: [],
+              telemetry: null,
+              onEnd: undefined,
+            });
+            let changed = new WorkflowAgent({
+              model,
+            });
+            changed = agent;
+            await changed.stream({
+              messages: [],
+              telemetry: {},
+              onEnd: recordCallback({ name: "onEnd" }),
+            });
             void agent;
             void disabled;
+            void changed;
             """
         ),
         encoding="utf-8",
@@ -2739,14 +2791,14 @@ def test_typescript_workflow_agent_observability_controls_are_exact(
     ir = scan_repository(tmp_path)
 
     observability_controls = {
-        component.name: component.attributes
+        component.attributes["configuration"]: component.attributes
         for component in ir.components
         if component.kind == "control"
         and component.attributes.get("analysis")
         == "typescript-vercel-workflow-agent-observability"
     }
     assert observability_controls == {
-        "workflow-agent-telemetry": {
+        "WorkflowAgent.telemetry": {
             "analysis": "typescript-vercel-workflow-agent-observability",
             "module": "@ai-sdk/workflow",
             "constructor": "WorkflowAgent",
@@ -2759,7 +2811,7 @@ def test_typescript_workflow_agent_observability_controls_are_exact(
             "scope": "production",
             "telemetry_factory": "createTelemetryOptions",
         },
-        "workflow-agent-callbacks": {
+        "WorkflowAgent.callbacks": {
             "analysis": "typescript-vercel-workflow-agent-observability",
             "module": "@ai-sdk/workflow",
             "constructor": "WorkflowAgent",
@@ -2773,6 +2825,34 @@ def test_typescript_workflow_agent_observability_controls_are_exact(
                 "onEnd",
             ],
             "callback_count": 4,
+            "callback_handler_resolution": "configured-expression",
+            "source_agent": "agent",
+            "source_agent_id": "ts:agent.ts#agent:agent",
+            "scope": "production",
+            "callback_handlers": ["recordCallback"],
+        },
+        "WorkflowAgent.stream.telemetry": {
+            "analysis": "typescript-vercel-workflow-agent-observability",
+            "module": "@ai-sdk/workflow",
+            "constructor": "WorkflowAgent",
+            "imported_symbol": "WorkflowAgent",
+            "configuration": "WorkflowAgent.stream.telemetry",
+            "observability_scope": "workflow-agent-run-telemetry",
+            "telemetry_resolution": "binding",
+            "source_agent": "agent",
+            "source_agent_id": "ts:agent.ts#agent:agent",
+            "scope": "production",
+            "telemetry_binding": "streamTelemetry",
+        },
+        "WorkflowAgent.stream.callbacks": {
+            "analysis": "typescript-vercel-workflow-agent-observability",
+            "module": "@ai-sdk/workflow",
+            "constructor": "WorkflowAgent",
+            "imported_symbol": "WorkflowAgent",
+            "configuration": "WorkflowAgent.stream.callbacks",
+            "observability_scope": "workflow-agent-run-callbacks",
+            "callbacks": ["onError"],
+            "callback_count": 1,
             "callback_handler_resolution": "configured-expression",
             "source_agent": "agent",
             "source_agent_id": "ts:agent.ts#agent:agent",
@@ -2795,6 +2875,18 @@ def test_typescript_workflow_agent_observability_controls_are_exact(
     } == {
         ("agent", "configured-by", "workflow-agent-telemetry", "WorkflowAgent-telemetry"),
         ("agent", "configured-by", "workflow-agent-callbacks", "WorkflowAgent-callbacks"),
+        (
+            "agent",
+            "configured-by",
+            "workflow-agent-telemetry",
+            "WorkflowAgent-stream-telemetry",
+        ),
+        (
+            "agent",
+            "configured-by",
+            "workflow-agent-callbacks",
+            "WorkflowAgent-stream-callbacks",
+        ),
     }
 
 
