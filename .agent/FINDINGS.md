@@ -37,12 +37,12 @@
   resuming. The full public IR truth set passed 2,440/2,440 labels for that slice.
 - Exact Vercel AI WorkflowAgent model configuration is now visible for direct AI SDK provider calls:
   `WorkflowAgent({ model: anthropic("claude-sonnet-4-20250514") })` emits a
-  `model-settings-policy` control linked back to the source agent. Imported sibling model bindings
-  now also resolve through direct named imports, exact named reexports, and unambiguous star
-  reexports when the exported const initializer is exactly one immutable AI SDK provider model call.
-  Same-file bound model variables, cast or otherwise wrapped provider expressions, mutated exports,
-  and ambiguous star reexports remain unresolved by design. The full public IR truth set now passes
-  2,460/2,460 labels.
+  `model-settings-policy` control linked back to the source agent. Stable same-file `const` model
+  bindings and imported sibling model bindings now also resolve when the initializer is exactly one
+  immutable AI SDK provider model call, including direct named imports, exact named reexports, and
+  unambiguous star reexports for sibling modules. Cast or otherwise wrapped provider expressions,
+  mutated bindings/exports, and ambiguous star reexports remain unresolved by design. The full
+  public IR truth set now passes 2,464/2,464 labels.
 - OpenAI Agents SDK MCP approval metadata now covers TypeScript hosted `hostedMcpTool`
   `requireApproval` policies, Python hosted `HostedMCPTool` tool configs, and Python non-hosted
   MCP server `require_approval` call sites. The TypeScript hosted check now has 16 public IR labels

@@ -2928,16 +2928,20 @@ def test_typescript_workflow_agent_model_control_is_exact(tmp_path: Path) -> Non
             import { WorkflowAgent } from "@ai-sdk/workflow";
 
             const boundModel = anthropic("claude-bound");
+            let mutableModel = anthropic("claude-mutable");
+            mutableModel = anthropic("claude-changed");
 
             const agent = new WorkflowAgent({
               model: anthropic("claude-sonnet-4-20250514"),
             });
             const boundAgent = new WorkflowAgent({ model: boundModel });
+            const mutableAgent = new WorkflowAgent({ model: mutableModel });
             const castAgent = new WorkflowAgent({
               model: anthropic("claude-cast") as any,
             });
             void agent;
             void boundAgent;
+            void mutableAgent;
             void castAgent;
             """
         ),
@@ -2953,24 +2957,48 @@ def test_typescript_workflow_agent_model_control_is_exact(tmp_path: Path) -> Non
         and component.name == "model-settings-policy"
         and component.attributes.get("analysis") == "typescript-vercel-workflow-agent-model"
     ]
-    assert len(controls) == 1
-    assert controls[0].attributes == {
-        "analysis": "typescript-vercel-workflow-agent-model",
-        "module": "@ai-sdk/workflow",
-        "constructor": "WorkflowAgent",
-        "imported_symbol": "WorkflowAgent",
-        "configuration": "WorkflowAgent.model",
-        "settings_scope": "workflow-agent-model",
-        "source_agent": "agent",
-        "source_agent_id": "ts:agent.ts#agent:agent",
-        "provider": "Anthropic",
-        "provider_module": "@ai-sdk/anthropic",
-        "provider_imported_symbol": "anthropic",
-        "provider_call": "anthropic",
-        "model": "claude-sonnet-4-20250514",
-        "model_method": "language",
-        "scope": "production",
+    controls_by_agent = {
+        component.attributes["source_agent"]: component.attributes for component in controls
     }
+    assert controls_by_agent == {
+        "agent": {
+            "analysis": "typescript-vercel-workflow-agent-model",
+            "module": "@ai-sdk/workflow",
+            "constructor": "WorkflowAgent",
+            "imported_symbol": "WorkflowAgent",
+            "configuration": "WorkflowAgent.model",
+            "settings_scope": "workflow-agent-model",
+            "source_agent": "agent",
+            "source_agent_id": "ts:agent.ts#agent:agent",
+            "provider": "Anthropic",
+            "provider_module": "@ai-sdk/anthropic",
+            "provider_imported_symbol": "anthropic",
+            "provider_call": "anthropic",
+            "model": "claude-sonnet-4-20250514",
+            "model_method": "language",
+            "scope": "production",
+        },
+        "boundAgent": {
+            "analysis": "typescript-vercel-workflow-agent-model",
+            "module": "@ai-sdk/workflow",
+            "constructor": "WorkflowAgent",
+            "imported_symbol": "WorkflowAgent",
+            "configuration": "WorkflowAgent.model",
+            "settings_scope": "workflow-agent-model",
+            "source_agent": "boundAgent",
+            "source_agent_id": "ts:agent.ts#agent:boundAgent",
+            "provider": "Anthropic",
+            "provider_module": "@ai-sdk/anthropic",
+            "provider_imported_symbol": "anthropic",
+            "provider_call": "anthropic",
+            "model": "claude-bound",
+            "model_method": "language",
+            "model_binding": "boundModel",
+            "model_binding_resolution": "same-file-provider-model",
+            "scope": "production",
+        },
+    }
+    assert {"mutableAgent", "castAgent"}.isdisjoint(controls_by_agent)
     assert {
         (
             relationship.source_name,
@@ -2979,6 +3007,8 @@ def test_typescript_workflow_agent_model_control_is_exact(tmp_path: Path) -> Non
             relationship.attributes.get("analysis"),
             relationship.attributes.get("provider"),
             relationship.attributes.get("model"),
+            relationship.attributes.get("model_binding"),
+            relationship.attributes.get("model_binding_resolution"),
         )
         for relationship in ir.relationships
         if relationship.source_kind == "agent"
@@ -2992,6 +3022,18 @@ def test_typescript_workflow_agent_model_control_is_exact(tmp_path: Path) -> Non
             "typescript-vercel-workflow-agent-model",
             "Anthropic",
             "claude-sonnet-4-20250514",
+            None,
+            None,
+        ),
+        (
+            "boundAgent",
+            "configured-by",
+            "model-settings-policy",
+            "typescript-vercel-workflow-agent-model",
+            "Anthropic",
+            "claude-bound",
+            "boundModel",
+            "same-file-provider-model",
         )
     }
 
@@ -3014,6 +3056,11 @@ def test_typescript_workflow_agent_model_control_follows_imported_model_bindings
         )
         for name, control in controls.items()
     } == {
+        "localModelAgent": (
+            "claude-local",
+            "localWorkflowModel",
+            "same-file-provider-model",
+        ),
         "directImportedAgent": (
             "claude-imported",
             "workflowModel",
@@ -3044,6 +3091,11 @@ def test_typescript_workflow_agent_model_control_follows_imported_model_bindings
         and relationship.attributes.get("analysis") == "typescript-vercel-workflow-agent-model"
     }
     assert model_edges == {
+        (
+            "localModelAgent",
+            "localWorkflowModel",
+            "same-file-provider-model",
+        ),
         (
             "directImportedAgent",
             "workflowModel",

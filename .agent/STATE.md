@@ -7,11 +7,12 @@ catalog workflows.
 
 ## Completed recently
 
-- Extended exact Vercel AI `WorkflowAgent.model` provenance through imported sibling model bindings
-  when the exported const initializer is exactly one immutable AI SDK provider model call. Direct
-  relative named imports, exact named reexports, and unambiguous star reexports now emit
-  source-agent-linked `model-settings-policy` controls; casted, mutated, and ambiguous exports stay
-  unresolved. The public IR truth set now passes 2,460/2,460 labels.
+- Extended exact Vercel AI `WorkflowAgent.model` provenance through stable same-file const bindings
+  and imported sibling model bindings when the initializer is exactly one immutable AI SDK provider
+  model call. Same-file bindings, direct relative named imports, exact named reexports, and
+  unambiguous star reexports now emit source-agent-linked `model-settings-policy` controls; casted,
+  mutated, wrapped, and ambiguous forms stay unresolved. The public IR truth set now passes
+  2,464/2,464 labels.
 - Added per-result `all_labels_passed` to benchmark verifier output entries, regenerated the checked
   `examples/benchmark-verification.json` artifact, and updated release/docs guidance so multi-result
   release tooling can inspect each result file without re-deriving the all-pass state from counts.
@@ -24,7 +25,7 @@ catalog workflows.
   `scripts/evaluate_truthset.py` and accepted by the bundled benchmark-result schema. The verifier
   recomputes the boolean when present, so stale all-pass claims fail release checks without making
   older external benchmark-result files invalid. Checked rule and IR result artifacts were
-  regenerated and still pass 730/730 and 2,460/2,460 labels respectively.
+  regenerated and still pass 730/730 and 2,464/2,464 labels respectively.
 - Extended exact TypeScript OpenAI Agents SDK `Agent.clone(...)` source lineage through relative
   named and star reexports of exported OpenAI `Agent` bindings. Clone sources reached through
   barrels keep the original source-agent ID, ambiguous/conflicting reexports remain unresolved, and

@@ -15253,6 +15253,40 @@ def typescript_provider_call_is_exact_initializer(
     return not code[end:statement_end].strip()
 
 
+def typescript_same_file_ai_sdk_provider_model_bindings(
+    text: str,
+    provider_model_calls: dict[int, TypeScriptProviderCall],
+) -> dict[str, tuple[TypeScriptProviderCall, str]]:
+    """Return stable same-file const bindings initialized by exact AI SDK provider model calls."""
+    code = typescript_code_mask(text)
+    candidates: dict[str, list[TypeScriptProviderCall]] = defaultdict(list)
+    const_pattern = re.compile(
+        r"\b(?:export\s+)?const\s+([A-Za-z_$][\w$]*)"
+        r"\s*(?::\s*(?:[^=;\n]|=(?!>))+)?="
+    )
+    for match in const_pattern.finditer(code):
+        name = match.group(1)
+        initializer = code[match.end() :]
+        expression_offset = match.end() + len(initializer) - len(initializer.lstrip())
+        provider_call = provider_model_calls.get(expression_offset)
+        if provider_call is None:
+            continue
+        if not typescript_provider_call_is_exact_initializer(
+            text,
+            expression_offset=expression_offset,
+            provider_call=provider_call,
+        ):
+            continue
+        if not typescript_const_provider_binding_is_stable(text, name, expression_offset):
+            continue
+        candidates[name].append(provider_call)
+    return {
+        name: (bindings[0], "same-file-provider-model")
+        for name, bindings in candidates.items()
+        if len(bindings) == 1
+    }
+
+
 def typescript_exported_ai_sdk_provider_model_bindings(
     root: Path,
     path: Path,
@@ -24833,7 +24867,10 @@ def typescript_graph(
         else {}
     )
     workflow_model_bindings = (
-        typescript_imported_ai_sdk_provider_model_bindings(root, path, text)
+        {
+            **typescript_same_file_ai_sdk_provider_model_bindings(text, workflow_model_calls),
+            **typescript_imported_ai_sdk_provider_model_bindings(root, path, text),
+        }
         if workflow_imports
         else {}
     )

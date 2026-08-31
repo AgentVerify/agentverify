@@ -21,7 +21,8 @@
   const`; exact local `@ai-sdk/workflow` `WorkflowAgent({ tools })` edges are covered for stable
   same-file tool-set bindings; unique stable same-file `execute: helper` bodies now map delegated
   code-execution/filesystem/network capability evidence back to the owning tool; direct
-  `WorkflowAgent.model` AI SDK provider calls now emit source-agent-linked model-setting controls;
+  `WorkflowAgent.model` AI SDK provider calls and stable same-file immutable provider-model consts
+  now emit source-agent-linked model-setting controls;
   direct relative named imports, exact named reexports, and unambiguous star reexports of immutable
   exported tool-set objects now link to original sibling-module object-tool IDs with mutation
   guards. Direct relative named imports, exact named reexports, and unambiguous star reexports of
