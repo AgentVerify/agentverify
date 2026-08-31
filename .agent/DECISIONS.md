@@ -1310,8 +1310,25 @@
 - Alternative: Treat Realtime output guardrail presence as sufficient tripwire quality. Rejected
   because placeholder settings, mutable arrays, and throwing or delegated guardrails can exist
   without a source-proven predicate.
-- Revisit when imported Realtime guardrail arrays, helper-created guardrails, or richer predicate
-  semantics can be resolved without broad callback interpretation.
+- Revisit when helper-created Realtime guardrails or richer predicate semantics can be resolved
+  without broad callback interpretation.
+
+## OpenAI Realtime imported output guardrail arrays require exact export provenance
+
+- Decision: Resolve TypeScript OpenAI Realtime output guardrail arrays across relative named imports
+  only when the imported binding points to a unique exported typed const array whose type is imported
+  from `@openai/agents/realtime` as `RealtimeOutputGuardrail`. Preserve direct named local reexports
+  and unambiguous star reexports, but leave ambiguous duplicate star-barrel exports binding-only.
+- Evidence: The local `typescript_openai_realtime_session_guardrails` fixture now includes a direct
+  imported output guardrail array, a named-reexported array consumed through a typed
+  `RealtimeSessionOptions` spread with `debounceTextLength`, and an ambiguous barrel exporting two
+  same-named arrays. Focused public labels pass 25/25, and ambiguous negatives prove names and
+  literal tripwires are not over-resolved.
+- Alternative: Resolve any imported identifier used in `outputGuardrails`. Rejected because
+  Realtime guardrail arrays can be composed through barrels and aliases, and binding-only evidence is
+  safer than attributing names/tripwires from a conflicting source.
+- Revisit when helper-created Realtime guardrails or richer predicate summaries can be tied to exact
+  source identity without broad callback interpretation.
 
 ## OpenAI Agents JS Agent guardrails are source-agent governance controls
 

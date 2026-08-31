@@ -7587,6 +7587,9 @@ def test_typescript_openai_realtime_session_guardrail_policy_is_exact() -> None:
         "ts:agent.ts#control:spreadOptionsSession.guardrails@27",
         "ts:agent.ts#control:mutableSession.guardrails@71",
         "ts:agent.ts#control:dynamicSettingsSession.guardrails@76",
+        "ts:agent.ts#control:importedSpreadSession.guardrails@87",
+        "ts:agent.ts#control:importedGuardedSession.guardrails@94",
+        "ts:agent.ts#control:ambiguousImportedSession.guardrails@102",
     }
     assert controls["ts:agent.ts#control:guardedSession.guardrails@34"].attributes == {
         "analysis": "typescript-openai-agents-realtime-session-guardrails",
@@ -7651,6 +7654,39 @@ def test_typescript_openai_realtime_session_guardrail_policy_is_exact() -> None:
     assert "debounce_text_length" not in controls[
         "ts:agent.ts#control:dynamicSettingsSession.guardrails@76"
     ].attributes
+    assert controls[
+        "ts:agent.ts#control:importedGuardedSession.guardrails@94"
+    ].attributes["guardrail_source"] == "imported-local-typed-const-array"
+    assert controls[
+        "ts:agent.ts#control:importedGuardedSession.guardrails@94"
+    ].attributes["guardrail_names"] == ["Imported no password guardrail"]
+    assert controls[
+        "ts:agent.ts#control:importedGuardedSession.guardrails@94"
+    ].attributes["guardrail_tripwire_sources"] == ["dynamic-expression"]
+    assert controls[
+        "ts:agent.ts#control:importedSpreadSession.guardrails@87"
+    ].attributes["guardrail_source"] == "imported-local-reexported-typed-const-array"
+    assert controls[
+        "ts:agent.ts#control:importedSpreadSession.guardrails@87"
+    ].attributes["session_options_binding"] == "importedTypedOptions"
+    assert controls[
+        "ts:agent.ts#control:importedSpreadSession.guardrails@87"
+    ].attributes["debounce_text_length"] == 250
+    assert controls[
+        "ts:agent.ts#control:importedSpreadSession.guardrails@87"
+    ].attributes["guardrail_literal_false_tripwire_count"] == 1
+    assert controls[
+        "ts:agent.ts#control:ambiguousImportedSession.guardrails@102"
+    ].attributes["guardrail_source"] == "binding"
+    assert controls[
+        "ts:agent.ts#control:ambiguousImportedSession.guardrails@102"
+    ].attributes["guardrail_binding"] == "ambiguousRealtimeOutputGuardrails"
+    assert "guardrail_names" not in controls[
+        "ts:agent.ts#control:ambiguousImportedSession.guardrails@102"
+    ].attributes
+    assert "guardrail_tripwire_sources" not in controls[
+        "ts:agent.ts#control:ambiguousImportedSession.guardrails@102"
+    ].attributes
 
     edges = {
         relationship.target_id: relationship
@@ -7680,6 +7716,12 @@ def test_typescript_openai_realtime_session_guardrail_policy_is_exact() -> None:
         "output_guardrail_settings_present": True,
         "debounce_text_length": 500,
     }
+    assert edges["ts:agent.ts#control:importedGuardedSession.guardrails@94"].attributes[
+        "guardrail_source"
+    ] == "imported-local-typed-const-array"
+    assert edges["ts:agent.ts#control:importedSpreadSession.guardrails@87"].attributes[
+        "guardrail_source"
+    ] == "imported-local-reexported-typed-const-array"
 
 
 def test_typescript_openai_agents_codex_tool_flow_is_exact() -> None:

@@ -159,12 +159,13 @@
   gathering enough real non-example client-side/server-side context. Current auth evidence is IR
   inventory only because `process.env.OPENAI_API_KEY` with websocket/SIP can be legitimate server
   code or unsafe browser bundling depending on deployment context.
-- Explore the next OpenAI Realtime guardrail slice only if it stays exact: imported guardrail arrays,
-  helper-created guardrails, input guardrails, or richer predicate/action semantics beyond direct
+- Explore the next OpenAI Realtime guardrail slice only if it stays exact: helper-created
+  guardrails, input guardrails, or richer predicate/action semantics beyond direct
   returned `tripwireTriggered` source classification. Current output guardrail inventory covers
   direct session options, typed `RealtimeOutputGuardrail[]` const arrays, typed
-  `RealtimeSessionOptions` spreads, literal names/counts, direct tripwire source counts, and
-  `debounceTextLength`, with mutated arrays and dynamic settings bounded.
+  `RealtimeSessionOptions` spreads, exact relative imported typed guardrail arrays including named
+  reexports, literal names/counts, direct tripwire source counts, and `debounceTextLength`, with
+  mutated arrays, ambiguous barrels, and dynamic settings bounded.
 - Explore richer OpenAI Agents JS Agent guardrails only if evidence stays exact: helper-created
   guardrails, imported helper-created guardrail arrays, cross-file guardrail assignment helpers, or
   richer predicate/action semantics beyond direct returned `tripwireTriggered` source

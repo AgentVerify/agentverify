@@ -78,3 +78,26 @@ const dynamicSettingsSession = new RealtimeSession(greeter, {
     debounceTextLength: dynamicDebounce,
   },
 });
+
+import { ambiguousRealtimeOutputGuardrails } from "./realtime-ambiguous-barrel";
+import { importedRealtimeOutputGuardrails } from "./realtime-guardrails";
+import { reexportedRealtimeOutputGuardrails } from "./realtime-reexports";
+
+const importedTypedOptions: RealtimeSessionOptions = {
+  outputGuardrails: reexportedRealtimeOutputGuardrails,
+  outputGuardrailSettings: {
+    debounceTextLength: 250,
+  },
+};
+
+const importedGuardedSession = new RealtimeSession(greeter, {
+  outputGuardrails: importedRealtimeOutputGuardrails,
+});
+
+const importedSpreadSession = new RealtimeSession(greeter, {
+  ...importedTypedOptions,
+});
+
+const ambiguousImportedSession = new RealtimeSession(greeter, {
+  outputGuardrails: ambiguousRealtimeOutputGuardrails,
+});

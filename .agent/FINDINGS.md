@@ -879,6 +879,12 @@
   sessions remain unresolved. The local fixture plus pinned OpenAI Agents JS
   `examples/docs/voice-agents/guardrails.ts` bring the Realtime guardrail truth-set slice to
   18/18 labels within the then-current 2,387-label public IR truth set.
+- OpenAI RealtimeSession output guardrails now resolve exact relative imported typed
+  `RealtimeOutputGuardrail[]` arrays. Direct imports and exact named local reexports used through
+  typed `RealtimeSessionOptions` spreads preserve literal names, direct `tripwireTriggered`
+  metadata, debounce settings, and source-agent governance edges, while ambiguous same-name barrels
+  remain binding-only. The local Realtime guardrail fixture raises the slice to 25/25 labels and the
+  full public IR truth set to 2,545/2,545 labels.
 - OpenAI Agents JS Agent-level input/output guardrails are now reviewable when source-proven.
   Exact `new Agent({ inputGuardrails })` and `new Agent({ outputGuardrails })` constructor options
   emit `agent-guardrail-policy` controls linked to the source agent, including

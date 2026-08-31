@@ -7,6 +7,13 @@ catalog workflows.
 
 ## Completed recently
 
+- Extended exact TypeScript OpenAI RealtimeSession output-guardrail inventory through relative
+  imported typed `RealtimeOutputGuardrail[]` arrays, including exact named local reexports used
+  directly or through exact typed `RealtimeSessionOptions` spreads. Imported Realtime guardrails now
+  preserve names, literal/dynamic `tripwireTriggered` metadata, debounce settings from spread
+  options, and source-agent governance edges; ambiguous two-source star barrels remain binding-only.
+  Focused Realtime guardrail labels pass 25/25, and the full public IR truth set now passes
+  2,545/2,545.
 - Extended exact TypeScript OpenAI Agents SDK tool guardrail inventory through relative imported
   typed `ToolInputGuardrailDefinition[]` / `ToolOutputGuardrailDefinition[]` arrays, including exact
   named local reexports. Imported tool guardrail controls now preserve literal names, allow/reject
