@@ -15,7 +15,8 @@
     "repositories",
     "successful",
     "summary_repositories",
-    "summary_successful"
+    "summary_successful",
+    "aggregate_total_fields_checked"
   ],
   "properties": {
     "engine_results_verification_format": {
@@ -58,6 +59,15 @@
     "summary_successful": {
       "type": "integer",
       "minimum": 0
+    },
+    "aggregate_total_fields_checked": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
     }
   }
 }

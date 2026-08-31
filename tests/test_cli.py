@@ -10,7 +10,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from jsonschema import Draft202012Validator
 
 from agentverify import cli
-from agentverify.benchmark import file_sha256
+from agentverify.benchmark import CORE_ENGINE_TOTAL_FIELDS, file_sha256
 from agentverify.policy import load_policy, render_policy_signing_payload
 from agentverify.report import render_bom, render_json, render_sarif, render_schema
 from agentverify.rules import RULE_CATALOG
@@ -768,6 +768,7 @@ def test_cli_verifies_checked_in_engine_results(capsys) -> None:
         "successful": 71,
         "summary_repositories": 71,
         "summary_successful": 71,
+        "aggregate_total_fields_checked": list(CORE_ENGINE_TOTAL_FIELDS),
     }
     schema = json.loads(render_schema("engine-results-verification"))
     Draft202012Validator(schema).validate(payload)
@@ -795,6 +796,7 @@ def test_cli_benchmark_verify_engine_writes_output_file(tmp_path: Path, capsys) 
     assert payload["passed"] is True
     assert payload["repositories"] == 71
     assert payload["schema"] == "engine-results"
+    assert payload["aggregate_total_fields_checked"] == list(CORE_ENGINE_TOTAL_FIELDS)
     schema = json.loads(render_schema("engine-results-verification"))
     Draft202012Validator(schema).validate(payload)
 
@@ -824,6 +826,21 @@ def test_cli_benchmark_verify_engine_rejects_summary_drift(
     captured = capsys.readouterr()
     assert captured.out == ""
     assert "summary.repositories does not match repository entries" in captured.err
+
+
+def test_cli_benchmark_verify_engine_rejects_aggregate_drift(
+    tmp_path: Path, capsys
+) -> None:
+    payload = json.loads((ROOT / "benchmarks/engine-results.json").read_text(encoding="utf-8"))
+    payload["summary"]["files_scanned"] = payload["summary"]["files_scanned"] + 1
+    result = tmp_path / "engine-results.json"
+    result.write_text(json.dumps(payload), encoding="utf-8")
+
+    assert cli.main(["benchmark", "verify-engine", str(result)]) == 2
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "summary.files_scanned does not match repository total" in captured.err
 
 
 def test_cli_benchmark_verify_rejects_public_results_as_sealed_claim(capsys) -> None:

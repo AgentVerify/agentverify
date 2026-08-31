@@ -9,5 +9,19 @@
   "repositories": 71,
   "successful": 71,
   "summary_repositories": 71,
-  "summary_successful": 71
+  "summary_successful": 71,
+  "aggregate_total_fields_checked": [
+    "files_scanned",
+    "dependency_files_materialized",
+    "config_files_scanned",
+    "relationships",
+    "symbolized_components",
+    "identified_symbol_endpoints",
+    "resolved_symbol_endpoints",
+    "unmatched_identified_symbol_endpoints",
+    "ambiguous_repeated_binding_targets",
+    "resolved_import_edges",
+    "parse_warnings",
+    "suppressed_findings"
+  ]
 }

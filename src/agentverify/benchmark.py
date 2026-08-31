@@ -17,6 +17,20 @@ DEFAULT_BENCHMARK_RESULTS = (
     Path("benchmarks/ir-truthset-results.json"),
 )
 DEFAULT_ENGINE_RESULTS = Path("benchmarks/engine-results.json")
+CORE_ENGINE_TOTAL_FIELDS = (
+    "files_scanned",
+    "dependency_files_materialized",
+    "config_files_scanned",
+    "relationships",
+    "symbolized_components",
+    "identified_symbol_endpoints",
+    "resolved_symbol_endpoints",
+    "unmatched_identified_symbol_endpoints",
+    "ambiguous_repeated_binding_targets",
+    "resolved_import_edges",
+    "parse_warnings",
+    "suppressed_findings",
+)
 BENCHMARK_VERIFICATION_ERRORS = (
     OSError,
     RuntimeError,
@@ -341,6 +355,10 @@ def verify_engine_results(
         raise RuntimeError(f"{path}: summary.repositories does not match repository entries")
     if summary["successful"] != successful:
         raise RuntimeError(f"{path}: summary.successful does not match ok repository entries")
+    for field in CORE_ENGINE_TOTAL_FIELDS:
+        total = sum(result[field] for result in repositories)
+        if summary[field] != total:
+            raise RuntimeError(f"{path}: summary.{field} does not match repository total")
 
     result = {
         "engine_results_verification_format": "AgentVerify Engine Results Verification",
@@ -354,6 +372,7 @@ def verify_engine_results(
         "successful": successful,
         "summary_repositories": summary["repositories"],
         "summary_successful": summary["successful"],
+        "aggregate_total_fields_checked": list(CORE_ENGINE_TOTAL_FIELDS),
     }
     Draft202012Validator(load_engine_results_verification_schema()).validate(result)
     return result

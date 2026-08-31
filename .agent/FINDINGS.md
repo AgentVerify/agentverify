@@ -3,7 +3,7 @@
 ## Durable facts
 
 - `agentverify benchmark verify-engine` is now the installed validation path for full-corpus engine
-  snapshots. It validates the engine-results schema, checks repository/success summary consistency,
+  snapshots. It validates the engine-results schema, checks core summary aggregate consistency,
   and emits JSON governed by `agentverify schema engine-results-verification`.
 - Installed-wheel smoke verification now validates the checked engine-results snapshot with the
   schema exported by the installed `agentverify` executable, proving the packaged schema and source

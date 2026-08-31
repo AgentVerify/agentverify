@@ -96,7 +96,7 @@ by `agentverify contracts --verify-dir`.
 `agentverify schema engine-results` validates full-corpus engine metric snapshots such as
 `benchmarks/engine-results.json`.
 `agentverify schema engine-results-verification` validates the JSON emitted by
-`agentverify benchmark verify-engine`, which checks the snapshot schema and summary counts.
+`agentverify benchmark verify-engine`, which checks the snapshot schema and aggregate totals.
 `agentverify schema holdout-manifest` and `agentverify schema holdout-labels` validate the public
 sealed-holdout sampling and adjudicated-label templates.
 `agentverify holdout validate --manifest PATH --labels PATH` validates those setup files directly
@@ -116,7 +116,8 @@ anchor, and source-snippet mismatches. It can fail closed on release-claim requi
 `--require-evaluation-kind sealed-holdout`, `--require-sealed`, `--require-manifest`, and
 `--require-all-passed`.
 `agentverify benchmark verify-engine` validates full-corpus engine metric snapshots against the
-bundled engine-results schema and checks that summary repository totals match the packaged entries.
+bundled engine-results schema and checks that core summary totals match the packaged repository
+entries.
 Use `--format summary` for compact CI logs: it reports scan totals, baseline/policy status, counts by
 severity/result kind/rule, and the top evidence locations without printing the full component graph.
 `agentverify rules` lists every enabled reporting rule with its result kind, default severity,
