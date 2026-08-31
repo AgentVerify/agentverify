@@ -24283,12 +24283,63 @@ def typescript_graph(
                 summary["guardrail_reject_condition_literal_count"] = len(literals)
             return summary
 
+        def direct_return_helper_call_name(body: str) -> str | None:
+            body_code = typescript_code_mask(body)
+            return_matches = list(re.finditer(r"\breturn\s+([\s\S]*?);", body_code))
+            if len(return_matches) != 1:
+                return None
+            return_match = return_matches[0]
+            expression_code = body_code[return_match.start(1) : return_match.end(1)]
+            value = expression_code.strip()
+            while value.startswith("("):
+                end = typescript_balanced_end(value, 0, "(", ")")
+                if end is None or value[end:].strip():
+                    break
+                value = value[1 : end - 1].strip()
+            value = re.sub(r"^(?:await\s+)+", "", value).strip()
+            call_match = re.match(r"^([A-Za-z_$][\w$]*)\s*\(", value)
+            if call_match is None:
+                return None
+            opening = value.find("(", call_match.start(1))
+            end = typescript_balanced_end(value, opening, "(", ")")
+            if end is None or value[end:].strip():
+                return None
+            return call_match.group(1)
+
+        def chained_helper_summary(
+            name: str,
+            helper_source: str,
+            callee_summary: dict[str, object],
+        ) -> dict[str, object]:
+            summary = dict(callee_summary)
+            helpers = [
+                helper
+                for helper in summary.get("guardrail_reject_condition_helpers", [])
+                if isinstance(helper, str)
+            ]
+            if name not in helpers:
+                helpers.insert(0, name)
+            helper_sources = [
+                source
+                for source in summary.get("guardrail_reject_condition_helper_sources", [])
+                if isinstance(source, str)
+            ]
+            if helper_source not in helper_sources:
+                helper_sources.insert(0, helper_source)
+            summary["guardrail_reject_condition_helpers"] = helpers
+            summary["guardrail_reject_condition_helper_count"] = len(helpers)
+            summary["guardrail_reject_condition_helper_sources"] = helper_sources
+            summary["guardrail_reject_condition_helper_source_count"] = len(helper_sources)
+            return summary
+
         definitions = typescript_function_definitions(text)
         name_counts = Counter(name for name, _, _, _ in definitions)
+        helper_bodies: dict[str, tuple[str, str]] = {}
         summaries: dict[str, dict[str, object]] = {}
         for name, _, _, body in definitions:
             if name_counts[name] != 1:
                 continue
+            helper_bodies[name] = (body, "same-file-function")
             summary = summarize_helper_body(
                 name,
                 body,
@@ -24303,6 +24354,7 @@ def typescript_graph(
             text,
         ).items():
             body = binding.text[binding.body_start : binding.body_end]
+            helper_bodies[local_name] = (body, binding.resolution)
             summary = summarize_helper_body(
                 local_name,
                 body,
@@ -24311,6 +24363,21 @@ def typescript_graph(
             if summary is None:
                 continue
             summaries[local_name] = summary
+        changed = True
+        while changed:
+            changed = False
+            for name, (body, helper_source) in helper_bodies.items():
+                if name in summaries:
+                    continue
+                callee = direct_return_helper_call_name(body)
+                if callee is None or callee not in summaries:
+                    continue
+                summaries[name] = chained_helper_summary(
+                    name,
+                    helper_source,
+                    summaries[callee],
+                )
+                changed = True
         return summaries
 
     openai_tool_guardrail_condition_helper_summaries = (

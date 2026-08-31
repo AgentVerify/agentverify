@@ -134,6 +134,10 @@ function containsClassifiedTerm(value: string | undefined): boolean {
   return String(value ?? "").includes("classified");
 }
 
+function containsClassifiedTermViaWrapper(value: string | undefined): boolean {
+  return containsClassifiedTerm(value);
+}
+
 const helperPredicateGuardrail = defineToolInputGuardrail({
   name: "helper_predicate_guardrail",
   run: async ({ toolCall }) => {
@@ -223,3 +227,32 @@ const helperResultBindingAgent = new Agent({
 });
 
 void helperResultBindingAgent;
+
+const helperChainGuardrail = defineToolInputGuardrail({
+  name: "helper_chain_guardrail",
+  run: async ({ toolCall }) => {
+    const args = JSON.parse(toolCall.arguments) as { text?: string };
+    if (containsClassifiedTermViaWrapper(args.text)) {
+      return ToolGuardrailFunctionOutputFactory.rejectContent(
+        "Remove wrapper-detected classified terms before calling this tool.",
+      );
+    }
+    return ToolGuardrailFunctionOutputFactory.allow();
+  },
+});
+
+const helperChainTool = tool({
+  name: "helper_chain_tool",
+  description: "Uses a helper chain guardrail.",
+  parameters: z.object({ text: z.string() }),
+  inputGuardrails: [helperChainGuardrail],
+  execute: ({ text }) => text,
+});
+
+const helperChainAgent = new Agent({
+  name: "Helper chain tool guardrail classifier",
+  instructions: "Classify with a helper chain guardrail.",
+  tools: [helperChainTool],
+});
+
+void helperChainAgent;

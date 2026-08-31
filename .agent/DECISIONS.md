@@ -1517,8 +1517,22 @@
 - Alternative: Track arbitrary boolean aliases, compound expressions, or post-branch mutations.
   Rejected because a narrow pre-branch initializer check gives useful coverage without claiming
   general data-flow precision.
-- Revisit when compound helper predicates can be decomposed with similarly tight mutation and scope
-  evidence.
+- Later direct helper-chain support is recorded in the fixed-point summary decision below.
+
+## OpenAI Agents JS tool guardrail helper chains are fixed-point exact summaries
+
+- Decision: After direct literal helper summaries are built, iteratively summarize unique helper
+  bodies whose only return expression is a direct call to an already-proven helper, preserving both
+  wrapper and callee helper names.
+- Evidence: The local `typescript_openai_tool_guardrails` fixture routes
+  `containsClassifiedTermViaWrapper(...)` through `containsClassifiedTerm(...)`; focused public IR
+  labels pass 56/56 with `classified` literal evidence and both helper names on tool and Agent
+  governance edges.
+- Alternative: Follow arbitrary helper bodies, compound boolean expressions, or helper chains with
+  multiple returns. Rejected because single-return direct-call chains add useful coverage while
+  retaining exact provenance and cycle safety.
+- Revisit when compound predicate decomposition or imported helper chains can be proven with the
+  same uniqueness and mutation bounds.
 
 ## OpenAI Agents JS imported tool guardrail arrays require exact export provenance
 

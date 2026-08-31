@@ -7005,9 +7005,10 @@ def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:
         "ts:agent.ts#control:ambiguousImportedGuardrailTool.inputGuardrails@109",
         "ts:exported-tools.ts#control:exportedGuardrailTool.inputGuardrails@13",
         "ts:exported-tools.ts#control:exportedGuardrailTool.outputGuardrails@14",
-        "ts:agent.ts#control:helperPredicateTool.inputGuardrails@154",
-        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@185",
-        "ts:agent.ts#control:helperResultBindingTool.inputGuardrails@215",
+        "ts:agent.ts#control:helperPredicateTool.inputGuardrails@158",
+        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@189",
+        "ts:agent.ts#control:helperResultBindingTool.inputGuardrails@219",
+        "ts:agent.ts#control:helperChainTool.inputGuardrails@248",
     }
     assert controls["ts:agent.ts#control:classifyTool.inputGuardrails@44"].attributes == {
         "analysis": "typescript-openai-agents-tool-guardrails",
@@ -7099,31 +7100,40 @@ def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:
         "ts:exported-tools.ts#control:exportedGuardrailTool.outputGuardrails@14"
     ].attributes["guardrail_actions"] == ["allow"]
     assert controls[
-        "ts:agent.ts#control:helperPredicateTool.inputGuardrails@154"
+        "ts:agent.ts#control:helperPredicateTool.inputGuardrails@158"
     ].attributes["guardrail_reject_condition_literals"] == ["classified"]
     assert controls[
-        "ts:agent.ts#control:helperPredicateTool.inputGuardrails@154"
+        "ts:agent.ts#control:helperPredicateTool.inputGuardrails@158"
     ].attributes["guardrail_reject_condition_helpers"] == ["containsClassifiedTerm"]
     assert controls[
-        "ts:agent.ts#control:helperPredicateTool.inputGuardrails@154"
+        "ts:agent.ts#control:helperPredicateTool.inputGuardrails@158"
     ].attributes["guardrail_reject_condition_helper_sources"] == ["same-file-function"]
     assert controls[
-        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@185"
+        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@189"
     ].attributes["guardrail_reject_condition_literals"] == ["export-controlled"]
     assert controls[
-        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@185"
+        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@189"
     ].attributes["guardrail_reject_condition_helpers"] == [
         "containsExportControlledTerm",
     ]
     assert controls[
-        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@185"
+        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@189"
     ].attributes["guardrail_reject_condition_helper_sources"] == ["imported-local-function"]
     assert controls[
-        "ts:agent.ts#control:helperResultBindingTool.inputGuardrails@215"
+        "ts:agent.ts#control:helperResultBindingTool.inputGuardrails@219"
     ].attributes["guardrail_reject_condition_literals"] == ["classified"]
     assert controls[
-        "ts:agent.ts#control:helperResultBindingTool.inputGuardrails@215"
+        "ts:agent.ts#control:helperResultBindingTool.inputGuardrails@219"
     ].attributes["guardrail_reject_condition_helpers"] == ["containsClassifiedTerm"]
+    assert controls[
+        "ts:agent.ts#control:helperChainTool.inputGuardrails@248"
+    ].attributes["guardrail_reject_condition_literals"] == ["classified"]
+    assert controls[
+        "ts:agent.ts#control:helperChainTool.inputGuardrails@248"
+    ].attributes["guardrail_reject_condition_helpers"] == [
+        "containsClassifiedTermViaWrapper",
+        "containsClassifiedTerm",
+    ]
     assert "guardrail_names" not in controls[
         "ts:agent.ts#control:ambiguousImportedGuardrailTool.inputGuardrails@109"
     ].attributes
@@ -7220,32 +7230,41 @@ def test_typescript_openai_tool_guardrail_policy_is_exact() -> None:
         "ts:exported-tools.ts#control:exportedGuardrailTool.outputGuardrails@14"
     ].attributes["tool_guardrail_control_line"] == 14
     assert agent_edges[
-        "ts:agent.ts#control:helperPredicateTool.inputGuardrails@154"
+        "ts:agent.ts#control:helperPredicateTool.inputGuardrails@158"
     ].source_id == "ts:agent.ts#agent:helperPredicateAgent"
     assert agent_edges[
-        "ts:agent.ts#control:helperPredicateTool.inputGuardrails@154"
+        "ts:agent.ts#control:helperPredicateTool.inputGuardrails@158"
     ].attributes["via_tool_id"] == "ts:agent.ts#tool:helperPredicateTool"
     assert agent_edges[
-        "ts:agent.ts#control:helperPredicateTool.inputGuardrails@154"
+        "ts:agent.ts#control:helperPredicateTool.inputGuardrails@158"
     ].attributes["guardrail_reject_condition_helpers"] == ["containsClassifiedTerm"]
     assert agent_edges[
-        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@185"
+        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@189"
     ].source_id == "ts:agent.ts#agent:importedHelperPredicateAgent"
     assert agent_edges[
-        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@185"
+        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@189"
     ].attributes["via_tool_id"] == "ts:agent.ts#tool:importedHelperPredicateTool"
     assert agent_edges[
-        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@185"
+        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@189"
     ].attributes["guardrail_reject_condition_literals"] == ["export-controlled"]
     assert agent_edges[
-        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@185"
+        "ts:agent.ts#control:importedHelperPredicateTool.inputGuardrails@189"
     ].attributes["guardrail_reject_condition_helper_sources"] == ["imported-local-function"]
     assert agent_edges[
-        "ts:agent.ts#control:helperResultBindingTool.inputGuardrails@215"
+        "ts:agent.ts#control:helperResultBindingTool.inputGuardrails@219"
     ].source_id == "ts:agent.ts#agent:helperResultBindingAgent"
     assert agent_edges[
-        "ts:agent.ts#control:helperResultBindingTool.inputGuardrails@215"
+        "ts:agent.ts#control:helperResultBindingTool.inputGuardrails@219"
     ].attributes["guardrail_reject_condition_literals"] == ["classified"]
+    assert agent_edges[
+        "ts:agent.ts#control:helperChainTool.inputGuardrails@248"
+    ].source_id == "ts:agent.ts#agent:helperChainAgent"
+    assert agent_edges[
+        "ts:agent.ts#control:helperChainTool.inputGuardrails@248"
+    ].attributes["guardrail_reject_condition_helpers"] == [
+        "containsClassifiedTermViaWrapper",
+        "containsClassifiedTerm",
+    ]
 
 
 def test_typescript_openai_agent_clone_is_exact() -> None:
