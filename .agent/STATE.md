@@ -7,14 +7,21 @@ catalog workflows.
 
 ## Completed recently
 
+- Extended TypeScript OpenAI Agents JS tool-guardrail reject-condition metadata through exact
+  same-file helper predicates. Unique helper functions that return literal string checks can now
+  annotate guarded `if (helper(...)) return rejectContent(...)` branches with
+  `guardrail_reject_condition_helpers` plus inherited literal/source metadata, and that metadata
+  propagates through tool and Agent governance edges. Focused
+  `IR-TS-OPENAI-TOOL-GUARDRAILS` labels pass 47/47, the full reporting truth set passes 733/733,
+  the full public IR truth set passes 2,569/2,569, and benchmark verification passes 3,302/3,302
+  combined public-regression labels.
 - Extended TypeScript OpenAI Agents JS tool-guardrail governance across imported guarded
   `tool(...)` bindings. Agents that attach a proven imported tool now receive exact `governed-by`
   edges to the producer-file `tool-guardrail-policy` controls via the existing Agent-to-tool
   relationship and the tool control's stable source-tool id, preserving `via_tool_id`, guardrail
   source/name/action/reject-condition metadata, and producer control path/line. Focused
-  `IR-TS-OPENAI-TOOL-GUARDRAILS` labels pass 44/44, the full reporting truth set passes 733/733,
-  the full public IR truth set passes 2,566/2,566, and benchmark verification passes 3,299/3,299
-  combined public-regression labels.
+  `IR-TS-OPENAI-TOOL-GUARDRAILS` labels passed 44/44 before the later helper-predicate expansion;
+  the current aggregate public-regression counts are recorded in the latest entry above.
 - Extended OpenAI Agents Python `ComputerTool(on_safety_check=...)` inventory with exact
   non-acknowledgement metadata for boolean callbacks. Inline `lambda ...: False` and scope-proven
   same-file callbacks ending in a single `return False` now record

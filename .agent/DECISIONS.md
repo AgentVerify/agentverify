@@ -1476,6 +1476,21 @@
 - Revisit when helper-created or factory-created guarded tools need richer interprocedural metadata
   beyond the existing control/source-tool join.
 
+## OpenAI Agents JS tool guardrail helper predicates are same-file exact summaries
+
+- Decision: Summarize only unique same-file helper function declarations whose direct return
+  expression contains a literal string `.includes(...)` or literal non-equality check, and apply the
+  summary only when a reject-content guardrail branch is guarded by an exact direct helper call.
+- Evidence: The local `typescript_openai_tool_guardrails` fixture now routes
+  `if (containsClassifiedTerm(args.text))` into a `rejectContent(...)` return; focused public IR
+  labels pass 47/47 and show the helper name plus inherited `classified` literal on both tool and
+  Agent governance edges.
+- Alternative: Inline arbitrary predicate helpers, boolean variables, imported helpers, or complex
+  composed conditions. Rejected because those shapes need stronger data-flow/provenance before
+  their literals can be attributed to a tool guardrail reject path.
+- Revisit when imported helpers or factory-created guardrails can be summarized with stable source
+  identity and mutation/shadowing bounds.
+
 ## OpenAI Agents JS imported tool guardrail arrays require exact export provenance
 
 - Decision: Resolve TypeScript OpenAI Agents SDK tool guardrail arrays across relative named imports

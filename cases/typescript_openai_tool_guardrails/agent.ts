@@ -129,3 +129,36 @@ const importedToolAgent = new Agent({
 });
 
 void importedToolAgent;
+
+function containsClassifiedTerm(value: string | undefined): boolean {
+  return String(value ?? "").includes("classified");
+}
+
+const helperPredicateGuardrail = defineToolInputGuardrail({
+  name: "helper_predicate_guardrail",
+  run: async ({ toolCall }) => {
+    const args = JSON.parse(toolCall.arguments) as { text?: string };
+    if (containsClassifiedTerm(args.text)) {
+      return ToolGuardrailFunctionOutputFactory.rejectContent(
+        "Remove classified terms before calling this tool.",
+      );
+    }
+    return ToolGuardrailFunctionOutputFactory.allow();
+  },
+});
+
+const helperPredicateTool = tool({
+  name: "helper_predicate_tool",
+  description: "Uses a same-file helper predicate guardrail.",
+  parameters: z.object({ text: z.string() }),
+  inputGuardrails: [helperPredicateGuardrail],
+  execute: ({ text }) => text,
+});
+
+const helperPredicateAgent = new Agent({
+  name: "Helper predicate tool guardrail classifier",
+  instructions: "Classify with a helper predicate guardrail.",
+  tools: [helperPredicateTool],
+});
+
+void helperPredicateAgent;

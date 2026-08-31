@@ -19899,6 +19899,8 @@ def add_typescript_openai_tool_guardrail_control(
         "guardrail_reject_condition_count",
         "guardrail_reject_condition_literals",
         "guardrail_reject_condition_literal_count",
+        "guardrail_reject_condition_helpers",
+        "guardrail_reject_condition_helper_count",
     ):
         if key in attributes:
             relationship_attributes[key] = attributes[key]
@@ -19986,6 +19988,8 @@ def add_typescript_openai_imported_tool_guardrail_edges(ir: RepositoryIR) -> Non
                 "guardrail_reject_condition_count",
                 "guardrail_reject_condition_literals",
                 "guardrail_reject_condition_literal_count",
+                "guardrail_reject_condition_helpers",
+                "guardrail_reject_condition_helper_count",
                 "source_tool",
             ):
                 if key in control.attributes:
@@ -24044,6 +24048,7 @@ def typescript_graph(
         expression_code = typescript_code_mask(expression)
         condition_sources: list[str] = []
         condition_literals: list[str] = []
+        condition_helpers: list[str] = []
 
         def add_condition_source(source: str) -> None:
             if source not in condition_sources:
@@ -24052,6 +24057,44 @@ def typescript_graph(
         def add_condition_literal(value: str) -> None:
             if value not in condition_literals:
                 condition_literals.append(value)
+
+        def add_condition_helper(value: str) -> None:
+            if value not in condition_helpers:
+                condition_helpers.append(value)
+
+        def add_condition_attributes(attributes: dict[str, object]) -> None:
+            sources = attributes.get("guardrail_reject_condition_sources")
+            if isinstance(sources, list):
+                for source in sources:
+                    if isinstance(source, str):
+                        add_condition_source(source)
+            literals = attributes.get("guardrail_reject_condition_literals")
+            if isinstance(literals, list):
+                for literal in literals:
+                    if isinstance(literal, str):
+                        add_condition_literal(literal)
+            helpers = attributes.get("guardrail_reject_condition_helpers")
+            if isinstance(helpers, list):
+                for helper in helpers:
+                    if isinstance(helper, str):
+                        add_condition_helper(helper)
+
+        def direct_helper_call_name(condition: str) -> str | None:
+            value = condition.strip()
+            while value.startswith("("):
+                end = typescript_balanced_end(value, 0, "(", ")")
+                if end is None or value[end:].strip():
+                    break
+                value = value[1 : end - 1].strip()
+            value = re.sub(r"^(?:await\s+)+", "", value).strip()
+            call_match = re.match(r"^([A-Za-z_$][\w$]*)\s*\(", value)
+            if call_match is None:
+                return None
+            opening = value.find("(", call_match.start(1))
+            end = typescript_balanced_end(value, opening, "(", ")")
+            if end is None or value[end:].strip():
+                return None
+            return call_match.group(1)
 
         for if_match in re.finditer(r"\bif\s*\(", expression_code):
             condition_opening = expression_code.find("(", if_match.start(), if_match.end())
@@ -24108,6 +24151,13 @@ def typescript_graph(
             ):
                 add_condition_source("string-not-equals")
                 add_condition_literal(comparison_match.group(2))
+            helper_name = direct_helper_call_name(condition_code)
+            if helper_name is not None:
+                helper_attributes = openai_tool_guardrail_condition_helper_summaries.get(
+                    helper_name,
+                )
+                if helper_attributes is not None:
+                    add_condition_attributes(helper_attributes)
 
         if not condition_sources:
             return {}
@@ -24118,7 +24168,79 @@ def typescript_graph(
         if condition_literals:
             attributes["guardrail_reject_condition_literals"] = condition_literals
             attributes["guardrail_reject_condition_literal_count"] = len(condition_literals)
+        if condition_helpers:
+            attributes["guardrail_reject_condition_helpers"] = condition_helpers
+            attributes["guardrail_reject_condition_helper_count"] = len(condition_helpers)
         return attributes
+
+    def openai_tool_guardrail_condition_helper_summaries() -> dict[str, dict[str, object]]:
+        definitions = typescript_function_definitions(text)
+        name_counts = Counter(name for name, _, _, _ in definitions)
+        summaries: dict[str, dict[str, object]] = {}
+
+        def append_unique(values: list[str], value: str) -> None:
+            if value not in values:
+                values.append(value)
+
+        for name, _, _, body in definitions:
+            if name_counts[name] != 1:
+                continue
+            sources: list[str] = []
+            literals: list[str] = []
+
+            body_code = typescript_code_mask(body)
+            for return_match in re.finditer(r"\breturn\s+([\s\S]*?);", body_code):
+                expression = body[return_match.start(1) : return_match.end(1)]
+                expression_code = body_code[return_match.start(1) : return_match.end(1)]
+                for includes_match in re.finditer(r"\.\s*includes\s*\(", expression_code):
+                    includes_opening = expression_code.find(
+                        "(",
+                        includes_match.start(),
+                        includes_match.end(),
+                    )
+                    includes_end = typescript_balanced_end(
+                        expression_code,
+                        includes_opening,
+                        "(",
+                        ")",
+                    )
+                    if includes_end is None:
+                        continue
+                    arguments = typescript_call_arguments(
+                        expression[includes_opening + 1 : includes_end - 1],
+                        includes_opening + 1,
+                    )
+                    if not arguments:
+                        continue
+                    literal_value = typescript_string_literal_value(arguments[0][0])
+                    if literal_value is None:
+                        continue
+                    append_unique(sources, "string-includes")
+                    append_unique(literals, literal_value)
+                for comparison_match in re.finditer(
+                    r"!\s*==\s*(['\"])([^\\\r\n]*?)\1",
+                    expression,
+                    re.DOTALL,
+                ):
+                    append_unique(sources, "string-not-equals")
+                    append_unique(literals, comparison_match.group(2))
+            if not sources:
+                continue
+            summary: dict[str, object] = {
+                "guardrail_reject_condition_sources": sources,
+                "guardrail_reject_condition_count": len(sources),
+                "guardrail_reject_condition_helpers": [name],
+                "guardrail_reject_condition_helper_count": 1,
+            }
+            if literals:
+                summary["guardrail_reject_condition_literals"] = literals
+                summary["guardrail_reject_condition_literal_count"] = len(literals)
+            summaries[name] = summary
+        return summaries
+
+    openai_tool_guardrail_condition_helper_summaries = (
+        openai_tool_guardrail_condition_helper_summaries()
+    )
 
     def openai_tool_guardrail_definition_bindings(
         *,
@@ -24266,6 +24388,7 @@ def typescript_graph(
         guardrail_actions: set[str] = set()
         guardrail_reject_condition_sources: list[str] = []
         guardrail_reject_condition_literals: list[str] = []
+        guardrail_reject_condition_helpers: list[str] = []
         for item, item_offset in concrete_items:
             item_attributes, item_binding = openai_tool_guardrail_item_attributes(
                 item,
@@ -24289,6 +24412,11 @@ def typescript_graph(
             if isinstance(condition_literals, list):
                 guardrail_reject_condition_literals.extend(
                     literal for literal in condition_literals if isinstance(literal, str)
+                )
+            condition_helpers = item_attributes.get("guardrail_reject_condition_helpers")
+            if isinstance(condition_helpers, list):
+                guardrail_reject_condition_helpers.extend(
+                    helper for helper in condition_helpers if isinstance(helper, str)
                 )
         if guardrail_bindings:
             attributes["guardrail_bindings"] = guardrail_bindings
@@ -24314,6 +24442,13 @@ def typescript_graph(
             )
             attributes["guardrail_reject_condition_literal_count"] = len(
                 guardrail_reject_condition_literals
+            )
+        if guardrail_reject_condition_helpers:
+            attributes["guardrail_reject_condition_helpers"] = (
+                guardrail_reject_condition_helpers
+            )
+            attributes["guardrail_reject_condition_helper_count"] = len(
+                guardrail_reject_condition_helpers
             )
         return attributes
 
@@ -28181,6 +28316,8 @@ def typescript_graph(
                             "guardrail_reject_condition_count",
                             "guardrail_reject_condition_literals",
                             "guardrail_reject_condition_literal_count",
+                            "guardrail_reject_condition_helpers",
+                            "guardrail_reject_condition_helper_count",
                         ):
                             if key in guardrail_attributes:
                                 guardrail_relationship_attributes[key] = guardrail_attributes[key]

@@ -2,6 +2,12 @@
 
 ## Durable facts
 
+- OpenAI Agents JS tool guardrails can safely inherit reject-condition literals from exact same-file
+  helper predicates. Unique helper functions with direct return expressions such as
+  `String(value ?? "").includes("classified")` now summarize to
+  `guardrail_reject_condition_helpers` plus the inherited literal/source metadata, but only when a
+  reject-content branch is guarded by an exact helper call. This keeps helper calls visible in the
+  IR while avoiding broad predicate/data-flow claims.
 - OpenAI Agents JS imported guarded tools now carry tool-guardrail governance to consumer Agents
   when identity is exact. The pinned SDK and local fixture expose reusable guarded
   `tool({ inputGuardrails, outputGuardrails })` exports that are imported into another file's
