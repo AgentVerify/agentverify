@@ -1195,6 +1195,28 @@
 - Revisit when imported guardrail arrays, helper-created guardrails, input guardrails, or guardrail
   tripwire/action quality can be tied to exact source-agent identity without broad name matching.
 
+## OpenAI Agents JS Codex tool is delegated-runtime inventory
+
+- Decision: Represent exact TypeScript `codexTool(...)` calls from
+  `@openai/agents-extensions/experimental/codex` as `Codex tool` components when an exact
+  `@openai/agents` `Agent` includes the tool through a stable same-file binding or an inline call in
+  a literal `tools` array. Record `defaultThreadOptions` governance metadata, including
+  `approvalPolicy`, sandbox mode, network/web-search toggles, model/reasoning, stream callback
+  binding, working-directory binding, and `useRunContextThreadId`, and attach explicit
+  `tool-approval-policy` controls only when an approval policy is present.
+- Evidence: The local `typescript_openai_codex_tool` fixture covers same-file binding, inline
+  generic-Agent usage, and a mutated-binding negative. The pinned OpenAI Agents JS
+  `examples/tools/codex.ts` and `examples/tools/codex-same-thread.ts` examples contribute real
+  labels for `approvalPolicy: 'never'`, workspace-write sandboxing, network/web-search toggles,
+  stream callbacks, and run-context thread reuse.
+- Alternative: Treat every Codex extension import as an executable tool or emit broad network/code
+  capabilities from `networkAccessEnabled`. Rejected because the model-visible surface is only
+  source-proven once the `codexTool` value reaches an Agent `tools` array, and network/code
+  capability severity needs a separate evidence standard from thread-option inventory.
+- Revisit when imported/reexported Codex tool bindings, richer working-directory provenance, or
+  reportable approval-policy findings can be tied to exact agent/tool identity without broad helper
+  matching.
+
 ## OpenAI Realtime guardrail tripwires are conservative quality metadata
 
 - Decision: Record direct `tripwireTriggered` return-object metadata on exact TypeScript OpenAI

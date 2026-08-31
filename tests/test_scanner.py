@@ -7600,6 +7600,111 @@ def test_typescript_openai_realtime_session_guardrail_policy_is_exact() -> None:
     }
 
 
+def test_typescript_openai_agents_codex_tool_flow_is_exact() -> None:
+    ir = scan_repository(ROOT / "cases/typescript_openai_codex_tool")
+
+    tools = {
+        component.symbol_id: component
+        for component in ir.components
+        if component.kind == "tool"
+        and component.name == "Codex tool"
+        and component.attributes.get("analysis") == "typescript-openai-agents-codex-tool"
+    }
+    assert set(tools) == {
+        "ts:agent.ts#tool:codex.codexTool",
+        "ts:agent.ts#tool:inlineAgent.inlineCodexTool@29",
+    }
+    assert tools["ts:agent.ts#tool:codex.codexTool"].attributes == {
+        "analysis": "typescript-openai-agents-codex-tool",
+        "module": "@openai/agents-extensions/experimental/codex",
+        "factory": "codexTool",
+        "imported_symbol": "codexTool",
+        "local_factory": "makeCodex",
+        "tool_reference": "codex",
+        "scope": "production",
+        "sandbox_mode": "workspace-write",
+        "stream_callback_present": True,
+        "stream_callback_binding": "onCodexStream",
+        "thread_options_present": True,
+        "thread_model": "gpt-5.4",
+        "thread_model_reasoning_effort": "low",
+        "approval_policy": "never",
+        "network_access_enabled": True,
+        "web_search_enabled": False,
+        "working_directory_binding": "workspace",
+        "working_directory_resolution": "binding",
+    }
+    assert tools["ts:agent.ts#tool:inlineAgent.inlineCodexTool@29"].attributes[
+        "tool_name"
+    ] == "codex_engineer"
+    assert tools["ts:agent.ts#tool:inlineAgent.inlineCodexTool@29"].attributes[
+        "use_run_context_thread_id"
+    ] is True
+
+    controls = {
+        component.symbol_id: component
+        for component in ir.components
+        if component.kind == "control"
+        and component.name == "tool-approval-policy"
+        and component.attributes.get("analysis") == "typescript-openai-agents-codex-tool"
+    }
+    assert set(controls) == {
+        "ts:agent.ts#control:codex.codexTool.defaultThreadOptions",
+        "ts:agent.ts#control:inlineAgent.inlineCodexTool@29.defaultThreadOptions",
+    }
+    assert all(
+        control.attributes["configuration"] == "codexTool.defaultThreadOptions"
+        and control.attributes["governed_runtime"] == "codex-thread"
+        and control.attributes["approval_policy"] == "never"
+        for control in controls.values()
+    )
+    assert controls[
+        "ts:agent.ts#control:inlineAgent.inlineCodexTool@29.defaultThreadOptions"
+    ].attributes["tool_name"] == "codex_engineer"
+
+    agent_edges = {
+        (relationship.source_id, relationship.target_id): relationship
+        for relationship in ir.relationships
+        if relationship.attributes.get("analysis") == "typescript-openai-agents-codex-tool"
+        and relationship.source_kind == "agent"
+        and relationship.relation == "uses"
+        and relationship.target_kind == "tool"
+    }
+    assert set(agent_edges) == {
+        ("ts:agent.ts#agent:agent", "ts:agent.ts#tool:codex.codexTool"),
+        (
+            "ts:agent.ts#agent:inlineAgent",
+            "ts:agent.ts#tool:inlineAgent.inlineCodexTool@29",
+        ),
+    }
+    assert all("mutableAgent" not in source_id for source_id, _ in agent_edges)
+
+    control_edges = {
+        (relationship.source_id, relationship.target_id): relationship
+        for relationship in ir.relationships
+        if relationship.attributes.get("analysis") == "typescript-openai-agents-codex-tool"
+        and relationship.source_kind == "tool"
+        and relationship.relation == "configured-by"
+        and relationship.target_kind == "control"
+    }
+    assert set(control_edges) == {
+        (
+            "ts:agent.ts#tool:codex.codexTool",
+            "ts:agent.ts#control:codex.codexTool.defaultThreadOptions",
+        ),
+        (
+            "ts:agent.ts#tool:inlineAgent.inlineCodexTool@29",
+            "ts:agent.ts#control:inlineAgent.inlineCodexTool@29.defaultThreadOptions",
+        ),
+    }
+    assert control_edges[
+        (
+            "ts:agent.ts#tool:inlineAgent.inlineCodexTool@29",
+            "ts:agent.ts#control:inlineAgent.inlineCodexTool@29.defaultThreadOptions",
+        )
+    ].attributes["use_run_context_thread_id"] is True
+
+
 def test_typescript_openai_realtime_session_auth_policy_is_exact() -> None:
     ir = scan_repository(ROOT / "cases/typescript_openai_realtime_session_auth")
 

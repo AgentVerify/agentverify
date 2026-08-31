@@ -45293,6 +45293,486 @@ def add_python_openai_agents_run_state_approval_decision_flow(
             )
 
 
+def add_typescript_openai_agents_codex_tool_flow(
+    ir: RepositoryIR,
+    root: Path,
+    paths: list[Path],
+) -> None:
+    """Resolve exact OpenAI Agents JS Codex extension tool governance."""
+
+    def read_sources() -> dict[str, str]:
+        sources: dict[str, str] = {}
+        for path in paths:
+            if path.suffix.lower() not in {".ts", ".tsx", ".js", ".jsx"} or not path.is_file():
+                continue
+            try:
+                if path.stat().st_size > MAX_SOURCE_BYTES:
+                    continue
+                sources[path.relative_to(root).as_posix()] = path.read_text(
+                    encoding="utf-8-sig",
+                    errors="ignore",
+                )
+            except OSError:
+                continue
+        return sources
+
+    def literal_object_arg(
+        call_body: str,
+        call_body_offset: int,
+    ) -> tuple[str, int] | None:
+        arguments = typescript_call_arguments(call_body, call_body_offset)
+        if not arguments:
+            return None
+        expression, expression_offset = arguments[0]
+        if not typescript_object_items(expression, expression_offset):
+            return None
+        return expression, expression_offset
+
+    def string_attr(
+        attributes: dict[str, object],
+        expression: str,
+        expression_offset: int,
+        key: str,
+        attr: str,
+    ) -> int | None:
+        location = typescript_object_property_expression_location(
+            expression,
+            key,
+            expression_offset,
+        )
+        if location is None:
+            return None
+        value_expression, property_offset, _ = location
+        value = typescript_string_literal_value(value_expression)
+        if value is not None:
+            attributes[attr] = value
+        return property_offset
+
+    def bool_attr(
+        attributes: dict[str, object],
+        expression: str,
+        expression_offset: int,
+        key: str,
+        attr: str,
+    ) -> int | None:
+        location = typescript_object_property_expression_location(
+            expression,
+            key,
+            expression_offset,
+        )
+        if location is None:
+            return None
+        value_expression, property_offset, _ = location
+        value = typescript_literal_boolean_value(value_expression)
+        if value is not None:
+            attributes[attr] = value
+        return property_offset
+
+    def codex_tool_attributes(
+        options_expression: str,
+        options_offset: int,
+    ) -> tuple[dict[str, object], int | None, int | None]:
+        attributes: dict[str, object] = {}
+        evidence_offsets: list[int] = []
+        approval_policy_offset = None
+        sandbox_offset = string_attr(
+            attributes,
+            options_expression,
+            options_offset,
+            "sandboxMode",
+            "sandbox_mode",
+        )
+        if sandbox_offset is not None:
+            evidence_offsets.append(sandbox_offset)
+        name_offset = string_attr(
+            attributes,
+            options_expression,
+            options_offset,
+            "name",
+            "tool_name",
+        )
+        if name_offset is not None:
+            evidence_offsets.append(name_offset)
+        use_context_offset = bool_attr(
+            attributes,
+            options_expression,
+            options_offset,
+            "useRunContextThreadId",
+            "use_run_context_thread_id",
+        )
+        if use_context_offset is not None:
+            evidence_offsets.append(use_context_offset)
+        on_stream_location = typescript_object_property_expression_location(
+            options_expression,
+            "onStream",
+            options_offset,
+        )
+        if on_stream_location is not None:
+            on_stream_expression, on_stream_property_offset, _ = on_stream_location
+            attributes["stream_callback_present"] = True
+            on_stream_code = typescript_code_mask(on_stream_expression).strip()
+            if re.fullmatch(r"[A-Za-z_$][\w$]*", on_stream_code):
+                attributes["stream_callback_binding"] = on_stream_code
+            evidence_offsets.append(on_stream_property_offset)
+
+        thread_options_location = typescript_object_property_expression_location(
+            options_expression,
+            "defaultThreadOptions",
+            options_offset,
+        )
+        if thread_options_location is not None:
+            (
+                thread_options_expression,
+                thread_options_property_offset,
+                thread_options_expression_offset,
+            ) = thread_options_location
+            attributes["thread_options_present"] = True
+            evidence_offsets.append(thread_options_property_offset)
+            for key, attr in (
+                ("model", "thread_model"),
+                ("modelReasoningEffort", "thread_model_reasoning_effort"),
+                ("approvalPolicy", "approval_policy"),
+            ):
+                offset = string_attr(
+                    attributes,
+                    thread_options_expression,
+                    thread_options_expression_offset,
+                    key,
+                    attr,
+                )
+                if offset is not None:
+                    evidence_offsets.append(offset)
+                    if key == "approvalPolicy":
+                        approval_policy_offset = offset
+            for key, attr in (
+                ("networkAccessEnabled", "network_access_enabled"),
+                ("webSearchEnabled", "web_search_enabled"),
+            ):
+                offset = bool_attr(
+                    attributes,
+                    thread_options_expression,
+                    thread_options_expression_offset,
+                    key,
+                    attr,
+                )
+                if offset is not None:
+                    evidence_offsets.append(offset)
+            working_directory_location = typescript_object_property_expression_location(
+                thread_options_expression,
+                "workingDirectory",
+                thread_options_expression_offset,
+            )
+            if working_directory_location is not None:
+                working_directory_expression, working_directory_property_offset, _ = (
+                    working_directory_location
+                )
+                working_directory = typescript_string_literal_value(working_directory_expression)
+                if working_directory is not None:
+                    attributes["working_directory"] = working_directory
+                    attributes["working_directory_resolution"] = "literal"
+                else:
+                    working_directory_code = typescript_code_mask(
+                        working_directory_expression
+                    ).strip()
+                    if re.fullmatch(r"[A-Za-z_$][\w$]*", working_directory_code):
+                        attributes["working_directory_binding"] = working_directory_code
+                        attributes["working_directory_resolution"] = "binding"
+                    else:
+                        attributes["working_directory_resolution"] = "dynamic-expression"
+                evidence_offsets.append(working_directory_property_offset)
+        return (
+            attributes,
+            min(evidence_offsets) if evidence_offsets else None,
+            approval_policy_offset,
+        )
+
+    for relative, text in read_sources().items():
+        if "codexTool" not in text or "new Agent" not in text:
+            continue
+        codex_imports = {
+            local
+            for local, imported in typescript_named_import_bindings(
+                text,
+                "@openai/agents-extensions/experimental/codex",
+            ).items()
+            if imported == "codexTool" and not typescript_import_binding_is_shadowed(text, local)
+        }
+        agent_imports = {
+            local
+            for local, imported in typescript_named_import_bindings(text, "@openai/agents").items()
+            if imported == "Agent" and not typescript_import_binding_is_shadowed(text, local)
+        }
+        if not codex_imports or not agent_imports:
+            continue
+        code = typescript_code_mask(text)
+        lines = text.splitlines()
+        codex_bindings: dict[str, tuple[str, int, dict[str, object], int]] = {}
+        for binding_name, expression, expression_offset in typescript_variable_initializers(text):
+            call = typescript_call_parts(expression)
+            if call is None:
+                continue
+            local_factory, call_body, call_body_offset = call
+            if local_factory not in codex_imports:
+                continue
+            options = literal_object_arg(call_body, expression_offset + call_body_offset)
+            if options is None:
+                continue
+            options_expression, options_offset = options
+            attributes, evidence_offset, approval_policy_offset = codex_tool_attributes(
+                options_expression,
+                options_offset,
+            )
+            codex_bindings[binding_name] = (
+                local_factory,
+                expression_offset,
+                attributes,
+                approval_policy_offset
+                if approval_policy_offset is not None
+                else evidence_offset
+                if evidence_offset is not None
+                else expression_offset,
+            )
+
+        agent_pattern = re.compile(
+            r"\bconst\s+([A-Za-z_$][\w$]*)"
+            r"\s*(?::\s*(?:[^=;\n]|=(?!>))+)?"
+            r"=\s*new\s+([A-Za-z_$][\w$]*)(?:<[^;\n]+>)?\s*\(",
+        )
+        for agent_match in agent_pattern.finditer(code):
+            agent_binding = agent_match.group(1)
+            local_constructor = agent_match.group(2)
+            if local_constructor not in agent_imports:
+                continue
+            opening = code.find("(", agent_match.start(), agent_match.end())
+            end = typescript_balanced_end(code, opening, "(", ")")
+            if end is None:
+                continue
+            arguments = typescript_call_arguments(text[opening + 1 : end - 1], opening + 1)
+            if not arguments:
+                continue
+            agent_options_expression, agent_options_offset = arguments[0]
+            agent_name = (
+                typescript_object_string_property(agent_options_expression, "name")
+                or agent_binding
+            )
+            tools = typescript_agent_tool_items(agent_options_expression, agent_options_offset)
+            if not tools:
+                continue
+            agent_line = line_at(text, agent_match.start())
+            agent_id = source_symbol("ts", relative, "agent", agent_binding)
+            agent_evidence = Evidence(relative, agent_line, excerpt(lines, agent_line))
+            emitted_agent = False
+
+            def emit_codex_tool(
+                *,
+                local_factory: str,
+                tool_line: int,
+                tool_evidence_offset: int,
+                tool_symbol_name: str,
+                tool_reference: str,
+                attributes: dict[str, object],
+                captured_relative: str = relative,
+                captured_lines: list[str] = lines,
+                captured_text: str = text,
+                captured_agent_name: str = agent_name,
+                captured_agent_evidence: Evidence = agent_evidence,
+                captured_local_constructor: str = local_constructor,
+                captured_agent_binding: str = agent_binding,
+                captured_agent_id: str = agent_id,
+            ) -> None:
+                nonlocal emitted_agent
+                if not emitted_agent:
+                    ir.add_component(
+                        Component(
+                            "agent",
+                            captured_agent_name,
+                            captured_agent_evidence,
+                            {
+                                "analysis": "typescript-openai-agents-codex-tool",
+                                "module": "@openai/agents",
+                                "constructor": "Agent",
+                                "imported_symbol": "Agent",
+                                "local_constructor": captured_local_constructor,
+                                "agent_binding": captured_agent_binding,
+                                "tool_source": "literal-tools-array",
+                                "scope": source_scope(captured_relative),
+                            },
+                            captured_agent_id,
+                        )
+                    )
+                    emitted_agent = True
+                evidence = Evidence(
+                    captured_relative,
+                    tool_line,
+                    excerpt(captured_lines, tool_line),
+                )
+                control_line = line_at(captured_text, tool_evidence_offset)
+                control_evidence = Evidence(
+                    captured_relative,
+                    control_line,
+                    excerpt(captured_lines, control_line),
+                )
+                tool_id = source_symbol("ts", captured_relative, "tool", tool_symbol_name)
+                control_id = source_symbol(
+                    "ts",
+                    captured_relative,
+                    "control",
+                    f"{tool_symbol_name}.defaultThreadOptions",
+                )
+                control_name = (
+                    "tool-approval-policy"
+                    if "approval_policy" in attributes
+                    else "codex-thread-options-policy"
+                )
+                shared: dict[str, object] = {
+                    "analysis": "typescript-openai-agents-codex-tool",
+                    "module": "@openai/agents-extensions/experimental/codex",
+                    "factory": "codexTool",
+                    "imported_symbol": "codexTool",
+                    "local_factory": local_factory,
+                    "tool_reference": tool_reference,
+                    "scope": source_scope(captured_relative),
+                }
+                ir.add_component(
+                    Component(
+                        "tool",
+                        "Codex tool",
+                        evidence,
+                        {**shared, **attributes},
+                        tool_id,
+                    )
+                )
+                ir.add_component(
+                    Component(
+                        "control",
+                        control_name,
+                        control_evidence,
+                        {
+                            **shared,
+                            **attributes,
+                            "configuration": "codexTool.defaultThreadOptions",
+                            "governed_runtime": "codex-thread",
+                        },
+                        control_id,
+                    )
+                )
+                edge_attributes: dict[str, object] = {
+                    "analysis": "typescript-openai-agents-codex-tool",
+                    "tool_source": "literal-tools-array",
+                    "tool_reference": tool_reference,
+                }
+                if "tool_name" in attributes:
+                    edge_attributes["tool_name"] = attributes["tool_name"]
+                ir.add_relationship(
+                    Relationship(
+                        "agent",
+                        captured_agent_name,
+                        "uses",
+                        "tool",
+                        "Codex tool",
+                        evidence,
+                        edge_attributes,
+                        source_id=captured_agent_id,
+                        target_id=tool_id,
+                    )
+                )
+                control_edge_attributes = {
+                    key: value
+                    for key, value in attributes.items()
+                    if key
+                    in {
+                        "sandbox_mode",
+                        "thread_options_present",
+                        "thread_model",
+                        "thread_model_reasoning_effort",
+                        "approval_policy",
+                        "network_access_enabled",
+                        "web_search_enabled",
+                        "use_run_context_thread_id",
+                        "working_directory_resolution",
+                        "working_directory_binding",
+                        "stream_callback_present",
+                        "stream_callback_binding",
+                    }
+                }
+                control_edge_attributes.update(
+                    {
+                        "analysis": "typescript-openai-agents-codex-tool",
+                        "configuration": "codexTool.defaultThreadOptions",
+                    }
+                )
+                ir.add_relationship(
+                    Relationship(
+                        "tool",
+                        "Codex tool",
+                        "configured-by",
+                        "control",
+                        control_name,
+                        control_evidence,
+                        control_edge_attributes,
+                        source_id=tool_id,
+                        target_id=control_id,
+                    )
+                )
+
+            for item, item_offset in tools:
+                item_code = typescript_code_mask(item).strip()
+                identifier = re.fullmatch(r"[A-Za-z_$][\w$]*", item_code)
+                if identifier is not None:
+                    binding_name = identifier.group(0)
+                    binding = codex_bindings.get(binding_name)
+                    if binding is None:
+                        continue
+                    local_factory, expression_offset, attributes, evidence_offset = binding
+                    if expression_offset > item_offset:
+                        continue
+                    if re.search(
+                        rf"(?<![\w$.]){re.escape(binding_name)}\s*=(?!=)",
+                        code[expression_offset:item_offset],
+                    ) or re.search(
+                        rf"(?<![\w$]){re.escape(binding_name)}\s*(?:\.|\[)",
+                        code[expression_offset:item_offset],
+                    ):
+                        continue
+                    emit_codex_tool(
+                        local_factory=local_factory,
+                        tool_line=line_at(text, item_offset),
+                        tool_evidence_offset=evidence_offset,
+                        tool_symbol_name=f"{binding_name}.codexTool",
+                        tool_reference=binding_name,
+                        attributes=attributes,
+                    )
+                    continue
+                call = typescript_call_parts(item)
+                if call is None:
+                    continue
+                local_factory, call_body, call_body_offset = call
+                if local_factory not in codex_imports:
+                    continue
+                options = literal_object_arg(call_body, item_offset + call_body_offset)
+                if options is None:
+                    continue
+                options_expression, options_offset = options
+                attributes, evidence_offset, approval_policy_offset = codex_tool_attributes(
+                    options_expression,
+                    options_offset,
+                )
+                emit_codex_tool(
+                    local_factory=local_factory,
+                    tool_line=line_at(text, item_offset),
+                    tool_evidence_offset=(
+                        approval_policy_offset
+                        if approval_policy_offset is not None
+                        else evidence_offset
+                        if evidence_offset is not None
+                        else item_offset
+                    ),
+                    tool_symbol_name=f"{agent_binding}.inlineCodexTool@{line_at(text, item_offset)}",
+                    tool_reference="inline-codexTool",
+                    attributes=attributes,
+                )
+
+
 def repository_files(root: Path) -> list[Path]:
     paths = []
     for directory, directory_names, file_names in os.walk(root, followlinks=False):
@@ -45504,6 +45984,7 @@ def _scan_repository(
     add_typescript_vercel_code_mode_tool_surface(ir, root, registry_paths)
     add_typescript_vercel_code_mode_approval_flow(ir, root, registry_paths)
     add_typescript_vercel_workflow_agent_approval_flow(ir, root, registry_paths)
+    add_typescript_openai_agents_codex_tool_flow(ir, root, registry_paths)
     add_typescript_cline_subagent_approval_flow(ir, root, registry_paths)
     add_typescript_cline_cli_subagent_approval_flow(ir, root, registry_paths)
     add_typescript_letta_default_tool_flow(ir, root, registry_paths)

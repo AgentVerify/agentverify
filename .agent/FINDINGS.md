@@ -20,11 +20,18 @@
   require both the wheel schema file and the source-distribution `benchmarks/engine-results.json`
   evidence artifact.
 - The repository contains a 71-repository pinned research corpus and schema-v159 engine benchmark
-  outputs. The refreshed full-corpus summary records 2,950 relationships and 10,823 symbolized
+  outputs. The refreshed full-corpus summary records 2,958 relationships and 10,831 symbolized
   components. It includes dedicated Vercel AI runtime evidence for Code Mode's public tool surface
   and host-tool approval runtime plus WorkflowAgent's framework-level approval pause,
   request-chunk, and revalidation continuation path.
 - The runtime catalog currently contains 25 enabled reporting rules.
+- OpenAI Agents JS `codexTool(...)` from
+  `@openai/agents-extensions/experimental/codex` is now source-proven IR when the tool is passed
+  directly or through an immutable same-file binding into an exact `@openai/agents` `Agent`
+  literal `tools` array. The scanner records Codex thread options such as
+  `approvalPolicy: "never"`, sandbox mode, network/web-search toggles, stream callbacks, and
+  run-context thread reuse. This is inventory for a model-visible delegated Codex runtime, not a
+  reporting finding or a claim that all Codex executions are unsafe.
 - Vercel `WorkflowAgent` has a source-proven framework approval runtime in
   `packages/workflow/src/workflow-agent.ts`: the run loop checks `tool.needsApproval` before
   executable tool calls, pauses approval-needed calls, writes `tool-approval-request` chunks for

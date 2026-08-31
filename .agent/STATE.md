@@ -7,13 +7,21 @@ catalog workflows.
 
 ## Completed recently
 
+- Added exact OpenAI Agents JS Codex extension tool IR for `codexTool(...)` when a source-proven
+  `@openai/agents` `Agent` includes either a stable same-file Codex tool binding or an inline
+  `codexTool({...})` call in its literal `tools` array. The scanner records workspace-write
+  sandbox mode, default Codex thread model/reasoning, `approvalPolicy: "never"`, network/web-search
+  toggles, stream callbacks, and run-context thread reuse without treating mutated tool bindings as
+  executable agent tools. Seventeen labels under `IR-TS-OPENAI-CODEX-TOOL` pass in focused
+  evaluation; the full public IR truth set passes 2,506/2,506, and the refreshed 71-repository
+  engine benchmark records 2,958 relationships / 10,831 symbolized components.
 - Added exact Vercel `WorkflowAgent` framework-runtime approval IR for the pinned
   `packages/workflow/src/workflow-agent.ts` implementation: the scanner records the
   `tool.needsApproval` run-loop policy, writable-stream `tool-approval-request` chunk format, and
   approval-response continuation path that revalidates through `validateApprovedToolApprovals(...)`
   before approved execution or `execution-denied` results. Seven real labels under
-  `IR-APPROVAL-CONTROL` pass; the full public IR truth set passes 2,489/2,489 after refresh, and
-  the refreshed 71-repository engine benchmark records 2,950 relationships / 10,823 symbolized
+  `IR-APPROVAL-CONTROL` pass; the full public IR truth set passes 2,506/2,506 after refresh, and
+  the refreshed 71-repository engine benchmark records 2,958 relationships / 10,831 symbolized
   components.
 - Extended exact Vercel `WorkflowAgent` observability IR from constructor options to same-file
   `agent.stream({ ... })` telemetry and callback options when the agent binding is source-proven

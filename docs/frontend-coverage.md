@@ -884,6 +884,13 @@ contribute `required` and `programmatic_tool_calling` Agent-level tool-choice po
 human-in-the-loop example also contributes Runner-level `required` initial-run and `auto` resume-run
 tool-choice policy; the voice-agent configure-session example contributes realtime session-level
 parallel tool-call and low-reasoning configuration.
+OpenAI Agents JS Codex extension tools are inventoried when an exact
+`@openai/agents-extensions/experimental/codex` `codexTool(...)` call reaches an exact
+`@openai/agents` Agent literal `tools` array, either through a stable same-file binding or an inline
+call. The IR records Codex thread options such as workspace-write sandbox mode,
+`approvalPolicy: 'never'`, network and web-search toggles, model/reasoning, stream callback
+bindings, working-directory bindings, and run-context thread reuse; mutated tool bindings are not
+linked. This is delegated-runtime inventory, not a reporting rule.
 
 The Python frontend inventories 449 canonical/import/callable-aliased and proven-`Path` mutations:
 179 creates, 191 deletes, 46 copies, and 33 moves. Of these, 434 use non-literal path expressions;
@@ -1187,7 +1194,7 @@ and `network-ssrf-policy` edge.
 
 ## Quality interpretation
 
-The 730-label rule truth set and 2,489-label IR component/relationship set are curated regression
+The 730-label rule truth set and 2,506-label IR component/relationship set are curated regression
 suites. They guard known positives and negatives; they are not an unbiased accuracy estimate. A
 future holdout must be sampled separately across the categories above, externally reviewed, and kept
 sealed while rules change. Until then, precision/recall values apply only to the published seed

@@ -169,7 +169,7 @@ tool. The same model command passes through `shell-quote` classification and rea
 
 The 2026-08-31 default scan covered 70 source-bearing repositories plus one docs-only upstream
 snapshot. It parsed 10,797 selected Python/TypeScript/JavaScript files plus 155 configuration files,
-resolved 2,950 relationships with 10,823 symbolized components, and completed in 936.8974 seconds
+resolved 2,958 relationships with 10,831 symbolized components, and completed in 918.5121 seconds
 on the development machine. The summary now exposes Vercel AI runtime evidence for Code Mode's
 approval/tool surface and WorkflowAgent's framework-level approval pause, request chunk, and
 revalidation continuation path. Three parse warnings were isolated and reported without aborting the
@@ -1721,11 +1721,16 @@ Twelve OpenAI Agents JS trace labels pin local and real `withTrace(..., { groupI
 `withTrace(..., { traceId })` correlation evidence, including the real `routing.ts` dynamic
 `conversationId` group binding, the real Codex tool example's generated trace ID with a logged
 OpenAI platform trace URL, and local missing-option negatives.
-All 2,489 IR labels pass (1,905 positives and 584 negatives). The checked
+Seventeen OpenAI Agents JS Codex-tool labels pin exact `codexTool(...)` values that reach Agent
+literal `tools` arrays, including same-file binding and inline forms, real
+`approvalPolicy: 'never'` default-thread options, workspace-write sandbox mode,
+network/web-search toggles, stream
+callback bindings, run-context thread reuse, and a mutated-binding negative.
+All 2,506 IR labels pass (1,921 positives and 585 negatives). The checked
 `benchmarks/ir-truthset-results.json` file contains the current per-check precision/recall
 breakdown, including the Vercel WorkflowAgent same-file/imported/reexported model-binding labels,
 direct/named-reexported/star-reexported execute-helper tool-graph labels, real Vercel
-WorkflowAgent approval-runtime labels,
+WorkflowAgent approval-runtime labels, OpenAI Agents JS Codex extension tool labels,
 WorkflowAgent constructor and stream-call telemetry/callback observability labels, OpenAI
 Agents JS and Python safety-check labels added for `computerTool({ onSafetyCheck })` and
 `ComputerTool(on_safety_check=...)`, plus OpenAI Agents JS run-state approval-decision labels for JS
