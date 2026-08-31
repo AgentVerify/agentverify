@@ -26,10 +26,20 @@ jobs:
           --require-evaluation-kind public-regression
           --require-all-passed
           --output agentverify-benchmark-verification.json
+      - name: Print benchmark verification summary
+        run: >
+          agentverify benchmark verify
+          --require-evaluation-kind public-regression
+          --require-all-passed
+          --format summary
       - name: Verify engine metric snapshot
         run: >
           agentverify benchmark verify-engine
           --output agentverify-engine-results-verification.json
+      - name: Print engine metric verification summary
+        run: >
+          agentverify benchmark verify-engine
+          --format summary
       - name: Validate holdout setup templates
         run: >
           agentverify holdout validate

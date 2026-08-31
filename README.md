@@ -9,7 +9,7 @@ agents, MCP servers, workflow platforms, tool integrations, sandboxes, and obser
 The first engine supports Python AST analysis, structure-aware TypeScript/JavaScript discovery, MCP
 configuration, framework/provider/tool inventory, deterministic JSON, and initial
 agent-security review rules. Its curated cross-rule regression set contains 730 pinned positive and
-negative labels, plus 2,514 separately scored Agent IR component and relationship labels.
+negative labels, plus 2,522 separately scored Agent IR component and relationship labels.
 
 ## Install and scan
 
@@ -177,7 +177,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`benchmarks/engine-results.json`](benchmarks/engine-results.json) — full-corpus engine metrics
 - [`benchmarks/truthset.json`](benchmarks/truthset.json) — exact hand-labeled positives and negatives
 - [`benchmarks/truthset-results.json`](benchmarks/truthset-results.json) — per-rule seed precision/recall and label-failure summary
-- [`benchmarks/ir-truthset.json`](benchmarks/ir-truthset.json) — 2,514 separately scored component and relationship labels
+- [`benchmarks/ir-truthset.json`](benchmarks/ir-truthset.json) — 2,522 separately scored component and relationship labels
 - [`benchmarks/holdout-design.md`](benchmarks/holdout-design.md) — sealed benchmark plan for unbiased evaluation
 - [`benchmarks/release-checklist.md`](benchmarks/release-checklist.md) — claim boundaries and verifier gates for benchmark releases
 - [`examples/github-benchmark-verify.yml`](examples/github-benchmark-verify.yml) — copyable benchmark verifier workflow
@@ -249,7 +249,8 @@ tooling can distinguish scanner false positives/negatives from stale source anch
 snippets. Source-distribution
 verification keeps the copyable GitHub workflow examples tied to their contracts: benchmark
 verification emits, validates, and uploads both `agentverify-benchmark-verification.json` and
-`agentverify-engine-results-verification.json`; policy-gate and code-scanning examples keep their
+`agentverify-engine-results-verification.json`, and prints compact summary logs for both verifier
+passes; policy-gate and code-scanning examples keep their
 expected permissions and gate/upload commands.
 For editor or custom CI integrations, `agentverify contracts --sample-root examples/safe_agent`
 exports the report schema, rules schema, current rules catalog, and optional sample report into a

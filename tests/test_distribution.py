@@ -248,8 +248,11 @@ def test_github_benchmark_verify_example_is_read_only_and_exports_verifier_json(
     assert "--require-evaluation-kind public-regression" in workflow
     assert "--require-all-passed" in workflow
     assert "--output agentverify-benchmark-verification.json" in workflow
+    assert "Print benchmark verification summary" in workflow
+    assert "--format summary" in workflow
     assert "agentverify benchmark verify-engine" in workflow
     assert "--output agentverify-engine-results-verification.json" in workflow
+    assert "Print engine metric verification summary" in workflow
     assert "agentverify holdout validate" in workflow
     assert "--manifest benchmarks/holdout-manifest.template.json" in workflow
     assert "--labels benchmarks/holdout-labels.template.json" in workflow
