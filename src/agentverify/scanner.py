@@ -45387,23 +45387,39 @@ def add_typescript_openai_agents_codex_tool_flow(
                 expression_offset,
             )
             if working_directory_location is None:
-                return None
-            working_directory_expression, working_directory_property_offset, _ = (
-                working_directory_location
-            )
-            working_directory = typescript_string_literal_value(working_directory_expression)
-            if working_directory is not None:
-                attributes["working_directory"] = working_directory
-                attributes["working_directory_resolution"] = "literal"
+                shorthand_offsets = [
+                    property_offset
+                    for property_text, property_offset in typescript_object_items(
+                        expression,
+                        expression_offset,
+                    )
+                    if typescript_code_mask(property_text).strip() == "workingDirectory"
+                ]
+                if len(shorthand_offsets) != 1:
+                    return None
+                working_directory_property_offset = shorthand_offsets[0]
+                working_directory_code = "workingDirectory"
             else:
+                working_directory_expression, working_directory_property_offset, _ = (
+                    working_directory_location
+                )
+                working_directory = typescript_string_literal_value(working_directory_expression)
                 working_directory_code = typescript_code_mask(
                     working_directory_expression
                 ).strip()
-                if re.fullmatch(r"[A-Za-z_$][\w$]*", working_directory_code):
-                    attributes["working_directory_binding"] = working_directory_code
-                    attributes["working_directory_resolution"] = "binding"
-                else:
-                    attributes["working_directory_resolution"] = "dynamic-expression"
+                if working_directory is not None:
+                    attributes.pop("working_directory_binding", None)
+                    attributes["working_directory"] = working_directory
+                    attributes["working_directory_resolution"] = "literal"
+                    attributes["working_directory_configuration"] = configuration
+                    return working_directory_property_offset
+            attributes.pop("working_directory", None)
+            if re.fullmatch(r"[A-Za-z_$][\w$]*", working_directory_code):
+                attributes["working_directory_binding"] = working_directory_code
+                attributes["working_directory_resolution"] = "binding"
+            else:
+                attributes.pop("working_directory_binding", None)
+                attributes["working_directory_resolution"] = "dynamic-expression"
             attributes["working_directory_configuration"] = configuration
             return working_directory_property_offset
 

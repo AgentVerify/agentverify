@@ -7632,7 +7632,7 @@ def test_typescript_openai_agents_codex_tool_flow_is_exact() -> None:
         "approval_policy": "never",
         "network_access_enabled": True,
         "web_search_enabled": False,
-        "working_directory_binding": "workspace",
+        "working_directory_binding": "workingDirectory",
         "working_directory_resolution": "binding",
         "working_directory_configuration": (
             "codexTool.defaultThreadOptions.workingDirectory"

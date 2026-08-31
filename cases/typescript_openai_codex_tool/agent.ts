@@ -1,7 +1,7 @@
 import { Agent } from "@openai/agents";
 import { codexTool as makeCodex } from "@openai/agents-extensions/experimental/codex";
 
-const workspace = "/tmp/agentverify-codex-workspace";
+const workingDirectory = "/tmp/agentverify-codex-workspace";
 
 const codex = makeCodex({
   sandboxMode: "workspace-write",
@@ -11,7 +11,7 @@ const codex = makeCodex({
     networkAccessEnabled: true,
     webSearchEnabled: false,
     approvalPolicy: "never",
-    workingDirectory: workspace,
+    workingDirectory,
   },
   onStream: onCodexStream,
 });
@@ -35,7 +35,7 @@ const inlineAgent = new Agent<{ codexThreadId_engineer?: string }>({
         networkAccessEnabled: true,
         webSearchEnabled: false,
         approvalPolicy: "never",
-        workingDirectory: workspace,
+        workingDirectory,
       },
       useRunContextThreadId: true,
       onStream: onCodexStream,

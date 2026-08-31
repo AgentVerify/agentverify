@@ -12,8 +12,9 @@ catalog workflows.
   `codexTool({...})` call in its literal `tools` array. The scanner records workspace-write
   sandbox mode, default Codex thread model/reasoning, `approvalPolicy: "never"`, network/web-search
   toggles, stream callbacks, run-context thread reuse, top-level or default-thread working-directory
-  values, and default thread options without explicit approval policy. Mutated tool bindings are not
-  treated as executable agent tools. Twenty-five labels under `IR-TS-OPENAI-CODEX-TOOL` pass in
+  values including shorthand bindings, and default thread options without explicit approval policy.
+  Mutated tool bindings are not treated as executable agent tools. Twenty-five labels under
+  `IR-TS-OPENAI-CODEX-TOOL` pass in
   focused evaluation; the full public IR truth set passes 2,514/2,514, and the refreshed 71-repository
   engine benchmark records 2,958 relationships / 10,831 symbolized components.
 - Added exact Vercel `WorkflowAgent` framework-runtime approval IR for the pinned

@@ -889,9 +889,9 @@ OpenAI Agents JS Codex extension tools are inventoried when an exact
 `@openai/agents` Agent literal `tools` array, either through a stable same-file binding or an inline
 call. The IR records Codex tool and thread options such as workspace-write sandbox mode,
 `approvalPolicy: 'never'`, network and web-search toggles, model/reasoning, stream callback
-bindings, top-level or default-thread working-directory literals/bindings, and run-context thread
-reuse; mutated tool bindings are not linked. This is delegated-runtime inventory, not a reporting
-rule.
+bindings, top-level or default-thread working-directory literals/bindings including shorthand, and
+run-context thread reuse; mutated tool bindings are not linked. This is delegated-runtime inventory,
+not a reporting rule.
 
 The Python frontend inventories 449 canonical/import/callable-aliased and proven-`Path` mutations:
 179 creates, 191 deletes, 46 copies, and 33 moves. Of these, 434 use non-literal path expressions;
