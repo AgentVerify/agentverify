@@ -23508,6 +23508,16 @@ def typescript_openai_on_approval_predicate_attributes(
         if end is not None and not expression_code[end:].strip():
             expression = expression[1 : end - 1].strip()
 
+    def request_field(expression: str) -> str | None:
+        parts = expression.replace(" ", "").split(".")
+        if request_root is not None:
+            if len(parts) < 2 or parts[0] != request_root:
+                return None
+            return ".".join(parts[1:])
+        if parts[0] in field_aliases:
+            return ".".join(parts)
+        return None
+
     predicate_match = re.fullmatch(
         r"\s*([A-Za-z_$][\w$]*(?:\s*\.\s*[A-Za-z_$][\w$]*)*)\s*"
         r"(===|!==|==|!=)\s*"
@@ -23515,38 +23525,70 @@ def typescript_openai_on_approval_predicate_attributes(
         expression,
         re.DOTALL,
     )
-    if predicate_match is None:
-        return {}
-
-    lhs = predicate_match.group(1).replace(" ", "")
-    parts = lhs.split(".")
-    if request_root is not None:
-        if len(parts) < 2 or parts[0] != request_root:
+    if predicate_match is not None:
+        field = request_field(predicate_match.group(1))
+        if field is None:
             return {}
-        field = ".".join(parts[1:])
-    elif parts[0] in field_aliases:
-        field = ".".join(parts)
-    else:
-        return {}
 
-    if predicate_match.group(4) is not None:
-        value: object = predicate_match.group(4)
-    elif predicate_match.group(5) is not None:
-        value = int(predicate_match.group(5))
-    else:
-        value = predicate_match.group(6) == "true"
-    predicate = (
-        "request-field-equals-literal"
-        if predicate_match.group(2) in {"==", "==="}
-        else "request-field-not-equals-literal"
+        if predicate_match.group(4) is not None:
+            value: object = predicate_match.group(4)
+        elif predicate_match.group(5) is not None:
+            value = int(predicate_match.group(5))
+        else:
+            value = predicate_match.group(6) == "true"
+        predicate = (
+            "request-field-equals-literal"
+            if predicate_match.group(2) in {"==", "==="}
+            else "request-field-not-equals-literal"
+        )
+        return {
+            f"{attribute_prefix}_resolution": "inline-approval-object-return",
+            f"{attribute_prefix}_decision": "conditional-approve",
+            f"{attribute_prefix}_predicate": predicate,
+            f"{attribute_prefix}_predicate_field": field,
+            f"{attribute_prefix}_predicate_values": [value],
+        }
+
+    method_match = re.fullmatch(
+        r"\s*([A-Za-z_$][\w$]*(?:\s*\.\s*[A-Za-z_$][\w$]*)*)\s*\.\s*"
+        r"(includes|startsWith)\s*\(\s*(['\"])([^\\\r\n]*?)\3\s*\)\s*",
+        expression,
+        re.DOTALL,
     )
-    return {
-        f"{attribute_prefix}_resolution": "inline-approval-object-return",
-        f"{attribute_prefix}_decision": "conditional-approve",
-        f"{attribute_prefix}_predicate": predicate,
-        f"{attribute_prefix}_predicate_field": field,
-        f"{attribute_prefix}_predicate_values": [value],
-    }
+    if method_match is not None:
+        field = request_field(method_match.group(1))
+        if field is None:
+            return {}
+        return {
+            f"{attribute_prefix}_resolution": "inline-approval-object-return",
+            f"{attribute_prefix}_decision": "conditional-approve",
+            f"{attribute_prefix}_predicate": (
+                "request-field-contains-literal"
+                if method_match.group(2) == "includes"
+                else "request-field-prefix-literal"
+            ),
+            f"{attribute_prefix}_predicate_field": field,
+            f"{attribute_prefix}_predicate_values": [method_match.group(4)],
+        }
+
+    includes_match = re.fullmatch(
+        r"\s*(\[[\s\S]*?\])\s*\.\s*includes\s*\(\s*"
+        r"([A-Za-z_$][\w$]*(?:\s*\.\s*[A-Za-z_$][\w$]*)*)\s*\)\s*",
+        expression,
+        re.DOTALL,
+    )
+    if includes_match is not None:
+        values = typescript_literal_string_arguments(includes_match.group(1))
+        field = request_field(includes_match.group(2))
+        if values is not None and all(value is not None for value in values) and field:
+            return {
+                f"{attribute_prefix}_resolution": "inline-approval-object-return",
+                f"{attribute_prefix}_decision": "conditional-approve",
+                f"{attribute_prefix}_predicate": "request-field-in-literal-set",
+                f"{attribute_prefix}_predicate_field": field,
+                f"{attribute_prefix}_predicate_values": list(values),
+            }
+    return {}
 
 
 def typescript_openai_needs_approval_attributes(body: str) -> dict[str, object]:

@@ -60,6 +60,39 @@ const agent = new Agent({
         return { approve: item.name !== "delete_page" };
       },
     }),
+    hostedMcpTool({
+      serverLabel: "prefix-predicate",
+      serverUrl: "https://mcp.example.test/mcp",
+      requireApproval: "always",
+      onApproval: async (_context, item) => ({
+        approve: item.name.startsWith("read_"),
+      }),
+    }),
+    hostedMcpTool({
+      serverLabel: "contains-predicate",
+      serverUrl: "https://mcp.example.test/mcp",
+      requireApproval: "always",
+      onApproval: async (_context, item) => ({
+        approve: item.name.includes("_read_"),
+      }),
+    }),
+    hostedMcpTool({
+      serverLabel: "set-predicate",
+      serverUrl: "https://mcp.example.test/mcp",
+      requireApproval: "always",
+      onApproval: async (_context, item) => ({
+        approve: ["read_page", "list_pages"].includes(item.name),
+      }),
+    }),
+    hostedMcpTool({
+      serverLabel: "local-set-predicate",
+      serverUrl: "https://mcp.example.test/mcp",
+      requireApproval: "always",
+      onApproval: async (_context, item) => {
+        const allowed = ["read_page", "list_pages"];
+        return { approve: allowed.includes(item.name) };
+      },
+    }),
   ],
 });
 void agent;

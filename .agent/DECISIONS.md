@@ -1612,7 +1612,7 @@
   unambiguous local star reexports, dynamic/mutated/ambiguous bindings, and configured `onApproval`
   callbacks including exact result-binding approval-object returns with same-file readline review
   metadata, conditional prompt fallback-to-reject metadata, and shallow request-field
-  equality/inequality predicate metadata.
+  equality/inequality, prefix/contains, and literal-set predicate metadata.
 - Evidence: The pinned OpenAI Agents JS `hostedMcpTool` implementation maps omitted or `"never"`
   `requireApproval` to provider `require_approval: "never"` and otherwise forwards
   `buildRequireApproval(...)` plus `on_approval`. Pinned examples cover simple/default hosted MCP,
@@ -1621,7 +1621,9 @@
   callback and an opaque callback that keeps call-result metadata but receives no prompt-review
   proof, plus a conditional prompt callback that records fallback rejection when the prompt path is
   unavailable. A direct predicate callback records request-field literal comparison metadata, while
-  a same-named local variable lookalike remains unresolved to avoid over-attribution.
+  a same-named local variable lookalike remains unresolved to avoid over-attribution. Additional
+  local fixtures pin request-field `startsWith`, request-field `includes`, and array-literal
+  membership predicates, plus a local-array lookalike negative.
 - Alternative: Treat hosted MCP approval as generic `approval_policy` or report every hosted MCP
   callback as human approval. Rejected because the SDK option is named differently, approval may be
   handled by the agent loop, and callback quality remains distinct from the MCP tool requirement.
