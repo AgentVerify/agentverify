@@ -117,6 +117,23 @@ const agent = new Agent({
         approve: item.data.readOnly === true,
       }),
     }),
+    hostedMcpTool({
+      serverLabel: "negated-set-predicate",
+      serverUrl: "https://mcp.example.test/mcp",
+      requireApproval: "always",
+      onApproval: async (_context, item) => ({
+        approve: !["delete_page", "erase_page"].includes(item.name),
+      }),
+    }),
+    hostedMcpTool({
+      serverLabel: "local-negated-set-predicate",
+      serverUrl: "https://mcp.example.test/mcp",
+      requireApproval: "always",
+      onApproval: async (_context, item) => {
+        const blocked = ["delete_page", "erase_page"];
+        return { approve: !blocked.includes(item.name) };
+      },
+    }),
   ],
 });
 void agent;

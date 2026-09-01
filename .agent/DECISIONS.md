@@ -329,8 +329,8 @@
   existing environment-bypass evidence for `AUTO_APPROVE_MCP` / `AUTO_APPROVE_HITL`, so reporting both
   prompt-source and bypass metadata is more honest than collapsing the callback into a single
   "approved" concept. Local fixtures also pin shallow conditional predicates from destructured
-  callback parameters and nested numeric/boolean request fields as inventory, not full
-  human-review proof.
+  callback parameters, nested numeric/boolean request fields, and exact negated literal-set
+  membership as inventory, not full human-review proof.
 - Alternative: Treat `onApproval` callbacks as human-in-the-loop controls whenever present. Rejected
   because callbacks can always approve/reject, consult environment flags, or delegate to helpers with
   unknown semantics.
@@ -1615,7 +1615,7 @@
   callbacks including exact result-binding approval-object returns with same-file readline review
   metadata, conditional prompt fallback-to-reject metadata, and shallow request-field
   equality/inequality, destructured callback-parameter equality, nested numeric/boolean literal
-  comparisons, prefix/contains, and literal-set predicate metadata.
+  comparisons, prefix/contains, literal-set, and negated literal-set predicate metadata.
 - Evidence: The pinned OpenAI Agents JS `hostedMcpTool` implementation maps omitted or `"never"`
   `requireApproval` to provider `require_approval: "never"` and otherwise forwards
   `buildRequireApproval(...)` plus `on_approval`. Pinned examples cover simple/default hosted MCP,
@@ -1626,8 +1626,9 @@
   unavailable. A direct predicate callback records request-field literal comparison metadata, while
   a same-named local variable lookalike remains unresolved to avoid over-attribution. Additional
   local fixtures pin destructured callback-parameter equality, nested numeric/boolean request-field
-  literal comparisons, request-field `startsWith`, request-field `includes`, and array-literal
-  membership predicates, plus a local-array lookalike negative.
+  literal comparisons, request-field `startsWith`, request-field `includes`, array-literal
+  membership predicates, and negated array-literal membership predicates, plus local-array
+  lookalike negatives.
 - Alternative: Treat hosted MCP approval as generic `approval_policy` or report every hosted MCP
   callback as human approval. Rejected because the SDK option is named differently, approval may be
   handled by the agent loop, and callback quality remains distinct from the MCP tool requirement.

@@ -23571,10 +23571,25 @@ def typescript_openai_on_approval_predicate_attributes(
             f"{attribute_prefix}_predicate_values": [method_match.group(4)],
         }
 
+    literal_set_expression = expression
+    literal_set_code = expression_code
+    negated_literal_set = False
+    if literal_set_code.startswith("!"):
+        candidate_expression = literal_set_expression[1:].strip()
+        candidate_code = typescript_code_mask(candidate_expression).strip()
+        if candidate_code.startswith("("):
+            end = typescript_balanced_end(candidate_code, 0, "(", ")")
+            if end is not None and not candidate_code[end:].strip():
+                candidate_expression = candidate_expression[1 : end - 1].strip()
+                candidate_code = typescript_code_mask(candidate_expression).strip()
+        literal_set_expression = candidate_expression
+        literal_set_code = candidate_code
+        negated_literal_set = True
+
     includes_match = re.fullmatch(
         r"\s*(\[[\s\S]*?\])\s*\.\s*includes\s*\(\s*"
         r"([A-Za-z_$][\w$]*(?:\s*\.\s*[A-Za-z_$][\w$]*)*)\s*\)\s*",
-        expression,
+        literal_set_expression,
         re.DOTALL,
     )
     if includes_match is not None:
@@ -23584,7 +23599,11 @@ def typescript_openai_on_approval_predicate_attributes(
             return {
                 f"{attribute_prefix}_resolution": "inline-approval-object-return",
                 f"{attribute_prefix}_decision": "conditional-approve",
-                f"{attribute_prefix}_predicate": "request-field-in-literal-set",
+                f"{attribute_prefix}_predicate": (
+                    "request-field-not-in-literal-set"
+                    if negated_literal_set
+                    else "request-field-in-literal-set"
+                ),
                 f"{attribute_prefix}_predicate_field": field,
                 f"{attribute_prefix}_predicate_values": list(values),
             }

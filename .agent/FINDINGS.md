@@ -856,7 +856,7 @@
   bindings remain unresolved as well. The local fixture plus pinned OpenAI Agents JS
   `web-search-filters.ts`, `web-search.ts`, and hosted-tools examples bring the public IR truth set
   to 2,201 passing labels at the original literal milestone; the bound same-file/imported/star
-  options extensions are covered in the current 2,616-label IR corpus.
+  options extensions are covered in the current 2,618-label IR corpus.
 - OpenAI Agents JS Agent-level `parallelToolCalls` concurrency is now reviewable when literal.
   Exact `new Agent({ modelSettings: { parallelToolCalls: true|false } })` values emit
   `model-settings-policy` controls and configured-by edges on the source agent, while dynamic
@@ -1023,10 +1023,11 @@
   `conditional-call-result` and fallback reject metadata. Direct request-field equality/inequality
   expressions such as `item.name !== "delete_page"`, destructured callback-parameter equality such
   as `{ name }`, nested numeric/boolean request-field literal comparisons, direct
-  `startsWith`/`includes` string-method predicates, and direct array-literal membership checks now
-  record shallow predicate metadata, while local-variable/local-array lookalikes and opaque callback
-  helpers are inventoried without request-review proof. The local fixture plus pinned OpenAI hosted
-  MCP examples cover 31/31 hosted-MCP approval labels in the current 2,616-label IR corpus.
+  `startsWith`/`includes` string-method predicates, direct array-literal membership checks, and
+  exact negated array-literal membership checks now record shallow predicate metadata, while
+  local-variable/local-array lookalikes and opaque callback helpers are inventoried without
+  request-review proof. The local fixture plus pinned OpenAI hosted MCP examples cover 33/33
+  hosted-MCP approval labels in the current 2,618-label IR corpus.
 - Python OpenAI Agents SDK `HostedMCPTool(tool_config={...})` approval settings are now visible as
   hosted-MCP-specific IR metadata on exact imported tool and capability nodes. Direct `"never"`
   policies record explicit disablement, direct or same-block literal `"always"` policies record
