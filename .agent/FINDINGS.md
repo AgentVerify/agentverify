@@ -846,12 +846,15 @@
 - OpenAI Agents JS hosted web-search scope is now reviewable when it is literal. Exact
   `webSearchTool({ filters: { allowedDomains }, searchContextSize, userLocation })` values emit
   `web-search-policy` controls on the source tool and copy the same allowlist/context metadata onto
-  the `external-action` capability. Exact literal `Agent.modelSettings.providerData.include` arrays
-  emit `provider-data-policy` controls and mark `web_search_sources_included` when source URLs are
-  requested. Mutable domain arrays, mutable context sizes, and dynamic provider-data include arrays
-  remain unresolved; dynamic `userLocation` bindings remain unresolved as well. The local fixture
-  plus pinned OpenAI Agents JS `web-search-filters.ts`, `web-search.ts`, and hosted-tools examples
-  bring the public IR truth set to 2,201 passing labels.
+  the `external-action` capability; stable same-file const options objects now expose the same
+  policy metadata with `web_search_options_binding` provenance. Exact literal
+  `Agent.modelSettings.providerData.include` arrays emit `provider-data-policy` controls and mark
+  `web_search_sources_included` when source URLs are requested. Mutable domain arrays, mutable
+  context sizes, mutable options objects, and dynamic provider-data include arrays remain
+  unresolved; dynamic `userLocation` bindings remain unresolved as well. The local fixture plus
+  pinned OpenAI Agents JS `web-search-filters.ts`, `web-search.ts`, and hosted-tools examples bring
+  the public IR truth set to 2,201 passing labels at the original literal milestone; the bound
+  same-file options extension is now covered in the current 2,590-label IR corpus.
 - OpenAI Agents JS Agent-level `parallelToolCalls` concurrency is now reviewable when literal.
   Exact `new Agent({ modelSettings: { parallelToolCalls: true|false } })` values emit
   `model-settings-policy` controls and configured-by edges on the source agent, while dynamic
@@ -1097,6 +1100,7 @@
   `alias-agent.ts`, where `aliasedCalculate` resolves through `const aliasedCalculate =
   importedCalculate` to `helpers.ts` `new Function(...)`, while `directShared` and `aliasedShared`
   both point at the canonical `importedShared` helper and remain unresolved. Focused Vercel
-  Workflow labels pass 46/46 and the full public IR truth set passes 2,586/2,586.
+  Workflow labels pass 46/46 and the full public IR truth set passed 2,586/2,586 at that
+  milestone.
 - Implication: Future execute-helper alias work should preserve canonical helper uniqueness before
   adding longer chains, destructuring, namespace imports, or property aliases.

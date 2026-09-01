@@ -195,7 +195,8 @@
 - Evidence: Local scanner tests cover same-file alias positives and direct-plus-alias shared-helper
   negatives. The public `typescript_vercel_workflow_imported_execute_helper/alias-agent.ts`
   fixture covers an imported alias positive and imported direct-plus-alias shared-helper negatives;
-  focused Vercel Workflow IR labels pass 46/46 and the full public IR truth set passes 2,586/2,586.
+  focused Vercel Workflow IR labels pass 46/46 and the full public IR truth set passed 2,586/2,586
+  at that milestone.
 - Alternative: Treat each alias name independently. Rejected because it would bypass the existing
   shared-helper ambiguity guard and could make one risky helper body look like exact evidence for
   multiple unrelated object tools.
@@ -1259,13 +1260,15 @@
 
 - Decision: Record exact TypeScript OpenAI Agents SDK `webSearchTool` literal
   `filters.allowedDomains`, `searchContextSize`, and `userLocation` values as `web-search-policy`
-  controls on the source tool and as metadata on its `external-action` capability. Separately
-  record exact literal `Agent.modelSettings.providerData.include` arrays as `provider-data-policy`
-  controls on the source agent, marking web-search source inclusion only when
-  `web_search_call.action.sources` is explicitly requested.
-- Evidence: The local `typescript_openai_web_search_policy` fixture covers literal policy evidence
-  and dynamic-domain/dynamic-user-location/dynamic-provider-data negatives. The pinned OpenAI
-  Agents JS
+  controls on the source tool and as metadata on its `external-action` capability. The same fields
+  may resolve through a stable same-file const options object passed as `webSearchTool(options)`,
+  with option-binding provenance retained. Separately record exact literal
+  `Agent.modelSettings.providerData.include` arrays as `provider-data-policy` controls on the
+  source agent, marking web-search source inclusion only when `web_search_call.action.sources` is
+  explicitly requested.
+- Evidence: The local `typescript_openai_web_search_policy` fixture covers literal policy evidence,
+  stable same-file const option objects, and dynamic-domain, dynamic-user-location,
+  mutable-options, and dynamic-provider-data negatives. The pinned OpenAI Agents JS
   `examples/tools/web-search-filters.ts` example sets an OpenAI-domain allowlist, medium search
   context size, and `web_search_call.action.sources` inclusion; `examples/tools/web-search.ts`
   sets an approximate New York user location; and `examples/docs/tools/hostedTools.ts` sets a

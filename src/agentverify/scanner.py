@@ -22972,7 +22972,12 @@ def add_typescript_tool_observation(
     computer_provider_attributes = typescript_openai_computer_provider_attributes(
         call_body, constructor
     )
-    web_search_attributes = typescript_openai_web_search_attributes(call_body, constructor)
+    web_search_attributes = typescript_openai_web_search_attributes(
+        call_body,
+        constructor,
+        body_offset=body_offset,
+        immutable_object_bindings=immutable_object_bindings,
+    )
     hosted_mcp_approval_attributes = typescript_openai_hosted_mcp_approval_attributes(
         call_body,
         constructor,
@@ -23850,11 +23855,31 @@ def typescript_openai_computer_provider_attributes(
     return attributes
 
 
-def typescript_openai_web_search_attributes(body: str, constructor: str) -> dict[str, object]:
+def typescript_openai_web_search_attributes(
+    body: str,
+    constructor: str,
+    *,
+    body_offset: int = 0,
+    immutable_object_bindings: dict[str, TypeScriptLiteralObjectBinding] | None = None,
+) -> dict[str, object]:
     """Resolve exact OpenAI Agents JS webSearchTool policy metadata."""
     if constructor != "webSearchTool":
         return {}
+    immutable_object_bindings = immutable_object_bindings or {}
+    body_code = typescript_code_mask(body).strip()
     attributes: dict[str, object] = {}
+    binding_attributes: dict[str, object] = {}
+    body_binding = re.fullmatch(r"[A-Za-z_$][\w$]*", body_code)
+    if body_binding is not None:
+        binding_name = body_binding.group(0)
+        binding = immutable_object_bindings.get(binding_name)
+        if binding is not None and binding.declaration_end <= body_offset < binding.scope_end:
+            body = binding.expression
+            body_code = typescript_code_mask(body).strip()
+            binding_attributes["web_search_options_binding"] = binding_name
+            binding_attributes["web_search_options_resolution"] = binding.resolution
+    if not body_code.startswith("{"):
+        return {}
     domains_location = typescript_literal_nested_object_string_array_property_location(
         body,
         body_offset=0,
@@ -23881,6 +23906,7 @@ def typescript_openai_web_search_attributes(body: str, constructor: str) -> dict
             attributes["web_search_user_location_policy"] = "configured"
             attributes.update(user_location_attributes)
     if attributes:
+        attributes.update(binding_attributes)
         attributes["web_search_policy"] = "configured"
     return attributes
 
@@ -24739,7 +24765,8 @@ def typescript_graph(
             **typescript_imported_literal_object_bindings(root, path, text),
             **typescript_immutable_module_literal_object_bindings(text),
         }
-        if "hostedMcpTool" in text and "requireApproval" in text
+        if ("hostedMcpTool" in text and "requireApproval" in text)
+        or "webSearchTool" in text
         else {}
     )
     tool_matches = list(TS_TOOL_ASSIGNMENT.finditer(code))
