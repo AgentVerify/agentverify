@@ -15056,6 +15056,30 @@ def typescript_exported_literal_object_bindings(
                     "reexported-local-const-object",
                 )
             )
+    for match in TS_STAR_EXPORT_FROM.finditer(text):
+        target = typescript_resolve_local_module(root, path, match.group(1))
+        if target is None:
+            continue
+        try:
+            target_text = target.read_text(encoding="utf-8-sig", errors="ignore")
+        except OSError:
+            continue
+        target_exports = typescript_exported_literal_object_bindings(
+            target_text,
+            root,
+            target,
+            seen,
+        )
+        for exported_name, binding in target_exports.items():
+            candidates[exported_name].append(
+                TypeScriptLiteralObjectBinding(
+                    binding.expression,
+                    binding.expression_offset,
+                    0,
+                    0,
+                    "star-reexported-local-const-object",
+                )
+            )
     return {
         name: bindings[0]
         for name, bindings in candidates.items()
@@ -15107,6 +15131,8 @@ def typescript_imported_literal_object_bindings(
         resolution = (
             "reexported-local-const-object"
             if binding.resolution == "reexported-local-const-object"
+            else "imported-local-star-reexported-const-object"
+            if binding.resolution == "star-reexported-local-const-object"
             else "imported-local-const-object"
         )
         resolved[local] = TypeScriptLiteralObjectBinding(

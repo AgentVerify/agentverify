@@ -8,12 +8,14 @@ catalog workflows.
 ## Completed recently
 
 - Extended TypeScript OpenAI Agents JS `webSearchTool(...)` policy extraction through stable
-  same-file, imported sibling, and named-reexported const options objects.
+  same-file, imported sibling, named-reexported, and unambiguous star-reexported const options
+  objects.
   `webSearchTool(boundedSearchOptions)` and exact imported/reexported option bindings now inherit
   exact `filters.allowedDomains` and `searchContextSize` metadata plus option-binding provenance,
-  while mutable same-file and nested-mutated imported option bindings remain unresolved. Focused
-  `IR-TS-OPENAI-WEB-SEARCH-POLICY` labels pass 30/30, the full public IR truth set passes
-  2,597/2,597, and benchmark verification passes 3,330/3,330 combined public-regression labels.
+  while mutable same-file, nested-mutated imported, and ambiguous star-reexported option bindings
+  remain unresolved. Focused `IR-TS-OPENAI-WEB-SEARCH-POLICY` labels pass 34/34, the full public IR
+  truth set passes 2,601/2,601, and benchmark verification passes 3,334/3,334 combined
+  public-regression labels.
   A post-refresh warm-cache IR pass hits 157/157 targets in about 3 seconds, and the full pytest
   suite passes 368/368.
 - Extended Vercel `WorkflowAgent` execute-helper capability propagation through exact

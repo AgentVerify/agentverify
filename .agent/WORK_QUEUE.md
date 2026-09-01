@@ -139,12 +139,13 @@
   trace metadata policy, direct `run(..., { workflowName })` calls, or governance edges that can
   connect `trace-group`/`trace-id`/`tracing-disabled`/`trace-workflow` evidence to actual audit
   storage without treating observability IDs as memory/session continuity.
-- Explore additional web-search governance only if it stays source-proven: star-reexported or
-  package-level web-search option objects, or OpenAI-compatible provider-defined web-search
-  factories in real repositories. The exact OpenAI Agents JS
+- Explore additional web-search governance only if it stays source-proven: package-level
+  web-search option objects or OpenAI-compatible provider-defined web-search factories in real
+  repositories. The exact OpenAI Agents JS
   `webSearchTool({ filters.allowedDomains, searchContextSize, userLocation })`, stable same-file,
-  imported sibling, and named-reexported `webSearchTool(options)` const-object bindings, and
-  `Agent.modelSettings.providerData.include` literal shapes are now covered.
+  imported sibling, named-reexported, and unambiguous star-reexported `webSearchTool(options)`
+  const-object bindings, and `Agent.modelSettings.providerData.include` literal shapes are now
+  covered; ambiguous star barrels remain unresolved.
 - Explore the remaining OpenAI Agents JS HITL approval-state gaps only if they can stay exact:
   compound callback predicate quality, automatic approval bypasses, and any more complex serialized
   state flows beyond same-file literal

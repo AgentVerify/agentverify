@@ -1261,15 +1261,15 @@
 - Decision: Record exact TypeScript OpenAI Agents SDK `webSearchTool` literal
   `filters.allowedDomains`, `searchContextSize`, and `userLocation` values as `web-search-policy`
   controls on the source tool and as metadata on its `external-action` capability. The same fields
-  may resolve through a stable same-file, imported sibling, or named-reexported const options object
-  passed as `webSearchTool(options)`, with option-binding provenance retained. Separately record
-  exact literal `Agent.modelSettings.providerData.include` arrays as `provider-data-policy`
-  controls on the source agent, marking web-search source inclusion only when
-  `web_search_call.action.sources` is explicitly requested.
+  may resolve through a stable same-file, imported sibling, named-reexported, or unambiguous
+  star-reexported const options object passed as `webSearchTool(options)`, with option-binding
+  provenance retained. Separately record exact literal `Agent.modelSettings.providerData.include`
+  arrays as `provider-data-policy` controls on the source agent, marking web-search source
+  inclusion only when `web_search_call.action.sources` is explicitly requested.
 - Evidence: The local `typescript_openai_web_search_policy` fixture covers literal policy evidence,
-  stable same-file/imported/named-reexported const option objects, dynamic-domain,
-  dynamic-user-location, mutable-options, nested-mutated imported options, and dynamic-provider-data
-  negatives. The pinned OpenAI Agents JS
+  stable same-file/imported/named-reexported/star-reexported const option objects, dynamic-domain,
+  dynamic-user-location, mutable-options, nested-mutated imported options, ambiguous-star options,
+  and dynamic-provider-data negatives. The pinned OpenAI Agents JS
   `examples/tools/web-search-filters.ts` example sets an OpenAI-domain allowlist, medium search
   context size, and `web_search_call.action.sources` inclusion; `examples/tools/web-search.ts`
   sets an approximate New York user location; and `examples/docs/tools/hostedTools.ts` sets a
@@ -1278,9 +1278,8 @@
   because unfiltered hosted web search and domain-constrained search have materially different
   review semantics, approximate user location has separate privacy/scope meaning, and source
   inclusion is an Agent provider-data setting rather than a tool constructor setting.
-- Revisit when star-reexported option barrels, package-level option exports, or OpenAI-compatible
-  provider-defined web search factories can be tied to exact source-tool/source-agent identity
-  without broad config matching.
+- Revisit when package-level option exports or OpenAI-compatible provider-defined web search
+  factories can be tied to exact source-tool/source-agent identity without broad config matching.
 
 ## OpenAI Realtime output guardrails are source-agent governance controls
 
