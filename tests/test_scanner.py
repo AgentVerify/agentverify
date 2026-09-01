@@ -7897,6 +7897,30 @@ def test_typescript_openai_hosted_mcp_approval_policy_is_exact() -> None:
         "execution_environment": "unresolved",
         "scope": "production",
     }
+    assert tools["hostedMcpTool@8"].attributes == {
+        "constructor": "hostedMcpTool",
+        "approval_policy": "not-applicable",
+        "approval_handler": "not-applicable",
+        "mcp_approval_binding": "starPolicy",
+        "mcp_approval_resolution": "imported-local-star-reexported-const-object",
+        "mcp_approval_policy": "selective",
+        "mcp_approval_never_tool_names": ["read_imported"],
+        "mcp_approval_never_read_only": True,
+        "mcp_approval_always_tool_names": ["write_imported"],
+        "mcp_approval_handler": "agent-loop",
+        "execution_environment": "unresolved",
+        "scope": "production",
+    }
+    assert tools["hostedMcpTool@13"].attributes == {
+        "constructor": "hostedMcpTool",
+        "approval_policy": "not-applicable",
+        "approval_handler": "not-applicable",
+        "mcp_approval_policy": "dynamic",
+        "mcp_approval_binding": "ambiguousStarPolicy",
+        "mcp_approval_handler": "agent-loop",
+        "execution_environment": "unresolved",
+        "scope": "production",
+    }
     assert "fakeHostedMcpTool@80" not in tools
 
     capability_by_line = {
@@ -7913,6 +7937,22 @@ def test_typescript_openai_hosted_mcp_approval_policy_is_exact() -> None:
         "same-file-const-object"
     )
     assert capability_by_line[50].attributes["mcp_approval_policy"] == "dynamic"
+    capability_by_path_line = {
+        (component.evidence.path, component.evidence.line): component
+        for component in ir.components
+        if component.kind == "capability" and component.name == "mcp-access"
+    }
+    assert capability_by_path_line[
+        ("star-agent.ts", 8)
+    ].attributes["mcp_approval_resolution"] == (
+        "imported-local-star-reexported-const-object"
+    )
+    assert (
+        capability_by_path_line[
+            ("star-agent.ts", 13)
+        ].attributes["mcp_approval_policy"]
+        == "dynamic"
+    )
     assert capability_by_line[55].attributes["mcp_approval_resolution"] == (
         "imported-local-const-object"
     )

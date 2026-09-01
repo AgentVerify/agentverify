@@ -1608,8 +1608,9 @@
 - Decision: Record exact `hostedMcpTool({...})` approval state through `mcp_approval_*` attributes
   rather than overloading generic `needsApproval` fields. Support omitted defaults, literal
   `"never"`/`"always"`, direct selective object policies with shallow `toolNames` and `readOnly`
-  hints, stable same-file const object policies, dynamic/mutated bindings, and configured
-  `onApproval` callbacks.
+  hints, stable same-file const object policies, direct sibling imports, exact named local reexports,
+  unambiguous local star reexports, dynamic/mutated/ambiguous bindings, and configured `onApproval`
+  callbacks.
 - Evidence: The pinned OpenAI Agents JS `hostedMcpTool` implementation maps omitted or `"never"`
   `requireApproval` to provider `require_approval: "never"` and otherwise forwards
   `buildRequireApproval(...)` plus `on_approval`. Pinned examples cover simple/default hosted MCP,
@@ -1618,9 +1619,10 @@
 - Alternative: Treat hosted MCP approval as generic `approval_policy` or report every hosted MCP
   callback as human approval. Rejected because the SDK option is named differently, approval may be
   handled by the agent loop, and callback quality remains distinct from the MCP tool requirement.
-- Revisit when wildcard or package-level reexported policy object bindings can be resolved without
-  broad object-flow interpretation. Direct imported sibling const-object policies and named local
-  reexports are now covered when the import, reexport, and exported object identity are exact.
+- Revisit when package-level or external star-reexported policy object bindings can be resolved
+  without broad object-flow interpretation. Direct imported sibling const-object policies, named
+  local reexports, and unambiguous local star reexports are now covered when the import, reexport,
+  and exported object identity are exact; ambiguous two-source star barrels remain dynamic.
 
 ## OpenAI Agents Python HostedMCPTool approval is source-proven tool_config inventory
 

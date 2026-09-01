@@ -88,9 +88,10 @@
   acknowledgement beyond the current exact auto-acknowledgement and computer backend lifecycle
   inventory. Hosted MCP `requireApproval`/`onApproval` inventory now covers direct literals, inline
   selective policies, stable same-file const object policies, exact imported local const object
-  policies, exact named local reexported const object policies, and dynamic/mutated bindings; future
-  TypeScript hosted MCP work should resolve wildcard or package-level reexported policy object
-  bindings only if object identity remains exact. Same-file helper-derived
+  policies, exact named local reexported const object policies, unambiguous local star-reexported
+  const object policies, and dynamic/mutated/ambiguous bindings; future TypeScript hosted MCP work
+  should resolve package-level or external star-reexported policy object bindings only if object
+  identity remains exact. Same-file helper-derived
   run-state resumes and helper-body prompt-review propagation are now covered for the narrow
   exact-agent-parameter pattern; future helper work should focus only on richer predicate/action
   quality or new exact helper/prompt shapes that preserve call-site and source-agent identity.

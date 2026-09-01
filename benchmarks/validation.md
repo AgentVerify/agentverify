@@ -1768,7 +1768,11 @@ reexported/star-reexported bindings, an ambiguous two-source star-barrel negativ
 network/web-search toggles, stream callback bindings, run-context thread reuse,
 top-level/default-thread working-directory values, default thread options without explicit
 approval, and a mutated-binding negative.
-All 2,601 IR labels pass (2,002 positives and 599 negatives). The checked
+Eighteen OpenAI Agents JS hosted-MCP approval labels now pin disabled defaults, explicit `"never"`,
+inline/same-file/imported/named-reexported policy objects, one unambiguous star-reexported policy
+object, ambiguous-star and mutated-binding negatives, and real hosted-MCP examples with callback
+approval metadata.
+All 2,603 IR labels pass (2,003 positives and 600 negatives). The checked
 `benchmarks/ir-truthset-results.json` file contains the current per-check precision/recall
 breakdown, including the Vercel WorkflowAgent same-file/imported/reexported model-binding labels,
 direct/named-reexported/star-reexported/const-aliased execute-helper tool-graph labels, real Vercel
@@ -1781,4 +1785,4 @@ approve branches, TypeScript local/helper reject-message metadata, helper-derive
 clean reject/reassigned near misses, imported OpenAI Agents JS guarded-tool governance bridge
 edges, same-file/imported/helper-result/helper-chain predicate metadata for tool guardrail
 reject conditions, and bound same-file/imported/named-reexported/star-reexported const-object
-OpenAI Agents JS web-search policy options.
+OpenAI Agents JS web-search policy options plus hosted-MCP policy objects.

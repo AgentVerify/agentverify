@@ -7,6 +7,13 @@ catalog workflows.
 
 ## Completed recently
 
+- Extended TypeScript OpenAI Agents JS hosted-MCP approval policy extraction coverage through
+  unambiguous local `export *` barrels for immutable exported policy objects. A star-reexported
+  `requireApproval` binding now preserves exact `never`/`always` tool-name lists, read-only hints,
+  binding provenance, and `imported-local-star-reexported-const-object` resolution, while an
+  ambiguous two-source star barrel remains dynamic/binding-only. Focused
+  `IR-TS-OPENAI-HOSTED-MCP-APPROVAL` labels pass 18/18, the full public IR truth set passes
+  2,603/2,603, and benchmark verification passes 3,336/3,336 combined public-regression labels.
 - Extended TypeScript OpenAI Agents JS `webSearchTool(...)` policy extraction through stable
   same-file, imported sibling, named-reexported, and unambiguous star-reexported const options
   objects.
