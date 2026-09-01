@@ -6342,6 +6342,41 @@ def test_typescript_openai_web_search_tool_policy_is_exact() -> None:
         "execution_environment": "unresolved",
         "scope": "production",
     }
+    assert tools["webSearchTool@11"].attributes == {
+        "constructor": "webSearchTool",
+        "approval_policy": "not-applicable",
+        "approval_handler": "not-applicable",
+        "web_search_filter_policy": "allowed-domains",
+        "web_search_allowed_domains": ["kb.example.com", "support.example.com"],
+        "web_search_allowed_domain_count": 2,
+        "web_search_context_size": "medium",
+        "web_search_options_binding": "importedSearchOptions",
+        "web_search_options_resolution": "imported-local-const-object",
+        "web_search_policy": "configured",
+        "execution_environment": "unresolved",
+        "scope": "production",
+    }
+    assert tools["webSearchTool@12"].attributes == {
+        "constructor": "webSearchTool",
+        "approval_policy": "not-applicable",
+        "approval_handler": "not-applicable",
+        "web_search_filter_policy": "allowed-domains",
+        "web_search_allowed_domains": ["kb.example.com", "support.example.com"],
+        "web_search_allowed_domain_count": 2,
+        "web_search_context_size": "medium",
+        "web_search_options_binding": "reexportedSearchOptions",
+        "web_search_options_resolution": "reexported-local-const-object",
+        "web_search_policy": "configured",
+        "execution_environment": "unresolved",
+        "scope": "production",
+    }
+    assert tools["webSearchTool@18"].attributes == {
+        "constructor": "webSearchTool",
+        "approval_policy": "not-applicable",
+        "approval_handler": "not-applicable",
+        "execution_environment": "unresolved",
+        "scope": "production",
+    }
 
     web_search_controls = [
         component
@@ -6354,6 +6389,8 @@ def test_typescript_openai_web_search_tool_policy_is_exact() -> None:
     assert {control.symbol_id for control in web_search_controls} == {
         "ts:agent.ts#control:webSearchTool@10.webSearchPolicy@10",
         "ts:bound-options.ts#control:webSearchTool@19.webSearchPolicy@19",
+        "ts:imported-options.ts#control:webSearchTool@11.webSearchPolicy@11",
+        "ts:imported-options.ts#control:webSearchTool@12.webSearchPolicy@12",
         "ts:location.ts#control:webSearchTool@8.webSearchPolicy@8",
     }
     domain_control = next(
@@ -6398,6 +6435,52 @@ def test_typescript_openai_web_search_tool_policy_is_exact() -> None:
         "web_search_context_size": "low",
         "web_search_options_binding": "boundedSearchOptions",
         "web_search_options_resolution": "same-file-const-object",
+        "web_search_policy": "configured",
+    }
+    imported_control = next(
+        control
+        for control in web_search_controls
+        if control.symbol_id == "ts:imported-options.ts#control:webSearchTool@11.webSearchPolicy@11"
+    )
+    assert imported_control.attributes == {
+        "analysis": "typescript-openai-agents-web-search-policy",
+        "module": "@openai/agents",
+        "constructor": "webSearchTool",
+        "imported_symbol": "webSearchTool",
+        "configuration": "webSearchTool",
+        "search_scope": "web-search-tool",
+        "source_tool": "webSearchTool@11",
+        "source_tool_id": "ts:imported-options.ts#tool:webSearchTool@11",
+        "scope": "production",
+        "web_search_filter_policy": "allowed-domains",
+        "web_search_allowed_domains": ["kb.example.com", "support.example.com"],
+        "web_search_allowed_domain_count": 2,
+        "web_search_context_size": "medium",
+        "web_search_options_binding": "importedSearchOptions",
+        "web_search_options_resolution": "imported-local-const-object",
+        "web_search_policy": "configured",
+    }
+    reexported_control = next(
+        control
+        for control in web_search_controls
+        if control.symbol_id == "ts:imported-options.ts#control:webSearchTool@12.webSearchPolicy@12"
+    )
+    assert reexported_control.attributes == {
+        "analysis": "typescript-openai-agents-web-search-policy",
+        "module": "@openai/agents",
+        "constructor": "webSearchTool",
+        "imported_symbol": "webSearchTool",
+        "configuration": "webSearchTool",
+        "search_scope": "web-search-tool",
+        "source_tool": "webSearchTool@12",
+        "source_tool_id": "ts:imported-options.ts#tool:webSearchTool@12",
+        "scope": "production",
+        "web_search_filter_policy": "allowed-domains",
+        "web_search_allowed_domains": ["kb.example.com", "support.example.com"],
+        "web_search_allowed_domain_count": 2,
+        "web_search_context_size": "medium",
+        "web_search_options_binding": "reexportedSearchOptions",
+        "web_search_options_resolution": "reexported-local-const-object",
         "web_search_policy": "configured",
     }
     location_control = next(
@@ -6485,6 +6568,28 @@ def test_typescript_openai_web_search_tool_policy_is_exact() -> None:
             "ts:bound-options.ts#control:webSearchTool@19.webSearchPolicy@19",
             "bound-options.ts",
             19,
+        ),
+        (
+            "tool",
+            "webSearchTool@11",
+            "ts:imported-options.ts#tool:webSearchTool@11",
+            "configured-by",
+            "control",
+            "web-search-policy",
+            "ts:imported-options.ts#control:webSearchTool@11.webSearchPolicy@11",
+            "imported-options.ts",
+            11,
+        ),
+        (
+            "tool",
+            "webSearchTool@12",
+            "ts:imported-options.ts#tool:webSearchTool@12",
+            "configured-by",
+            "control",
+            "web-search-policy",
+            "ts:imported-options.ts#control:webSearchTool@12.webSearchPolicy@12",
+            "imported-options.ts",
+            12,
         ),
         (
             "agent",

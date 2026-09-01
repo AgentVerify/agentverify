@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-01T00:40:49.511323+00:00",
+  "generated_at": "2026-09-01T01:00:41.111078+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "68c66c856024e446c884c33e5667a34438810a5d0984e678963afe8b07a453a6",
+    "labels_sha256": "ab65b6e252a8ffa3a17225ae0c113bfcc6e7028bd839ceec521770625e242773",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 2590,
-  "passed": 2590,
+  "labels": 2597,
+  "passed": 2597,
   "failed": 0,
   "all_labels_passed": true,
   "failure_summary": {
@@ -780,9 +780,9 @@
       "recall": 1.0
     },
     "IR-TS-OPENAI-WEB-SEARCH-POLICY": {
-      "tp": 19,
+      "tp": 25,
       "fp": 0,
-      "tn": 4,
+      "tn": 5,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -21564,6 +21564,69 @@
     },
     {
       "id": "typescript-openai-web-search-mutable-bound-options-local-negative",
+      "check_id": "IR-TS-OPENAI-WEB-SEARCH-POLICY",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-web-search-imported-options-tool-local",
+      "check_id": "IR-TS-OPENAI-WEB-SEARCH-POLICY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-web-search-imported-options-control-local",
+      "check_id": "IR-TS-OPENAI-WEB-SEARCH-POLICY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-web-search-imported-options-edge-local",
+      "check_id": "IR-TS-OPENAI-WEB-SEARCH-POLICY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-web-search-reexported-options-tool-local",
+      "check_id": "IR-TS-OPENAI-WEB-SEARCH-POLICY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-web-search-reexported-options-control-local",
+      "check_id": "IR-TS-OPENAI-WEB-SEARCH-POLICY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-web-search-reexported-options-edge-local",
+      "check_id": "IR-TS-OPENAI-WEB-SEARCH-POLICY",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-web-search-mutated-imported-options-local-negative",
       "check_id": "IR-TS-OPENAI-WEB-SEARCH-POLICY",
       "expected": false,
       "observed": false,

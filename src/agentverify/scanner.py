@@ -14975,8 +14975,12 @@ def typescript_immutable_module_literal_object_bindings(
                 )
             )
             != 1
-            or re.search(rf"(?<![\w$]){escaped}\s*\.\s*[A-Za-z_$][\w$]*\s*=(?!=)", code)
-            or re.search(rf"(?<![\w$]){escaped}\s*\[[^\]]+\]\s*=(?!=)", code)
+            or re.search(
+                rf"(?<![\w$]){escaped}"
+                r"(?:\s*\.\s*[A-Za-z_$][\w$]*|\s*\[[^\]]+\])+"
+                r"\s*=(?!=)",
+                code,
+            )
             or typescript_parameter_binding_is_declared(text, name)
             or re.search(rf"\bcatch\s*\(\s*{escaped}\b", code)
             or name in imported_names
