@@ -31,6 +31,18 @@ const agent = new Agent({
       requireApproval: "always",
       onApproval: async () => ({ approve: await approveSomehow() }),
     }),
+
+    // Keep this fallback case on a unique occurrence-qualified line anchor.
+    // The wider fixture already has hostedMcpTool@36 in agent.ts.
+    hostedMcpTool({
+      serverLabel: "fallback",
+      serverUrl: "https://mcp.example.test/mcp",
+      requireApproval: "always",
+      onApproval: async (_context, item) => {
+        const approved = item ? await promptApproval(item) : false;
+        return { approve: approved };
+      },
+    }),
   ],
 });
 void agent;

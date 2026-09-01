@@ -13,10 +13,10 @@ catalog workflows.
   preserves exact `never`/`always` tool-name lists, read-only hints, binding provenance, and
   `imported-local-star-reexported-const-object` resolution, while an ambiguous two-source star
   barrel remains dynamic/binding-only. A prompted result-binding callback now records same-file
-  readline review metadata, while an opaque call-result callback is inventoried without review
-  proof. Focused `IR-TS-OPENAI-HOSTED-MCP-APPROVAL` labels pass 21/21, the full public IR truth set
-  passes 2,606/2,606, and benchmark verification passes 3,339/3,339 combined public-regression
-  labels.
+  readline review metadata, a conditional prompt fallback records `conditional-call-result` plus
+  fallback reject metadata, and an opaque call-result callback is inventoried without review proof.
+  Focused `IR-TS-OPENAI-HOSTED-MCP-APPROVAL` labels pass 22/22, the full public IR truth set passes
+  2,607/2,607, and benchmark verification passes 3,340/3,340 combined public-regression labels.
 - Extended TypeScript OpenAI Agents JS `webSearchTool(...)` policy extraction through stable
   same-file, imported sibling, named-reexported, and unambiguous star-reexported const options
   objects.

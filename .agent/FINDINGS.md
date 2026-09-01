@@ -856,7 +856,7 @@
   bindings remain unresolved as well. The local fixture plus pinned OpenAI Agents JS
   `web-search-filters.ts`, `web-search.ts`, and hosted-tools examples bring the public IR truth set
   to 2,201 passing labels at the original literal milestone; the bound same-file/imported/star
-  options extensions are covered in the current 2,606-label IR corpus.
+  options extensions are covered in the current 2,607-label IR corpus.
 - OpenAI Agents JS Agent-level `parallelToolCalls` concurrency is now reviewable when literal.
   Exact `new Agent({ modelSettings: { parallelToolCalls: true|false } })` values emit
   `model-settings-policy` controls and configured-by edges on the source agent, while dynamic
@@ -1018,9 +1018,11 @@
   imported/reexported-mutated policy bindings, ambiguous star-barrel policy imports, shorthand
   values without stable object proof, and other dynamic `requireApproval` bindings remain
   binding-only dynamic metadata. Inline result-binding `onApproval` callbacks can also retain
-  call-result metadata plus same-file readline review proof when the called helper is exact, while
-  opaque callback helpers are inventoried without review proof. The local fixture plus pinned OpenAI
-  hosted MCP examples cover 21/21 hosted-MCP approval labels in the current 2,606-label IR corpus.
+  call-result metadata plus same-file readline review proof when the called helper is exact;
+  conditional prompt expressions that fall back to `false` additionally record
+  `conditional-call-result` and fallback reject metadata, while opaque callback helpers are
+  inventoried without review proof. The local fixture plus pinned OpenAI hosted MCP examples cover
+  22/22 hosted-MCP approval labels in the current 2,607-label IR corpus.
 - Python OpenAI Agents SDK `HostedMCPTool(tool_config={...})` approval settings are now visible as
   hosted-MCP-specific IR metadata on exact imported tool and capability nodes. Direct `"never"`
   policies record explicit disablement, direct or same-block literal `"always"` policies record
