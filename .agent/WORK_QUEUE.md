@@ -95,8 +95,9 @@
   review metadata, conditional prompt fallback-to-reject metadata, and opaque no-review callback
   negatives are now fixture/truthset-backed. Direct request-field equality/inequality, destructured
   callback-parameter equality, nested numeric/boolean request-field literal comparisons,
-  prefix/contains, literal-set, and negated literal-set approval predicates are now covered with
-  local-variable and local-array over-attribution negatives; future callback work should focus on richer
+  prefix/contains, literal-set, negated literal-set, and negated prefix/contains approval
+  predicates are now covered with local-variable and local-array over-attribution negatives; future
+  callback work should focus on richer
   predicate/action quality only when prompt source and call-site identity remain exact. Same-file
   helper-derived
   run-state resumes and helper-body prompt-review propagation are now covered for the narrow

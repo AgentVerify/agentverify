@@ -23549,23 +23549,41 @@ def typescript_openai_on_approval_predicate_attributes(
             f"{attribute_prefix}_predicate_values": [value],
         }
 
+    method_expression = expression
+    method_code = expression_code
+    negated_method = False
+    if method_code.startswith("!"):
+        candidate_expression = method_expression[1:].strip()
+        candidate_code = typescript_code_mask(candidate_expression).strip()
+        if candidate_code.startswith("("):
+            end = typescript_balanced_end(candidate_code, 0, "(", ")")
+            if end is not None and not candidate_code[end:].strip():
+                candidate_expression = candidate_expression[1 : end - 1].strip()
+                candidate_code = typescript_code_mask(candidate_expression).strip()
+        method_expression = candidate_expression
+        method_code = candidate_code
+        negated_method = True
+
     method_match = re.fullmatch(
         r"\s*([A-Za-z_$][\w$]*(?:\s*\.\s*[A-Za-z_$][\w$]*)*)\s*\.\s*"
         r"(includes|startsWith)\s*\(\s*(['\"])([^\\\r\n]*?)\3\s*\)\s*",
-        expression,
+        method_expression,
         re.DOTALL,
     )
     if method_match is not None:
         field = request_field(method_match.group(1))
         if field is None:
             return {}
+        predicate_kind = (
+            "contains" if method_match.group(2) == "includes" else "prefix"
+        )
         return {
             f"{attribute_prefix}_resolution": "inline-approval-object-return",
             f"{attribute_prefix}_decision": "conditional-approve",
             f"{attribute_prefix}_predicate": (
-                "request-field-contains-literal"
-                if method_match.group(2) == "includes"
-                else "request-field-prefix-literal"
+                f"request-field-not-{predicate_kind}-literal"
+                if negated_method
+                else f"request-field-{predicate_kind}-literal"
             ),
             f"{attribute_prefix}_predicate_field": field,
             f"{attribute_prefix}_predicate_values": [method_match.group(4)],

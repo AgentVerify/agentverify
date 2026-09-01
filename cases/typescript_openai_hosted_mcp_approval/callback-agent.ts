@@ -134,6 +134,31 @@ const agent = new Agent({
         return { approve: !blocked.includes(item.name) };
       },
     }),
+    hostedMcpTool({
+      serverLabel: "negated-prefix-predicate",
+      serverUrl: "https://mcp.example.test/mcp",
+      requireApproval: "always",
+      onApproval: async (_context, item) => ({
+        approve: !item.name.startsWith("delete_"),
+      }),
+    }),
+    hostedMcpTool({
+      serverLabel: "negated-contains-predicate",
+      serverUrl: "https://mcp.example.test/mcp",
+      requireApproval: "always",
+      onApproval: async (_context, item) => ({
+        approve: !item.name.includes("_write_"),
+      }),
+    }),
+    hostedMcpTool({
+      serverLabel: "local-negated-method-predicate",
+      serverUrl: "https://mcp.example.test/mcp",
+      requireApproval: "always",
+      onApproval: async (_context, item) => {
+        const name = item.name;
+        return { approve: !name.startsWith("delete_") };
+      },
+    }),
   ],
 });
 void agent;
