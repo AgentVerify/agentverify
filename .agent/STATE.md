@@ -7,12 +7,20 @@ catalog workflows.
 
 ## Completed recently
 
+- Extended Vercel `WorkflowAgent` execute-helper capability propagation through exact
+  `const alias = helper` bindings. Same-file helpers and imported relative helper functions now
+  canonicalize direct identifier aliases before capability linking, while the existing one-tool-per
+  canonical helper guard keeps shared direct/alias helper paths unresolved. Focused
+  `typescript-vercel-workflow*` IR labels pass 46/46, the full public IR truth set passes
+  2,586/2,586, benchmark verification passes 3,319/3,319 combined public-regression labels, and the
+  full pytest suite passes 368/368.
 - Extended OpenAI Agents JS history-feedback continuity through exact same-result current-agent
   route updates. A feedback-loop run that consumes caller-owned history and then assigns
   `agent = result.currentAgent ?? agent` now records routed-agent metadata on the configured-by edge
   when both values come from the same proven SDK run result; unknown-run lookalikes stay clean.
   Focused `IR-TS-OPENAI-CONVERSATION-SESSION` labels pass 94/94, the full public IR truth set passes
-  2,583/2,583, and benchmark verification passes 3,316/3,316 combined public-regression labels.
+  2,583/2,583, and benchmark verification passes 3,316/3,316 combined public-regression labels at
+  that milestone.
 - Extended TypeScript OpenAI Agents JS tool-guardrail helper predicates through exact helper
   chains. Unique helpers whose only return value is a direct call to another proven helper now
   inherit literal reject-condition metadata while retaining the wrapper and base helper names.

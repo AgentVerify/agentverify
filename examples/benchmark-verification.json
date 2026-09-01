@@ -23,8 +23,8 @@
       "evaluation_kind": "public-regression",
       "label_scope": "agent-ir",
       "sealed": false,
-      "labels": 2583,
-      "passed": 2583,
+      "labels": 2586,
+      "passed": 2586,
       "failed": 0,
       "all_labels_passed": true,
       "failure_summary": {

@@ -35,8 +35,9 @@
   app-level approval event/UI flows beyond the now-covered framework runtime approval pause,
   request-chunk, and revalidation continuation path, richer telemetry sink/retention proof beyond
   the now-covered constructor and same-file stream telemetry/callback-hook inventory, reportable
-  Vercel approval findings only with matching real evidence, or additional execute-helper alias
-  chains only when comparable ambiguity guards exist.
+  Vercel approval findings only with matching real evidence, or richer execute-helper forms beyond
+  direct `const alias = helper` bindings only when comparable canonical-helper ambiguity guards
+  exist.
 - Extend Vercel AI Code Mode only when runtime provenance stays exact: current IR covers the
   host-tool approval gate, interrupt payload kind, denial-before-execute behavior, and
   continuation approval-id validation, plus the public `codeModeTool()` /
@@ -121,8 +122,9 @@
   cluster in detectors that rely on non-import-neighbor architecture sidecars or global summaries
   rather than simple source imports. Repository-wide release scans are still authoritative. Opt-in
   `--scan-cache-dir` now preserves repository-wide semantics across repeated local runs by
-  revalidating source and AgentVerify package source digests before reusing cached IR. A warm-cache
-  post-current-agent smoke now shows 157/157 IR target hits in about 3 seconds for 2,583 IR labels.
+  revalidating source and AgentVerify package source digests before reusing cached IR. A previous
+  warm-cache post-current-agent smoke showed 157/157 IR target hits in about 3 seconds for the
+  then-current 2,583 IR labels.
   The first reporting pass after scanner changes had 106/118 cache hits plus 12 misses and took
   about 47 seconds; the second true warm reporting pass had 118/118 cache hits and took about
   2 seconds. Next performance work should focus on cold-cache invalidation cost after scanner

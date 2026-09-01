@@ -1085,3 +1085,18 @@
 - Confidence: High for the current local corpus/cache layout.
 - Implication: More near-term benchmark performance work should focus on cold-cache invalidation
   cost after scanner changes or selected-path dependency gaps, not on warm-cache hit overhead.
+
+## Vercel WorkflowAgent execute-helper aliases can be exact when canonicalized first
+
+- Finding: A direct TypeScript `execute: helperAlias` object-tool binding remains precise when
+  `helperAlias` is a stable `const helperAlias = helper` identifier alias and the canonical helper
+  resolves to exactly one same-file or imported relative helper function. The alias must be folded
+  before the existing shared-helper guard runs; otherwise direct and alias paths to the same helper
+  can over-attribute code-execution evidence.
+- Evidence: The local `typescript_vercel_workflow_imported_execute_helper` fixture now includes
+  `alias-agent.ts`, where `aliasedCalculate` resolves through `const aliasedCalculate =
+  importedCalculate` to `helpers.ts` `new Function(...)`, while `directShared` and `aliasedShared`
+  both point at the canonical `importedShared` helper and remain unresolved. Focused Vercel
+  Workflow labels pass 46/46 and the full public IR truth set passes 2,586/2,586.
+- Implication: Future execute-helper alias work should preserve canonical helper uniqueness before
+  adding longer chains, destructuring, namespace imports, or property aliases.

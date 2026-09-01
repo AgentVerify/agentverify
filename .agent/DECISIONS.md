@@ -185,6 +185,23 @@
   persistent approval records, authenticated actors, or unsafe bypasses that justify reportable
   findings.
 
+## Vercel WorkflowAgent execute-helper aliases use canonical-helper uniqueness
+
+- Decision: Resolve TypeScript object-tool `execute` helper aliases only for stable direct
+  identifier bindings of the form `const alias = helper`, then apply the same one-tool-per-helper
+  guard to the canonical helper identifier before linking same-file or imported helper-body
+  capabilities. If a helper is reached through both direct and alias paths in the same source file,
+  neither path receives delegated helper-body capability evidence.
+- Evidence: Local scanner tests cover same-file alias positives and direct-plus-alias shared-helper
+  negatives. The public `typescript_vercel_workflow_imported_execute_helper/alias-agent.ts`
+  fixture covers an imported alias positive and imported direct-plus-alias shared-helper negatives;
+  focused Vercel Workflow IR labels pass 46/46 and the full public IR truth set passes 2,586/2,586.
+- Alternative: Treat each alias name independently. Rejected because it would bypass the existing
+  shared-helper ambiguity guard and could make one risky helper body look like exact evidence for
+  multiple unrelated object tools.
+- Revisit when: Longer alias chains, destructured helper aliases, namespace imports, or property
+  aliases can be resolved without broad dataflow or stale mutation assumptions.
+
 ## Vercel WorkflowAgent tool edges require exact constructor and stable tool-set binding
 
 - Decision: Treat `new WorkflowAgent(...)` as an agent only when `WorkflowAgent` is an unshadowed

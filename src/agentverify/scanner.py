@@ -9,7 +9,7 @@ import re
 import shlex
 import warnings
 from collections import Counter, defaultdict
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
 from pathlib import Path
@@ -23290,6 +23290,48 @@ def typescript_tool_execute_identifier(body: str) -> str | None:
     return match.group(0) if match is not None else None
 
 
+def typescript_const_identifier_alias_bindings(text: str) -> dict[str, str]:
+    """Return exact `const alias = helper` identifier bindings."""
+    code = typescript_code_mask(text)
+    aliases: dict[str, str] = {}
+    alias_counts: Counter[str] = Counter()
+    for match in re.finditer(
+        r"\bconst\s+([A-Za-z_$][\w$]*)\s*"
+        r"(?::\s*(?:[^=;\n]|=(?!>))+)?=\s*"
+        r"([A-Za-z_$][\w$]*)\s*(?:;|$)",
+        code,
+        re.MULTILINE,
+    ):
+        alias = match.group(1)
+        target = match.group(2)
+        if alias == target:
+            continue
+        alias_counts[alias] += 1
+        aliases[alias] = target
+    return {
+        alias: target
+        for alias, target in aliases.items()
+        if alias_counts[alias] == 1
+        and typescript_function_identifier_is_stable(text, alias)
+    }
+
+
+def typescript_resolve_const_identifier_alias(
+    identifier: str,
+    aliases: Mapping[str, str],
+) -> str:
+    """Resolve a short acyclic chain of exact const identifier aliases."""
+    seen = {identifier}
+    current = identifier
+    for _ in range(8):
+        target = aliases.get(current)
+        if target is None or target in seen:
+            return current
+        seen.add(target)
+        current = target
+    return current
+
+
 def typescript_function_identifier_is_stable(text: str, identifier: str) -> bool:
     """Return true when a same-file function helper is not reassigned."""
     code = typescript_code_mask(text)
@@ -24954,10 +24996,21 @@ def typescript_graph(
         if tool_execute_bindings
         else {}
     )
+    execute_helper_aliases = typescript_const_identifier_alias_bindings(text)
+    canonical_tool_execute_bindings: dict[str, list[tuple[str, str, str]]] = defaultdict(list)
     for execute_identifier, tool_bindings in tool_execute_bindings.items():
+        canonical_identifier = typescript_resolve_const_identifier_alias(
+            execute_identifier,
+            execute_helper_aliases,
+        )
+        for tool_name, tool_id in tool_bindings:
+            canonical_tool_execute_bindings[canonical_identifier].append(
+                (execute_identifier, tool_name, tool_id)
+            )
+    for execute_identifier, tool_bindings in canonical_tool_execute_bindings.items():
         if len(tool_bindings) != 1:
             continue
-        tool_name, tool_id = tool_bindings[0]
+        original_execute_identifier, tool_name, tool_id = tool_bindings[0]
         function_bindings = function_spans_by_name.get(execute_identifier, [])
         if len(function_bindings) == 1 and typescript_function_identifier_is_stable(
             text,
@@ -24973,6 +25026,14 @@ def typescript_graph(
         imported_function_binding = imported_function_bindings.get(execute_identifier)
         if imported_function_binding is None:
             continue
+        if original_execute_identifier != execute_identifier:
+            imported_function_binding = TypeScriptFunctionBodyBinding(
+                imported_function_binding.path,
+                imported_function_binding.text,
+                imported_function_binding.body_start,
+                imported_function_binding.body_end,
+                f"const-aliased-{imported_function_binding.resolution}",
+            )
         add_typescript_imported_execute_helper_capabilities(
             ir,
             binding=imported_function_binding,

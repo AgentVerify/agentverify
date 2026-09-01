@@ -1768,10 +1768,10 @@ reexported/star-reexported bindings, an ambiguous two-source star-barrel negativ
 network/web-search toggles, stream callback bindings, run-context thread reuse,
 top-level/default-thread working-directory values, default thread options without explicit
 approval, and a mutated-binding negative.
-All 2,583 IR labels pass (1,989 positives and 594 negatives). The checked
+All 2,586 IR labels pass (1,990 positives and 596 negatives). The checked
 `benchmarks/ir-truthset-results.json` file contains the current per-check precision/recall
 breakdown, including the Vercel WorkflowAgent same-file/imported/reexported model-binding labels,
-direct/named-reexported/star-reexported execute-helper tool-graph labels, real Vercel
+direct/named-reexported/star-reexported/const-aliased execute-helper tool-graph labels, real Vercel
 WorkflowAgent approval-runtime labels, OpenAI Agents JS Codex extension tool labels,
 WorkflowAgent constructor and stream-call telemetry/callback observability labels, OpenAI
 Agents JS and Python safety-check labels added for `computerTool({ onSafetyCheck })` and
