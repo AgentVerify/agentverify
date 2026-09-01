@@ -93,6 +93,30 @@ const agent = new Agent({
         return { approve: allowed.includes(item.name) };
       },
     }),
+    hostedMcpTool({
+      serverLabel: "destructured-predicate",
+      serverUrl: "https://mcp.example.test/mcp",
+      requireApproval: "always",
+      onApproval: async (_context, { name }) => ({
+        approve: name === "read_page",
+      }),
+    }),
+    hostedMcpTool({
+      serverLabel: "nested-number-predicate",
+      serverUrl: "https://mcp.example.test/mcp",
+      requireApproval: "always",
+      onApproval: async (_context, item) => ({
+        approve: item.data.riskScore !== 10,
+      }),
+    }),
+    hostedMcpTool({
+      serverLabel: "nested-boolean-predicate",
+      serverUrl: "https://mcp.example.test/mcp",
+      requireApproval: "always",
+      onApproval: async (_context, item) => ({
+        approve: item.data.readOnly === true,
+      }),
+    }),
   ],
 });
 void agent;

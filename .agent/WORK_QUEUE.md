@@ -93,7 +93,8 @@
   should resolve package-level or external star-reexported policy object bindings only if object
   identity remains exact. Inline result-binding `onApproval` callbacks with same-file readline
   review metadata, conditional prompt fallback-to-reject metadata, and opaque no-review callback
-  negatives are now fixture/truthset-backed. Direct request-field equality/inequality,
+  negatives are now fixture/truthset-backed. Direct request-field equality/inequality, destructured
+  callback-parameter equality, nested numeric/boolean request-field literal comparisons,
   prefix/contains, and literal-set approval predicates are now covered with local-variable and
   local-array over-attribution negatives; future callback work should focus on richer
   predicate/action quality only when prompt source and call-site identity remain exact. Same-file

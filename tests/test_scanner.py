@@ -8075,6 +8075,54 @@ def test_typescript_openai_hosted_mcp_approval_policy_is_exact() -> None:
         "execution_environment": "unresolved",
         "scope": "production",
     }
+    assert tools["hostedMcpTool@96"].attributes == {
+        "constructor": "hostedMcpTool",
+        "approval_policy": "not-applicable",
+        "approval_handler": "not-applicable",
+        "mcp_approval_policy": "always-required",
+        "mcp_approval_requirement": "always",
+        "mcp_approval_handler": "configured",
+        "mcp_approval_handler_policy": "callback-controlled",
+        "mcp_approval_handler_resolution": "inline-approval-object-return",
+        "mcp_approval_handler_decision": "conditional-approve",
+        "mcp_approval_handler_predicate": "request-field-equals-literal",
+        "mcp_approval_handler_predicate_field": "name",
+        "mcp_approval_handler_predicate_values": ["read_page"],
+        "execution_environment": "unresolved",
+        "scope": "production",
+    }
+    assert tools["hostedMcpTool@104"].attributes == {
+        "constructor": "hostedMcpTool",
+        "approval_policy": "not-applicable",
+        "approval_handler": "not-applicable",
+        "mcp_approval_policy": "always-required",
+        "mcp_approval_requirement": "always",
+        "mcp_approval_handler": "configured",
+        "mcp_approval_handler_policy": "callback-controlled",
+        "mcp_approval_handler_resolution": "inline-approval-object-return",
+        "mcp_approval_handler_decision": "conditional-approve",
+        "mcp_approval_handler_predicate": "request-field-not-equals-literal",
+        "mcp_approval_handler_predicate_field": "data.riskScore",
+        "mcp_approval_handler_predicate_values": [10],
+        "execution_environment": "unresolved",
+        "scope": "production",
+    }
+    assert tools["hostedMcpTool@112"].attributes == {
+        "constructor": "hostedMcpTool",
+        "approval_policy": "not-applicable",
+        "approval_handler": "not-applicable",
+        "mcp_approval_policy": "always-required",
+        "mcp_approval_requirement": "always",
+        "mcp_approval_handler": "configured",
+        "mcp_approval_handler_policy": "callback-controlled",
+        "mcp_approval_handler_resolution": "inline-approval-object-return",
+        "mcp_approval_handler_decision": "conditional-approve",
+        "mcp_approval_handler_predicate": "request-field-equals-literal",
+        "mcp_approval_handler_predicate_field": "data.readOnly",
+        "mcp_approval_handler_predicate_values": [True],
+        "execution_environment": "unresolved",
+        "scope": "production",
+    }
     assert "fakeHostedMcpTool@80" not in tools
 
     capability_by_line = {
@@ -8147,6 +8195,30 @@ def test_typescript_openai_hosted_mcp_approval_policy_is_exact() -> None:
         "mcp_approval_handler_predicate"
         not in capability_by_path_line[("callback-agent.ts", 87)].attributes
     )
+    assert capability_by_path_line[
+        ("callback-agent.ts", 96)
+    ].attributes["mcp_approval_handler_predicate"] == (
+        "request-field-equals-literal"
+    )
+    assert capability_by_path_line[
+        ("callback-agent.ts", 96)
+    ].attributes["mcp_approval_handler_predicate_values"] == ["read_page"]
+    assert capability_by_path_line[
+        ("callback-agent.ts", 104)
+    ].attributes["mcp_approval_handler_predicate"] == (
+        "request-field-not-equals-literal"
+    )
+    assert capability_by_path_line[
+        ("callback-agent.ts", 104)
+    ].attributes["mcp_approval_handler_predicate_values"] == [10]
+    assert capability_by_path_line[
+        ("callback-agent.ts", 112)
+    ].attributes["mcp_approval_handler_predicate"] == (
+        "request-field-equals-literal"
+    )
+    assert capability_by_path_line[
+        ("callback-agent.ts", 112)
+    ].attributes["mcp_approval_handler_predicate_values"] == [True]
     assert capability_by_line[55].attributes["mcp_approval_resolution"] == (
         "imported-local-const-object"
     )

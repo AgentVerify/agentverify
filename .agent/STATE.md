@@ -15,11 +15,13 @@ catalog workflows.
   barrel remains dynamic/binding-only. A prompted result-binding callback now records same-file
   readline review metadata, a conditional prompt fallback records `conditional-call-result` plus
   fallback reject metadata, direct request-field equality/inequality, prefix/contains, and
-  literal-set predicates record shallow predicate metadata, and local-variable/local-array
+  literal-set predicates, destructured callback-parameter equality, and nested numeric/boolean
+  request-field literal predicates record shallow predicate metadata, and local-variable/local-array
   lookalikes plus opaque call-result callbacks avoid overclaiming request review proof. Focused
-  `IR-TS-OPENAI-HOSTED-MCP-APPROVAL` labels pass 28/28, the full public IR truth set passes
-  2,613/2,613, and benchmark verification passes 3,346/3,346
-  combined public-regression labels.
+  `IR-TS-OPENAI-HOSTED-MCP-APPROVAL` labels pass 31/31, the full public IR truth set passes
+  2,616/2,616, and benchmark verification passes 3,349/3,349
+  combined public-regression labels. The full pytest suite passes 368/368, and a post-refresh
+  warm-cache IR pass hits 157/157 targets.
 - Extended TypeScript OpenAI Agents JS `webSearchTool(...)` policy extraction through stable
   same-file, imported sibling, named-reexported, and unambiguous star-reexported const options
   objects.
