@@ -7921,6 +7921,45 @@ def test_typescript_openai_hosted_mcp_approval_policy_is_exact() -> None:
         "execution_environment": "unresolved",
         "scope": "production",
     }
+    assert tools["hostedMcpTool@18"].attributes == {
+        "constructor": "hostedMcpTool",
+        "approval_policy": "not-applicable",
+        "approval_handler": "not-applicable",
+        "mcp_approval_policy": "always-required",
+        "mcp_approval_requirement": "always",
+        "mcp_approval_handler": "configured",
+        "mcp_approval_handler_policy": "callback-controlled",
+        "mcp_approval_handler_resolution": (
+            "inline-result-binding-approval-object-return"
+        ),
+        "mcp_approval_handler_approve_binding": "approved",
+        "mcp_approval_handler_decision": "dynamic-callback-result",
+        "mcp_approval_handler_approve_source": "call-result",
+        "mcp_approval_handler_approve_call": "promptApproval",
+        "mcp_approval_handler_review_resolution": (
+            "same-file-helper-readline-question"
+        ),
+        "mcp_approval_handler_review_helper": "promptApproval",
+        "mcp_approval_handler_review_source": "readline-question",
+        "mcp_approval_handler_review_decision": "yes-literal-comparison",
+        "execution_environment": "unresolved",
+        "scope": "production",
+    }
+    assert tools["hostedMcpTool@28"].attributes == {
+        "constructor": "hostedMcpTool",
+        "approval_policy": "not-applicable",
+        "approval_handler": "not-applicable",
+        "mcp_approval_policy": "always-required",
+        "mcp_approval_requirement": "always",
+        "mcp_approval_handler": "configured",
+        "mcp_approval_handler_policy": "callback-controlled",
+        "mcp_approval_handler_resolution": "inline-approval-object-return",
+        "mcp_approval_handler_decision": "dynamic-callback-result",
+        "mcp_approval_handler_approve_source": "call-result",
+        "mcp_approval_handler_approve_call": "approveSomehow",
+        "execution_environment": "unresolved",
+        "scope": "production",
+    }
     assert "fakeHostedMcpTool@80" not in tools
 
     capability_by_line = {
@@ -7952,6 +7991,15 @@ def test_typescript_openai_hosted_mcp_approval_policy_is_exact() -> None:
             ("star-agent.ts", 13)
         ].attributes["mcp_approval_policy"]
         == "dynamic"
+    )
+    assert capability_by_path_line[
+        ("callback-agent.ts", 18)
+    ].attributes["mcp_approval_handler_review_resolution"] == (
+        "same-file-helper-readline-question"
+    )
+    assert (
+        "mcp_approval_handler_review_resolution"
+        not in capability_by_path_line[("callback-agent.ts", 28)].attributes
     )
     assert capability_by_line[55].attributes["mcp_approval_resolution"] == (
         "imported-local-const-object"

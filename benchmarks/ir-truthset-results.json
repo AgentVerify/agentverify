@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-01T01:25:46.289905+00:00",
+  "generated_at": "2026-09-01T01:32:11.995519+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "937ce3a9c372d6589baf90aef78b3a2cc0a43228fe7c6d287d98037e51c74ce0",
+    "labels_sha256": "b642a388faa1be7c864bf5750645395e549f6866cd95e5f0f0646712534845d1",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 2603,
-  "passed": 2603,
+  "labels": 2606,
+  "passed": 2606,
   "failed": 0,
   "all_labels_passed": true,
   "failure_summary": {
@@ -668,9 +668,9 @@
       "recall": 1.0
     },
     "IR-TS-OPENAI-HOSTED-MCP-APPROVAL": {
-      "tp": 15,
+      "tp": 17,
       "fp": 0,
-      "tn": 3,
+      "tn": 4,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -4698,6 +4698,33 @@
     },
     {
       "id": "typescript-openai-hosted-mcp-approval-ambiguous-star-local",
+      "check_id": "IR-TS-OPENAI-HOSTED-MCP-APPROVAL",
+      "expected": false,
+      "observed": false,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-hosted-mcp-approval-result-binding-review-local",
+      "check_id": "IR-TS-OPENAI-HOSTED-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-hosted-mcp-approval-opaque-callback-local",
+      "check_id": "IR-TS-OPENAI-HOSTED-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-hosted-mcp-approval-opaque-callback-review-negative-local",
       "check_id": "IR-TS-OPENAI-HOSTED-MCP-APPROVAL",
       "expected": false,
       "observed": false,

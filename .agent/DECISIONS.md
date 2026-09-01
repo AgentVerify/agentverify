@@ -1610,12 +1610,15 @@
   `"never"`/`"always"`, direct selective object policies with shallow `toolNames` and `readOnly`
   hints, stable same-file const object policies, direct sibling imports, exact named local reexports,
   unambiguous local star reexports, dynamic/mutated/ambiguous bindings, and configured `onApproval`
-  callbacks.
+  callbacks including exact result-binding approval-object returns with same-file readline review
+  metadata.
 - Evidence: The pinned OpenAI Agents JS `hostedMcpTool` implementation maps omitted or `"never"`
   `requireApproval` to provider `require_approval: "never"` and otherwise forwards
   `buildRequireApproval(...)` plus `on_approval`. Pinned examples cover simple/default hosted MCP,
   connector `"never"`, selective HITL policy, and a callback that can return an
-  environment-backed approval.
+  environment-backed approval. Local fixtures now also pin a prompted `onApproval` result-binding
+  callback and an opaque callback that keeps call-result metadata but receives no prompt-review
+  proof.
 - Alternative: Treat hosted MCP approval as generic `approval_policy` or report every hosted MCP
   callback as human approval. Rejected because the SDK option is named differently, approval may be
   handled by the agent loop, and callback quality remains distinct from the MCP tool requirement.
