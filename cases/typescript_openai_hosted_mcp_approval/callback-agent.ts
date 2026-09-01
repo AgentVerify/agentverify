@@ -43,6 +43,23 @@ const agent = new Agent({
         return { approve: approved };
       },
     }),
+    hostedMcpTool({
+      serverLabel: "predicate",
+      serverUrl: "https://mcp.example.test/mcp",
+      requireApproval: "always",
+      onApproval: async (_context, item) => ({
+        approve: item.name !== "delete_page",
+      }),
+    }),
+    hostedMcpTool({
+      serverLabel: "local-predicate",
+      serverUrl: "https://mcp.example.test/mcp",
+      requireApproval: "always",
+      onApproval: async () => {
+        const item = { name: "delete_page" };
+        return { approve: item.name !== "delete_page" };
+      },
+    }),
   ],
 });
 void agent;

@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-01T01:41:17.527031+00:00",
+  "generated_at": "2026-09-01T01:58:47.066454+00:00",
   "benchmark": {
     "evaluation_kind": "public-regression",
     "label_scope": "agent-ir",
     "labels_source": "benchmarks/ir-truthset.json",
-    "labels_sha256": "78972dfc26b178757917ae213bad911aad8df6be3f56afdf4350350ef0eec881",
+    "labels_sha256": "741853a8ab14a0f0b66d7b0a79b81374a5fda6d98bf09b0cbb3cf39e323d91a5",
     "sealed": false,
     "claim_scope": "curated public regression metrics only; not an unbiased ecosystem accuracy estimate"
   },
-  "labels": 2607,
-  "passed": 2607,
+  "labels": 2609,
+  "passed": 2609,
   "failed": 0,
   "all_labels_passed": true,
   "failure_summary": {
@@ -668,9 +668,9 @@
       "recall": 1.0
     },
     "IR-TS-OPENAI-HOSTED-MCP-APPROVAL": {
-      "tp": 18,
+      "tp": 19,
       "fp": 0,
-      "tn": 4,
+      "tn": 5,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0
@@ -4737,6 +4737,24 @@
       "check_id": "IR-TS-OPENAI-HOSTED-MCP-APPROVAL",
       "expected": true,
       "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-hosted-mcp-approval-direct-predicate-local",
+      "check_id": "IR-TS-OPENAI-HOSTED-MCP-APPROVAL",
+      "expected": true,
+      "observed": true,
+      "anchor_ok": true,
+      "source_ok": true,
+      "passed": true
+    },
+    {
+      "id": "typescript-openai-hosted-mcp-approval-local-predicate-negative",
+      "check_id": "IR-TS-OPENAI-HOSTED-MCP-APPROVAL",
+      "expected": false,
+      "observed": false,
       "anchor_ok": true,
       "source_ok": true,
       "passed": true

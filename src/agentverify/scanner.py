@@ -23482,6 +23482,73 @@ def typescript_openai_needs_approval_predicate_attributes(
     return {}
 
 
+def typescript_openai_on_approval_predicate_attributes(
+    approve_expression: str,
+    callback_expression: str,
+    *,
+    attribute_prefix: str = "mcp_approval_handler",
+) -> dict[str, object]:
+    """Resolve exact literal field predicates from one OpenAI onApproval callback."""
+    parameters = typescript_callback_parameters(callback_expression)
+    if len(parameters) < 2:
+        return {}
+    request_root: str | None = None
+    field_aliases: dict[str, str] = {}
+    second_parameter = parameters[1]
+    if second_parameter.lstrip().startswith("{"):
+        for field in sorted(typescript_destructured_names(second_parameter)):
+            field_aliases[field] = field
+    elif parameter_match := re.match(r"[A-Za-z_$][\w$]*", second_parameter):
+        request_root = parameter_match.group(0)
+
+    expression = approve_expression.strip()
+    expression_code = typescript_code_mask(expression).strip()
+    if expression_code.startswith("("):
+        end = typescript_balanced_end(expression_code, 0, "(", ")")
+        if end is not None and not expression_code[end:].strip():
+            expression = expression[1 : end - 1].strip()
+
+    predicate_match = re.fullmatch(
+        r"\s*([A-Za-z_$][\w$]*(?:\s*\.\s*[A-Za-z_$][\w$]*)*)\s*"
+        r"(===|!==|==|!=)\s*"
+        r"(?:(['\"])([^\\\r\n]*?)\3|(-?\d+)|(true|false))\s*",
+        expression,
+        re.DOTALL,
+    )
+    if predicate_match is None:
+        return {}
+
+    lhs = predicate_match.group(1).replace(" ", "")
+    parts = lhs.split(".")
+    if request_root is not None:
+        if len(parts) < 2 or parts[0] != request_root:
+            return {}
+        field = ".".join(parts[1:])
+    elif parts[0] in field_aliases:
+        field = ".".join(parts)
+    else:
+        return {}
+
+    if predicate_match.group(4) is not None:
+        value: object = predicate_match.group(4)
+    elif predicate_match.group(5) is not None:
+        value = int(predicate_match.group(5))
+    else:
+        value = predicate_match.group(6) == "true"
+    predicate = (
+        "request-field-equals-literal"
+        if predicate_match.group(2) in {"==", "==="}
+        else "request-field-not-equals-literal"
+    )
+    return {
+        f"{attribute_prefix}_resolution": "inline-approval-object-return",
+        f"{attribute_prefix}_decision": "conditional-approve",
+        f"{attribute_prefix}_predicate": predicate,
+        f"{attribute_prefix}_predicate_field": field,
+        f"{attribute_prefix}_predicate_values": [value],
+    }
+
+
 def typescript_openai_needs_approval_attributes(body: str) -> dict[str, object]:
     """Resolve exact OpenAI Agents JS needsApproval metadata from one options object."""
     approval_expression = typescript_object_property_expression(body, "needsApproval")
@@ -23573,6 +23640,12 @@ def typescript_openai_on_approval_callback_attributes(
                 "always-approve" if approve_decision else "always-reject"
             ),
         }
+    if predicate_attributes := typescript_openai_on_approval_predicate_attributes(
+        approve_expression,
+        callback_expression,
+        attribute_prefix=attribute_prefix,
+    ):
+        return predicate_attributes
     if call_match := re.fullmatch(
         r"(?:await\s+)?([A-Za-z_$][\w$]*(?:\s*\.\s*[A-Za-z_$][\w$]*)*)\s*\([\s\S]*\)",
         approve_expression_code,

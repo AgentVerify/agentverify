@@ -7985,6 +7985,33 @@ def test_typescript_openai_hosted_mcp_approval_policy_is_exact() -> None:
         "execution_environment": "unresolved",
         "scope": "production",
     }
+    assert tools["hostedMcpTool@46"].attributes == {
+        "constructor": "hostedMcpTool",
+        "approval_policy": "not-applicable",
+        "approval_handler": "not-applicable",
+        "mcp_approval_policy": "always-required",
+        "mcp_approval_requirement": "always",
+        "mcp_approval_handler": "configured",
+        "mcp_approval_handler_policy": "callback-controlled",
+        "mcp_approval_handler_resolution": "inline-approval-object-return",
+        "mcp_approval_handler_decision": "conditional-approve",
+        "mcp_approval_handler_predicate": "request-field-not-equals-literal",
+        "mcp_approval_handler_predicate_field": "name",
+        "mcp_approval_handler_predicate_values": ["delete_page"],
+        "execution_environment": "unresolved",
+        "scope": "production",
+    }
+    assert tools["hostedMcpTool@54"].attributes == {
+        "constructor": "hostedMcpTool",
+        "approval_policy": "not-applicable",
+        "approval_handler": "not-applicable",
+        "mcp_approval_policy": "always-required",
+        "mcp_approval_requirement": "always",
+        "mcp_approval_handler": "configured",
+        "mcp_approval_handler_policy": "callback-controlled",
+        "execution_environment": "unresolved",
+        "scope": "production",
+    }
     assert "fakeHostedMcpTool@80" not in tools
 
     capability_by_line = {
@@ -8029,6 +8056,15 @@ def test_typescript_openai_hosted_mcp_approval_policy_is_exact() -> None:
     assert capability_by_path_line[
         ("callback-agent.ts", 37)
     ].attributes["mcp_approval_handler_fallback_decision"] == "reject"
+    assert capability_by_path_line[
+        ("callback-agent.ts", 46)
+    ].attributes["mcp_approval_handler_predicate"] == (
+        "request-field-not-equals-literal"
+    )
+    assert (
+        "mcp_approval_handler_predicate"
+        not in capability_by_path_line[("callback-agent.ts", 54)].attributes
+    )
     assert capability_by_line[55].attributes["mcp_approval_resolution"] == (
         "imported-local-const-object"
     )

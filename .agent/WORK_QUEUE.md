@@ -93,9 +93,10 @@
   should resolve package-level or external star-reexported policy object bindings only if object
   identity remains exact. Inline result-binding `onApproval` callbacks with same-file readline
   review metadata, conditional prompt fallback-to-reject metadata, and opaque no-review callback
-  negatives are now fixture/truthset-backed; future callback work should focus on richer
-  predicate/action quality only when prompt source and call-site identity remain exact. Same-file
-  helper-derived
+  negatives are now fixture/truthset-backed. Direct request-field equality/inequality approval
+  predicates are now covered with local-variable over-attribution negatives; future callback work
+  should focus on richer predicate/action quality only when prompt source and call-site identity
+  remain exact. Same-file helper-derived
   run-state resumes and helper-body prompt-review propagation are now covered for the narrow
   exact-agent-parameter pattern; future helper work should focus only on richer predicate/action
   quality or new exact helper/prompt shapes that preserve call-site and source-agent identity.
