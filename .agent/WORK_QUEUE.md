@@ -2,6 +2,10 @@
 
 ## P0
 
+- Before manual GitHub publication, push the release-candidate source commit, create an exact
+  `v0.1.0` tag from that commit, create the GitHub Release, attach the locally verified
+  `dist/agentverify-0.1.0-py3-none-any.whl` and `dist/agentverify-0.1.0.tar.gz` artifacts plus
+  benchmark/engine verification JSON, and state the public-regression claim boundary clearly.
 - Keep rule additions evidence-backed: real repository case, fixture or corpus label, regression
   test, documentation, and benchmark update.
 - Preserve fail-closed behavior for policy, baseline, suppression, and schema inputs used in CI.

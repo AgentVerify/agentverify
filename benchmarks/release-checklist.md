@@ -14,6 +14,17 @@ external integration guide.
 Public truth-set results are suitable for claims like "the checked-in regression labels pass at this
 commit." They are not suitable for ecosystem-wide precision/recall claims.
 
+For a local v0.1.0 release candidate, keep the source commit and built artifacts separate:
+
+```console
+uv build --wheel --sdist
+uv run python scripts/verify_distribution.py --require-sdist --smoke-install
+```
+
+Attach the resulting `dist/agentverify-0.1.0-py3-none-any.whl` and
+`dist/agentverify-0.1.0.tar.gz` manually to the GitHub Release after the source commit is pushed and
+tagged. Do not commit `dist/`; it is a local release artifact directory.
+
 ```console
 PYTHONPATH=src python3 scripts/evaluate_truthset.py
 PYTHONPATH=src python3 scripts/evaluate_truthset.py --labels benchmarks/ir-truthset.json \

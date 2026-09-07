@@ -2,11 +2,22 @@
 
 ## Current milestone
 
-CI and integration polish on top of the schema-backed report, policy, baseline, SARIF, and rule
-catalog workflows.
+Prepare the v0.1.0 release candidate for manual GitHub publication without pushing, tagging,
+creating a GitHub Release, or publishing to PyPI from Codex.
 
 ## Completed recently
 
+- Prepared the local v0.1.0 release candidate source state. README release-facing counts now match
+  the current checked benchmark artifacts: 25 enabled reporting rules, 733/733 public
+  reporting-rule regression labels, 2,621/2,621 public Agent IR regression labels, 3,354/3,354
+  combined benchmark verification labels, and 71/71 successful full-corpus engine repositories.
+  Added `CHANGELOG.md` with v0.1.0 release-candidate notes and tightened
+  `benchmarks/release-checklist.md` with `uv`-backed local artifact build/verification commands and the
+  GitHub-only manual publish boundary. Rebuilt local ignored artifacts
+  `dist/agentverify-0.1.0-py3-none-any.whl` and `dist/agentverify-0.1.0.tar.gz`. Installed-wheel
+  smoke distribution verification passed after refreshing the verifier's benchmark-label
+  expectation to [733, 2621]; direct release gates passed for Ruff, public benchmark verification,
+  engine-results verification, holdout template validation, and the full 368-test pytest suite.
 - Extended TypeScript OpenAI Agents JS hosted-MCP approval policy/callback coverage through
   unambiguous local `export *` barrels for immutable exported policy objects and fixture-backed
   `onApproval` result-binding review metadata. A star-reexported `requireApproval` binding now

@@ -8,8 +8,10 @@ The initial research corpus contains 71 pinned repositories spanning frameworks,
 agents, MCP servers, workflow platforms, tool integrations, sandboxes, and observability systems.
 The first engine supports Python AST analysis, structure-aware TypeScript/JavaScript discovery, MCP
 configuration, framework/provider/tool inventory, deterministic JSON, and initial
-agent-security review rules. Its curated cross-rule regression set contains 730 pinned positive and
-negative labels, plus 2,522 separately scored Agent IR component and relationship labels.
+agent-security review rules. The v0.1.0 release candidate contains 25 enabled reporting rules. Its
+curated public regression set contains 733 pinned positive and negative reporting-rule labels, plus
+2,621 separately scored Agent IR component and relationship labels. These are checked-in regression
+metrics, not an unbiased ecosystem-wide accuracy estimate.
 
 ## Install and scan
 
@@ -181,7 +183,7 @@ HIGH AV-EXEC001 [high; finding]
 - [`benchmarks/engine-results.json`](benchmarks/engine-results.json) — full-corpus engine metrics
 - [`benchmarks/truthset.json`](benchmarks/truthset.json) — exact hand-labeled positives and negatives
 - [`benchmarks/truthset-results.json`](benchmarks/truthset-results.json) — per-rule seed precision/recall and label-failure summary
-- [`benchmarks/ir-truthset.json`](benchmarks/ir-truthset.json) — 2,522 separately scored component and relationship labels
+- [`benchmarks/ir-truthset.json`](benchmarks/ir-truthset.json) — 2,621 separately scored component and relationship labels
 - [`benchmarks/holdout-design.md`](benchmarks/holdout-design.md) — sealed benchmark plan for unbiased evaluation
 - [`benchmarks/release-checklist.md`](benchmarks/release-checklist.md) — claim boundaries and verifier gates for benchmark releases
 - [`examples/github-benchmark-verify.yml`](examples/github-benchmark-verify.yml) — copyable benchmark verifier workflow
@@ -297,8 +299,32 @@ python3 -m venv .venv
 .venv/bin/pytest
 .venv/bin/ruff check src tests scripts
 uv build --wheel --sdist
-python3 scripts/verify_distribution.py --require-sdist
-python3 scripts/verify_distribution.py --require-sdist --smoke-install
+uv run python scripts/verify_distribution.py --require-sdist
+uv run python scripts/verify_distribution.py --require-sdist --smoke-install
 uv run python scripts/verify_benchmark_results.py --require-evaluation-kind public-regression --require-all-passed
 agentverify benchmark verify-engine
 ```
+
+## v0.1.0 release candidate
+
+The local release candidate is prepared from this repository with:
+
+```console
+uv build --wheel --sdist
+uv run python scripts/verify_distribution.py --require-sdist --smoke-install
+```
+
+The built wheel and source distribution are written to `dist/` for manual attachment to a GitHub
+Release. `dist/` is intentionally ignored by git; release binaries should be uploaded as release
+artifacts, while source, docs, examples, schemas, and benchmark evidence remain committed.
+
+Before publishing, verify the release claim boundary with:
+
+```console
+agentverify benchmark verify --require-evaluation-kind public-regression --require-all-passed
+agentverify benchmark verify-engine
+agentverify holdout validate --manifest benchmarks/holdout-manifest.template.json --labels benchmarks/holdout-labels.template.json
+```
+
+Public numbers should be described as checked-in curated regression metrics. Do not present them as
+unbiased production precision/recall until a sealed holdout round has been completed.
