@@ -6,9 +6,10 @@ AgentVerify favors explainable, validated detections over large rule counts.
 
 AgentVerify is maintained by **Steven Rosa** ([GitHub: @gangfan](https://github.com/gangfan)).
 The GitHub noreply address in commits is for attribution only and cannot receive contact emails.
-Until a dedicated contact mailbox is available, use the issue forms for project questions or
-[private vulnerability reporting](https://github.com/AgentVerify/agentverify/security/advisories/new)
-for security issues in AgentVerify itself.
+For private questions or collaboration, contact
+[stevenrosafan@icloud.com](mailto:stevenrosafan@icloud.com). Public bug reports and rule proposals
+can use the issue forms. For security issues in AgentVerify itself, use that email or
+[private vulnerability reporting](https://github.com/AgentVerify/agentverify/security/advisories/new).
 
 ## Start small
 

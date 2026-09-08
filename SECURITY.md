@@ -5,6 +5,7 @@ Please report any code-execution, path-traversal, denial-of-service, or unsafe-o
 to the maintainers rather than opening a public exploit report.
 
 Use [GitHub private vulnerability reporting](https://github.com/AgentVerify/agentverify/security/advisories/new).
+You can also email Steven Rosa at [stevenrosafan@icloud.com](mailto:stevenrosafan@icloud.com).
 Include the AgentVerify version, operating system, smallest reproducer, and impact. Do not include
 live credentials. The current 0.1.x line is supported; fixes will be released on the latest patch
 version. There is no guaranteed response-time service level for this early community project.

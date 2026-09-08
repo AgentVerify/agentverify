@@ -5,12 +5,20 @@
 Completed the authorized public v0.1.0 launch on 2026-09-08.
 Repository: https://github.com/AgentVerify/agentverify
 Release: https://github.com/AgentVerify/agentverify/releases/tag/v0.1.0
-Release source commit: d79d764efdf66e51cba0e5e7155e3c92d2a1af6d.
+Release source commit after the authorized author rewrite: 8ebcc7b3d1e420798732a450d18946268d696c7d.
 This bounded launch pass is complete. The next iteration should be selected from real user feedback;
 PyPI publication and continuous autonomous expansion were not part of this pass.
 
 ## Completed recently
 
+- On 2026-09-08 the user supplied stevenrosafan@icloud.com for public contact and explicitly
+  authorized rewriting existing Git author history and force-pushing. All 476 existing main
+  commits and the v0.1.0 tag now use Steven Rosa with the GitHub-linked noreply address; the
+  supplied iCloud address is used for contact docs and package maintainer metadata. It was not
+  listed on the GitHub account at the time of this update, so commit attribution continues to use
+  the already verified 1679432+gangfan@users.noreply.github.com address. Every mapped commit was
+  checked for identical tree, timestamps, and mapped parent structure. A complete pre-rewrite Git
+  bundle and commit map are saved outside this repository. Release binaries remain unchanged.
 - Pushed source and the annotated v0.1.0 tag to git@github.com:AgentVerify/agentverify.git and
   published the latest GitHub release with wheel, sdist, public-regression verification JSON,
   engine verification JSON, and SHA256SUMS. Hosted CI run 34185566260 passed the complete suite,

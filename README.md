@@ -134,6 +134,9 @@ Use [`examples/github-benchmark-verify.yml`](examples/github-benchmark-verify.ym
 
 ## Help shape the next release
 
+For private questions or collaboration, email **Steven Rosa** at
+[stevenrosafan@icloud.com](mailto:stevenrosafan@icloud.com).
+
 The most useful contribution is a real scan: tell us what helped, what was noisy, and what we missed.
 
 - [Share scan feedback](https://github.com/AgentVerify/agentverify/issues/new?template=scan-feedback.yml):
