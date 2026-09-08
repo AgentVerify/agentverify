@@ -1,5 +1,21 @@
 # Evidence-backed roadmap
 
+## v0.1.0 and the next release
+
+v0.1.0 ships local scans, 25 reporting rules, Agent IR, JSON/BOM/SARIF, policy gates, and
+reproducible public regression evidence. The next release should be driven by users trying it:
+
+1. Fix installation problems, crashes, and confusing output reported from real scans.
+2. Turn reproducible false positives and missed detections into regression cases and fixes.
+3. Improve the most-requested framework patterns with pinned evidence and negative cases.
+4. Run a separately sampled holdout evaluation before making broader accuracy claims.
+
+Use [scan feedback](https://github.com/AgentVerify/agentverify/issues/new?template=scan-feedback.yml)
+to influence priorities. The table below preserves the research basis for detection work; it is
+not a commitment to implement every item in the next release.
+
+## Research priorities
+
 Priorities use `impact × corpus frequency × technical feasibility`, each scored from 1–5. Frequency
 is based on the initial 71-repository corpus; scores will be recalibrated as the benchmark grows.
 

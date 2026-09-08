@@ -1,0 +1,38 @@
+name: Share scan feedback
+description: Tell us what was useful, noisy, or missing in a real scan
+title: "[Feedback]: "
+labels: ["feedback", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A real scan helps us choose what to improve next. Do not upload private code or unredacted reports.
+        A public repository link is welcome but optional; anonymized examples are useful too.
+  - type: input
+    id: version
+    attributes:
+      label: AgentVerify version and scan command
+      placeholder: "0.1.0 — agentverify scan . --format summary"
+    validations:
+      required: true
+  - type: textarea
+    id: project
+    attributes:
+      label: Project context
+      description: Language, framework, approximate source size, and optionally a public repository link.
+    validations:
+      required: true
+  - type: textarea
+    id: experience
+    attributes:
+      label: What helped, what was noisy, and what was missing?
+      description: Include runtime or installation problems if relevant. Rule IDs help us connect feedback to detections.
+    validations:
+      required: true
+  - type: dropdown
+    id: workflow
+    attributes:
+      label: Where would you use AgentVerify?
+      options: [Local review, Pull request or CI gate, Architecture inventory, Editor integration, Still exploring]
+    validations:
+      required: true

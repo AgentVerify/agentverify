@@ -3,6 +3,11 @@ description: Report a false positive, false negative, crash, or unsafe output
 title: "[Bug]: "
 labels: ["bug", "triage"]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve AgentVerify. Remove secrets, private source, and local paths before sharing reports.
+        For vulnerabilities in AgentVerify itself, use https://github.com/AgentVerify/agentverify/security/advisories/new.
   - type: dropdown
     id: class
     attributes:
@@ -34,4 +39,3 @@ body:
       label: Actual behavior
     validations:
       required: true
-

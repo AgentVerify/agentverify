@@ -6,8 +6,8 @@ commit and remain available in a direct AgentVerify report.
 
 ## Use this checkout locally
 
-Until AgentVerify has an approved public remote and release tag, install it as a local hook in the
-repository being scanned. A copyable example is available at
+To use an already installed AgentVerify, add a local hook in the repository being scanned.
+A copyable example is available at
 [`examples/pre-commit-config.yaml`](../examples/pre-commit-config.yaml):
 
 ```yaml
@@ -34,15 +34,14 @@ Pin that package version in the project's development dependencies. Keep `pass_f
 unless you also run a full repository scan elsewhere; AgentVerify needs repository context for
 imports, reachability, policy, and control evidence.
 
-## Use a future tagged release
+## Use the published release
 
-After an official repository URL and tag exist, consumers can use the bundled
-`.pre-commit-hooks.yaml` manifest:
+Use the bundled `.pre-commit-hooks.yaml` manifest to install an isolated copy:
 
 ```yaml
 repos:
-  - repo: <official-agentverify-repository-url>
-    rev: <reviewed-release-tag>
+  - repo: https://github.com/AgentVerify/agentverify
+    rev: v0.1.0
     hooks:
       - id: agentverify
 ```

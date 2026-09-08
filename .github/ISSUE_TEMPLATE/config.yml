@@ -1,1 +1,8 @@
 blank_issues_enabled: false
+contact_links:
+  - name: Documentation and quickstart
+    url: https://github.com/AgentVerify/agentverify/tree/main/docs
+    about: Installation, interpreting findings, and integration guides.
+  - name: Report a security vulnerability privately
+    url: https://github.com/AgentVerify/agentverify/security/advisories/new
+    about: For vulnerabilities in AgentVerify itself, rather than detections in scanned projects.

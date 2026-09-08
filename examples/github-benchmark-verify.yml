@@ -12,6 +12,7 @@ jobs:
   public-regression:
     name: Verify public regression benchmark results
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -19,7 +20,7 @@ jobs:
           python-version: "3.13"
           cache: pip
       - name: Install AgentVerify
-        run: python -m pip install agentverify==0.1.0
+        run: python -m pip install "agentverify @ git+https://github.com/AgentVerify/agentverify.git@v0.1.0"
       - name: Verify checked benchmark result artifacts
         run: >
           agentverify benchmark verify

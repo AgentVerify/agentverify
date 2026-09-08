@@ -1,8 +1,9 @@
 # Changelog
 
-## v0.1.0 release candidate
+## v0.1.0 — 2026-09-08
 
-AgentVerify v0.1.0 is the first runnable release candidate for GitHub distribution.
+AgentVerify v0.1.0 is the first public GitHub release. This is an early static analyzer; syntax
+coverage and runtime control proof remain limited to documented patterns.
 
 ### Included
 
@@ -29,7 +30,15 @@ AgentVerify v0.1.0 is the first runnable release candidate for GitHub distributi
 
 These are curated public-regression results, not an unbiased ecosystem-wide precision/recall claim.
 
-### Publish boundary
+### First-run experience
 
-This candidate is prepared for manual GitHub release publication. It does not publish to GitHub,
-create a tag, upload artifacts, or publish to PyPI by itself.
+- GitHub installation instructions, a short README, and a task-oriented documentation index.
+- A runnable unsafe/fixed comparison that verifies findings and CI gate behavior.
+- Copyable integrations pinned to the official GitHub release.
+- Scan-feedback and detection-report forms, a contribution workflow, and private security reporting.
+- CI builds wheel/source artifacts and verifies installation, schemas, and command contracts.
+
+### Distribution
+
+The release provides a wheel, source distribution, benchmark verification JSON, and SHA-256
+checksums through GitHub Releases. PyPI publication is not part of this release.

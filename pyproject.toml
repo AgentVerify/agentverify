@@ -10,10 +10,29 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "Apache-2.0" }
 authors = [{ name = "AgentVerify contributors" }]
+keywords = ["ai-agents", "static-analysis", "mcp", "security", "sarif"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Security",
+  "Topic :: Software Development :: Quality Assurance",
+]
 dependencies = [
   "cryptography>=46.0",
   "jsonschema>=4.23",
 ]
+
+[project.urls]
+Homepage = "https://github.com/AgentVerify/agentverify"
+Documentation = "https://github.com/AgentVerify/agentverify/tree/main/docs"
+Repository = "https://github.com/AgentVerify/agentverify"
+Issues = "https://github.com/AgentVerify/agentverify/issues"
+Changelog = "https://github.com/AgentVerify/agentverify/blob/main/CHANGELOG.md"
 
 [project.scripts]
 agentverify = "agentverify.cli:main"

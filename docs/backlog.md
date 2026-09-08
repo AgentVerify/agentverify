@@ -1,7 +1,9 @@
 # Issue-ready backlog
 
-Items are ordered by evidence-backed roadmap priority. They are written to become GitHub issues once
-the local repository has an approved remote.
+This is the detailed research backlog, including historical implementation notes. For current
+release priorities, start with the [roadmap](roadmap.md) and
+[open issues](https://github.com/AgentVerify/agentverify/issues). Items below are evidence for future
+detection work, not a list of blockers for using v0.1.0.
 
 ## P0 — framework and provider taxonomy
 

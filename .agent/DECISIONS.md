@@ -1,5 +1,15 @@
 # AgentVerify decisions
 
+## 2026-09-08: Bounded public launch and user-driven follow-up
+
+The user explicitly authorized pushing to git@github.com:AgentVerify/agentverify.git and making
+the repository useful and public. Publish v0.1.0 through GitHub with installable artifacts, clear
+onboarding, checked evidence, and feedback intake. Keep detailed reference material outside the
+front-page quickstart. GitHub-tag installation replaces unverified PyPI instructions. Hosted CI
+must verify normal tests and built artifacts before the release is published. Prefer real user
+feedback over further unbounded framework-pattern expansion; this pass ends after public install
+verification. No PyPI publication or outreach is included.
+
 ## Editor diagnostics are an adapter schema, not a new scan format
 
 - Decision: Expose `agentverify schema editor-diagnostics` and include

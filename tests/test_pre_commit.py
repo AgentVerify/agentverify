@@ -36,4 +36,6 @@ def test_pre_commit_docs_link_manifest_and_local_example() -> None:
     assert "`.pre-commit-hooks.yaml` manifest" in docs
     assert "`language: system` deliberately uses the reviewed version" in docs
     assert "Keep `pass_filenames: false`" in docs
-    assert "[copyable local config](examples/pre-commit-config.yaml)" in readme
+    assert "[Pre-commit setup](docs/pre-commit.md)" in readme
+    assert "https://github.com/AgentVerify/agentverify" in docs
+    assert "rev: v0.1.0" in docs

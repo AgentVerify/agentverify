@@ -395,6 +395,7 @@ def test_cli_contract_verifier_rejects_missing_required_artifact(
 def test_editor_integration_docs_reference_exported_artifacts() -> None:
     docs = (ROOT / "docs/editor-integration.md").read_text(encoding="utf-8")
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    reference = (ROOT / "docs/cli-reference.md").read_text(encoding="utf-8")
 
     assert "agentverify contracts" in docs
     assert "Mapping findings to editor diagnostics" in docs
@@ -411,17 +412,17 @@ def test_editor_integration_docs_reference_exported_artifacts() -> None:
     assert "agentverify schema editor-contract-verification" in docs
     assert "agentverify contracts --verify-dir agentverify-editor-contracts" in docs
     assert "agentverify contracts --verify-dir agentverify-editor-contracts --format summary" in docs
-    assert "agentverify contracts --verify-dir" in readme
-    assert "agentverify contracts --verify-dir agentverify-editor-contracts --format summary" in readme
+    assert "agentverify contracts --verify-dir" in reference
+    assert "agentverify contracts --verify-dir agentverify-editor-contracts --format summary" in reference
     assert "`kind`" in docs
     assert "`contract`" in docs
     assert "`required`" in docs
-    assert "[`examples/editor-diagnostics.json`](examples/editor-diagnostics.json)" in readme
     assert "[`examples/editor-policy-diagnostics.json`](examples/editor-policy-diagnostics.json)" in readme
-    assert "[`docs/editor-integration.md`](docs/editor-integration.md)" in readme
-    assert "agentverify schema editor-contract-manifest" in readme
-    assert "agentverify schema editor-contract-verification" in readme
-    assert "agentverify schema editor-diagnostics" in readme
+    assert "[Editor guide](docs/editor-integration.md)" in readme
+    assert "[CLI reference](docs/cli-reference.md)" in readme
+    assert "agentverify schema editor-contract-manifest" in reference
+    assert "agentverify schema editor-contract-verification" in reference
+    assert "agentverify schema editor-diagnostics" in reference
 
 
 def test_editor_diagnostics_example_matches_real_report() -> None:

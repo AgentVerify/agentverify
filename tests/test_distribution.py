@@ -181,7 +181,7 @@ def test_github_policy_gate_example_is_read_only_and_fail_closed() -> None:
     assert "--policy agentverify-policy.json" in workflow
     assert "--format summary" in workflow
     assert "--require-suppression-expiry" in workflow
-    assert "python -m pip install agentverify==0.1.0" in workflow
+    assert 'python -m pip install "agentverify @ git+https://github.com/AgentVerify/agentverify.git@v0.1.0"' in workflow
     assert "[`examples/github-policy-gate.yml`](../examples/github-policy-gate.yml)" in policy_docs
     assert "[`examples/github-policy-gate.yml`](../examples/github-policy-gate.yml)" in code_scanning_docs
     assert "[`examples/github-policy-gate.yml`](examples/github-policy-gate.yml)" in readme
@@ -199,7 +199,7 @@ def test_github_code_scanning_example_uploads_sarif_without_policy_gate() -> Non
     assert "category: agentverify" in workflow
     assert "--policy" not in workflow
     assert "--fail-on" not in workflow
-    assert "python -m pip install agentverify==0.1.0" in workflow
+    assert 'python -m pip install "agentverify @ git+https://github.com/AgentVerify/agentverify.git@v0.1.0"' in workflow
     assert "[`examples/github-code-scanning.yml`](../examples/github-code-scanning.yml)" in (
         code_scanning_docs
     )
@@ -228,7 +228,7 @@ def test_github_editor_contracts_example_exports_and_verifies_contract_bundle() 
     assert 'verification.get("passed") is not True' in workflow
     assert "actions/upload-artifact@v5" in workflow
     assert "name: agentverify-editor-contracts" in workflow
-    assert "python -m pip install agentverify==0.1.0" in workflow
+    assert 'python -m pip install "agentverify @ git+https://github.com/AgentVerify/agentverify.git@v0.1.0"' in workflow
     assert "[`examples/github-editor-contracts.yml`](../examples/github-editor-contracts.yml)" in (
         editor_docs
     )
@@ -269,7 +269,7 @@ def test_github_benchmark_verify_example_is_read_only_and_exports_verifier_json(
     assert "Draft202012Validator(schema).validate(payload)" in workflow
     assert "actions/upload-artifact@v5" in workflow
     assert "agentverify-engine-results-verification.json" in workflow
-    assert "python -m pip install agentverify==0.1.0" in workflow
+    assert 'python -m pip install "agentverify @ git+https://github.com/AgentVerify/agentverify.git@v0.1.0"' in workflow
     assert "[`examples/github-benchmark-verify.yml`](../examples/github-benchmark-verify.yml)" in (
         release_checklist
     )

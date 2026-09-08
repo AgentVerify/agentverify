@@ -14,6 +14,7 @@ jobs:
   agentverify-policy:
     name: AgentVerify policy
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -21,9 +22,7 @@ jobs:
           python-version: "3.13"
           cache: pip
       - name: Install AgentVerify
-        # Pin an organization-approved release in production, for example:
-        # python -m pip install agentverify==0.1.0
-        run: python -m pip install agentverify
+        run: python -m pip install "agentverify @ git+https://github.com/AgentVerify/agentverify.git@v0.1.0"
       - name: Validate trusted policy composition
         run: >
           agentverify policy agentverify-policy.json

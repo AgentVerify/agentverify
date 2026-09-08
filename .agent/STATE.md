@@ -2,11 +2,27 @@
 
 ## Current milestone
 
-Prepare the v0.1.0 release candidate for manual GitHub publication without pushing, tagging,
-creating a GitHub Release, or publishing to PyPI from Codex.
+Publish a useful v0.1.0 GitHub release at AgentVerify/agentverify, as explicitly authorized by
+the user on 2026-09-08. Scope is a bounded public launch: onboarding, docs, working integrations,
+distribution verification, feedback intake, source push, and GitHub release assets. PyPI and
+continuous autonomous expansion are outside this pass.
 
 ## Completed recently
 
+- Reviewed the first-run experience and replaced the long command-first README with a concise
+  product introduction, verified demo, task-based integration links, initial evidence, and feedback
+  entry points. Preserved detailed CLI and benchmark instructions in dedicated docs and added a
+  documentation index plus getting-started guide. Official installation and integration examples
+  use the GitHub release rather than assuming a PyPI publication. Added package project metadata,
+  scan-feedback and PR templates, contribution triage guidance, release notes, and bounded CI
+  package build/install verification. Existing SSH credentials identify gangfan; the matching
+  existing GitHub account has ADMIN access to the empty public target repository.
+- Local launch gates passed: 368 tests, Ruff, runnable demo with both expected gate exits,
+  zero broken relative links across 20 public Markdown files, installed-wheel smoke verification,
+  source artifact verification, 3,354/3,354 public regression labels, and 71/71 engine repositories.
+  GitHub repository description/topics/docs link, feedback labels, and private vulnerability
+  reporting are configured. Next: push this source, check hosted CI, publish v0.1.0 assets, and
+  verify the public install path.
 - Prepared the local v0.1.0 release candidate source state. README release-facing counts now match
   the current checked benchmark artifacts: 25 enabled reporting rules, 733/733 public
   reporting-rule regression labels, 2,621/2,621 public Agent IR regression labels, 3,354/3,354

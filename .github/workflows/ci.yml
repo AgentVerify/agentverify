@@ -8,9 +8,14 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       matrix:
         python-version: ["3.11", "3.12", "3.13"]
@@ -22,6 +27,7 @@ jobs:
       - run: python -m pip install -e '.[dev]'
       - run: pytest -q
       - run: ruff check src tests scripts
+      - run: python scripts/demo.py
       - run: agentverify benchmark verify --require-evaluation-kind public-regression --require-all-passed
       - run: agentverify benchmark verify-engine
       - run: agentverify holdout validate --manifest benchmarks/holdout-manifest.template.json --labels benchmarks/holdout-labels.template.json
@@ -29,3 +35,21 @@ jobs:
       - run: agentverify scan examples/safe_agent --fail-on high
       - run: agentverify scan cases/python_dangerous --format sarif --output /tmp/agentverify.sarif
       - run: python -m json.tool /tmp/agentverify.sarif > /dev/null
+
+  distribution:
+    name: Build and install release artifacts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: python -m pip install build jsonschema
+      - run: python -m build
+      - run: python scripts/verify_distribution.py --require-sdist --smoke-install
+      - uses: actions/upload-artifact@v5
+        with:
+          name: agentverify-distributions
+          path: dist/*
+          if-no-files-found: error

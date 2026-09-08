@@ -11,9 +11,9 @@ application repositories should normally scan `.`.
 ## Add it to a repository
 
 Copy [`examples/github-code-scanning.yml`](../examples/github-code-scanning.yml) into
-`.github/workflows/agentverify-code-scanning.yml`. Replace the install step with the released,
-organization-approved AgentVerify version you want to enforce, such as
-`python -m pip install agentverify==<version>`.
+`.github/workflows/agentverify-code-scanning.yml`. The install step pins the official GitHub
+`v0.1.0` tag and does not depend on PyPI. For stricter reproducibility, replace the tag with the
+full commit SHA of the release after reviewing it.
 
 The upload job needs these GitHub token permissions:
 
