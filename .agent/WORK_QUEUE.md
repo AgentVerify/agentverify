@@ -2,9 +2,10 @@
 
 ## P0
 
-- Complete the authorized v0.1.0 public launch: validate local docs/demo/distributions, push to
-  git@github.com:AgentVerify/agentverify.git, verify hosted CI, tag the validated source commit,
-  and publish wheel/sdist plus benchmark/engine verification JSON and SHA-256 checksums.
+No v0.1.0 launch blockers remain. Source, tag, release artifacts, hosted CI, public installation,
+and feedback intake are verified. Select a new bounded milestone from user feedback before
+resuming implementation. Keep these requirements for future changes:
+
 - Keep rule additions evidence-backed: real repository case, fixture or corpus label, regression
   test, documentation, and benchmark update.
 - Preserve fail-closed behavior for policy, baseline, suppression, and schema inputs used in CI.

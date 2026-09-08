@@ -2,13 +2,25 @@
 
 ## Current milestone
 
-Publish a useful v0.1.0 GitHub release at AgentVerify/agentverify, as explicitly authorized by
-the user on 2026-09-08. Scope is a bounded public launch: onboarding, docs, working integrations,
-distribution verification, feedback intake, source push, and GitHub release assets. PyPI and
-continuous autonomous expansion are outside this pass.
+Completed the authorized public v0.1.0 launch on 2026-09-08.
+Repository: https://github.com/AgentVerify/agentverify
+Release: https://github.com/AgentVerify/agentverify/releases/tag/v0.1.0
+Release source commit: d79d764efdf66e51cba0e5e7155e3c92d2a1af6d.
+This bounded launch pass is complete. The next iteration should be selected from real user feedback;
+PyPI publication and continuous autonomous expansion were not part of this pass.
 
 ## Completed recently
 
+- Pushed source and the annotated v0.1.0 tag to git@github.com:AgentVerify/agentverify.git and
+  published the latest GitHub release with wheel, sdist, public-regression verification JSON,
+  engine verification JSON, and SHA256SUMS. Hosted CI run 34185566260 passed the complete suite,
+  lint, demo, evidence gates, and other CLI checks on Python 3.11/3.12/3.13, plus the independent
+  package build/install job. Code-scanning run 34185568226 passed SARIF upload and policy enforcement.
+  Verified the public README presentation and feedback form (including feedback/triage labels).
+  A fresh Python 3.12 environment installed from the public v0.1.0 Git tag and ran the cloned demo.
+  Anonymous downloads of all five release assets succeeded; all four SHA-256 checks passed.
+  Reinstalling the downloaded wheel also passed the demo's findings and gate-exit checks. The wheel
+  independently built from the public tag matched the uploaded wheel's SHA-256 digest.
 - Reviewed the first-run experience and replaced the long command-first README with a concise
   product introduction, verified demo, task-based integration links, initial evidence, and feedback
   entry points. Preserved detailed CLI and benchmark instructions in dedicated docs and added a
@@ -21,8 +33,7 @@ continuous autonomous expansion are outside this pass.
   zero broken relative links across 20 public Markdown files, installed-wheel smoke verification,
   source artifact verification, 3,354/3,354 public regression labels, and 71/71 engine repositories.
   GitHub repository description/topics/docs link, feedback labels, and private vulnerability
-  reporting are configured. Next: push this source, check hosted CI, publish v0.1.0 assets, and
-  verify the public install path.
+  reporting are configured. Public launch and install verification are recorded above.
 - Prepared the local v0.1.0 release candidate source state. README release-facing counts now match
   the current checked benchmark artifacts: 25 enabled reporting rules, 733/733 public
   reporting-rule regression labels, 2,621/2,621 public Agent IR regression labels, 3,354/3,354
